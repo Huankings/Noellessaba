@@ -71,14 +71,7 @@ public abstract class InstinctMixin {
                 if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.BARTENDER) && (playerPoisonComponent.poisonTicks > 0 || delusionPlayerComponent.isActive())) {
                     cir.setReturnValue(Color.RED.getRGB());
                 }
-                /*
-                 * 天使的“守护目标透视”改成和酒保 / 仇杀客一致的常驻透视：
-                 * 只要当前客户端玩家还是存活中的天使，并且这名玩家正是自己守护的目标，
-                 * 就直接返回职业颜色。
-                 *
-                 * 这里故意不再依赖 WatheClient.isInstinctEnabled()，
-                 * 这样就不会要求玩家额外按住本能键才能看到被守护者。
-                 */
+
                 if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.ANGEL)
                         && WatheClient.isPlayerAliveAndInSurvival()) {
                     AngelPlayerComponent angelComponent = AngelPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
