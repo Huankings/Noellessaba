@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "noellesroles:master_key",
+    "noellesroles:delusion_vial",
+    "noellesroles:defense_vial",
+    "noellesroles:fake_knife",
+    "noellesroles:fake_grenade",
+    "noellesroles:fake_revolver",
+    "noellesroles:robber_pistol",
+    "noellesroles:role_mine",
+    "noellesroles:toolbox"
+  ]
+}

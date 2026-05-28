@@ -1,0 +1,57 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.agmas.noellesroles.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "compat.WorldBlackoutComponentAccessor",
+    "DoNotCollideWithFeatherMixin",
+    "GiveCoinsOnMoodCompletionMixin",
+    "roles.bartender.BartenderReseterMixin",
+    "roles.bartender.CocktailItemMixin",
+    "roles.winder.WinderReseterMixin",
+    "roles.coroner.CoronerAddDeathReasonMixin",
+    "roles.executioner.ExecutionerConfirmMixin",
+    "roles.executioner.ExecutionerGunPickupMixin",
+    "roles.executioner.NoTargetBackfireMixin",
+    "framing.FramingPassiveIncomeMixin",
+    "host.MasterKeySmallDoorMixin",
+    "host.MasterKeyTrainDoorMixin",
+    "host.MoneyIncreaseMixin",
+    "items.FakeGrenadeMixin",
+    "roles.jester.FakeRevolverMixin",
+    "roles.jester.JesterItemEntityMixin",
+    "roles.jester.JesterJestMixin",
+    "roles.morphling.MorphlingReseterMixin",
+    "roles.noisemaker.NoisemakerKillMixin",
+    "roles.voodoo.VoodooVooMixin",
+    "roles.coroner.CoronerReseterMixin",
+    "roles.prophet.ProphetReseterMixin",
+    "roles.coroner.CoronerExamineRewardMixin",
+    "roles.controller.ControllerLogicMixin",
+    "roles.controller.ControllerReseterMixin",
+    "roles.angel.AngelReseterMixin",
+    "roles.coward.CowardReseterMixin",
+    "roles.angel.AngelDeathCleanupMixin",
+    "roles.bomber.BomberDeathMixin",
+    "roles.bomber.BomberReseterMixin",
+    "roles.robber.RobberGunShootMixin",
+    "roles.robber.RobberReseterMixin",
+    "roles.coward.CowardRevolverCooldownMixin",
+    "shop.NoellesRolesPlayerShopMixin",
+    "GameFunctionsDeathProcessMixin",
+    "roles.stalker.StalkerLeftClickKillMixin",
+    "roles.stalker.StalkerKillCountMixin",
+    "roles.stalker.StalkerReseterMixin",
+    "roles.prophet.ProphetDeathCleanupMixin"
+
+
+
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

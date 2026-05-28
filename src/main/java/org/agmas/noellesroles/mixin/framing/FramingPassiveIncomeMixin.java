@@ -1,0 +1,32 @@
+package org.agmas.noellesroles.mixin.framing;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.game.gamemode.MurderGameMode;
+import net.minecraft.entity.player.PlayerEntity;
+import org.agmas.noellesroles.Noellesroles;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(MurderGameMode.class)
+public abstract class FramingPassiveIncomeMixin {
+    ///添加有被动收入的角色
+    //目前角色有:大嗓门，模仿者，狂信者，仇杀客，验尸官，工程师，回溯者
+    @WrapOperation(method = "tickServerGameLoop", at = @At(value = "INVOKE", target = "Ldev/doctor4t/wathe/cca/GameWorldComponent;canUseKillerFeatures(Lnet/minecraft/entity/player/PlayerEntity;)Z"))
+    public boolean passiveMoneyGeneration(GameWorldComponent instance, PlayerEntity player, Operation<Boolean> original) {
+        if (    instance.isRole(player, Noellesroles.NOISEMAKER)
+                || instance.isRole(player, Noellesroles.MIMIC)
+                || instance.isRole(player, Noellesroles.JESTER)
+                || instance.isRole(player, Noellesroles.EXECUTIONER)
+                || instance.isRole(player, Noellesroles.CORONER)
+                || instance.isRole(player, Noellesroles.ENGINEER)
+                || instance.isRole(player, Noellesroles.RECALLER)
+                // 先知没有被动收入，因此不要加入这里
+                //|| instance.isRole(player, Noellesroles.WINDER)
+        )
+            return true;
+        return original.call(instance,player);
+    }
+
+}

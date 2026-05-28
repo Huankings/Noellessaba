@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "noellesroles",
+  "version": "${version}",
+  "name": "NoellesRoles",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "LGPL-3.0",
+  "icon": "assets/noellesroles/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.agmas.noellesroles.client.NoellesrolesDataGenerator"
+    ],
+    "client": [
+      "org.agmas.noellesroles.client.NoellesrolesClient"
+    ],
+    "main": [
+      "org.agmas.noellesroles.Noellesroles"
+    ],
+    "cardinal-components": [
+      "org.agmas.noellesroles.NoellesRolesComponents"
+    ],
+    "voicechat": [
+      "org.agmas.noellesroles.voice.NoellesrolesVoiceChatPlugin"
+    ]
+  },
+
+  "custom": {
+    "cardinal-components": [
+      "noellesroles:morphling",
+      "noellesroles:angel",
+      "noellesroles:bartender",
+      "noellesroles:delusion",
+      "noellesroles:winder",
+      "noellesroles:ability",
+      "noellesroles:phantom_state",
+      "noellesroles:voodoo",
+      "noellesroles:wind_mark",
+      "noellesroles:config",
+      "noellesroles:body_death_reason",
+      "noellesroles:executioner",
+      "noellesroles:recaller",
+      "noellesroles:prophet",
+      "noellesroles:vulture",
+      "noellesroles:chameleon",
+      "noellesroles:noisemaker",
+      "noellesroles:noisemaker_glow_target",
+      "noellesroles:coroner_player",
+      "noellesroles:engineer",
+      "noellesroles:controller_player",
+      "noellesroles:controlled_player",
+      "noellesroles:death_process",
+      "noellesroles:stunned",
+      "noellesroles:stalker",
+      "noellesroles:bomber",
+      "noellesroles:robber",
+      "noellesroles:coward",
+      "noellesroles:sedative"
+    ]
+  },
+  "mixins": [
+    "noellesroles.mixins.json",
+    {
+      "config": "noellesroles.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "harpymodloader": "*"
+  }
+}

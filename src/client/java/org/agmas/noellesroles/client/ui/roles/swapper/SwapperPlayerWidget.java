@@ -1,0 +1,87 @@
+package org.agmas.noellesroles.client.ui.roles.swapper;
+
+import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
+import dev.doctor4t.wathe.util.ShopEntry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.PlayerSkinDrawer;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.RenderLayer;
+import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.client.ui.common.PlayerHeadTextureHelper;
+import org.agmas.noellesroles.packet.role.swapper.SwapperC2SPacket;
+import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
+import java.util.UUID;
+
+public class SwapperPlayerWidget extends ButtonWidget{
+    public final LimitedInventoryScreen screen;
+    public final AbstractClientPlayerEntity disguiseTarget;
+
+    public static UUID playerChoiceOne = null;
+
+    public SwapperPlayerWidget(LimitedInventoryScreen screen, int x, int y, @NotNull AbstractClientPlayerEntity disguiseTarget, int index) {
+        super(x, y, 16, 16, disguiseTarget.getName(), (a) -> {
+            if ((AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player)).cooldown == 0) {
+                if (MinecraftClient.getInstance().player.getWorld().getPlayerByUuid(disguiseTarget.getUuid()) == null) return;
+                if (MinecraftClient.getInstance().player.getWorld().getPlayerByUuid(disguiseTarget.getUuid()).hasVehicle()) return;
+                // 这里是“真正点到了玩家头像”才会进入的逻辑。
+                // 翻页按钮是独立控件，不会走到这里，因此不会被记成交换目标。
+                if (playerChoiceOne != null) {
+                    ClientPlayNetworking.send(new SwapperC2SPacket(playerChoiceOne, disguiseTarget.getUuid()));
+                } else {
+                    // 第一名被选中的玩家 UUID 会保存在静态字段里，
+                    // 因此即使切到下一页，第二次选择也还能正确和第一页的目标组成交换对。
+                    playerChoiceOne = disguiseTarget.getUuid();
+                }
+            }
+        }, DEFAULT_NARRATION_SUPPLIER);
+        this.screen = screen;
+        this.disguiseTarget = disguiseTarget;
+    }
+
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderWidget(context, mouseX, mouseY, delta);
+        var headTexture = PlayerHeadTextureHelper.resolveStableSkinTextures(disguiseTarget.getUuid(), null).texture();
+        if ((AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player)).cooldown == 0) {
+            context.drawGuiTexture(ShopEntry.Type.POISON.getTexture(), this.getX() - 7, this.getY() - 7, 30, 30);
+            PlayerSkinDrawer.draw(context, headTexture, this.getX(), this.getY(), 16);
+            if (this.isHovered()) {
+                this.drawShopSlotHighlight(context, this.getX(), this.getY(), 0);
+                context.drawTooltip(MinecraftClient.getInstance().textRenderer, disguiseTarget.getName(), this.getX() - 4 - MinecraftClient.getInstance().textRenderer.getWidth(disguiseTarget.getName()) / 2, this.getY() - 9);
+            }
+
+        }
+
+        if ((AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player)).cooldown > 0) {
+            context.setShaderColor(0.25f,0.25f,0.25f,0.5f);
+            context.drawGuiTexture(ShopEntry.Type.POISON.getTexture(), this.getX() - 7, this.getY() - 7, 30, 30);
+            PlayerSkinDrawer.draw(context, headTexture, this.getX(), this.getY(), 16);
+            if (this.isHovered()) {
+                this.drawShopSlotHighlight(context, this.getX(), this.getY(), 0);
+                context.drawTooltip(MinecraftClient.getInstance().textRenderer, disguiseTarget.getName(), this.getX() - 4 - MinecraftClient.getInstance().textRenderer.getWidth(disguiseTarget.getName()) / 2, this.getY() - 9);
+            }
+
+
+            context.setShaderColor(1f,1f,1f,1f);
+            context.drawText(MinecraftClient.getInstance().textRenderer, AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player).cooldown/20+"",this.getX(),this.getY(), Color.RED.getRGB(),true);
+
+        }
+
+    }
+
+    private void drawShopSlotHighlight(DrawContext context, int x, int y, int z) {
+        int color = -1862287543;
+        context.fillGradient(RenderLayer.getGuiOverlay(), x, y, x + 16, y + 14, color, color, z);
+        context.fillGradient(RenderLayer.getGuiOverlay(), x, y + 14, x + 15, y + 15, color, color, z);
+        context.fillGradient(RenderLayer.getGuiOverlay(), x, y + 15, x + 14, y + 16, color, color, z);
+    }
+
+    public void drawMessage(DrawContext context, TextRenderer textRenderer, int color) {
+    }
+
+}

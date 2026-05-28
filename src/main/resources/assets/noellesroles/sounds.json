@@ -1,0 +1,23 @@
+{
+  "role_mine_beep": {
+    "subtitle": "subtitles.noellesroles.role_mine_beep",
+    "sounds": [
+      "noellesroles:role_mine_beep"
+    ]
+  },
+  "item.bomb.beep": {
+    "subtitle": "subtitles.noellesroles.bomb_beep",
+    "sounds": [
+      "noellesroles:item/bomb_beep_1",
+      "noellesroles:item/bomb_beep_2",
+      "noellesroles:item/bomb_beep_3",
+      "noellesroles:item/bomb_beep_4"
+    ]
+  },
+  "item.bomb.explode": {
+    "subtitle": "subtitles.noellesroles.bomb_explode",
+    "sounds": [
+      "noellesroles:item/bomb_explode"
+    ]
+  }
+}
