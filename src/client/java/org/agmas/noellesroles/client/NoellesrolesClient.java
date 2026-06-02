@@ -2,10 +2,13 @@ package org.agmas.noellesroles.client;
 
 import com.google.common.collect.Maps;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.index.WatheItems;
+import dev.doctor4t.wathe.util.GrenadeThrowModePayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -27,14 +30,17 @@ import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
+import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
 import org.agmas.noellesroles.client.ui.common.PagedPlayerScreenState;
 import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerState;
+import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.swapper.SwapperPlayerWidget;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
+import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.lwjgl.glfw.GLFW;
@@ -56,6 +62,8 @@ public class NoellesrolesClient implements ClientModInitializer {
     private static boolean wasGazingPressed = false;
     private static boolean wasChargingPressed = false;
     private static boolean wasUsingKnife = false;
+    private static boolean grenadeThrowModeToggleHeld = false;
+    private static int lastThrowableGrenadeSelectedSlot = -1;
 
     public static Map<UUID, UUID> SHUFFLED_PLAYER_ENTRIES_CACHE = Maps.newHashMap();
     public static SkinTextures LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES = null;
@@ -73,6 +81,11 @@ public class NoellesrolesClient implements ClientModInitializer {
         GameEvents.ON_FINISH_FINALIZE.register((world, gameComponent) -> PagedPlayerScreenState.reset());
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> noellesroles$resetClientCaches());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> noellesroles$resetClientCaches());
+        SpiritualistClientController.init();
+        ClientPlayNetworking.registerGlobalReceiver(SpiritualistPossessionViewS2CPacket.ID, (payload, context) ->
+                context.client().execute(() -> SpiritualistClientController.handlePossessionViewPacket(payload)));
+
+        ClientPreAttackCallback.EVENT.register((client, player, clickCount) -> noellesroles$handleGrenadeThrowModeSwitch(player));
 
 
 
@@ -138,6 +151,12 @@ public class NoellesrolesClient implements ClientModInitializer {
                 } else {
                     wasUsingKnife = false;
                 }
+
+                noellesroles$maybeShowGrenadeThrowModeHint(mc.player);
+            }
+
+            if (!client.options.attackKey.isPressed()) {
+                grenadeThrowModeToggleHeld = false;
             }
 
 
@@ -185,6 +204,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.CAPTURE_DEVICE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.POWER_RESTORATION, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.FAKE_KNIFE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.FAKE_GRENADE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.FAKE_REVOLVER, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.MASTER_KEY, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.DELUSION_VIAL, itemStack, list);
@@ -196,6 +216,10 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_AXE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.CRYSTAL_BALL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ROBBER_PISTOL, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SILENCED_REVOLVER, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SILENT_GRENADE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET_COLDOWN_REFRESH, itemStack, list);
         }));
 
         // 为需要额外模型的物品注册（目前所有物品都注册冷却模型，方便未来扩展）
@@ -204,6 +228,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.CAPTURE_DEVICE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.POWER_RESTORATION);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.FAKE_KNIFE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.FAKE_GRENADE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.FAKE_REVOLVER);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.MASTER_KEY);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.DELUSION_VIAL);
@@ -215,6 +240,63 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_AXE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.CRYSTAL_BALL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROBBER_PISTOL);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BAYONET);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENCED_REVOLVER);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENT_GRENADE);
+    }
+
+    /**
+     * 复刻 Wathe 原版手雷的左键切模式体验，并把 noellesroles 的扩展手雷一起接进来。
+     *
+     * <p>目前支持：
+     * 1. 无声手雷；
+     * 2. 假手雷。</p>
+     */
+    private static boolean noellesroles$handleGrenadeThrowModeSwitch(PlayerEntity player) {
+        if (!noellesroles$isThrowableGrenade(player.getMainHandStack())) {
+            return false;
+        }
+
+        /*
+         * 长按左键时 Fabric 会连续触发预攻击回调。
+         * 这里沿用 Wathe 的“按住锁”做法，同一次按住只允许切换一次模式，
+         * 并且整个按住期间都吞掉攻击动作，避免误打到别人。
+         */
+        if (grenadeThrowModeToggleHeld) {
+            return true;
+        }
+        grenadeThrowModeToggleHeld = true;
+
+        PlayerGrenadeComponent component = PlayerGrenadeComponent.KEY.get(player);
+        component.toggleLocal();
+        ClientPlayNetworking.send(new GrenadeThrowModePayload(component.isDirectThrowMode()));
+        WatheClient.showGrenadeThrowModeSwitchMessage(player);
+        return true;
+    }
+
+    /**
+     * 当玩家刚切到可切模式的扩展手雷所在栏位时，提示当前投掷模式。
+     *
+     * <p>这样玩家不用试扔一次，就能立刻确认自己当前是直投还是蓄力。</p>
+     */
+    private static void noellesroles$maybeShowGrenadeThrowModeHint(PlayerEntity player) {
+        int currentSlot = player.getInventory().selectedSlot;
+        boolean isHoldingThrowableGrenade = noellesroles$isThrowableGrenade(player.getMainHandStack());
+        if (isHoldingThrowableGrenade && lastThrowableGrenadeSelectedSlot != currentSlot) {
+            WatheClient.showGrenadeThrowModeMessage(player, "tip.grenade.current_throw_mode");
+            lastThrowableGrenadeSelectedSlot = currentSlot;
+        } else if (!isHoldingThrowableGrenade) {
+            lastThrowableGrenadeSelectedSlot = -1;
+        }
+    }
+
+    /**
+     * noellesroles 当前接入 Wathe 手雷双模式系统的扩展手雷名单。
+     *
+     * <p>统一收口到这里，后续再新增类似手雷时只改一处即可。</p>
+     */
+    private static boolean noellesroles$isThrowableGrenade(net.minecraft.item.ItemStack stack) {
+        return stack.isOf(ModItems.SILENT_GRENADE) || stack.isOf(ModItems.FAKE_GRENADE);
     }
 
     private static void noellesroles$refreshLocalOriginalSkinCache(MinecraftClient client) {
@@ -257,10 +339,14 @@ public class NoellesrolesClient implements ClientModInitializer {
         CowardClientEffects.reset();
         GuesserPlayerWidget.selectedPlayer = null;
         SwapperPlayerWidget.playerChoiceOne = null;
+        OperatorPlayerWidget.firstChoice = null;
         CorpsemakerState.reset();
+        SpiritualistClientController.reset();
         wasGazingPressed = false;
         wasChargingPressed = false;
         wasUsingKnife = false;
+        grenadeThrowModeToggleHeld = false;
+        lastThrowableGrenadeSelectedSlot = -1;
     }
 
 

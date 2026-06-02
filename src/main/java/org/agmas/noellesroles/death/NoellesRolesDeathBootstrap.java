@@ -8,6 +8,7 @@ import org.agmas.noellesroles.roles.executioner.ExecutionerBackfireDeathHandler;
 import org.agmas.noellesroles.roles.jester.JesterDeathProtectionHandler;
 import org.agmas.noellesroles.roles.mimic.MimicBackfireDeathHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetDeathProtectionHandler;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistDeathProtectionHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
 
 /**
@@ -64,6 +65,9 @@ public final class NoellesRolesDeathBootstrap {
                 return false;
             }
             if (!StalkerDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
+                return false;
+            }
+            if (!SpiritualistDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
                 return false;
             }
 

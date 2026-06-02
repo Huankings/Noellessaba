@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
- * 让 Wathe 左轮的“准星锁定高亮”也能识别强盗手枪。
+ * 让 Wathe 左轮的“准星锁定高亮”也能识别扩展枪械。
  * 这里只扩展第一段左轮判断，不去碰后面的匕首/短枪逻辑。
  */
 @Mixin(CrosshairRenderer.class)
@@ -25,6 +25,8 @@ public class RobberGunCrosshairMixin {
             )
     )
     private static boolean noellesroles$allowRobberPistolTarget(ItemStack instance, Item item, Operation<Boolean> original) {
-        return original.call(instance, item) || instance.isOf(ModItems.ROBBER_PISTOL);
+        return original.call(instance, item)
+                || instance.isOf(ModItems.ROBBER_PISTOL)
+                || instance.isOf(ModItems.SILENCED_REVOLVER);
     }
 }

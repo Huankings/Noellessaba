@@ -2,6 +2,7 @@ package org.agmas.noellesroles.shop;
 
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerShopHandler;
+import org.agmas.noellesroles.roles.assassin.AssassinShopHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderShopHandler;
 import org.agmas.noellesroles.roles.bomber.BomberShopHandler;
 import org.agmas.noellesroles.roles.controller.ControllerShopHandler;
@@ -43,6 +44,7 @@ public final class NoellesRolesShopBootstrap {
         NoellesRolesShopRegistry.registerStatic(Noellesroles.BOMBER, BomberShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.ROBBER, RobberShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.CONTROLLER, ControllerShopHandler::getShopEntries);
+        NoellesRolesShopRegistry.registerStatic(Noellesroles.ASSASSIN, AssassinShopHandler::getShopEntries);
 
         // 共用一套伪装商店的职业。
         NoellesRolesShopRegistry.registerStatic(

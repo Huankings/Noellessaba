@@ -15,6 +15,7 @@ import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.agmas.noellesroles.roles.coroner.CoronerPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -150,6 +151,33 @@ public final class DisguiseRenderHelper {
      */
     @Nullable
     public static SkinTextures resolveAppearanceOverrideSkinTextures(AbstractClientPlayerEntity player) {
+        ClientPlayerEntity localPlayer = MinecraftClient.getInstance().player;
+        if (localPlayer != null) {
+            SpiritualistPlayerComponent spiritualistComponent = SpiritualistPlayerComponent.KEY.get(localPlayer);
+
+            /*
+             * 灵魂出窍时，灵术师眼中的“其他所有玩家”都会被改写成自己当前原始皮肤。
+             * 由于这里直接改的是 getSkinTextures 入口，披风、鞘翅和 Alex/Steve 手臂模型
+             * 也会随之一起统一成灵术师自己的外观。
+             */
+            if (spiritualistComponent.isProjecting() && player != localPlayer) {
+                if (NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES != null) {
+                    return NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES;
+                }
+                return resolveSkinTexturesFromUuid(localPlayer, localPlayer.getUuid(), true);
+            }
+
+            /*
+             * 灵魂附身时，本地第一人称手臂需要显示成宿主皮肤。
+             * 这里仅在“本地玩家自己”这一侧临时替换，不会影响其他客户端看到的真实外观。
+             */
+            if (spiritualistComponent.isPossessing()
+                    && player == localPlayer
+                    && spiritualistComponent.possessionTarget != null) {
+                return resolveSkinTexturesFromUuid(player, spiritualistComponent.possessionTarget, true);
+            }
+        }
+
         // 先处理疯狂观察者造成的“随机看到别人皮肤”效果，
         // 这样模型类型也会跟着被随机到的皮肤一起变化，不会只换贴图不换身形。
         if (WatheClient.moodComponent != null) {

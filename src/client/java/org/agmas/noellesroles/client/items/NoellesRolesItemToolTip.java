@@ -12,6 +12,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.Noellesroles;
+import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +44,18 @@ public class NoellesRolesItemToolTip {
             RobberPlayerComponent robberComponent = RobberPlayerComponent.KEY.get(client.player);
             if (robberComponent.isUsingStartCooldown(item)) {
                 return RobberPlayerComponent.ROBBER_START_COOLDOWN_TICKS;
+            }
+            return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.BAYONET || item == ModItems.SILENCED_REVOLVER) {
+            /*
+             * 刺客这两件武器除了各自的常规冷却外，还额外拥有“开局先锁 30 秒”的职业冷却。
+             * 这里必须识别当前冷却来源，才能让 tooltip 的剩余秒数按正确总时长去换算。
+             */
+            AssassinPlayerComponent assassinComponent = AssassinPlayerComponent.KEY.get(client.player);
+            if (assassinComponent.isUsingStartCooldown(item)) {
+                return AssassinPlayerComponent.ASSASSIN_START_COOLDOWN_TICKS;
             }
             return getItemCooldownTicks(item);
         }

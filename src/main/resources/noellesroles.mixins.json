@@ -36,14 +36,28 @@
     "roles.bomber.BomberDeathMixin",
     "roles.bomber.BomberReseterMixin",
     "roles.robber.RobberGunShootMixin",
+    "roles.assassin.AssassinBayonetAttackMixin",
+    "roles.assassin.AssassinGrenadeThrowModeMixin",
+    "roles.assassin.AssassinHideBodyOnKillMixin",
+    "roles.assassin.AssassinReseterMixin",
+    "roles.assassin.SilentGrenadeMixin",
+    "roles.assassin.SilencedRevolverGunShootMixin",
     "roles.robber.RobberReseterMixin",
+    "roles.operator.OperatorReseterMixin",
     "roles.coward.CowardRevolverCooldownMixin",
     "shop.NoellesRolesPlayerShopMixin",
     "GameFunctionsDeathProcessMixin",
     "roles.stalker.StalkerLeftClickKillMixin",
     "roles.stalker.StalkerKillCountMixin",
     "roles.stalker.StalkerReseterMixin",
-    "roles.prophet.ProphetDeathCleanupMixin"
+    "roles.prophet.ProphetDeathCleanupMixin",
+    "roles.spiritualist.SpiritualistTaskBlockMixin",
+    "roles.spiritualist.SpiritualistReseterMixin",
+    "roles.spiritualist.SpiritualistProjectionDamageMixin",
+    "roles.spiritualist.SpiritualistBodyCollisionMixin",
+    "roles.spiritualist.SpiritualistPossessedMovementBlockMixin",
+    "roles.spiritualist.SpiritualistPossessedClientCommandBlockMixin",
+    "roles.spiritualist.PlayerEntityPoseInvoker"
 
 
 

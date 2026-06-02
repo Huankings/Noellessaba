@@ -313,6 +313,12 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatSilentGrenadeUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.silent_grenade", actor);
+    }
+
+    @Nullable
     public static Text formatTimedBombActivated(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = victimFromGlobal(event, match);
         return victim == null ? null : Text.translatable("replay.global.noellesroles.timed_bomb_activated", victim);
@@ -796,6 +802,205 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatSpiritualistProjectionStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.spiritualist_projection_started", actor);
+    }
+
+    @Nullable
+    public static Text formatSpiritualistProjectionEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.spiritualist_projection_ended", actor);
+    }
+
+    @Nullable
+    public static Text formatSpiritualistPossessionStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.spiritualist_possession_started", actor, target);
+    }
+
+    @Nullable
+    public static Text formatSpiritualistPossessionEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.spiritualist_possession_ended", actor, target);
+    }
+
+    private static @Nullable Text playerFromUuidOrName(GameRecordEvent event, GameRecordManager.MatchRecord match, String uuidKey, String nameKey) {
+        if (event.data().containsUuid(uuidKey)) {
+            return ReplayGenerator.formatPlayerName(event.data().getUuid(uuidKey), ReplayGenerator.getPlayerInfoCache(match));
+        }
+        if (event.data().contains(nameKey)) {
+            return Text.literal(event.data().getString(nameKey));
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Text formatOperatorConnectionFailedBothDead(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text playerOne = playerFromUuidOrName(event, match, "player_one", "player_one_name");
+        Text playerTwo = playerFromUuidOrName(event, match, "player_two", "player_two_name");
+        if (actor == null || playerOne == null || playerTwo == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_connection_failed_both_dead", actor, playerOne, playerTwo);
+    }
+
+    @Nullable
+    public static Text formatOperatorConnectionFailedOneDead(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text playerOne = playerFromUuidOrName(event, match, "player_one", "player_one_name");
+        Text playerTwo = playerFromUuidOrName(event, match, "player_two", "player_two_name");
+        Text deadPlayer = playerFromUuidOrName(event, match, "dead_player", "dead_player_name");
+        if (actor == null || playerOne == null || playerTwo == null || deadPlayer == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_connection_failed_one_dead", actor, playerOne, playerTwo, deadPlayer);
+    }
+
+    @Nullable
+    public static Text formatOperatorConnectionStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text playerOne = playerFromUuidOrName(event, match, "player_one", "player_one_name");
+        Text playerTwo = playerFromUuidOrName(event, match, "player_two", "player_two_name");
+        if (actor == null || playerOne == null || playerTwo == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_connection_started", actor, playerOne, playerTwo);
+    }
+
+    @Nullable
+    public static Text formatOperatorConnectionEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text playerOne = playerFromUuidOrName(event, match, "player_one", "player_one_name");
+        Text playerTwo = playerFromUuidOrName(event, match, "player_two", "player_two_name");
+        if (actor == null || playerOne == null || playerTwo == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_connection_ended", actor, playerOne, playerTwo);
+    }
+
+    @Nullable
+    public static Text formatOperatorConnectionInterrupted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text playerOne = playerFromUuidOrName(event, match, "player_one", "player_one_name");
+        Text playerTwo = playerFromUuidOrName(event, match, "player_two", "player_two_name");
+        if (actor == null || playerOne == null || playerTwo == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_connection_interrupted", actor, playerOne, playerTwo);
+    }
+
+    @Nullable
+    public static Text formatOperatorBroadcastFailed(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromUuidOrName(event, match, "target_player", "target_player_name");
+        Text deadPlayer = playerFromUuidOrName(event, match, "dead_player", "dead_player_name");
+        if (actor == null || target == null || deadPlayer == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_broadcast_failed", actor, target, deadPlayer);
+    }
+
+    @Nullable
+    public static Text formatOperatorBroadcastStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromUuidOrName(event, match, "target_player", "target_player_name");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_broadcast_started", actor, target);
+    }
+
+    @Nullable
+    public static Text formatOperatorBroadcastEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromUuidOrName(event, match, "target_player", "target_player_name");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_broadcast_ended", actor, target);
+    }
+
+    @Nullable
+    public static Text formatOperatorBroadcastInterrupted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromUuidOrName(event, match, "target_player", "target_player_name");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.operator_broadcast_interrupted", actor, target);
+    }
+
+    @Nullable
+    public static Text formatSpiritualistActiveShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text spiritualist = playerFromKey(event, match, "owner_player");
+        if (victim == null || spiritualist == null) {
+            return null;
+        }
+
+        Text damageName = DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        if (event.data().containsUuid("actor")) {
+            Text attacker = actorText(event, match);
+            if (attacker != null) {
+                return Text.translatable(
+                        "replay.global.noellesroles.spiritualist_active_shield_blocked",
+                        victim,
+                        spiritualist,
+                        attacker,
+                        damageName
+                );
+            }
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.spiritualist_active_shield_blocked",
+                victim,
+                spiritualist,
+                Text.literal("未知来源"),
+                damageName
+        );
+    }
+
+    @Nullable
+    public static Text formatSpiritualistLingeringShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text spiritualist = playerFromKey(event, match, "owner_player");
+        if (victim == null || spiritualist == null) {
+            return null;
+        }
+
+        Text damageName = DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        if (event.data().containsUuid("actor")) {
+            Text attacker = actorText(event, match);
+            if (attacker != null) {
+                return Text.translatable(
+                        "replay.global.noellesroles.spiritualist_lingering_shield_blocked",
+                        victim,
+                        spiritualist,
+                        attacker,
+                        damageName
+                );
+            }
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.spiritualist_lingering_shield_blocked",
+                victim,
+                spiritualist,
+                Text.literal("未知来源"),
+                damageName
+        );
+    }
+
+    @Nullable
     public static Text formatAngelGuardShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text guarded = targetText(event, match);
         Text angel = playerFromKey(event, match, "angel_player");
@@ -853,5 +1058,15 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatSedativeOverdoseDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = targetText(event, match);
         return victim == null ? null : Text.translatable("replay.death.noellesroles.sedative_overdose.died", victim);
+    }
+
+    @Nullable
+    public static Text formatSpiritualistSoulGuardDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text spiritualist = targetText(event, match);
+        Text protectedHost = playerFromKey(event, match, "target_player");
+        if (spiritualist == null || protectedHost == null) {
+            return null;
+        }
+        return Text.translatable("replay.death.noellesroles.spiritualist_soul_guard.died", spiritualist, protectedHost);
     }
 }

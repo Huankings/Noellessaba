@@ -49,6 +49,7 @@
       "noellesroles:noisemaker_glow_target",
       "noellesroles:coroner_player",
       "noellesroles:engineer",
+      "noellesroles:assassin",
       "noellesroles:controller_player",
       "noellesroles:controlled_player",
       "noellesroles:death_process",
@@ -56,8 +57,12 @@
       "noellesroles:stalker",
       "noellesroles:bomber",
       "noellesroles:robber",
+      "noellesroles:operator",
       "noellesroles:coward",
-      "noellesroles:sedative"
+      "noellesroles:sedative",
+      "noellesroles:spiritualist_player",
+      "noellesroles:spiritualist_host",
+      "noellesroles:hidden_bodies"
     ]
   },
   "mixins": [

@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "noellesroles:fake_revolver",
-    "noellesroles:robber_pistol"
+    "noellesroles:robber_pistol",
+    "noellesroles:silenced_revolver"
   ]
 }

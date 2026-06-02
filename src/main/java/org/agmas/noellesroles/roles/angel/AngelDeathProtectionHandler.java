@@ -32,6 +32,20 @@ public final class AngelDeathProtectionHandler {
      * <p>3. 立刻让天使自己以 {@code angel_sacrifice} 死因死亡。</p>
      */
     public static boolean allowDeath(PlayerEntity playerEntity, PlayerEntity killer, Identifier deathReason) {
+        /*
+         * 保险 1：
+         * “天使因守护而献祭”的这次死亡，本身就是守护结算的最终结果，
+         * 绝不能再被另一个天使的守护继续接管。
+         *
+         * 否则当两个天使互相守护时：
+         * A 为了救 B 触发献祭死亡 -> 再次进入 AllowPlayerDeath ->
+         * B 又尝试为 A 代死 -> A 再为 B 代死……
+         * 最终形成无限递归并把服务器栈打爆。
+         */
+        if (Noellesroles.ANGEL_SACRIFICE_DEATH_REASON.equals(deathReason)) {
+            return true;
+        }
+
         if (!(playerEntity instanceof ServerPlayerEntity protectedPlayer)) {
             return true;
         }
@@ -46,6 +60,17 @@ public final class AngelDeathProtectionHandler {
             }
 
             AngelPlayerComponent angelComponent = AngelPlayerComponent.KEY.get(possibleAngel);
+            /*
+             * 保险 2：
+             * 如果这名天使自己已经处于“守护献祭结算中”，
+             * 就不要再让它继续参与任何新的守护判定。
+             *
+             * 这层判断主要用于防御未来其他死亡链或事件顺序调整，
+             * 即便第一层死因短路被别处绕开，也能避免再次把它拉进递归。
+             */
+            if (angelComponent.isSacrificeDeathInProgress()) {
+                continue;
+            }
             if (angelComponent.getGuardedTarget() == null
                     || !angelComponent.getGuardedTarget().equals(protectedPlayer.getUuid())) {
                 continue;

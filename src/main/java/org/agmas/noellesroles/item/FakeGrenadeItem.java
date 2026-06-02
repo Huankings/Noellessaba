@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.item;
 
+import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
 import dev.doctor4t.wathe.entity.GrenadeEntity;
 import dev.doctor4t.wathe.index.WatheEntities;
 import dev.doctor4t.wathe.index.WatheSounds;
@@ -12,8 +13,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 假手雷。
@@ -50,6 +55,30 @@ public class FakeGrenadeItem extends GrenadeItem {
     }
 
     @Override
+    public @NotNull TypedActionResult<ItemStack> use(@NotNull World world, @NotNull PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+
+        /*
+         * 这里不能继续直接沿用父类 GrenadeItem.use()。
+         * 因为 Wathe 现在的父类已经会在“直投模式”下立刻生成真手雷逻辑的投掷物，
+         * 那样 fake_grenade 自己的 ItemStack 标记就会丢失，后续 mixin 也就无法识别这是一枚假手雷。
+         *
+         * 所以我们和 silent_grenade 一样，在 fake_grenade 自己这里完整接管两种投掷模式：
+         * 1. 直投模式：立即按基础速度投出；
+         * 2. 蓄力模式：进入持续使用状态，等松开右键后再按蓄力速度投出。
+         */
+        if (PlayerGrenadeComponent.KEY.get(user).isDirectThrowMode()) {
+            if (!world.isClient) {
+                this.noellesroles$throwFakeGrenade(world, user, stack, BASE_THROW_SPEED);
+            }
+            return TypedActionResult.consume(stack);
+        }
+
+        user.setCurrentHand(hand);
+        return TypedActionResult.consume(stack);
+    }
+
+    @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (user.isSpectator() || !(user instanceof PlayerEntity player) || world.isClient) {
             return;
@@ -57,12 +86,22 @@ public class FakeGrenadeItem extends GrenadeItem {
 
         // 这里完全沿用真手雷的蓄力换算，让假手雷的出手手感与真手雷保持一致。
         float throwSpeed = this.noellesroles$getThrowSpeed(stack, user, remainingUseTicks);
+        this.noellesroles$throwFakeGrenade(world, player, stack, throwSpeed);
+    }
 
+    /**
+     * 无论当前是直投还是蓄力，最终都统一走这里生成投掷物。
+     *
+     * <p>这样可以确保：
+     * 1. 飞出去的一定是携带 fake_grenade 自身 ItemStack 的 GrenadeEntity；
+     * 2. FakeGrenadeMixin 在碰撞时一定能识别出“这是假的”，从而只播表现、不结算真实伤害。</p>
+     */
+    private void noellesroles$throwFakeGrenade(@NotNull World world, @NotNull PlayerEntity player, @NotNull ItemStack stack, float throwSpeed) {
         world.playSound(
                 null,
-                user.getX(),
-                user.getY(),
-                user.getZ(),
+                player.getX(),
+                player.getY(),
+                player.getZ(),
                 WatheSounds.ITEM_GRENADE_THROW,
                 SoundCategory.NEUTRAL,
                 0.5F,
@@ -89,6 +128,16 @@ public class FakeGrenadeItem extends GrenadeItem {
 
         player.incrementStat(Stats.USED.getOrCreateStat(this));
         stack.decrementUnlessCreative(1, player);
+    }
+
+    @Override
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+        return 72000;
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
     }
 
     /**

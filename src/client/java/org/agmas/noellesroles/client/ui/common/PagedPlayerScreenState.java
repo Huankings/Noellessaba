@@ -19,6 +19,7 @@ public final class PagedPlayerScreenState {
     public static final String MORPHLING_PAGE_KEY = "morphling";
     public static final String VOODOO_PAGE_KEY = "voodoo";
     public static final String WINDER_PAGE_KEY = "winder";
+    public static final String OPERATOR_PAGE_KEY = "operator";
     public static final String CORONER_PAGE_KEY = "coroner";
     public static final String BRAINWASHER_PAGE_KEY = "brainwasher";
     public static final String GODDESS_PAGE_KEY = "goddess";

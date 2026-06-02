@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
+import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.shop.PlayerShopComponentAccessor;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +58,12 @@ public class NoellesRolesShops {
                 success = PlayerShopComponent.usePsychoMode(player);
             } else if (item == ModItems.POWER_RESTORATION) {
                 success = EngineerPlayerComponent.tryRestorePower(player);
+            } else if (item == ModItems.BAYONET_COLDOWN_REFRESH) {
+                /*
+                 * 刺刀冷却刷新是“即时生效图标”，
+                 * 购买成功与否不取决于背包空间，而取决于刺刀当前是否真的在冷却。
+                 */
+                success = AssassinPlayerComponent.tryRefreshBayonetCooldown(player);
             } else {
                 success = player.giveItemStack(stack.copy());
             }
@@ -72,8 +79,8 @@ public class NoellesRolesShops {
                 return true;
             }
 
-            // 电力恢复系统会给出更明确的失败提示，因此这里不要再用通用提示覆盖。
-            if (item != ModItems.POWER_RESTORATION) {
+            // 这两类即时道具都会各自给出更具体的失败原因，不再让通用提示覆盖。
+            if (item != ModItems.POWER_RESTORATION && item != ModItems.BAYONET_COLDOWN_REFRESH) {
                 player.sendMessage(Text.translatable("shop.purchase_failed").withColor(0xAA0000), true);
             }
         } else {

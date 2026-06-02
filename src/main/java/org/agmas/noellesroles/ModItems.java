@@ -18,6 +18,12 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(THROWING_AXE, GameConstants.getInTicks(0, 0));
         // 强盗手枪使用固定冷却，与飞斧分开控制，后续改数值也更直观。
         GameConstants.ITEM_COOLDOWNS.put(ROBBER_PISTOL, GameConstants.getInTicks(0, 35));
+        // 刺刀是刺客的主力近战武器，击杀后进入 35 秒冷却。
+        GameConstants.ITEM_COOLDOWNS.put(BAYONET, GameConstants.getInTicks(0, 35));
+        // 无声左轮沿用用户指定的 15 秒冷却。
+        GameConstants.ITEM_COOLDOWNS.put(SILENCED_REVOLVER, GameConstants.getInTicks(0, 15));
+        // 无声手雷是一次性大件，投出后 5 分钟内无法再次购买。
+        GameConstants.ITEM_COOLDOWNS.put(SILENT_GRENADE, GameConstants.getInTicks(5, 0));
         // 定时炸弹存在“开局冷却”和“传递冷却”两种时长。
         // 这里先登记更长的开局冷却作为默认值，客户端 tooltip 再根据当前状态动态修正。
         GameConstants.ITEM_COOLDOWNS.put(TIMED_BOMB, BomberPlayerComponent.BOMBER_START_COOLDOWN_TICKS);
@@ -52,6 +58,21 @@ public class ModItems {
     public static final Item ROBBER_PISTOL = register(
             new RobberPistolItem(new Item.Settings().maxCount(1)),
             "robber_pistol"
+    );
+    // 刺刀
+    public static final Item BAYONET = register(
+            new BayonetItem(new Item.Settings().maxCount(1)),
+            "bayonet"
+    );
+    // 无声左轮
+    public static final Item SILENCED_REVOLVER = register(
+            new SilencedRevolverItem(new Item.Settings().maxCount(1)),
+            "silenced_revolver"
+    );
+    // 无声手雷
+    public static final Item SILENT_GRENADE = register(
+            new SilentGrenadeItem(new Item.Settings().maxCount(1)),
+            "silent_grenade"
     );
     //万能钥匙
     public static final Item MASTER_KEY = register(
@@ -104,6 +125,11 @@ public class ModItems {
     public static final Item POWER_RESTORATION = register(
             new PowerRestorationItem(new Item.Settings().maxCount(1)),
             "power_restoration"
+    );
+    // 刺刀冷却刷新图标
+    public static final Item BAYONET_COLDOWN_REFRESH = register(
+            new BayonetCooldownRefreshItem(new Item.Settings().maxCount(1)),
+            "bayonet_coldown_refresh"
     );
 
 
