@@ -14,6 +14,7 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,6 +59,20 @@ public class NoellesRolesItemToolTip {
                 return AssassinPlayerComponent.ASSASSIN_START_COOLDOWN_TICKS;
             }
             return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.SNIPER_RIFLE) {
+            /*
+             * 狙击枪有三种冷却来源：
+             * 1. 开局 30 秒；
+             * 2. 切回武器时的部署 2 秒；
+             * 3. 开火后的 4 秒。
+             *
+             * 这里必须读追忆者组件同步过来的“当前来源”，
+             * 否则 tooltip 只能拿到一个剩余比例，无法知道这次应该按哪种总时长换算秒数。
+             */
+            int displayedTicks = RemembererPlayerComponent.KEY.get(client.player).getDisplayedSniperCooldownTotalTicks();
+            return displayedTicks > 0 ? displayedTicks : getItemCooldownTicks(item);
         }
 
         if (item != ModItems.TIMED_BOMB) {

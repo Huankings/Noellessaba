@@ -57,10 +57,11 @@
       "noellesroles:stalker",
       "noellesroles:bomber",
       "noellesroles:robber",
-      "noellesroles:operator",
-      "noellesroles:coward",
-      "noellesroles:sedative",
-      "noellesroles:spiritualist_player",
+        "noellesroles:operator",
+        "noellesroles:coward",
+        "noellesroles:rememberer",
+        "noellesroles:sedative",
+        "noellesroles:spiritualist_player",
       "noellesroles:spiritualist_host",
       "noellesroles:hidden_bodies"
     ]

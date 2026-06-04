@@ -15,14 +15,12 @@ import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.Noellesroles;
@@ -30,6 +28,7 @@ import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
+import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
 import org.agmas.noellesroles.client.ui.common.PagedPlayerScreenState;
@@ -42,6 +41,8 @@ import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
+import org.agmas.noellesroles.roles.angel.AngelAbility;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.lwjgl.glfw.GLFW;
 
@@ -90,6 +91,7 @@ public class NoellesrolesClient implements ClientModInitializer {
 
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            RemembererClientEffects.tick(client);
             CowardClientEffects.tick(client);
             // 在 ClientTickEvents.END_CLIENT_TICK.register(client -> { ... } 中：
             if (abilityBind.isPressed()) {
@@ -179,7 +181,6 @@ public class NoellesrolesClient implements ClientModInitializer {
                 }
             }
             if (abilityBind.wasPressed()) {
-                PacketByteBuf data = PacketByteBufs.create();
                 client.execute(() -> {
                     if (MinecraftClient.getInstance().player == null) return;
                     GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
@@ -188,7 +189,26 @@ public class NoellesrolesClient implements ClientModInitializer {
                         ClientPlayNetworking.send(new VultureEatC2SPacket(targetBody.getUuid()));
                         return;
                     }
-                    ClientPlayNetworking.send(new AbilityC2SPacket());
+
+                    /*
+                     * 天使 / 灵术师这类“同一枚能力键会根据是否锁定到玩家而切模式”的职业，
+                     * 这里把客户端这一帧真正命中的目标 id 一起发给服务端。
+                     * 这样服务端只需要再做一次距离和合法性校验，
+                     * 就不会因为目标横向移动而把原本应当触发的对人技能误判成另一种模式。
+                     */
+                    int targetId = -1;
+                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.ANGEL)) {
+                        PlayerEntity angelTarget = AngelAbility.getGenericGuardTarget(MinecraftClient.getInstance().player);
+                        if (angelTarget != null) {
+                            targetId = angelTarget.getId();
+                        }
+                    } else if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.SPIRITUALIST)) {
+                        PlayerEntity spiritualistTarget = SpiritualistTargeting.getPossessionTarget(MinecraftClient.getInstance().player);
+                        if (spiritualistTarget != null) {
+                            targetId = spiritualistTarget.getId();
+                        }
+                    }
+                    ClientPlayNetworking.send(new AbilityC2SPacket(targetId));
                 });
             }
         });
@@ -219,6 +239,8 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SILENCED_REVOLVER, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SILENT_GRENADE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE_BULLET, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET_COLDOWN_REFRESH, itemStack, list);
         }));
 
@@ -243,6 +265,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BAYONET);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENCED_REVOLVER);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENT_GRENADE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE_BULLET);
     }
 
     /**
@@ -342,6 +366,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         OperatorPlayerWidget.firstChoice = null;
         CorpsemakerState.reset();
         SpiritualistClientController.reset();
+        RemembererClientEffects.reset();
         wasGazingPressed = false;
         wasChargingPressed = false;
         wasUsingKnife = false;

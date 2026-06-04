@@ -10,12 +10,12 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.hit.EntityHitResult;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -94,16 +94,7 @@ public abstract class SpiritualistHudMixin {
     }
 
     private static boolean isPossessionAim(PlayerEntity player) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (!(client.crosshairTarget instanceof EntityHitResult entityHitResult)
-                || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
-            return false;
-        }
-
-        return !target.getUuid().equals(player.getUuid())
-                && target.isAlive()
-                && GameFunctions.isPlayerAliveAndSurvival(target)
-                && player.squaredDistanceTo(target) <= SpiritualistConstants.POSSESSION_RANGE * SpiritualistConstants.POSSESSION_RANGE;
+        return SpiritualistTargeting.isPossessionAim(player);
     }
 
     private static String getStateTranslationKey(SpiritualistPlayerComponent component) {

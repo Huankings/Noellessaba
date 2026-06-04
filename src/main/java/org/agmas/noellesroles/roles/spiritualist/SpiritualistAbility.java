@@ -21,6 +21,20 @@ public final class SpiritualistAbility {
     }
 
     public static void handle(ServerPlayerEntity player) {
+        handle(player, -1);
+    }
+
+    /**
+     * 处理灵术师能力键。
+     *
+     * <p>附身和出窍共用同一枚 G 键。
+     * 当客户端这一帧已经精准锁定到了玩家时，把目标实体 id 一并发给服务端，
+     * 服务端只负责做目标合法性、距离和状态校验，
+     * 这样就不会因为目标横向移动而把原本的“附身”误判成“出窍”。</p>
+     *
+     * @param clientTargetId 客户端当前锁定的玩家实体 id；没有则为 -1
+     */
+    public static void handle(ServerPlayerEntity player, int clientTargetId) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRole(player, Noellesroles.SPIRITUALIST)
                 || !gameWorld.isRunning()
@@ -44,9 +58,7 @@ public final class SpiritualistAbility {
             return;
         }
 
-        ServerPlayerEntity target = SpiritualistTargeting.getPossessionTarget(player) instanceof ServerPlayerEntity serverTarget
-                ? serverTarget
-                : null;
+        ServerPlayerEntity target = SpiritualistTargeting.getPossessionTarget(player, clientTargetId);
 
         if (target == null) {
             SpiritualistManager.startProjection(player);

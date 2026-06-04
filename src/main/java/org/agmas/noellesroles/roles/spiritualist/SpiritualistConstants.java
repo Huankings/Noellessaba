@@ -27,6 +27,14 @@ public final class SpiritualistConstants {
     public static final float POSSESSION_RANGE = 2.0f;
 
     /**
+     * 附身判定距离的平方值。
+     *
+     * <p>客户端锁定目标后，服务端只需要做一次“目标是否还在合法距离内”的校验，
+     * 这里直接缓存平方值，避免每次都重复乘法，也方便后续统一调参。</p>
+     */
+    public static final float POSSESSION_RANGE_SQUARED = POSSESSION_RANGE * POSSESSION_RANGE;
+
+    /**
      * 灵魂出窍结束后的固定冷却：45 秒。
      */
     public static final int PROJECTION_END_COOLDOWN_TICKS = GameConstants.getInTicks(0, 45);

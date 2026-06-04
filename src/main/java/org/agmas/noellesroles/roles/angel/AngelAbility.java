@@ -35,6 +35,19 @@ public final class AngelAbility {
     }
 
     public static void handle(ServerPlayerEntity player) {
+        handle(player, -1);
+    }
+
+    /**
+     * 处理天使能力键。
+     *
+     * <p>这里允许客户端把“这一帧自己真正瞄准到的玩家实体 id”一起发给服务端。
+     * 这样服务端就不用再重新做一次容易受网络时差影响的射线判定，
+     * 对于横向移动中的目标，守护命中会稳定很多。</p>
+     *
+     * @param clientTargetId 客户端这一帧锁定到的目标实体 id；没有则传 -1
+     */
+    public static void handle(ServerPlayerEntity player, int clientTargetId) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRole(player, Noellesroles.ANGEL)
                 || !gameWorld.isRunning()
@@ -45,7 +58,7 @@ public final class AngelAbility {
         AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
         AngelPlayerComponent angelComponent = AngelPlayerComponent.KEY.get(player);
 
-        ServerPlayerEntity targetedPlayer = getGuardTarget(player);
+        ServerPlayerEntity targetedPlayer = resolveGuardTarget(player, clientTargetId);
         if (ability.cooldown > 0) {
             /*
              * 天使的两种主动模式共用同一条能力冷却。
@@ -173,6 +186,30 @@ public final class AngelAbility {
     public static @Nullable ServerPlayerEntity getGuardTarget(@NotNull ServerPlayerEntity player) {
         PlayerEntity genericTarget = getGenericGuardTarget(player);
         return genericTarget instanceof ServerPlayerEntity serverTarget ? serverTarget : null;
+    }
+
+    /**
+     * 优先使用客户端已经锁定好的目标，再退回旧的服务端射线判定。
+     *
+     * <p>这样做的目的不是完全信任客户端，而是把“瞄准谁”这一步尽量交给玩家本地视角，
+     * 然后服务端只负责做：
+     * 1. 目标实体是否还存在；
+     * 2. 是否仍然是存活玩家；
+     * 3. 是否仍然在 2 格守护距离内；
+     * 4. 是否不是自己。
+     *
+     * <p>如果客户端没带目标，或者带来的目标当前已经不合法，
+     * 才退回旧的服务端射线方案，这样能兼容老调用路径，也能保证行为平滑升级。</p>
+     */
+    private static @Nullable ServerPlayerEntity resolveGuardTarget(@NotNull ServerPlayerEntity player, int clientTargetId) {
+        if (clientTargetId >= 0 && player.getServerWorld().getEntityById(clientTargetId) instanceof ServerPlayerEntity serverTarget) {
+            if (!player.getUuid().equals(serverTarget.getUuid())
+                    && GameFunctions.isPlayerAliveAndSurvival(serverTarget)
+                    && player.squaredDistanceTo(serverTarget) <= AngelConstants.GUARD_RANGE_SQUARED) {
+                return serverTarget;
+            }
+        }
+        return getGuardTarget(player);
     }
 
     public static @Nullable PlayerEntity getGenericGuardTarget(@NotNull PlayerEntity player) {

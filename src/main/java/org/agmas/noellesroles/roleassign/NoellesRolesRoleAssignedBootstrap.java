@@ -19,6 +19,7 @@ import org.agmas.noellesroles.roles.jester.JesterRoleAssignedHandler;
 import org.agmas.noellesroles.roles.mimic.MimicRoleAssignedHandler;
 import org.agmas.noellesroles.roles.operator.OperatorRoleAssignedHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetRoleAssignedHandler;
+import org.agmas.noellesroles.roles.rememberer.RemembererRoleAssignedHandler;
 import org.agmas.noellesroles.roles.robber.RobberRoleAssignedHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistRoleAssignedHandler;
@@ -76,6 +77,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             OperatorRoleAssignedHandler.onRoleAssigned(player, role);
             SpiritualistRoleAssignedHandler.onRoleAssigned(player, role);
             ProphetRoleAssignedHandler.onRoleAssigned(player, role);
+            RemembererRoleAssignedHandler.onRoleAssigned(player, role);
             ExecutionerRoleAssignedHandler.onRoleAssigned(player, role);
             VultureRoleAssignedHandler.onRoleAssigned(player, role);
             BetterVigilanteRoleAssignedHandler.onRoleAssigned(player, role);

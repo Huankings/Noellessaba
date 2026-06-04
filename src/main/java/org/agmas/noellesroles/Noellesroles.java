@@ -62,6 +62,7 @@ import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.item.BayonetKnockbackC2SPacket;
 import org.agmas.noellesroles.packet.item.BayonetStabC2SPacket;
 import org.agmas.noellesroles.packet.item.CrystalBallMarkC2SPacket;
+import org.agmas.noellesroles.packet.item.SniperRifleShootC2SPacket;
 import org.agmas.noellesroles.packet.modifiers.GuessC2SPacket;
 import org.agmas.noellesroles.packet.role.brainwasher.BrainwasherC2SPacket;
 import org.agmas.noellesroles.packet.role.controller.ControllerPossessC2SPacket;
@@ -84,6 +85,8 @@ import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
 import org.agmas.noellesroles.roles.phantom.PhantomAbility;
 import org.agmas.noellesroles.roles.phantom.PhantomPlayerComponent;
 import org.agmas.noellesroles.roles.prophet.ProphetAbility;
+import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
+import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
 import org.agmas.noellesroles.roles.recaller.RecallerAbility;
 import org.agmas.noellesroles.roles.operator.OperatorAbility;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
@@ -149,6 +152,7 @@ public class Noellesroles implements ModInitializer {
     public static Identifier STALKER_ID = Identifier.of(MOD_ID, "stalker");
     public static Identifier ANGEL_ID = Identifier.of(MOD_ID, "angel");
     public static Identifier COWARD_ID = Identifier.of(MOD_ID, "coward");
+    public static Identifier REMEMBERER_ID = Identifier.of(MOD_ID, "rememberer");
     public static Identifier SPIRITUALIST_ID = Identifier.of(MOD_ID, "spiritualist");
     public static Identifier OPERATOR_ID = Identifier.of(MOD_ID, "operator");
     public static Identifier FAKE_DEATH_REASON = Identifier.of(Noellesroles.MOD_ID, "fake");
@@ -156,6 +160,7 @@ public class Noellesroles implements ModInitializer {
     public static Identifier DEATH_REASON_BOMB = Identifier.of(MOD_ID, "bomb");
     public static Identifier DEATH_REASON_THROWING_AXE = Identifier.of(MOD_ID, "throwing_axe");
     public static Identifier DEATH_REASON_SEDATIVE_OVERDOSE = Identifier.of(MOD_ID, "sedative_overdose");
+    public static Identifier DEATH_REASON_SNIPER_RIFLE = Identifier.of(MOD_ID, "sniper_rifle");
     public static final Identifier DEFENSE_TRAY_EFFECT = Identifier.of(MOD_ID, "defense_vial");
     public static final Identifier DELUSION_TRAY_EFFECT = Identifier.of(MOD_ID, "delusion_vial");
     public static final Identifier SEDATIVE_TRAY_EFFECT = Identifier.of(MOD_ID, "sedative");
@@ -232,6 +237,8 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier OPERATOR_BROADCAST_STARTED_EVENT = Identifier.of(MOD_ID, "operator_broadcast_started");
     public static final Identifier OPERATOR_BROADCAST_ENDED_EVENT = Identifier.of(MOD_ID, "operator_broadcast_ended");
     public static final Identifier OPERATOR_BROADCAST_INTERRUPTED_EVENT = Identifier.of(MOD_ID, "operator_broadcast_interrupted");
+    public static final Identifier REMEMBERER_RECALL_EVENT = Identifier.of(MOD_ID, "rememberer_recall");
+    public static final Identifier REMEMBERER_SNIPER_RELOADED_EVENT = Identifier.of(MOD_ID, "rememberer_sniper_reloaded");
     public static final Identifier SPIRITUALIST_ACTIVE_SHIELD_SOURCE = Identifier.of(MOD_ID, "spiritualist_active_shield");
     public static final Identifier SPIRITUALIST_LINGERING_SHIELD_SOURCE = Identifier.of(MOD_ID, "spiritualist_lingering_shield");
     public static final Identifier SPIRITUALIST_SOUL_GUARD_DEATH_REASON = Identifier.of(MOD_ID, "spiritualist_soul_guard");
@@ -302,6 +309,8 @@ public class Noellesroles implements ModInitializer {
     public static Role ANGEL = WatheRoles.registerRole(new Role(ANGEL_ID, new Color(236, 220, 239).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //胆小鬼(好人)
     public static Role COWARD = WatheRoles.registerCivilianRole(new Role(COWARD_ID, new Color(208, 232, 140).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    //追忆者(好人)
+    public static Role REMEMBERER = WatheRoles.registerCivilianRole(new Role(REMEMBERER_ID, new Color(46, 46, 66).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
 
     //public static Role GUESSER =WatheRoles.registerRole(new Role(GUESSER_ID, new Color(158, 43, 25, 191).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
     //模仿者(好人)
@@ -368,6 +377,8 @@ public class Noellesroles implements ModInitializer {
         registerReplayFormatters();
         SpiritualistCommunicationManager.init();
         OperatorCommunicationManager.init();
+        RemembererInteractionHandler.init();
+        RemembererSniperManager.init();
 
 
         Harpymodloader.setRoleMaximum(CONDUCTOR_ID,1);
@@ -394,6 +405,7 @@ public class Noellesroles implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(CrystalBallMarkC2SPacket.ID, CrystalBallMarkC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(BayonetKnockbackC2SPacket.ID, BayonetKnockbackC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(BayonetStabC2SPacket.ID, BayonetStabC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SpiritualistPossessionControlC2SPacket.ID, SpiritualistPossessionControlC2SPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SpiritualistPossessionViewS2CPacket.ID, SpiritualistPossessionViewS2CPacket.CODEC);
         NoellesRolesShopBootstrap.init();
@@ -622,6 +634,7 @@ public class Noellesroles implements ModInitializer {
         });
         ServerPlayNetworking.registerGlobalReceiver(BayonetKnockbackC2SPacket.ID, new BayonetKnockbackC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(BayonetStabC2SPacket.ID, new BayonetStabC2SPacket.Receiver());
+        ServerPlayNetworking.registerGlobalReceiver(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket::handle);
 
 
         ServerPlayNetworking.registerGlobalReceiver(GoddessC2SPacket.ID, (payload, context) -> {
@@ -730,7 +743,7 @@ public class Noellesroles implements ModInitializer {
                 if (gameWorld.isRole(player, Noellesroles.RECALLER)) {
                     RecallerAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.ANGEL)) {
-                    AngelAbility.handle(player);
+                    AngelAbility.handle(player, payload.targetId());
                 } else if (gameWorld.isRole(player, Noellesroles.PROPHET)) {
                     ProphetAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.PHANTOM)) {
@@ -738,7 +751,7 @@ public class Noellesroles implements ModInitializer {
                 } else if (gameWorld.isRole(player, Noellesroles.WINDER)) {
                     WinderAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.SPIRITUALIST)) {
-                    SpiritualistAbility.handle(player);
+                    SpiritualistAbility.handle(player, payload.targetId());
                 }
                 // 可继续添加其他使用ABILITY_PACKET的角色
             });
@@ -761,9 +774,11 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.CAPTURE_DEVICE), NoellesRolesReplayFormatters::formatCaptureDeviceUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.WIND_MARK), NoellesRolesReplayFormatters::formatWindMarkUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.CRYSTAL_BALL), NoellesRolesReplayFormatters::formatCrystalBallUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(Items.ENDER_PEARL), NoellesRolesReplayFormatters::formatRecallerEnderPearl);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.FAKE_GRENADE), NoellesRolesReplayFormatters::formatFakeGrenadeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SILENT_GRENADE), NoellesRolesReplayFormatters::formatSilentGrenadeUse);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
 
         /*
          * 托盘放置事件优先按 tray effect 分发。
@@ -864,8 +879,11 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerGlobalEventFormatter(OPERATOR_BROADCAST_STARTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastStarted);
         ReplayRegistry.registerGlobalEventFormatter(OPERATOR_BROADCAST_ENDED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastEnded);
         ReplayRegistry.registerGlobalEventFormatter(OPERATOR_BROADCAST_INTERRUPTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastInterrupted);
+        ReplayRegistry.registerGlobalEventFormatter(REMEMBERER_RECALL_EVENT, NoellesRolesReplayFormatters::formatRemembererRecall);
+        ReplayRegistry.registerGlobalEventFormatter(REMEMBERER_SNIPER_RELOADED_EVENT, NoellesRolesReplayFormatters::formatRemembererSniperReloaded);
         ReplayRegistry.registerDeathReasonFormatter(ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
         ReplayRegistry.registerDeathReasonFormatter(SPIRITUALIST_SOUL_GUARD_DEATH_REASON, NoellesRolesReplayFormatters::formatSpiritualistSoulGuardDeath);
+        ReplayRegistry.registerDeathReasonFormatter(DEATH_REASON_SNIPER_RIFLE, NoellesRolesReplayFormatters::formatSniperRifleDeath);
     }
 }

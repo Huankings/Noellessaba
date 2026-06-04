@@ -31,10 +31,11 @@ public abstract class StoreRendererMixin {
         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player.getUuid(), Noellesroles.WINDER)
         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.MIMIC)
         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.TRAPPER)
-        || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.CORONER)
-        || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.PROPHET)
-        || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player, Noellesroles.ENGINEER)
-        || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player, Noellesroles.COWARD)) {
+         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.CORONER)
+         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.PROPHET)
+         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player,Noellesroles.REMEMBERER)
+         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player, Noellesroles.ENGINEER)
+         || ((GameWorldComponent)GameWorldComponent.KEY.get(player.getWorld())).isRole(player, Noellesroles.COWARD)) {
             int balance = ((PlayerShopComponent)PlayerShopComponent.KEY.get(player)).balance;
             if (view.getTarget() != (float)balance) {
                 offsetDelta = (float)balance > view.getTarget() ? 0.6F : -0.6F;

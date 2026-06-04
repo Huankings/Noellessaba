@@ -80,6 +80,7 @@
     "roles.brainwasher.BrainwasherScreenMixin",
     "roles.goddess.GoddessScreenMixin",
     "roles.angel.AngelHudMixin",
+    "roles.rememberer.RemembererHudMixin",
     "roles.stunned.StunnedKeyBindingMixin",
     "roles.stunned.StunnedMouseMixin",
     "roles.engineer.EngineerHandMixin",
@@ -106,6 +107,14 @@
     "roles.executioner.ExecutionerHudMixin",
     "roles.executioner.ExecutionerMoodRenderer",
     "roles.jester.JesterMoodRenderer",
+    "roles.rememberer.DrawContextAccessor",
+    "roles.rememberer.RemembererMoodRenderer",
+    "roles.rememberer.RemembererCrosshairMixin",
+    "roles.rememberer.SniperRifleCrosshairMixin",
+    "roles.rememberer.SniperRifleMovementSpeedMixin",
+    "roles.rememberer.SniperRifleLookInertiaMixin",
+    "roles.rememberer.SniperRifleArmPoseMixin",
+    "roles.rememberer.SniperRifleRenderPoseMixin",
     "killersided.KillerSidedTextsMixin"
   ]
 }

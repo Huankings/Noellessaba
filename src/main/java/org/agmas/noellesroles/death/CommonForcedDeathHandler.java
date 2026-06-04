@@ -26,14 +26,16 @@ public final class CommonForcedDeathHandler {
     /**
      * 判断这次死亡是否应该直接放行，不再继续执行第一阶段后半段的保命逻辑。
      *
-     * <p>当前保持与旧实现完全一致：</p>
+     * <p>当前规则保持与旧实现的语义一致，并额外把追忆者狙击枪并入同一条“不可阻挡死亡链路”：</p>
      * <p>1. 定时炸弹爆炸必须成立；</p>
      * <p>2. 落轨死亡必须成立；</p>
-     * <p>3. 但这些死亡仍然会继续进入第二段监听器，以保留 Mimic / Executioner 的后续连锁逻辑。</p>
+     * <p>3. 狙击枪狙杀也必须直接放行，避免被任何护盾吞掉；</p>
+     * <p>4. 但这些死亡仍然会继续进入第二段监听器，以保留 Mimic / Executioner 的后续连锁逻辑。</p>
      */
     public static boolean shouldForceAllow(Identifier deathReason) {
         return Noellesroles.DEATH_REASON_BOMB.equals(deathReason)
                 || Noellesroles.DEATH_REASON_SEDATIVE_OVERDOSE.equals(deathReason)
+                || Noellesroles.DEATH_REASON_SNIPER_RIFLE.equals(deathReason)
                 || deathReason == GameConstants.DeathReasons.FELL_OUT_OF_TRAIN;
     }
 }

@@ -26,10 +26,16 @@ public final class AssassinShopHandler {
                 ShopEntry.Type.WEAPON
         ));
         entries.add(new ShopEntry(
-                ModItems.SILENCED_REVOLVER.getDefaultStack(),
-                NoellesRolesShops.getItemPrice(WatheItems.REVOLVER, 250),
-                ShopEntry.Type.WEAPON
+                WatheItems.LOCKPICK.getDefaultStack(),
+                NoellesRolesShops.getItemPrice(WatheItems.LOCKPICK, 50),
+                ShopEntry.Type.TOOL
         ));
+    // 暂时注释无声手枪的购买
+    //    entries.add(new ShopEntry(
+    //            ModItems.SILENCED_REVOLVER.getDefaultStack(),
+    //            NoellesRolesShops.getItemPrice(WatheItems.REVOLVER, 250),
+    //            ShopEntry.Type.WEAPON
+    //    ));
         entries.add(new ShopEntry(
                 ModItems.BAYONET_COLDOWN_REFRESH.getDefaultStack(),
                 NoellesRolesShops.getItemPrice(WatheItems.KNIFE, 100) + 50,
@@ -42,8 +48,8 @@ public final class AssassinShopHandler {
     //            ShopEntry.Type.WEAPON
     //    ));
         entries.add(new ShopEntry(
-                WatheItems.LOCKPICK.getDefaultStack(),
-                NoellesRolesShops.getItemPrice(WatheItems.LOCKPICK, 50),
+                WatheItems.BLACKOUT.getDefaultStack(),
+                NoellesRolesShops.getItemPrice(WatheItems.BLACKOUT, 200),
                 ShopEntry.Type.TOOL
         ));
         entries.add(new ShopEntry(

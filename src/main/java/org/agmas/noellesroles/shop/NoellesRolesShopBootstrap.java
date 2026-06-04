@@ -11,6 +11,7 @@ import org.agmas.noellesroles.roles.coroner.CoronerShopHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetShopHandler;
 import org.agmas.noellesroles.roles.recaller.RecallerShopHandler;
+import org.agmas.noellesroles.roles.rememberer.RemembererShopHandler;
 import org.agmas.noellesroles.roles.robber.RobberShopHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerShopHandler;
 import org.agmas.noellesroles.roles.trapper.TrapperShopHandler;
@@ -34,6 +35,7 @@ public final class NoellesRolesShopBootstrap {
         NoellesRolesShopRegistry.registerStatic(Noellesroles.ENGINEER, EngineerShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.RECALLER, RecallerShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.PROPHET, ProphetShopHandler::getShopEntries);
+        NoellesRolesShopRegistry.registerStatic(Noellesroles.REMEMBERER, RemembererShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.TRAPPER, TrapperShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.WINDER, WinderShopHandler::getShopEntries);
         NoellesRolesShopRegistry.registerStatic(Noellesroles.NOISEMAKER, NoisemakerShopHandler::getShopEntries);
@@ -54,7 +56,9 @@ public final class NoellesRolesShopBootstrap {
                 Noellesroles.JESTER
         );
 
-        // 动态商店：按阶段状态实时变化。
+        // 杀手动态商店：按阶段状态实时变化。
         NoellesRolesShopRegistry.register(Noellesroles.STALKER, StalkerShopHandler::getShopEntries);
+        // 好人动态商店：按阶段状态实时变化。
+        
     }
 }

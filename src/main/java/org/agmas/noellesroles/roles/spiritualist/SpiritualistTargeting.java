@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.spiritualist;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,17 @@ import java.util.function.Predicate;
  */
 public final class SpiritualistTargeting {
     private SpiritualistTargeting() {
+    }
+
+    public static @Nullable ServerPlayerEntity getPossessionTarget(@NotNull ServerPlayerEntity player, int clientTargetId) {
+        if (clientTargetId >= 0 && player.getServerWorld().getEntityById(clientTargetId) instanceof ServerPlayerEntity target) {
+            if (isValidPossessionTarget(player, target)) {
+                return target;
+            }
+        }
+
+        PlayerEntity fallbackTarget = getPossessionTarget(player);
+        return fallbackTarget instanceof ServerPlayerEntity serverTarget ? serverTarget : null;
     }
 
     public static @Nullable PlayerEntity getPossessionTarget(@NotNull PlayerEntity player) {
@@ -43,5 +55,15 @@ public final class SpiritualistTargeting {
             return target;
         }
         return null;
+    }
+
+    public static boolean isPossessionAim(@NotNull PlayerEntity player) {
+        return getPossessionTarget(player) != null;
+    }
+
+    private static boolean isValidPossessionTarget(@NotNull ServerPlayerEntity player, @NotNull ServerPlayerEntity target) {
+        return !target.getUuid().equals(player.getUuid())
+                && GameFunctions.isPlayerAliveAndSurvival(target)
+                && player.squaredDistanceTo(target) <= SpiritualistConstants.POSSESSION_RANGE_SQUARED;
     }
 }

@@ -46,6 +46,15 @@ public final class AngelConstants {
     public static final float GUARD_RANGE = 2.0f;
 
     /**
+     * 守护距离平方值。
+     *
+     * <p>服务端在读取客户端发来的目标 id 后，只做合法性与距离校验，
+     * 不再重新做一遍容易因为目标横移而丢失的射线判定。
+     * 这里把平方值单独抽出来，避免每次重复乘法，也方便后续统一调参。</p>
+     */
+    public static final float GUARD_RANGE_SQUARED = GUARD_RANGE * GUARD_RANGE;
+
+    /**
      * 守护技能冷却：30 秒。
      */
     public static final int GUARD_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);

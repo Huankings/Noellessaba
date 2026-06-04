@@ -13,6 +13,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -941,6 +942,51 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatRemembererRecall(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "memory_target");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.rememberer_recall", actor, target);
+    }
+
+    @Nullable
+    public static Text formatRemembererSniperReloaded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.rememberer_sniper_reloaded",
+                actor,
+                event.data().getInt("current_ammo"),
+                event.data().getInt("max_ammo")
+        );
+    }
+
+    @Nullable
+    public static Text formatSniperRifleUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.sniper_rifle", actor);
+    }
+
+    @Nullable
+    public static Text formatSniperRifleHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.item_hit.noellesroles.sniper_rifle",
+                actor,
+                ReplayGenerator.resolveItemName(event.data(), world),
+                target
+        );
+    }
+
+    @Nullable
     public static Text formatSpiritualistActiveShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = targetText(event, match);
         Text spiritualist = playerFromKey(event, match, "owner_player");
@@ -1042,6 +1088,21 @@ public final class NoellesRolesReplayFormatters {
             return null;
         }
         return Text.translatable("replay.global.noellesroles.angel_guard_selected", actor, target);
+    }
+
+    @Nullable
+    public static Text formatSniperRifleDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text shooter = actorText(event, match);
+        if (victim == null || shooter == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.sniper_rifle.killed",
+                victim,
+                shooter,
+                ReplayGenerator.resolveItemName(event.data(), world)
+        );
     }
 
     @Nullable

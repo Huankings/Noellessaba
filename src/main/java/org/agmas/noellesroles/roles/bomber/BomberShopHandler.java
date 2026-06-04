@@ -32,6 +32,12 @@ public class BomberShopHandler {
                 Math.max(0, NoellesRolesShops.getItemPrice(WatheItems.GRENADE, 300) - 65),
                 ShopEntry.Type.WEAPON
         ));
+        // 无声手雷,在原手雷基础上增加15金币
+        entries.add(new ShopEntry(
+                ModItems.SILENT_GRENADE.getDefaultStack(),
+                NoellesRolesShops.getItemPrice(WatheItems.GRENADE, 300) + 15,
+                ShopEntry.Type.WEAPON
+        ));
 
         // 其余工具价格直接沿用 Wathe 原价，方便后续统一跟随基底调整
         entries.add(new ShopEntry(

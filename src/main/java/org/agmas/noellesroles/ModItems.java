@@ -1,8 +1,11 @@
 package org.agmas.noellesroles;
 
+import com.mojang.serialization.Codec;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.item.RevolverItem;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -27,7 +30,24 @@ public class ModItems {
         // 定时炸弹存在“开局冷却”和“传递冷却”两种时长。
         // 这里先登记更长的开局冷却作为默认值，客户端 tooltip 再根据当前状态动态修正。
         GameConstants.ITEM_COOLDOWNS.put(TIMED_BOMB, BomberPlayerComponent.BOMBER_START_COOLDOWN_TICKS);
+        // 狙击枪同样有多种冷却来源，这里登记开局 30 秒作为默认基线。
+        GameConstants.ITEM_COOLDOWNS.put(SNIPER_RIFLE, org.agmas.noellesroles.roles.rememberer.RemembererConstants.SNIPER_START_COOLDOWN_TICKS);
     }
+
+    /**
+     * 狙击枪当前装填弹药量。
+     *
+     * <p>追忆者的狙击枪需要把“装了几发子弹”稳定写在物品本体上，
+     * 这样无论是装填、切格子、掉落还是回放读取，都能直接从同一份数据源拿到结果。</p>
+     */
+    public static final ComponentType<Integer> SNIPER_AMMO = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(Noellesroles.MOD_ID, "sniper_ammo"),
+            ComponentType.<Integer>builder()
+                    .codec(Codec.INT)
+                    .packetCodec(PacketCodecs.INTEGER)
+                    .build()
+    );
     ///添加noellesroles的物品
     //假刀
     public static final Item FAKE_KNIFE = register(
@@ -118,6 +138,16 @@ public class ModItems {
     public static final Item TIMED_BOMB = register(
             new TimedBombItem(new Item.Settings().maxCount(1)),
             "timed_bomb"
+    );
+    //狙击枪
+    public static final Item SNIPER_RIFLE = register(
+            new SniperRifleItem(new Item.Settings().maxCount(1).component(SNIPER_AMMO, 0)),
+            "sniper_rifle"
+    );
+    //狙击枪子弹
+    public static final Item SNIPER_RIFLE_BULLET = register(
+            new SniperRifleBulletItem(new Item.Settings()),
+            "sniper_rifle_bullet"
     );
     
     ///添加noellesroles的商店图标
