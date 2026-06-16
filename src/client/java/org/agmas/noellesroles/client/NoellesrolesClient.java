@@ -26,6 +26,7 @@ import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
+import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
@@ -215,6 +216,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         EntityRendererRegistry.register(NoellesRolesEntities.ROLE_MINE_ENTITY_ENTITY_TYPE, RoleMineEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.CAPTURE_DEVICE_ENTITY_TYPE, CaptureDeviceEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.THROWING_AXE_ENTITY_TYPE, ThrowingAxeEntityRenderer::new);
+        EntityRendererRegistry.register(NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE, MagicianPlaybackEntityRenderer::new);
     }
 
     private void registerItemTooltipsAndModels() {

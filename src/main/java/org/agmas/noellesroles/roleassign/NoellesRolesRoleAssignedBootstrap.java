@@ -16,6 +16,7 @@ import org.agmas.noellesroles.roles.corpsemaker.CorpsemakerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.goddess.GoddessRoleAssignedHandler;
 import org.agmas.noellesroles.roles.jester.JesterRoleAssignedHandler;
+import org.agmas.noellesroles.roles.magician.MagicianRoleAssignedHandler;
 import org.agmas.noellesroles.roles.mimic.MimicRoleAssignedHandler;
 import org.agmas.noellesroles.roles.operator.OperatorRoleAssignedHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetRoleAssignedHandler;
@@ -75,6 +76,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             CowardRoleAssignedHandler.onRoleAssigned(player, role);
             WinderRoleAssignedHandler.onRoleAssigned(player, role);
             OperatorRoleAssignedHandler.onRoleAssigned(player, role);
+            MagicianRoleAssignedHandler.onRoleAssigned(player, role);
             SpiritualistRoleAssignedHandler.onRoleAssigned(player, role);
             ProphetRoleAssignedHandler.onRoleAssigned(player, role);
             RemembererRoleAssignedHandler.onRoleAssigned(player, role);

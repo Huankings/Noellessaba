@@ -24,6 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.Noellesroles;
+import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -195,6 +196,23 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
+        ServerPlayerEntity killer = this.getOwner() instanceof ServerPlayerEntity serverPlayer ? serverPlayer : null;
+
+        /*
+         * 飞斧命中播放体时，不应继续走真实玩家的一击必杀逻辑，
+         * 而是视作一次玩法武器命中并直接强制结束播放。
+         */
+        if (MagicianServerHooks.stopPlaybackByWeaponTarget(
+                entity,
+                killer,
+                Noellesroles.DEATH_REASON_THROWING_AXE,
+                MagicianServerHooks.getWeaponName(this.getItemStack())
+        )) {
+            this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
+            this.setVelocity(this.getVelocity().multiply(0.9D, 0.9D, 0.9D));
+            return;
+        }
+
         if (!(entity instanceof ServerPlayerEntity target)) {
             return;
         }
@@ -207,7 +225,7 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
             return;
         }
 
-        ServerPlayerEntity killer = owner instanceof ServerPlayerEntity serverPlayer ? serverPlayer : null;
+        killer = owner instanceof ServerPlayerEntity serverPlayer ? serverPlayer : null;
         /*
          * 飞斧属于“投掷实体造成伤害”的武器。
          *

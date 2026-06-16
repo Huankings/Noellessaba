@@ -12,8 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
  * 只对狙击枪死因绕过 Wathe 原版疯魔护盾。
  *
  * <p>这里不改 Wathe 主体 API，而是在 NoellesRoles 自己侧做一个极小特判：
- * 当死因是狙击枪时，直接把 psychoTicks 视作 0，
- * 从而整段“护盾格挡 / 停止疯魔”逻辑都会被跳过。</p>
+ * 当死因是狙击枪时，只把疯魔护盾值视作 0。
+ * 这样 Wathe 仍然会认为目标正处于疯魔状态，并自然执行 {@code stopPsycho()}，
+ * 但不会先消耗护盾挡下狙击枪。</p>
  */
 @Mixin(GameFunctions.class)
 public abstract class SniperRiflePsychoShieldBypassMixin {
@@ -22,7 +23,7 @@ public abstract class SniperRiflePsychoShieldBypassMixin {
             method = "killPlayer(Lnet/minecraft/entity/player/PlayerEntity;ZLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Identifier;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Ldev/doctor4t/wathe/cca/PlayerPsychoComponent;getPsychoTicks()I"
+                    target = "Ldev/doctor4t/wathe/cca/PlayerPsychoComponent;getArmour()I"
             )
     )
     private static int noellesroles$bypassPsychoShieldForSniper(

@@ -19,6 +19,7 @@ import org.agmas.noellesroles.roles.coroner.CoronerPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
+import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
@@ -73,6 +74,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, EngineerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(EngineerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AssassinPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AssassinPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, WinderPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WinderPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, MagicianPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(MagicianPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, WindMarkPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WindMarkPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, OperatorPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(OperatorPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AngelPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AngelPlayerComponent::new);

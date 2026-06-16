@@ -176,5 +176,6 @@
   "announcement.goals.noellesroles.goddess": "Save those who have fallen into darkness...",
   "hud.goddess.select_player": "Select a player to save",
   "hud.goddess.cooldown": "Cooldown: %s seconds",
-  "tip.goddess.saved": "You have been redeemed..."
+  "tip.goddess.saved": "You have been redeemed...",
+  "replay.item.unknown": "Unknown weapon"
 }

@@ -69,6 +69,8 @@
   "death_reason.wathe.fell_out_of_train": "being ran over.",
   "death_reason.noellesroles.voodoo": "voodoo magic.",
 
+  "replay.item.unknown": "Unknown weapon",
+
   "tip.phantom": "Use %s to go invisible!",
   "tip.recaller.place": "Drücke %s um deine Position zu speichern!",
   "tip.recaller.teleport": "Drücke %s um dich zu teleportieren!",

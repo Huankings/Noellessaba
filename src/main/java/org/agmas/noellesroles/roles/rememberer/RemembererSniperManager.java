@@ -10,7 +10,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.Noellesroles;
+import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
+import org.agmas.noellesroles.roles.magician.MagicianReplayActorContext;
+import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -47,14 +51,36 @@ public final class RemembererSniperManager {
     }
 
     public static void fireShot(@NotNull ServerPlayerEntity shooter, @NotNull Vec3d direction, @NotNull ItemStack replayStack) {
+        fireShot(shooter, direction, replayStack, shooter, shooter.getUuid(), shooter.getGameProfile().getName());
+    }
+
+    /**
+     * 允许扩展模组在延迟弹道里额外指定：
+     * 1. 玩法归属应该算给谁；
+     * 2. 回放里又应该显示成谁在开枪。
+     *
+     * <p>魔术师的皮套狙击枪正是依赖这个入口：
+     * 实际结算归属继续落到魔术师本人，而回放文本显示成皮套身份。</p>
+     */
+    public static void fireShot(
+            @NotNull ServerPlayerEntity shooter,
+            @NotNull Vec3d direction,
+            @NotNull ItemStack replayStack,
+            @Nullable ServerPlayerEntity killCreditOwner,
+            @Nullable UUID replayActorUuid,
+            @Nullable String replayActorName
+    ) {
         Vec3d normalizedDirection = direction.normalize();
         Vec3d start = shooter.getEyePos().add(normalizedDirection.multiply(RemembererConstants.SNIPER_TRACE_START_OFFSET));
         ACTIVE_SHOTS.add(new ActiveSniperShot(
                 shooter.getServerWorld(),
                 shooter.getUuid(),
+                killCreditOwner == null ? null : killCreditOwner.getUuid(),
                 start,
                 normalizedDirection,
-                replayStack.copy()
+                replayStack.copy(),
+                replayActorUuid,
+                replayActorName
         ));
     }
 
@@ -65,18 +91,36 @@ public final class RemembererSniperManager {
     private static final class ActiveSniperShot {
         private final ServerWorld world;
         private final UUID shooterUuid;
+        @Nullable
+        private final UUID killCreditOwnerUuid;
         private final Vec3d start;
         private final Vec3d direction;
         private final ItemStack replayStack;
+        @Nullable
+        private final UUID replayActorUuid;
+        @Nullable
+        private final String replayActorName;
         private final Set<UUID> hitPlayers = new HashSet<>();
         private int age = 0;
 
-        private ActiveSniperShot(ServerWorld world, UUID shooterUuid, Vec3d start, Vec3d direction, ItemStack replayStack) {
+        private ActiveSniperShot(
+                ServerWorld world,
+                UUID shooterUuid,
+                @Nullable UUID killCreditOwnerUuid,
+                Vec3d start,
+                Vec3d direction,
+                ItemStack replayStack,
+                @Nullable UUID replayActorUuid,
+                @Nullable String replayActorName
+        ) {
             this.world = world;
             this.shooterUuid = shooterUuid;
+            this.killCreditOwnerUuid = killCreditOwnerUuid;
             this.start = start;
             this.direction = direction;
             this.replayStack = replayStack;
+            this.replayActorUuid = replayActorUuid;
+            this.replayActorName = replayActorName;
         }
 
         private boolean tick() {
@@ -130,6 +174,9 @@ public final class RemembererSniperManager {
 
         private void hitPlayersAlongSegment(Vec3d segmentStart, Vec3d segmentEnd) {
             @Nullable ServerPlayerEntity shooter = this.world.getServer().getPlayerManager().getPlayer(this.shooterUuid);
+            @Nullable ServerPlayerEntity killCreditOwner = this.killCreditOwnerUuid == null
+                    ? shooter
+                    : this.world.getServer().getPlayerManager().getPlayer(this.killCreditOwnerUuid);
             for (ServerPlayerEntity candidate : this.world.getPlayers()) {
                 if (candidate.getUuid().equals(this.shooterUuid)) {
                     continue;
@@ -147,15 +194,61 @@ public final class RemembererSniperManager {
                 }
 
                 this.hitPlayers.add(candidate.getUuid());
-                if (shooter != null) {
-                    GameRecordManager.recordItemHit(shooter, this.replayStack, candidate, null);
+                try (MagicianReplayActorContext.Scope ignored = MagicianReplayActorContext.push(
+                        this.killCreditOwnerUuid,
+                        this.replayActorUuid,
+                        this.replayActorName
+                )) {
+                    if (shooter != null) {
+                        GameRecordManager.recordItemHit(shooter, this.replayStack, candidate, null);
+                    }
+
+                    var deathData = GameFunctions.createReplayItemData(this.world, this.replayStack);
+                    if (deathData == null) {
+                        deathData = new net.minecraft.nbt.NbtCompound();
+                    }
+                    if (this.replayActorUuid != null) {
+                        deathData.putUuid("replay_actor", this.replayActorUuid);
+                    }
+                    if (this.replayActorName != null && !this.replayActorName.isBlank()) {
+                        deathData.putString("replay_actor_name", this.replayActorName);
+                    }
+                    if (this.killCreditOwnerUuid != null) {
+                        deathData.putUuid("magician_owner", this.killCreditOwnerUuid);
+                    }
+
+                    GameFunctions.killPlayer(
+                            candidate,
+                            true,
+                            killCreditOwner,
+                            Noellesroles.DEATH_REASON_SNIPER_RIFLE,
+                            deathData
+                    );
                 }
-                GameFunctions.killPlayer(
-                        candidate,
-                        true,
+            }
+
+            /*
+             * 狙击枪本体的玩法定义就是“无视方块，沿整段路径贯穿目标”，
+             * 因此皮套也要用同样的线段检测方式来判定是否被击中。
+             */
+            Box searchBox = new Box(segmentStart, segmentEnd).expand(RemembererConstants.SNIPER_HITBOX_EXPANSION);
+            for (MagicianPlaybackEntity playbackEntity : this.world.getEntitiesByType(
+                    NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE,
+                    entity -> searchBox.intersects(entity.getBoundingBox())
+            )) {
+                if (!intersectsSegment(
+                        playbackEntity.getBoundingBox().expand(RemembererConstants.SNIPER_HITBOX_EXPANSION),
+                        segmentStart,
+                        segmentEnd
+                )) {
+                    continue;
+                }
+
+                MagicianServerHooks.stopPlaybackByWeaponTarget(
+                        playbackEntity,
                         shooter,
                         Noellesroles.DEATH_REASON_SNIPER_RIFLE,
-                        GameFunctions.createReplayItemData(this.world, this.replayStack)
+                        this.replayStack.getName().getString()
                 );
             }
         }

@@ -56,6 +56,10 @@ import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.framing.FramingShopEntry;
 import org.agmas.noellesroles.roles.goddess.GoddessAbility;
+import org.agmas.noellesroles.roles.magician.MagicianAbility;
+import org.agmas.noellesroles.roles.magician.MagicianConstants;
+import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
+import org.agmas.noellesroles.roles.magician.MagicianTargetAbility;
 import org.agmas.noellesroles.modifiers.guesser.GuesserAbility;
 import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
@@ -155,6 +159,7 @@ public class Noellesroles implements ModInitializer {
     public static Identifier REMEMBERER_ID = Identifier.of(MOD_ID, "rememberer");
     public static Identifier SPIRITUALIST_ID = Identifier.of(MOD_ID, "spiritualist");
     public static Identifier OPERATOR_ID = Identifier.of(MOD_ID, "operator");
+    public static Identifier MAGICIAN_ID = Identifier.of(MOD_ID, "magician");
     public static Identifier FAKE_DEATH_REASON = Identifier.of(Noellesroles.MOD_ID, "fake");
     public static Identifier STALKER_EXECUTION_DEATH = Identifier.of(MOD_ID, "stalker_execution");
     public static Identifier DEATH_REASON_BOMB = Identifier.of(MOD_ID, "bomb");
@@ -242,27 +247,34 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier SPIRITUALIST_ACTIVE_SHIELD_SOURCE = Identifier.of(MOD_ID, "spiritualist_active_shield");
     public static final Identifier SPIRITUALIST_LINGERING_SHIELD_SOURCE = Identifier.of(MOD_ID, "spiritualist_lingering_shield");
     public static final Identifier SPIRITUALIST_SOUL_GUARD_DEATH_REASON = Identifier.of(MOD_ID, "spiritualist_soul_guard");
+    public static final Identifier MAGICIAN_RECORDING_STARTED_EVENT = Identifier.of(MOD_ID, "magician_recording_started");
+    public static final Identifier MAGICIAN_RECORDING_FINISHED_EVENT = Identifier.of(MOD_ID, "magician_recording_finished");
+    public static final Identifier MAGICIAN_RECORDING_STOPPED_EARLY_EVENT = Identifier.of(MOD_ID, "magician_recording_stopped_early");
+    public static final Identifier MAGICIAN_PLAYBACK_STARTED_EVENT = Identifier.of(MOD_ID, "magician_playback_started");
+    public static final Identifier MAGICIAN_PLAYBACK_FINISHED_EVENT = Identifier.of(MOD_ID, "magician_playback_finished");
+    public static final Identifier MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT = Identifier.of(MOD_ID, "magician_playback_stopped_early");
+    public static final Identifier MAGICIAN_PLAYBACK_FORCED_END_EVENT = Identifier.of(MOD_ID, "magician_playback_forced_end");
 
 
 
 
     public static HashMap<Role, RoleAnnouncementTexts.RoleAnnouncementText> roleRoleAnnouncementTextHashMap = new HashMap<>();
     //造尸怪(杀手)
-    public static Role CORPSEMAKER = WatheRoles.registerRole(new Role(CORPSEMAKER_ID, new Color(12, 0, 228).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role CORPSEMAKER = WatheRoles.registerRole(new Role(CORPSEMAKER_ID, new Color(12, 0, 228).getRGB(), false, true, Role.MoodType.FAKE,-1, true));
     //潜行者(杀手)
-    public static Role STALKER = WatheRoles.registerRole(new Role(STALKER_ID, new Color(186, 85, 211).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role STALKER = WatheRoles.registerRole(new Role(STALKER_ID, new Color(186, 85, 211).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //附体师(杀手)
-    public static Role CONTROLLER = WatheRoles.registerRole(new Role(CONTROLLER_ID, new Color(128, 0, 128).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role CONTROLLER = WatheRoles.registerRole(new Role(CONTROLLER_ID, new Color(128, 0, 128).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //炸弹客(杀手)
-    public static Role BOMBER = WatheRoles.registerRole(new Role(BOMBER_ID, new Color(50, 50, 50).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role BOMBER = WatheRoles.registerRole(new Role(BOMBER_ID, new Color(50, 50, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //强盗(杀手)
-    public static Role ROBBER = WatheRoles.registerRole(new Role(ROBBER_ID, new Color(220, 82, 50).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role ROBBER = WatheRoles.registerRole(new Role(ROBBER_ID, new Color(220, 82, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //刺客(杀手)
-    public static Role ASSASSIN = WatheRoles.registerRole(new Role(ASSASSIN_ID, new Color(34, 68, 36).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role ASSASSIN = WatheRoles.registerRole(new Role(ASSASSIN_ID, new Color(34, 68, 36).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //狂信者(杀手中立)
-    public static Role JESTER = WatheRoles.registerRole(new Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    public static Role JESTER = WatheRoles.registerRole(new Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false, Role.MoodType.FAKE,-1,true));
     //变形怪(杀手)
-    public static Role MORPHLING =WatheRoles.registerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    public static Role MORPHLING =WatheRoles.registerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //列车长(好人)
     public static Role CONDUCTOR =WatheRoles.registerRole(new Role(CONDUCTOR_ID, new Color(255, 205, 84).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //记者(好人)
@@ -277,16 +289,18 @@ public class Noellesroles implements ModInitializer {
     public static Role SPIRITUALIST = WatheRoles.registerRole(new Role(SPIRITUALIST_ID, SpiritualistConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //接线员(好人)
     public static Role OPERATOR = WatheRoles.registerRole(new Role(OPERATOR_ID, new Color(75, 221, 192).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    //魔术师(杀手)
+    public static Role MAGICIAN = WatheRoles.registerRole(new Role(MAGICIAN_ID, MagicianConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //大嗓门(好人)
     public static Role NOISEMAKER =WatheRoles.registerRole(new Role(NOISEMAKER_ID, new Color(200, 255, 0).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //交换者(杀手)
-    public static Role SWAPPER = WatheRoles.registerRole(new Role(SWAPPER_ID, new Color(57, 4, 170).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    public static Role SWAPPER = WatheRoles.registerRole(new Role(SWAPPER_ID, new Color(57, 4, 170).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //幻灵(杀手)
-    public static Role PHANTOM =WatheRoles.registerRole(new Role(PHANTOM_ID, new Color(80, 5, 5, 192).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    public static Role PHANTOM =WatheRoles.registerRole(new Role(PHANTOM_ID, new Color(80, 5, 5, 192).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //巫毒师(好人)
     public static Role VOODOO =WatheRoles.registerRole(new Role(VOODOO_ID, new Color(128, 114, 253).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //亡语杀手(杀手)
-    public static Role THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES =WatheRoles.registerRole(new Role(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID, new Color(255, 0, 0, 192).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    public static Role THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES =WatheRoles.registerRole(new Role(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID, new Color(255, 0, 0, 192).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //调查官(好人)
     public static Role TRAPPER =WatheRoles.registerRole(new Role(TRAPPER_ID, new Color(132, 186, 167).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //验尸官(好人)
@@ -302,7 +316,7 @@ public class Noellesroles implements ModInitializer {
     //更好的义警(义警)
     public static Role BETTER_VIGILANTE =WatheRoles.registerVigilanteRole(new Role(BETTER_VIGILANTE_ID, new Color(0, 255, 255).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //洗脑师(杀手)
-    public static Role BRAINWASHER = WatheRoles.registerRole(new Role(BRAINWASHER_ID, new Color(255, 105, 180).getRGB(), false, true, Role.MoodType.FAKE, Integer.MAX_VALUE, true));
+    public static Role BRAINWASHER = WatheRoles.registerRole(new Role(BRAINWASHER_ID, new Color(255, 105, 180).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //圣母(好人)
     public static Role GODDESS = WatheRoles.registerRole(new Role(GODDESS_ID, Color.WHITE.getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //天使(好人)
@@ -312,7 +326,7 @@ public class Noellesroles implements ModInitializer {
     //追忆者(好人)
     public static Role REMEMBERER = WatheRoles.registerCivilianRole(new Role(REMEMBERER_ID, new Color(46, 46, 66).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
 
-    //public static Role GUESSER =WatheRoles.registerRole(new Role(GUESSER_ID, new Color(158, 43, 25, 191).getRGB(),false,true, Role.MoodType.FAKE,Integer.MAX_VALUE,true));
+    //public static Role GUESSER =WatheRoles.registerRole(new Role(GUESSER_ID, new Color(158, 43, 25, 191).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //模仿者(好人)
     public static Role MIMIC = WatheRoles.registerRole(new Role(MIMIC_ID, new Color(255, 137, 155).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
 
@@ -379,6 +393,7 @@ public class Noellesroles implements ModInitializer {
         OperatorCommunicationManager.init();
         RemembererInteractionHandler.init();
         RemembererSniperManager.init();
+        MagicianPlaybackManager.init();
 
 
         Harpymodloader.setRoleMaximum(CONDUCTOR_ID,1);
@@ -426,6 +441,7 @@ public class Noellesroles implements ModInitializer {
             // 防止上一把尚未执行的交换延迟到下一把才触发。
             SwapperAbility.clearPendingSwaps();
             HiddenBodiesWorldComponent.KEY.get(serverWorld).reset();
+            MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);
 
             for (ThrowingAxeEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(ThrowingAxeEntity.class), ignored -> true)) {
                 entity.discard();
@@ -713,6 +729,8 @@ public class Noellesroles implements ModInitializer {
                     VoodooTargetAbility.handle(payload, player);
                 } else if (gameWorld.isRole(player, Noellesroles.WINDER)) {
                     WinderTargetAbility.handle(payload, player);
+                } else if (gameWorld.isRole(player, Noellesroles.MAGICIAN)) {
+                    MagicianTargetAbility.handle(payload, player);
                 } else if (gameWorld.isRole(player, Noellesroles.MORPHLING)) {
                     MorphlingMorphAbility.handle(payload, player);
                 }
@@ -750,6 +768,8 @@ public class Noellesroles implements ModInitializer {
                     PhantomAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.WINDER)) {
                     WinderAbility.handle(player);
+                } else if (gameWorld.isRole(player, Noellesroles.MAGICIAN)) {
+                    MagicianAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.SPIRITUALIST)) {
                     SpiritualistAbility.handle(player, payload.targetId());
                 }
@@ -881,6 +901,13 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerGlobalEventFormatter(OPERATOR_BROADCAST_INTERRUPTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastInterrupted);
         ReplayRegistry.registerGlobalEventFormatter(REMEMBERER_RECALL_EVENT, NoellesRolesReplayFormatters::formatRemembererRecall);
         ReplayRegistry.registerGlobalEventFormatter(REMEMBERER_SNIPER_RELOADED_EVENT, NoellesRolesReplayFormatters::formatRemembererSniperReloaded);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_RECORDING_STARTED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStarted);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_RECORDING_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingFinished);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_RECORDING_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_STARTED_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackStarted);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackFinished);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_FORCED_END_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackForcedEnd);
         ReplayRegistry.registerDeathReasonFormatter(ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
         ReplayRegistry.registerDeathReasonFormatter(SPIRITUALIST_SOUL_GUARD_DEATH_REASON, NoellesRolesReplayFormatters::formatSpiritualistSoulGuardDeath);

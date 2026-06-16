@@ -36,7 +36,12 @@ public abstract class InstinctMixin {
     private static void b(CallbackInfoReturnable<Boolean> cir) {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
         if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.JESTER)) {
-            if (instinctKeybind.isPressed()) {
+            /*
+             * 本能键输入模式由 WatheClient 统一管理。
+             * 不再直接读物理按键 isPressed()，否则小丑会永远停留在“长按生效”，
+             * 无法跟随玩家通过 /instinct key true 选择的开关模式。
+             */
+            if (WatheClient.isInstinctInputActive()) {
                 cir.setReturnValue(true);
                 cir.cancel();
             }

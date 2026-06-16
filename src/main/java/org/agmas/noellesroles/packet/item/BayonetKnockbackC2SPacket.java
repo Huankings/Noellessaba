@@ -11,6 +11,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.BayonetKnockbackHandler;
+import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,7 +45,28 @@ public record BayonetKnockbackC2SPacket(int target) implements CustomPayload {
         @Override
         public void receive(@NotNull BayonetKnockbackC2SPacket payload, ServerPlayNetworking.@NotNull Context context) {
             ServerPlayerEntity attacker = context.player();
-            if (!(attacker.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)) {
+            net.minecraft.entity.Entity rawTarget = attacker.getServerWorld().getEntityById(payload.target());
+            if (rawTarget == null) {
+                return;
+            }
+
+            /*
+             * 刺刀左键击退客户端本身也会在命中播放体时发包，
+             * 所以这里要先把“播放体强制结束”这条特殊分支拦在前面。
+             *
+             * 这样玩家看到准星已经锁到皮套时，左键击退也会像其它玩法武器一样正确结束播放。
+             */
+            MagicianServerHooks.recordBayonetKnockback(attacker);
+            if (MagicianServerHooks.stopPlaybackByWeaponTarget(
+                    rawTarget,
+                    attacker,
+                    dev.doctor4t.wathe.game.GameConstants.DeathReasons.KNIFE,
+                    MagicianServerHooks.getWeaponName(attacker.getMainHandStack())
+            )) {
+                return;
+            }
+
+            if (!(rawTarget instanceof PlayerEntity target)) {
                 return;
             }
             if (!BayonetKnockbackHandler.canKnockback(attacker, target)) {

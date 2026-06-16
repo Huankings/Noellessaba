@@ -835,11 +835,25 @@ public final class NoellesRolesReplayFormatters {
     }
 
     private static @Nullable Text playerFromUuidOrName(GameRecordEvent event, GameRecordManager.MatchRecord match, String uuidKey, String nameKey) {
+        /*
+         * 魔术师皮套这类事件会同时保存 UUID 和当时锁定的名字。
+         *
+         * Wathe 的 ReplayGenerator.formatPlayerName 在 UUID 不属于本局初始职业快照时，
+         * 会只能退成短 UUID；而我们真正想要的是“当时背包里选中的玩家名”。
+         * 所以这里优先尝试 UUID，若缓存里没有可读玩家资料，再回退到随事件保存的名字。
+         */
         if (event.data().containsUuid(uuidKey)) {
-            return ReplayGenerator.formatPlayerName(event.data().getUuid(uuidKey), ReplayGenerator.getPlayerInfoCache(match));
+            java.util.Map<java.util.UUID, ReplayGenerator.PlayerInfo> playerInfoCache = ReplayGenerator.getPlayerInfoCache(match);
+            java.util.UUID uuid = event.data().getUuid(uuidKey);
+            if (playerInfoCache.containsKey(uuid)) {
+                return ReplayGenerator.formatPlayerName(uuid, playerInfoCache);
+            }
         }
         if (event.data().contains(nameKey)) {
             return Text.literal(event.data().getString(nameKey));
+        }
+        if (event.data().containsUuid(uuidKey)) {
+            return ReplayGenerator.formatPlayerName(event.data().getUuid(uuidKey), ReplayGenerator.getPlayerInfoCache(match));
         }
         return null;
     }
@@ -963,6 +977,76 @@ public final class NoellesRolesReplayFormatters {
                 event.data().getInt("current_ammo"),
                 event.data().getInt("max_ammo")
         );
+    }
+
+    @Nullable
+    public static Text formatMagicianRecordingStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.magician_recording_started", actor);
+    }
+
+    @Nullable
+    public static Text formatMagicianRecordingFinished(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.magician_recording_finished", actor);
+    }
+
+    @Nullable
+    public static Text formatMagicianRecordingStoppedEarly(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.magician_recording_stopped_early", actor);
+    }
+
+    @Nullable
+    public static Text formatMagicianPlaybackStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text disguise = playerFromUuidOrName(event, match, "disguise_player", "disguise_name");
+        if (actor == null || disguise == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.magician_playback_started", actor, disguise);
+    }
+
+    @Nullable
+    public static Text formatMagicianPlaybackFinished(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.magician_playback_finished", actor);
+    }
+
+    @Nullable
+    public static Text formatMagicianPlaybackStoppedEarly(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.magician_playback_stopped_early", actor);
+    }
+
+    @Nullable
+    public static Text formatMagicianPlaybackForcedEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text disguise = playerFromUuidOrName(event, match, "disguise_player", "disguise_name");
+        Text attacker = playerFromUuidOrName(event, match, "attacker_player", "attacker_name");
+        Text weapon = event.data().contains("weapon_name")
+                ? weaponNameText(event.data().getString("weapon_name"))
+                : Text.translatable("replay.item.unknown");
+        if (actor == null || disguise == null || attacker == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.magician_playback_forced_end", actor, disguise, attacker, weapon);
+    }
+
+    private static Text weaponNameText(String weaponName) {
+        /*
+         * 强制结束播放的武器名现在会尽量保存翻译 key，而不是服务端已经翻译好的字符串。
+         * 这样回放界面在客户端渲染时，才能按当前语言文件显示“刺刀 / Bayonet”。
+         *
+         * 旧回放里如果已经存成了普通字符串，则继续 literal 显示，避免破坏历史数据。
+         */
+        if (weaponName.startsWith("item.")
+                || weaponName.startsWith("block.")
+                || weaponName.startsWith("entity.")
+                || weaponName.startsWith("replay.")) {
+            return Text.translatable(weaponName);
+        }
+        return Text.literal(weaponName);
     }
 
     @Nullable
