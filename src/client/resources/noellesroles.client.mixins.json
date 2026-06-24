@@ -7,6 +7,7 @@
     "InstinctMixin",
     "DisguiseClientPlayerSkinMixin",
     "DisguiseEntityRenderDispatcherMixin",
+    "PlayerBodySkinRendererMixin",
     "framing.DelusionFovMixin",
     "roles.coward.CowardFovMixin",
     "roles.coward.CowardCameraMixin",

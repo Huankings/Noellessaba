@@ -18,7 +18,7 @@ public final class TrapperShopHandler {
         List<ShopEntry> entries = new ArrayList<>();
 
         // 身份检测装置：放置后侦测经过玩家身份。
-        entries.add(new ShopEntry(ModItems.ROLE_MINE.getDefaultStack(), 150, ShopEntry.Type.POISON));
+        entries.add(new ShopEntry(ModItems.ROLE_MINE.getDefaultStack(), 125, ShopEntry.Type.POISON));
 
         return entries;
     }

@@ -85,5 +85,5 @@ public final class RemembererConstants {
     public static final int BOOK_LINES_PER_PAGE = 13;
 
     /** 商店里一发狙击枪子弹的价格。 */
-    public static final int SNIPER_BULLET_PRICE = 100;
+    public static final int SNIPER_BULLET_PRICE = 75;
 }
