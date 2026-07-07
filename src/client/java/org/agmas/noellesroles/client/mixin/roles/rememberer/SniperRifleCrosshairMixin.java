@@ -37,11 +37,21 @@ public class SniperRifleCrosshairMixin {
             @NotNull RenderTickCounter tickCounter,
             @NotNull CallbackInfo ci
     ) {
-        if (!RemembererClientEffects.shouldRenderSniperCrosshair(player)) {
+        boolean holdingSniperRifle = RemembererClientEffects.shouldRenderSniperCrosshair(player);
+        if (!holdingSniperRifle) {
             return;
         }
 
         ci.cancel();
+        /*
+         * 开镜动画期间只保留狙击镜自己的黑色十字线。
+         * 这里仍然 cancel 掉 Wathe 原准心，但不再绘制狙击枪原来的 3x3 准心，
+         * 避免画面中心同时出现两套瞄准标记。
+         */
+        if (RemembererClientEffects.isSniperScopeVisible()) {
+            return;
+        }
+
         boolean target = !player.getItemCooldownManager().isCoolingDown(ModItems.SNIPER_RIFLE)
                 && RemembererClientEffects.hasVisibleSniperTarget(player);
 

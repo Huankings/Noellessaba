@@ -23,23 +23,38 @@ import org.jetbrains.annotations.Nullable;
  * <p>这里统一收口三类只和本地显示/手感有关的逻辑：</p>
  * <p>1. “摸取回忆”准星需要复用的目标检测；</p>
  * <p>2. 狙击枪准星需要复用的可视目标检测；</p>
- * <p>3. 狙击枪转向迟缓与惯性的残留状态。</p>
+ * <p>3. 狙击枪转向迟缓与惯性的残留状态；</p>
+ * <p>4. 狙击枪左键开镜的纯客户端动画进度。</p>
  */
 public final class RemembererClientEffects {
 
     private static double sniperSmoothedLookX = 0.0D;
     private static double sniperSmoothedLookY = 0.0D;
+    private static float prevSniperScopeProgress = 0.0F;
+    private static float sniperScopeProgress = 0.0F;
+    private static float sniperScopeAnimationStartProgress = 0.0F;
+    private static int sniperScopeAnimationTicks = 0;
+    private static int sniperScopeAnimationDurationTicks = 1;
+    private static boolean sniperScopeOpening = false;
+    private static boolean sniperScopeAttackPressedLastTick = false;
 
     private RemembererClientEffects() {
     }
 
     public static void tick(MinecraftClient client) {
+        tickSniperScope(client);
         tickSniperAimReset(client);
     }
 
     public static void reset() {
-        sniperSmoothedLookX = 0.0D;
-        sniperSmoothedLookY = 0.0D;
+        resetSniperAimInertia();
+        prevSniperScopeProgress = 0.0F;
+        sniperScopeProgress = 0.0F;
+        sniperScopeAnimationStartProgress = 0.0F;
+        sniperScopeAnimationTicks = 0;
+        sniperScopeAnimationDurationTicks = 1;
+        sniperScopeOpening = false;
+        sniperScopeAttackPressedLastTick = false;
     }
 
     public static boolean isRememberer(@Nullable PlayerEntity player) {
@@ -115,6 +130,34 @@ public final class RemembererClientEffects {
         return SniperRifleItem.getVisibleTarget(player) instanceof EntityHitResult;
     }
 
+    public static boolean isSniperScopeVisible() {
+        return prevSniperScopeProgress > 0.0F || sniperScopeProgress > 0.0F;
+    }
+
+    /**
+     * 取得当前帧用于渲染的开镜进度。
+     *
+     * <p>客户端逻辑每 tick 只更新一次进度，渲染却可能一秒跑很多帧；
+     * 这里用上一 tick 和当前 tick 的进度做插值，让 FOV 与遮罩放大过程都保持顺滑。</p>
+     */
+    public static float getSniperScopeProgress(float tickDelta) {
+        return MathHelper.clamp(
+                MathHelper.lerp(tickDelta, prevSniperScopeProgress, sniperScopeProgress),
+                0.0F,
+                1.0F
+        );
+    }
+
+    /**
+     * 取得套在原始 FOV 上的狙击镜倍率。
+     *
+     * <p>倍率从 1.0 平滑过渡到望远镜同款 0.1，
+     * 所以不会在按下左键的瞬间突然跳变，松开左键时也会自然退回。</p>
+     */
+    public static float getSniperScopeFovMultiplier(float tickDelta) {
+        return MathHelper.lerp(getSniperScopeProgress(tickDelta), 1.0F, RemembererConstants.SNIPER_SCOPE_FOV_MULTIPLIER);
+    }
+
     public static boolean shouldApplySniperAim(@Nullable PlayerEntity player) {
         return player instanceof ClientPlayerEntity clientPlayer
                 && MinecraftClient.getInstance().player == clientPlayer
@@ -135,7 +178,7 @@ public final class RemembererClientEffects {
     public static double[] transformSniperLookInput(double cursorDeltaX, double cursorDeltaY) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (!shouldApplySniperAim(client.player)) {
-            reset();
+            resetSniperAimInertia();
             return new double[]{cursorDeltaX, cursorDeltaY};
         }
 
@@ -158,8 +201,122 @@ public final class RemembererClientEffects {
      */
     private static void tickSniperAimReset(MinecraftClient client) {
         if (!shouldApplySniperAim(client.player)) {
-            reset();
+            resetSniperAimInertia();
         }
+    }
+
+    private static void resetSniperAimInertia() {
+        sniperSmoothedLookX = 0.0D;
+        sniperSmoothedLookY = 0.0D;
+    }
+
+    /**
+     * 更新左键开镜进度。
+     *
+     * <p>开镜是纯客户端视觉效果，不检查狙击枪冷却和弹药；
+     * 只要本地玩家第一人称手持狙击枪并按住攻击键，就可以开始放大。
+     * 如果只是松开左键，则单独启动一次“收镜”动画；如果切物品、切视角、死亡或打开界面，
+     * 说明当前画面已经不适合继续保留狙击镜，直接清零避免黑屏残留。</p>
+     */
+    private static void tickSniperScope(MinecraftClient client) {
+        if (!canKeepSniperScopeScene(client)) {
+            resetSniperScope();
+            return;
+        }
+
+        prevSniperScopeProgress = sniperScopeProgress;
+        boolean attackPressed = client.options.attackKey.isPressed();
+        if (attackPressed != sniperScopeAttackPressedLastTick) {
+            startSniperScopeAnimation(attackPressed);
+            sniperScopeAttackPressedLastTick = attackPressed;
+        }
+
+        updateSniperScopeAnimation();
+    }
+
+    private static boolean canKeepSniperScopeScene(@NotNull MinecraftClient client) {
+        return client.currentScreen == null && shouldRenderSniperCrosshair(client.player);
+    }
+
+    /**
+     * 启动一次开镜或收镜动画。
+     *
+     * <p>这里记录“动作开始时的当前进度”，而不是强制从 0 或 1 重新开始。
+     * 这样玩家快速点按左键、半路反向收镜时，动画会从当前画面继续过渡，不会突然跳帧。</p>
+     */
+    private static void startSniperScopeAnimation(boolean opening) {
+        sniperScopeOpening = opening;
+        sniperScopeAnimationStartProgress = sniperScopeProgress;
+        sniperScopeAnimationTicks = 0;
+        sniperScopeAnimationDurationTicks = Math.max(
+                1,
+                secondsToTicks(opening
+                        ? RemembererConstants.SNIPER_SCOPE_OPEN_ANIMATION_SECONDS
+                        : RemembererConstants.SNIPER_SCOPE_CLOSE_ANIMATION_SECONDS)
+        );
+    }
+
+    /**
+     * 根据当前动画方向推进开镜进度。
+     *
+     * <p>每次“开镜”和“收镜”都从 0 到 1 走一次 ease-out。
+     * 因为收镜不是简单把开镜曲线倒放，所以收镜同样会呈现“先快后慢”，
+     * 不会变成先慢后快。</p>
+     */
+    private static void updateSniperScopeAnimation() {
+        if (sniperScopeOpening && sniperScopeProgress >= 1.0F) {
+            sniperScopeProgress = 1.0F;
+            return;
+        }
+        if (!sniperScopeOpening && sniperScopeProgress <= 0.0F) {
+            sniperScopeProgress = 0.0F;
+            return;
+        }
+
+        sniperScopeAnimationTicks++;
+        float animationProgress = MathHelper.clamp(
+                sniperScopeAnimationTicks / (float) sniperScopeAnimationDurationTicks,
+                0.0F,
+                1.0F
+        );
+        float easedProgress = easeOutSniperScopeProgress(animationProgress);
+        float targetProgress = sniperScopeOpening ? 1.0F : 0.0F;
+        sniperScopeProgress = MathHelper.lerp(easedProgress, sniperScopeAnimationStartProgress, targetProgress);
+        /*
+         * 收镜最后几百分之一的进度在视觉上几乎没有意义，
+         * 但因为 HUD/FOV 渲染会继续用 prevSniperScopeProgress 插值，
+         * 这一点残留会让玩家感觉“已经收完了，却还等了一下才恢复普通准心”。
+         * 所以只在收镜接近 0 时立即清空当前帧和上一帧进度，让普通状态马上接管。
+         */
+        if (!sniperScopeOpening && sniperScopeProgress <= RemembererConstants.SNIPER_SCOPE_CLOSE_FINISH_PROGRESS) {
+            resetSniperScope();
+        }
+    }
+
+    private static void resetSniperScope() {
+        prevSniperScopeProgress = 0.0F;
+        sniperScopeProgress = 0.0F;
+        sniperScopeAnimationStartProgress = 0.0F;
+        sniperScopeAnimationTicks = 0;
+        sniperScopeAnimationDurationTicks = 1;
+        sniperScopeOpening = false;
+        sniperScopeAttackPressedLastTick = false;
+    }
+
+    private static int secondsToTicks(float seconds) {
+        return Math.round(Math.max(0.0F, seconds) * 20.0F);
+    }
+
+    /**
+     * ease-out cubic 缓动：开始时变化最快，越接近终点越慢。
+     *
+     * <p>开镜时视野会更快进入放大状态，最后轻轻贴到目标倍率；
+     * 收镜时也会快速恢复大部分视野，再慢慢回到正常画面。</p>
+     */
+    public static float easeOutSniperScopeProgress(float progress) {
+        float clamped = MathHelper.clamp(progress, 0.0F, 1.0F);
+        float inverse = 1.0F - clamped;
+        return 1.0F - inverse * inverse * inverse;
     }
 
     private static void trimResidualLook() {

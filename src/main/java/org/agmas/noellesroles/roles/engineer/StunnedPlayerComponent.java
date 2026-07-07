@@ -1,4 +1,4 @@
-package org.agmas.noellesroles.roles.capture;
+package org.agmas.noellesroles.roles.engineer;
 
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.effect.StatusEffects;

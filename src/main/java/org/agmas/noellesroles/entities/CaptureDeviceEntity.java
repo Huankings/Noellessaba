@@ -20,7 +20,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.Noellesroles;
-import org.agmas.noellesroles.roles.capture.StunnedPlayerComponent;
+import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 
 import java.util.ArrayList;
 import java.util.List;

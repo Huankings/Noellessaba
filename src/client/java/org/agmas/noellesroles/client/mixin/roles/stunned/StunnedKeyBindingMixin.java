@@ -2,7 +2,7 @@ package org.agmas.noellesroles.client.mixin.roles.stunned;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import org.agmas.noellesroles.roles.capture.StunnedPlayerComponent;
+import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

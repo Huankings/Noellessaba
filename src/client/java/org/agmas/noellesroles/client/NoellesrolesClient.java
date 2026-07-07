@@ -87,7 +87,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(SpiritualistPossessionViewS2CPacket.ID, (payload, context) ->
                 context.client().execute(() -> SpiritualistClientController.handlePossessionViewPacket(payload)));
 
-        ClientPreAttackCallback.EVENT.register((client, player, clickCount) -> noellesroles$handleGrenadeThrowModeSwitch(player));
+        ClientPreAttackCallback.EVENT.register((client, player, clickCount) -> noellesroles$handlePreAttack(player));
 
 
 
@@ -269,6 +269,21 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENT_GRENADE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE_BULLET);
+    }
+
+    /**
+     * noellesroles 需要优先接管的客户端左键逻辑。
+     *
+     * <p>Fabric 的 ClientPreAttackCallback 发生在客户端真正挥拳/攻击前。
+     * 在这里返回 true 就等于“这次攻击已经被模组处理”，客户端不会继续把左键当成普通攻击。
+     * 狙击枪开镜本身由每 tick 读取 attackKey 的按住状态控制，这里只负责吞掉攻击，
+     * 避免玩家按住左键开镜时误伤附近玩家或破坏方块。</p>
+     */
+    private static boolean noellesroles$handlePreAttack(PlayerEntity player) {
+        if (player.getMainHandStack().isOf(ModItems.SNIPER_RIFLE)) {
+            return true;
+        }
+        return noellesroles$handleGrenadeThrowModeSwitch(player);
     }
 
     /**

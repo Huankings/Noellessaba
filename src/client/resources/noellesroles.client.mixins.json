@@ -119,6 +119,8 @@
     "roles.rememberer.RemembererMoodRenderer",
     "roles.rememberer.RemembererCrosshairMixin",
     "roles.rememberer.SniperRifleCrosshairMixin",
+    "roles.rememberer.SniperRifleScopeFovMixin",
+    "roles.rememberer.SniperRifleScopeOverlayMixin",
     "roles.rememberer.SniperRifleMovementSpeedMixin",
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",

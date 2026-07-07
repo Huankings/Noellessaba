@@ -67,6 +67,45 @@ public final class RemembererConstants {
     public static final double SNIPER_AIM_INERTIA_DAMPING = 0.85D;
     /** 极小平滑残量直接归零，避免停止移动鼠标后镜头长期轻微漂移。 */
     public static final double SNIPER_AIM_EPSILON = 0.01D;
+    /** 狙击枪左键开镜过渡时长，单位为秒。当前 0.5 秒约等于 10 tick。 */
+    public static final float SNIPER_SCOPE_OPEN_ANIMATION_SECONDS = 0.0F;//暂时设置为0代表马上开镜，原0.35
+    /** 狙击枪松开左键收镜过渡时长，单位为秒。当前 0.5 秒约等于 10 tick。 */
+    public static final float SNIPER_SCOPE_CLOSE_ANIMATION_SECONDS = 0.0F;//暂时设置为0代表马上关镜.原0.5
+    /**
+     * 收镜接近完成时的提前归零阈值。
+     *
+     * <p>客户端渲染会用上一 tick 和当前 tick 插值，如果严格等到 0 才结束，
+     * 最后一小段黑镜/放大状态会多残留一拍，看起来像收镜后迟钝。
+     * 这里在进度低于 3% 时直接切回普通状态，让手感更干脆。</p>
+     */
+    public static final float SNIPER_SCOPE_CLOSE_FINISH_PROGRESS = 0.03F;
+    /**
+     * 狙击镜最终可见范围的横向半径比例。
+     *
+     * <p>当前按你的需求设置成屏幕宽度的一半，也就是最终直径正好等于屏幕宽度。</p>
+     */
+    public static final float SNIPER_SCOPE_FINAL_HORIZONTAL_RADIUS_RATIO = 0.4F;
+    /**
+     * 开镜动画起始半径相对最终半径的比例。
+     *
+     * <p>设为 0.5 后，按下左键的第一段画面会从最终视野圈的一半开始放大。</p>
+     */
+    public static final float SNIPER_SCOPE_INITIAL_RADIUS_SCALE = 1.0F;//原0.5，现改为1也就是前后一致
+    /**
+     * 狙击镜遮罩的基准宽高比。
+     *
+     * <p>16:9 下横向半径和纵向半径相同，因此屏幕上的可见区是圆形；
+     * 其他宽高比会按这个基准拉伸成椭圆，避免不同分辨率下视野圈观感完全跑偏。</p>
+     */
+    public static final float SNIPER_SCOPE_BASE_ASPECT_RATIO = 16.0F / 9.0F;
+    /** 开镜完全完成时的 FOV 倍率，0.1F 是原版望远镜使用的放大强度。 */
+    public static final float SNIPER_SCOPE_FOV_MULTIPLIER = 0.1F;
+    /** 狙击镜十字线厚度，单位是 GUI 缩放后的像素。 */
+    public static final int SNIPER_SCOPE_CROSSHAIR_THICKNESS = 1;
+    /** 狙击镜遮罩颜色：纯黑且完全不透明。 */
+    public static final int SNIPER_SCOPE_MASK_COLOR = 0xFF000000;
+    /** 狙击镜中心十字线颜色。 */
+    public static final int SNIPER_SCOPE_CROSSHAIR_COLOR = 0xFF000000;
 
     /** 回忆书内文本统一使用的紫色。 */
     public static final int BOOK_TEXT_COLOR = 0xA86DFF;

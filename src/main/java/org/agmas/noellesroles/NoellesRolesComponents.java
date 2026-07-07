@@ -9,7 +9,7 @@ import org.agmas.noellesroles.modifiers.chameleon.ChameleonPlayerComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerGlowTargetComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
 import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
-import org.agmas.noellesroles.roles.capture.StunnedPlayerComponent;
+import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
