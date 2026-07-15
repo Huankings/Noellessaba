@@ -92,7 +92,6 @@
     "roles.engineer.EngineerInvisPaperMixin",
     "roles.engineer.StunnedKeyBindingMixin",
     "roles.engineer.StunnedMouseMixin",
-    "shop.NoellesRolesShopScreenMixin",
     "roles.bomber.TimedBombBedViewMixin",
     "roles.bomber.TimedBombTrayViewMixin",
     "roles.stalker.StalkerHudMixin"
