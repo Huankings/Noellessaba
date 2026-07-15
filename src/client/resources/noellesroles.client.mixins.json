@@ -104,7 +104,6 @@
     "requireAnnotations": true
   },
   "mixins": [
-    "StoreRendererMixin",
     "roles.prophet.CrystalBallCrosshairMixin",
     "roles.robber.RobberGunCrosshairMixin",
     "roles.assassin.AssassinBayonetCrosshairMixin",

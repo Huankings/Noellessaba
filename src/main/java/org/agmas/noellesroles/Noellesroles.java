@@ -3,9 +3,11 @@ package org.agmas.noellesroles;
 import dev.doctor4t.wathe.api.Faction;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.economy.EconomyApi;
 import dev.doctor4t.wathe.api.event.AllowPlayerPunching;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
+import dev.doctor4t.wathe.api.task.TaskCompletionApi;
 import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
 import dev.doctor4t.wathe.api.event.CanSeePoison;
 import dev.doctor4t.wathe.api.event.GameEvents;
@@ -424,6 +426,7 @@ public class Noellesroles implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(SpiritualistPossessionControlC2SPacket.ID, SpiritualistPossessionControlC2SPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SpiritualistPossessionViewS2CPacket.ID, SpiritualistPossessionViewS2CPacket.CODEC);
         NoellesRolesShopBootstrap.init();
+        registerEconomyApi();
         ServerPlayNetworking.registerGlobalReceiver(NoisemakerGlowC2SPacket.ID,
                 (packet, context) -> NoisemakerGlowC2SPacket.handle(packet, context.player().networkHandler));
 
@@ -462,6 +465,73 @@ public class Noellesroles implements ModInitializer {
     }
 
     EntityAttributeModifier tinyModifier = new EntityAttributeModifier(Identifier.of(MOD_ID, "tiny_modifier"), -0.15, EntityAttributeModifier.Operation.ADD_VALUE);
+
+    private static void registerEconomyApi() {
+        /*
+         * 金币 HUD：这里只迁移旧 StoreRendererMixin 里明确会显示右上角金币数量的角色。
+         * 杀手能力角色本来就会被 Wathe 默认显示，所以这里只需要注册非杀手但使用金币系统的角色。
+         */
+        EconomyApi.registerBalanceHudRoles(List.of(
+                BARTENDER,
+                RECALLER,
+                EXECUTIONER,
+                JESTER,
+                NOISEMAKER,
+                WINDER,
+                MIMIC,
+                TRAPPER,
+                CORONER,
+                PROPHET,
+                REMEMBERER,
+                ENGINEER,
+                COWARD
+        ));
+
+        /*
+         * 任务金币：旧逻辑是“心情上升就给 50”，会无条件覆盖所有真实心情角色。
+         * 现在改成真正监听任务完成，并且只给 noellesroles 自己声明有任务收入的职业。
+         * 这样没有金币用途的真实心情职业不会被误发钱，假心情但设计上有任务收入的职业也能拿到钱。
+         */
+        Set<Role> taskIncomeRoles = Set.of(
+                PHANTOM,
+                SWAPPER,
+                TRAPPER,
+                RECALLER,
+                BARTENDER,
+                MORPHLING,
+                NOISEMAKER,
+                CORPSEMAKER,
+                CONTROLLER,
+                CORONER,
+                ENGINEER,
+                ROBBER,
+                BOMBER,
+                STALKER,
+                BRAINWASHER,
+                WINDER,
+                PROPHET,
+                THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES
+        );
+        TaskCompletionApi.registerTaskIncomeProvider(
+                Identifier.of(MOD_ID, "task_income"),
+                TaskCompletionApi.DEFAULT_PRIORITY,
+                context -> taskIncomeRoles.contains(context.role()) ? 50 : 0
+        );
+
+        /*
+         * 通用被动收入：迁移旧 FramingPassiveIncomeMixin 的角色列表。
+         * 这些角色会进入 Wathe 的统一被动收入结算，并自动遵守阵营金币上限。
+         */
+        EconomyApi.registerPassiveIncomeRoles(List.of(
+                NOISEMAKER,
+                MIMIC,
+                JESTER,
+                EXECUTIONER,
+                CORONER,
+                ENGINEER,
+                RECALLER
+        ));
+    }
 
 
 
