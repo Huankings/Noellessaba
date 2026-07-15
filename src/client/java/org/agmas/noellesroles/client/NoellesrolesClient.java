@@ -25,6 +25,7 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
+import org.agmas.noellesroles.client.appearance.NoellesAppearanceHandlers;
 import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
 import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
@@ -79,6 +80,7 @@ public class NoellesrolesClient implements ClientModInitializer {
     public void onInitializeClient() {
         abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + Noellesroles.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
         NoellesInstinctHandlers.register();
+        NoellesAppearanceHandlers.register();
         ExecutionerMoodHud.register();
         JesterMoodHud.register();
         RemembererMoodHud.register();
