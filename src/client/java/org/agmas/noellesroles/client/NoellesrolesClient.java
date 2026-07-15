@@ -30,7 +30,10 @@ import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
 import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
+import org.agmas.noellesroles.client.roles.executioner.ExecutionerMoodHud;
+import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
+import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
 import org.agmas.noellesroles.client.ui.common.PagedPlayerScreenState;
@@ -76,6 +79,9 @@ public class NoellesrolesClient implements ClientModInitializer {
     public void onInitializeClient() {
         abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + Noellesroles.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
         NoellesInstinctHandlers.register();
+        ExecutionerMoodHud.register();
+        JesterMoodHud.register();
+        RemembererMoodHud.register();
         registerItemTooltipsAndModels();
 
         // 分页缓存只在当前对局内生效。
@@ -386,6 +392,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         CorpsemakerState.reset();
         SpiritualistClientController.reset();
         RemembererClientEffects.reset();
+        ExecutionerMoodHud.reset();
         wasGazingPressed = false;
         wasChargingPressed = false;
         wasUsingKnife = false;
