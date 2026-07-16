@@ -42,6 +42,7 @@ import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerState;
 import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.swapper.SwapperPlayerWidget;
+import org.agmas.noellesroles.client.visibility.NoellesHeldItemVisibilityHandlers;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
@@ -81,6 +82,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + Noellesroles.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
+        NoellesHeldItemVisibilityHandlers.register();
         ExecutionerMoodHud.register();
         JesterMoodHud.register();
         RemembererMoodHud.register();
