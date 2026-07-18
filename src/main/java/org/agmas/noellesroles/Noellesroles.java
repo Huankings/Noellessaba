@@ -491,8 +491,14 @@ public class Noellesroles implements ModInitializer {
          * 任务金币：旧逻辑是“心情上升就给 50”，会无条件覆盖所有真实心情角色。
          * 现在改成真正监听任务完成，并且只给 noellesroles 自己声明有任务收入的职业。
          * 这样没有金币用途的真实心情职业不会被误发钱，假心情但设计上有任务收入的职业也能拿到钱。
+         *
+         * 注意不要在这里使用 Set.of(...)：Set.of 遇到重复 Role 会在模组 main entrypoint 初始化时
+         * 直接抛出 IllegalArgumentException，服务器控制台会显示 duplicate element 并导致服务器启动失败。
+         * 这里故意先用 List.of(...) 写出需要任务收入的职业，再交给 LinkedHashSet 去重。
+         * 后续如果要补职业，先检查下面是否已经存在同一个 Role；如果不小心重复添加，也只会被去重，
+         * 不会再因为集合构建失败而让 noellesroles 产物无法启动。
          */
-        Set<Role> taskIncomeRoles = Set.of(
+        Set<Role> taskIncomeRoles = new LinkedHashSet<>(List.of(
                 PHANTOM,
                 SWAPPER,
                 TRAPPER,
@@ -510,8 +516,12 @@ public class Noellesroles implements ModInitializer {
                 BRAINWASHER,
                 WINDER,
                 PROPHET,
+                COWARD,
+                REMEMBERER,
+                MAGICIAN,
+                ASSASSIN,
                 THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES
-        );
+        ));
         TaskCompletionApi.registerTaskIncomeProvider(
                 Identifier.of(MOD_ID, "task_income"),
                 TaskCompletionApi.DEFAULT_PRIORITY,

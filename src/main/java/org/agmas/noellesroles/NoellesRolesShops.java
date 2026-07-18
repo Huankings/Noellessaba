@@ -1,8 +1,10 @@
 package org.agmas.noellesroles;
 
 import dev.doctor4t.wathe.api.shop.ShopApi;
+import dev.doctor4t.wathe.api.economy.EconomyApi;
 import dev.doctor4t.wathe.api.shop.ShopPurchaseContext;
 import dev.doctor4t.wathe.api.shop.ShopPurchaseResult;
+import dev.doctor4t.wathe.api.shop.ShopPrice;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -11,6 +13,7 @@ import dev.doctor4t.wathe.util.ShopEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.shop.PlayerShopComponentAccessor;
@@ -22,10 +25,12 @@ import java.util.Map;
 public class NoellesRolesShops {
 
     private static final Map<Item, Integer> ITEM_PRICES = new HashMap<>();
+    private static final Map<Item, ShopPrice> ITEM_SHOP_PRICES = new HashMap<>();
 
     // 从 Wathe 原版商店中提取基础价格，方便扩展职业直接复用。
     static {
         for (ShopEntry entry : GameConstants.SHOP_ENTRIES) {
+            ITEM_SHOP_PRICES.put(entry.stack().getItem(), entry.shopPrice());
             ITEM_PRICES.put(entry.stack().getItem(), entry.price());
         }
     }
@@ -33,9 +38,35 @@ public class NoellesRolesShops {
     /**
      * 获取某个物品在 Wathe 商店中的原始价格。
      * 如果 Wathe 后续调整了价格，这里会自动跟随更新。
+     *
+     * <p>这里固定读取默认商店第 0 组支付方案里的金币价格。
+     * 如果需要任务币或疯魔模式第 1 组价格，请使用 {@link #getItemCurrencyPrice(Item, int, Identifier, int)}
+     * 明确指定“哪一组支付方案 + 哪一种货币”。</p>
      */
     public static int getItemPrice(Item item, int defaultValue) {
-        return ShopApi.getDefaultPrice(item, ITEM_PRICES.getOrDefault(item, defaultValue));
+        return getItemCurrencyPrice(item, 0, EconomyApi.MONEY, ITEM_PRICES.getOrDefault(item, defaultValue));
+    }
+
+    /**
+     * 按“支付方案索引 + 货币 id”读取 Wathe 默认商店价格。
+     *
+     * <p>这样扩展职业可以只取自己需要的那一部分价格，
+     * 不会因为默认商店里存在任务币或多方案支付，就把整套价格条件误复制过去。</p>
+     */
+    public static int getItemCurrencyPrice(Item item, int optionIndex, Identifier currency, int defaultValue) {
+        return ShopApi.getDefaultCurrencyPrice(item, optionIndex, currency, defaultValue);
+    }
+
+    /**
+     * 读取 Wathe 默认商店里某个物品的完整价格定义。
+     *
+     * <p>这里返回的是原始 {@link ShopPrice}，而不是旧的单个金币数值。
+     * 这样外部扩展如果想区分“金币 / 任务币 / 多方案 OR 价格”，就可以直接读取完整结构，
+     * 不会被旧版 int 兼容层截断。只有明确想完整继承默认杀手商品价格时才应使用它；
+     * 普通职业商店请优先用 {@link #getItemCurrencyPrice(Item, int, Identifier, int)} 拆开读取。</p>
+     */
+    public static ShopPrice getItemShopPrice(Item item) {
+        return ITEM_SHOP_PRICES.get(item);
     }
 
     /**
@@ -50,7 +81,12 @@ public class NoellesRolesShops {
         ShopEntry entry = context.entry();
         Item item = entry.stack().getItem();
 
-        if (context.balance() < entry.price() || player.getItemCooldownManager().isCoolingDown(item)) {
+        /*
+         * 这里改为读取 entry 自己的 ShopPrice，而不是只看 legacy 金币余额。
+         * 这样 NoellesRoles 的职业商店以后如果也开始使用任务币或多方案价格，
+         * 购买判定会自动生效，不会被旧的 int 金额逻辑截断。
+         */
+        if (!context.canAffordEntry() || player.getItemCooldownManager().isCoolingDown(item)) {
             return ShopPurchaseResult.FAIL_SHOW_MESSAGE;
         }
 

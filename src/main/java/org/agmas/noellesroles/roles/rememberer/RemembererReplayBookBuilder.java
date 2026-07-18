@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +38,12 @@ import java.util.UUID;
 public final class RemembererReplayBookBuilder {
 
     private static final String MEMORY_BOOK_MARKER = "rememberer_memory_book";
-    private static final Set<Identifier> PASSIVE_GLOBAL_EVENTS = Set.of(
+    /*
+     * 这里是手动维护的“追忆者回忆书需要忽略的被动事件”长名单。
+     * 不使用 Set.of(...)，因为它遇到重复 Identifier 会在类初始化时直接抛 IllegalArgumentException。
+     * 后续如果补事件时不小心重复添加，LinkedHashSet 会自动去重并保留书写顺序，避免运行中的服务器因为重复名单崩掉。
+     */
+    private static final Set<Identifier> PASSIVE_GLOBAL_EVENTS = new LinkedHashSet<>(List.of(
             Noellesroles.DELUSION_STARTED_EVENT,
             Noellesroles.DELUSION_ENDED_EVENT,
             Noellesroles.COWARD_DANGER_SENSED_EVENT,
@@ -65,7 +71,7 @@ public final class RemembererReplayBookBuilder {
             Noellesroles.CONTROLLER_POSSESS_ENDED_EVENT,
             Noellesroles.SPIRITUALIST_PROJECTION_ENDED_EVENT,
             Noellesroles.SPIRITUALIST_POSSESSION_ENDED_EVENT
-    );
+    ));
 
     private RemembererReplayBookBuilder() {
     }
