@@ -164,12 +164,30 @@ public final class NoellesAppearanceHandlers {
     }
 
     private static void registerKillerSidedCohortRules() {
-        RoleNameHudApi.registerCohortState(id("shared/role_name/killer_sided_cohorts"), RoleNameHudApi.DEFAULT_PRIORITY, (viewer, subject, vanillaValue) -> {
+        RoleNameHudApi.registerCohortState(id("shared/role_name/executioner_two_way_cohort"), RoleNameHudApi.DEFAULT_PRIORITY, (viewer, subject, vanillaValue) -> {
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(subject.getWorld());
-            if (gameWorld.isRole(subject, Noellesroles.MIMIC)) {
+            /*
+             * Executioner 是本次明确保留双向“杀手同伙”机制的例外：
+             * 杀手看 Executioner 会显示同伙，Executioner 自己看杀手/其它同伙目标也能看到提示。
+             * 其它 Noelles 杀手侧中立不能放在这个双向状态里，否则它们会反向判断谁是杀手。
+             */
+            return gameWorld.isRole(subject, Noellesroles.EXECUTIONER) ? true : null;
+        });
+
+        RoleNameHudApi.registerCohortTargetState(id("shared/role_name/one_way_killer_sided_targets"), RoleNameHudApi.DEFAULT_PRIORITY, (viewer, target, vanillaValue) -> {
+            GameWorldComponent gameWorld = GameWorldComponent.KEY.get(target.getWorld());
+            /*
+             * 这里是单向目标显示：Mimic、Jester、Vulture 只是在“有资格看同伙的人”眼里像杀手同伙，
+             * 但它们本人不会因此获得 viewer 侧的同伙识别资格。最终是否真的渲染“杀手同伙”文字，
+             * 还会由 Wathe 在 RoleNameRenderer 中检查 viewer 自己的双向 cohort 状态。
+             */
+            if (gameWorld.isRole(target, Noellesroles.MIMIC)) {
                 return true;
             }
-            return gameWorld.getRole(subject) != null && Noellesroles.KILLER_SIDED_NEUTRALS.contains(gameWorld.getRole(subject))
+            if (gameWorld.isRole(target, Noellesroles.EXECUTIONER)) {
+                return null;
+            }
+            return gameWorld.getRole(target) != null && Noellesroles.KILLER_SIDED_NEUTRALS.contains(gameWorld.getRole(target))
                     ? true
                     : null;
         });
