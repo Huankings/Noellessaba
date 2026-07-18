@@ -20,12 +20,14 @@ public final class BomberInstinctHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
-            if (!GameFunctions.isPlayerSpectatingOrCreative(targetPlayer)
+            if (GameFunctions.isPlayerAliveAndSurvival(viewer)
+                    && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
                     && gameWorld.isRole(viewer, Noellesroles.BOMBER)
                     && WatheClient.isInstinctEnabled()
                     && BomberPlayerComponent.KEY.get(targetPlayer).hasBomb()) {
                 /*
                  * 炸弹客塞过炸弹的玩家必须压过 Wathe 默认杀手本能颜色。
+                 * viewer 必须仍存活，否则死亡观察者会因为 isInstinctEnabled() 被观察者本能开启而误看到炸弹客颜色。
                  * 因此这里使用高于 0 的 priority，但仍依赖 isInstinctEnabled()，保证本能压制能统一生效。
                  */
                 return InstinctApi.HighlightResult.color(Noellesroles.BOMBER.color());

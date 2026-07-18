@@ -18,7 +18,9 @@ public final class BartenderInstinctHandler {
 
     public static void register() {
         InstinctApi.registerHighlight(NoellesInstinctHandlers.id("bartender_status"), NoellesInstinctHandlers.PRIORITY_ABILITY_MARK, (viewer, target) -> {
-            if (!(target instanceof PlayerEntity targetPlayer) || GameFunctions.isPlayerSpectatingOrCreative(targetPlayer)) {
+            if (!(target instanceof PlayerEntity targetPlayer)
+                    || !GameFunctions.isPlayerAliveAndSurvival(viewer)
+                    || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)) {
                 return InstinctApi.HighlightResult.pass();
             }
 
@@ -34,6 +36,7 @@ public final class BartenderInstinctHandler {
             /*
              * Bartender 的绿色/蓝色/红色都是饮品或防御状态反馈。
              * 它们属于职业能力信息，不依赖本能键开启，所以这里不走 WatheClient.isInstinctEnabled()。
+             * 但这些信息只应该给存活 Bartender 看；死亡后应让 Harpy 的观察者职业色接管。
              */
             InstinctApi.HighlightResult result = InstinctApi.HighlightResult.pass();
             if (bartender.glowTicks > 0) {
