@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.mixin.roles.assassin;
 
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
+import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.util.GrenadeThrowModePayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import org.agmas.noellesroles.ModItems;
@@ -28,6 +29,16 @@ public abstract class AssassinGrenadeThrowModeMixin {
         boolean isHoldingSilentGrenade = context.player().getMainHandStack().isOf(ModItems.SILENT_GRENADE);
         boolean isHoldingFakeGrenade = context.player().getMainHandStack().isOf(ModItems.FAKE_GRENADE);
         if (!isHoldingSilentGrenade && !isHoldingFakeGrenade) {
+            return;
+        }
+
+        /*
+         * 这是 NoellesRoles 扩展手雷的服务端入口，必须和 Wathe 原版手雷的收包规则同步。
+         * 非存活旁观玩家死亡后如果手里残留扩展手雷，客户端应当放行左键用于 spectator 附身；
+         * 即使异常客户端仍然发来了切模式包，服务端也不允许它修改玩家的手雷投掷偏好。
+         */
+        if (!GameFunctions.isPlayerAliveAndSurvival(context.player())) {
+            ci.cancel();
             return;
         }
 

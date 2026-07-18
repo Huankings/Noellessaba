@@ -5,6 +5,7 @@ import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
+import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.util.GrenadeThrowModePayload;
 import net.fabricmc.api.ClientModInitializer;
@@ -311,6 +312,21 @@ public class NoellesrolesClient implements ClientModInitializer {
         }
 
         /*
+         * 扩展手雷也必须和 Wathe 原版手雷保持同一条规则：
+         * 非存活旁观玩家左键点击其他玩家时，优先交还给原版 spectator 附身逻辑。
+         *
+         * 否则玩家死亡时如果手里残留无声手雷 / 假手雷，
+         * 左键想附身观战会被这里吞掉并切换投掷模式，表现上就像“无法附身”。
+         *
+         * 这里使用 GameFunctions.isPlayerAliveAndSurvival，而不是直接判断 !isSpectator()：
+         * Wathe 允许部分职业/调试逻辑把 spectator 或 creative 标记为“玩法仍存活”，
+         * 这些特殊存活玩家仍然应该保留扩展手雷的模式切换能力。
+         */
+        if (!GameFunctions.isPlayerAliveAndSurvival(player)) {
+            return false;
+        }
+
+        /*
          * 长按左键时 Fabric 会连续触发预攻击回调。
          * 这里沿用 Wathe 的“按住锁”做法，同一次按住只允许切换一次模式，
          * 并且整个按住期间都吞掉攻击动作，避免误打到别人。
@@ -335,10 +351,11 @@ public class NoellesrolesClient implements ClientModInitializer {
     private static void noellesroles$maybeShowGrenadeThrowModeHint(PlayerEntity player) {
         int currentSlot = player.getInventory().selectedSlot;
         boolean isHoldingThrowableGrenade = noellesroles$isThrowableGrenade(player.getMainHandStack());
-        if (isHoldingThrowableGrenade && lastThrowableGrenadeSelectedSlot != currentSlot) {
+        boolean canUseGrenadeThrowMode = GameFunctions.isPlayerAliveAndSurvival(player);
+        if (isHoldingThrowableGrenade && canUseGrenadeThrowMode && lastThrowableGrenadeSelectedSlot != currentSlot) {
             WatheClient.showGrenadeThrowModeMessage(player, "tip.grenade.current_throw_mode");
             lastThrowableGrenadeSelectedSlot = currentSlot;
-        } else if (!isHoldingThrowableGrenade) {
+        } else if (!isHoldingThrowableGrenade || !canUseGrenadeThrowMode) {
             lastThrowableGrenadeSelectedSlot = -1;
         }
     }
