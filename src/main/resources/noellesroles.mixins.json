@@ -69,7 +69,10 @@
     "roles.spiritualist.SpiritualistBodyCollisionMixin",
     "roles.spiritualist.SpiritualistPossessedMovementBlockMixin",
     "roles.spiritualist.SpiritualistPossessedClientCommandBlockMixin",
-    "roles.spiritualist.PlayerEntityPoseInvoker"
+    "roles.spiritualist.PlayerEntityPoseInvoker",
+    "roles.waiter.PlayerMoodComponentAccessor",
+    "roles.waiter.WaiterTaskIncomeMixin",
+    "roles.waiter.FoodPlatterWaiterTakeMixin"
 
 
 

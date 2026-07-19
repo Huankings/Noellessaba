@@ -20,6 +20,7 @@ import org.agmas.noellesroles.roles.rememberer.RemembererShopHandler;
 import org.agmas.noellesroles.roles.robber.RobberShopHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerShopHandler;
 import org.agmas.noellesroles.roles.trapper.TrapperShopHandler;
+import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
 import org.agmas.noellesroles.roles.winder.WinderShopHandler;
 
 import java.util.List;
@@ -49,6 +50,8 @@ public final class NoellesRolesShopBootstrap {
         registerStatic(Noellesroles.NOISEMAKER, NoisemakerShopHandler::getShopEntries);
         registerStatic(Noellesroles.CORONER, CoronerShopHandler::getShopEntries);
         registerStatic(Noellesroles.COWARD, CowardShopHandler::getShopEntries);
+        // 服务员商店是静态列表，顺序、价格和商品类型都在 WaiterShopHandler 里集中维护。
+        registerStatic(Noellesroles.WAITER, WaiterShopHandler::getShopEntries);
 
         // 杀手阵营静态商店。
         registerStatic(Noellesroles.BOMBER, BomberShopHandler::getShopEntries);

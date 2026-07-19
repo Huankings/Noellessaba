@@ -114,6 +114,28 @@ public final class NoellesRolesReplayFormatters {
         return Text.translatable("death_reason." + deathReasonId.toString().replace(':', '.'));
     }
 
+    // 回放里服务员事件需要展示“完成了哪个任务”，所以把 task lang key 单独抽出来格式化。
+    private static Text taskText(GameRecordEvent event) {
+        String taskKey = event.data().getString("task");
+        if (taskKey == null || taskKey.isEmpty()) {
+            return Text.translatable("replay.task.unknown");
+        }
+        return Text.translatable(taskKey);
+    }
+
+    /*
+     * 带试剂或托盘效果的服务员递送，需要同时展示效果翻译 key 和本地化 fallback。
+     * 这样在不同语言环境下，既能优先显示 lang 里的正式名称，也不会因为语言包缺失而空白。
+     */
+    private static Text effectText(GameRecordEvent event) {
+        String effectKey = event.data().getString("effect_translation_key");
+        String fallback = event.data().getString("effect_fallback");
+        if (effectKey == null || effectKey.isEmpty()) {
+            return Text.translatable("replay.item.unknown");
+        }
+        return Text.translatableWithFallback(effectKey, fallback == null || fallback.isEmpty() ? effectKey : fallback);
+    }
+
     @Nullable
     public static Text formatDefenseVialUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
@@ -501,6 +523,38 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatRecallerEnderPearl(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.recaller_ender_pearl", actor);
+    }
+
+    @Nullable
+    public static Text formatWaiterServe(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+
+        // 先取物品名、任务名，再按是否带试剂/毒药效果切换不同的回放句式。
+        Text itemName = ReplayGenerator.formatItemName(event.data(), world);
+        Text taskName = taskText(event);
+        if (event.data().contains("effect_translation_key")) {
+            return Text.translatable("replay.global.noellesroles.waiter_serve.effect", actor, effectText(event), itemName, target, target, taskName);
+        }
+        return Text.translatable("replay.global.noellesroles.waiter_serve", actor, itemName, target, target, taskName);
+    }
+
+    @Nullable
+    public static Text formatWaiterSelfUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        // 自用回放不需要 target，只要 actor、物品和任务名即可。
+        return Text.translatable(
+                "replay.global.noellesroles.waiter_self_use",
+                actor,
+                ReplayGenerator.formatItemName(event.data(), world),
+                taskText(event)
+        );
     }
 
     @Nullable

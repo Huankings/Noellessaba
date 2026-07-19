@@ -10,12 +10,17 @@ import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.record.ShopPurchaseTracker;
 import dev.doctor4t.wathe.util.ShopEntry;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
+import org.agmas.noellesroles.roles.waiter.WaiterConstants;
+import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
 import org.agmas.noellesroles.shop.PlayerShopComponentAccessor;
 import org.jetbrains.annotations.NotNull;
 
@@ -161,8 +166,26 @@ public class NoellesRolesShops {
              */
             return AssassinPlayerComponent.tryRefreshBayonetCooldown(player);
         }
+        if (item == ModItems.RANDOM_DRINK) {
+            return player.giveItemStack(WaiterShopHandler.createRandomCocktailStack(player.getRandom()));
+        }
+        if (item == ModItems.RANDOM_FOOD) {
+            return player.giveItemStack(WaiterShopHandler.createRandomFoodStack(player.getRandom()));
+        }
+        if (item == ModItems.RANDOM_POTION) {
+            return player.giveItemStack(WaiterShopHandler.createRandomPotionStack(player.getRandom()));
+        }
 
-        return player.giveItemStack(stack.copy());
+        // 普通购买默认直接交付原物品；只有 waiter 的图标类商品会在上面几个分支里被替换成随机实物。
+        ItemStack deliveredStack = stack.copy();
+        if (item == Items.FISHING_ROD
+                && player instanceof ServerPlayerEntity serverPlayer
+                && deliveredStack.getOrDefault(DataComponentTypes.MAX_DAMAGE, 0) == WaiterConstants.FISHING_ROD_MAX_DAMAGE) {
+            // 服务员商店钓鱼竿要求“最大耐久 1 + 饵钓 5”，所以在购买结算时补写附魔。
+            WaiterShopHandler.applyWaiterFishingRodDetails(deliveredStack, serverPlayer);
+        }
+
+        return player.giveItemStack(deliveredStack);
     }
 
     /**

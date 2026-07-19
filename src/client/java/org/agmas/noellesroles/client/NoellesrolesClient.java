@@ -10,6 +10,7 @@ import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.util.GrenadeThrowModePayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -52,6 +53,7 @@ import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
+import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.lwjgl.glfw.GLFW;
 
 import org.agmas.noellesroles.client.items.NoellesRolesItemToolTip;
@@ -87,6 +89,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         ExecutionerMoodHud.register();
         JesterMoodHud.register();
         RemembererMoodHud.register();
+        // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
+        registerItemColors();
         registerItemTooltipsAndModels();
 
         // 分页缓存只在当前对局内生效。
@@ -232,6 +236,14 @@ public class NoellesrolesClient implements ClientModInitializer {
         EntityRendererRegistry.register(NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE, MagicianPlaybackEntityRenderer::new);
     }
 
+    private static void registerItemColors() {
+        // random_potion 的 layer0 用药水颜色，layer1 仍然复用原版药水瓶模型。
+        ColorProviderRegistry.ITEM.register(
+                (stack, tintIndex) -> tintIndex == 0 ? WaiterConstants.REGENERATION_POTION_COLOR : -1,
+                ModItems.RANDOM_POTION
+        );
+    }
+
     private void registerItemTooltipsAndModels() {
         ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> {
             // 为 NoellesRoles 的所有物品添加提示（描述 + 冷却）
@@ -257,6 +269,12 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE_BULLET, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET_COLDOWN_REFRESH, itemStack, list);
+            // 服务员新增物品也走同一套 tooltip 生成器，文案全部在 lang 里维护。
+            NoellesRolesItemToolTip.addItemtip(ModItems.SLEEPING_BAG, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BOOK, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_FOOD, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_DRINK, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_POTION, itemStack, list);
         }));
 
         // 为需要额外模型的物品注册（目前所有物品都注册冷却模型，方便未来扩展）
@@ -282,6 +300,12 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENT_GRENADE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE_BULLET);
+        // 这些服务员物品/图标需要额外模型来呈现和原版物品一致的视觉效果。
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SLEEPING_BAG);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOOK);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_FOOD);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_DRINK);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_POTION);
     }
 
     /**

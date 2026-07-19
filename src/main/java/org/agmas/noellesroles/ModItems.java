@@ -149,8 +149,33 @@ public class ModItems {
             new SniperRifleBulletItem(new Item.Settings()),
             "sniper_rifle_bullet"
     );
+    //睡袋
+    public static final Item SLEEPING_BAG = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "sleeping_bag"
+    );
+    //图书
+    public static final Item BOOK = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "book"
+    );
     
     ///添加noellesroles的商店图标
+    //服务员随机食物图标
+    public static final Item RANDOM_FOOD = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "random_food"
+    );
+    //服务员随机饮品图标
+    public static final Item RANDOM_DRINK = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "random_drink"
+    );
+    //服务员随机药水图标
+    public static final Item RANDOM_POTION = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "random_potion"
+    );
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(
             new PowerRestorationItem(new Item.Settings().maxCount(1)),

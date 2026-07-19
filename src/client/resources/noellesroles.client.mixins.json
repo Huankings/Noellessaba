@@ -97,6 +97,7 @@
     "roles.rememberer.SniperRifleMovementSpeedMixin",
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",
-    "roles.rememberer.SniperRifleRenderPoseMixin"
+    "roles.rememberer.SniperRifleRenderPoseMixin",
+    "roles.waiter.WaiterCrosshairMixin"
   ]
 }

@@ -1,92 +1,353 @@
-# You will need doctor4t's train mod placed inside the "libs" folder (alongside HarpyModLoader). Please install it yourself.
-New roles for [The Last Voyage of the Harpy Express](https://modrinth.com/modpack/harpy-express) created by [doctor4t](https://www.youtube.com/@doctor4t).
+# NoellesRoles 中文说明与开发文档
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h_c-dpjlONY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-Role List:
+这是一个基于 Minecraft 1.21.1 Fabric 的 Wathe 扩展职业模组。
+它不是独立玩法，而是依赖 Wathe + HarpyModLoader 的职业扩展层，给类狼人杀对局补充更多职业、词条、商店改写、回放文本和客户端表现。
 
-## Killers & Non-Innocents
+本文档分两部分：
+1. 给玩家和服主看的职业总览。
+2. 给其他开发者看的注册流程和源码接入方式。
 
-- Jester
-  - Wins with the killers, but cannot use any killer menus.
-  - Has a fake knife and a fake revolver
-  - **When shot, goes psycho mode**. Does not have a shield, so one more shot will kill the jester.
-  - Can accidentaly kill their killer teammates and end the game, make sure to co-operate!
-  - Has a shop with tools to frame people; gains money passively.
+## 依赖与启动
 
-- Executioner
-  - Gains a target at the start of the game
-  - If the target dies to a civillian or natural causes, the Executioner becomes a random Killer role.
-  - If the target dies to a killer, the executioner re-targets.
-  - Has a shop with tools to frame people; gains money passively.
+- Minecraft 1.21.1
+- Fabric Loader / Fabric API
+- Wathe
+- HarpyModLoader
+- Cardinal Components API
+- 语音桥接为可选项，当前源码里已经接了 `voicechat` 入口。
 
-- Morphling
-  - Can morph into any **alive** player on a cooldown.
+仓库里 `libs` 目录已经放了 Wathe 和 HarpyModLoader 的本地依赖；如果你本地的 Wathe 构建还要求额外训练/语音相关 jar，也要一起放进 `libs`。
 
-- Phantom
-  - Can gain temporary invisibility on a cooldown. Watch out- your items are still visible! (ps. may break with mods that add extra things to your character)
+## 源码地图
 
-- Swapper
-  - Can swap two people around the map on a cooldown.
+- 主入口：`src/main/java/org/agmas/noellesroles/Noellesroles.java`
+- 组件注册：`src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
+- 职业分配总引导：`src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
+- 死亡保护总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
+- 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
+- 物品：`src/main/java/org/agmas/noellesroles/item/`
+- 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
+- 客户端：`src/client/java/org/agmas/noellesroles/client/`
+- mixin：`src/main/java/org/agmas/noellesroles/mixin/` 和 `src/client/java/org/agmas/noellesroles/client/mixin/`
 
-- Vulture
-  - Eat bodies to turn into a killer!
-  - Only enables past 8 players.
-  - Neutral role.
+## 阵营规则
 
+当前源码里角色注册仍然沿用 Wathe 的 `Role` 结构，但阵营已经可以显式声明。
 
-## Civillians
+`Role` 的核心构造参数是：
+- `Identifier`
+- `color`
+- `isInnocent`
+- `canUseKiller`
+- `MoodType`
+- `maxSprintTime`
+- `canSeeTime`
 
-- Conductor
-  - Has a key to every door on the train.
-  - This key will drop after the host dies- make sure everyone knows you have it, or the killers can clear themselves with it!
+推荐新职业直接使用：
+- `WatheRoles.registerCivilianRole(...)`
+- `WatheRoles.registerKillerRole(...)`
+- `WatheRoles.registerNeutralRole(...)`
+- `WatheRoles.registerVigilanteRole(...)`
 
-- Bartender
-  - See people who drink through walls temporarily.
-  - Bartender can see poison and poisoned players
-  - Bartender can buy a "defense vial" for 100 dollars (50 dollars per task done)
-    - Defense vial can make drinks give whoever drinks them an extra hit (like psycho armor)
+不要再只靠 `isInnocent/canUseKiller` 去猜阵营。当前 HarpyModLoader 会优先按 `role.getFaction()` 分池和结算。
 
-- Noisemaker
-  - On death, your body will glow.
-  - Can buy firecrackers in the store.
+注意：
+- `Faction.NEUTRAL` 是真正的中立阵营。
+- `KILLER_SIDED_NEUTRALS` 只是“杀手侧中立”显示和本能识别集合，不等于阵营本身。
 
-- Recaller
-  - Save a location to teleport to later
-  - Use your ability key to teleport to your saved location for 100 dollars (50 dollars per task done)
+## 职业总览
 
-- Coroner
-  - See the time of death and death reason of bodies. (also enabled in spectator mode!)
+### 杀手阵营
 
-- Voodoo
-  - Choose one person to die alongside you.
+- 造尸怪（`corpsemaker`）
+- 潜行者（`stalker`）
+- 附体师（`controller`）
+- 炸弹客（`bomber`）
+- 强盗（`robber`）
+- 刺客（`assassin`）
+- 变形怪（`morphling`）
+- 魔术师（`magician`）
+- 交换者（`swapper`）
+- 幻灵（`phantom`）
+- 洗脑师（`brainwasher`）
+- 亡语杀手（`the_insane_damned_paranoid_killer`）
 
-## ???? (disabled by default, turn on a config option to get them back on!)
+### 杀手侧中立
 
-- Awesome Binglus
-  - Awesome Binglu
-  - Spawns with a lot of notes
-- The Insane Damned Paranoid Killer Of Doom Death Destruction And Waffles
-  - Killer Role
-  - Can hear ghosts
-- Better Vigilante
-  - Spawns with a grenade
+- 狂信者（`jester`）
+- 仇杀客（`executioner`）
+- 秃鹫（`vulture`）
 
-## Extras
-- Coroner's ability can be used by spectators when looking at a body
-- (Configurable) Players will start morphing skins and have a hidden name when having extremely low mood.
+### 平民阵营
 
-## Config Note
-Use /setEnabledRole and /listRoles (from HarpyModLoader) to enable or disable roles.
+- 典狱长（`conductor`，源码注释里也叫列车长）
+- 记者（`awesome_binglus`）
+- 工程师（`engineer`）
+- 酒保（`bartender`）
+- 风灵师（`winder`）
+- 灵术师（`spiritualist`）
+- 接线员（`operator`）
+- 大嗓门（`noisemaker`）
+- 巫毒师（`voodoo`）
+- 调查官（`trapper`）
+- 演尸官（`coroner`）
+- 回溯者（`recaller`）
+- 先知（`prophet`）
+- 圣母（`goddess`）
+- 天使（`angel`）
+- 胆小鬼（`coward`）
+- 追忆者（`rememberer`）
+- 服务员（`waiter`）
+- 模仿者（`mimic`）
 
+### 义警阵营
 
-"Why _Noelle's_ Roles?" because i had a noelle deltarune minecraft skin at the time of making this mod and i thought it was funny
+- 更好的义警（`better_vigilante`）
 
-**Special Thanks:**
+### 附加词条
 
-- eyelego for the "Master Key" item art
-- DragonSlayr15001 for the Mood icons
-- Alazi for Russian Translation
-- ZeroIcceBear, Qlicky, YourZi for Chinese Translation
-- LucCraftGHG for the German Translation
-- Hugo0272 for the Spanish Translation
-- All the testers in this mod's discord, for giving out so many cool ideas!
+- 小孩子（`tiny`）
+- 变色龙（`chameleon`）
+- 猜测者（`guesser`）
+- 盗墓者（`graverobber`）
+- 羽化者（`feather`）
+
+## 职业机制与源码实现
+
+### 杀手阵营
+
+- 造尸怪：能伪造尸体、假身份和假死因；源码入口是 `CorpsemakerC2SPacket`、`CorpsemakerAbility` 和 `CorpsemakerRoleAssignedHandler`，尸体信息通过 `BodyDeathReasonComponent` 和 `Noellesroles.CORPSEMAKER_FORGED_BODY_EVENT` 记录。
+- 潜行者：三阶段成长，靠凝视攒能量，二阶段拿刀，三阶段进入处刑突进；核心状态都在 `StalkerPlayerComponent`，技能包在 `StalkerGazeC2SPacket` / `StalkerDashC2SPacket`，免死在 `StalkerDeathProtectionHandler`，商店动态切换在 `StalkerShopHandler`。
+- 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerLogicMixin` 和客户端 mixin 负责输入与显示。
+- 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathMixin` 在真实死亡里补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
+- 强盗：`RobberGunShootMixin` 完整接管强盗手枪开火，命中后按目标阵营决定保留、掉左轮或消失；`RobberShopHandler` 改写默认杀手商店，`RobberRoleAssignedHandler` 开局发强盗手枪和撬棍。
+- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinHideBodyOnKillMixin` 实现无声刺杀、击退和隐藏尸体；`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
+- 变形怪：`MorphlingMorphAbility` 和 `MorphlingPlayerComponent` 负责变形成任意存活玩家、变形时长和冷却，选人包复用统一的 `MorphC2SPacket`。
+- 魔术师：先录一段玩家操作，再用播放实体重放；`MagicianPlayerComponent` 存录像，`MagicianPlaybackManager`、`MagicianPlaybackEntity`、`MagicianServerHooks` 执行回放，相关 mixin 会把刀、枪、手雷和交互都记进时间线。
+- 交换者：`SwapperC2SPacket` 加 `SwapperAbility` 先选两人，再按随机延迟交换位置，执行结果也会写回放。
+- 幻灵：`PhantomAbility` 提供短时隐身，`PhantomPlayerComponent` 管倒计时，`PhantomConstants` 控制 35 秒隐身和 90 秒冷却。
+- 洗脑师：`BrainwasherAbility` 能把目标平民洗成随机杀手角色，成功后清商店并广播；`BrainwasherRoleAssignedHandler` 只负责开局冷却初始化。
+- 亡语杀手：默认被 `shitpostRoles` 关闭时自动禁用；源码上主要接语音聊天和疯狂观察视觉表现，核心入口是 `NoellesrolesVoiceChatPlugin`、`InsaneObserverAppearanceHandler` 和 `NoellesRolesConfig.insanePlayersSeeMorphs`。
+
+### 杀手侧中立
+
+- 狂信者：开局拿假匕首、假左轮和撬棍，`JesterRoleAssignedHandler` 只做发物品；`JesterDeathProtectionHandler` 保留 psycho 无敌窗口，`FakeRevolverMixin`、`JesterJestMixin` 和 `JesterItemEntityMixin` 负责假武器和狂化表现。
+- 仇杀客：`ExecutionerPlayerComponent` 负责目标，server tick 会在目标失效后重选；`ExecutionerConfirmMixin` 处理目标达成后的转职，`ExecutionerBackfireDeathHandler` 和 `NoTargetBackfireMixin` 处理误杀反噬和射击锁定。
+- 秃鹫：`VultureRoleAssignedHandler` 会按当前人数算需要吞多少尸体，`VultureAbility` 吞尸后累计进度，达标后随机转成一个未禁用的杀手角色并发 200 金币，尸体状态记录在 `VulturePlayerComponent`。
+
+### 平民阵营
+
+- 典狱长：`ConductorRoleAssignedHandler` 开局发万能钥匙、开锁器和假左轮，`MasterKeyTrainDoorMixin`、`MasterKeySmallDoorMixin` 让钥匙能开火车上各种门，`ShouldDropOnDeath` 保证死亡掉落。
+- 记者：`AwesomeBinglusRoleAssignedHandler` 直接发 12 张纸条和撬棍，这是一个默认关闭的搞笑职业。
+- 工程师：`ToolboxItem` 负责修门，`CaptureDeviceItem` 负责定点拘束并生成报告，`PowerRestorationItem` 负责消除停电；`EngineerShopHandler` 把这三件东西接进商店。
+- 酒保：`BartenderPlayerComponent` 追踪防御瓶充能和护甲，`BartenderDeathProtectionHandler` 把护甲当一次免死，`DefenseVialApplyMixin`、`PoisonToHealsMixin` 和 `CocktailItemMixin` 改酒和毒的处理。
+- 风灵师：`WinderPlayerComponent` 记录已选目标和漂浮状态，`WinderAbility` 开关漂浮，`WinderTargetAbility` 负责选人，`WindMarkPlayerComponent` 负责风印记，`WinderShopHandler` 卖风弹和风印。
+- 灵术师：`SpiritualistAbility` 一枚 G 键分出“出窍 / 附身 / 结束”几种行为，`SpiritualistPlayerComponent` 是主状态中心，`SpiritualistHostComponent` 保存被附身者状态，`SpiritualistManager` 负责控制输入、视角、回写背包、语音转发和结束冷却，`SpiritualistDeathProtectionHandler` 负责免死。
+- 接线员：`OperatorAbility`、`OperatorPlayerComponent` 和 `OperatorCommunicationManager` 负责把两个人接通或把某个人广播出去，持续时间、成功冷却和失败冷却都在 `OperatorConstants`。
+- 大嗓门：`NoisemakerGlowC2SPacket` 点亮目标，`NoisemakerPlayerComponent` 管主动技能冷却，`NoisemakerGlowTargetComponent` 负责追踪发光结束并补回放事件，`NoisemakerKillMixin` 让自己死亡后的尸体也会发光。
+- 巫毒师：`VoodooTargetAbility` 负责选人，`VoodooVooMixin` 在死亡流程里把目标一起杀掉；默认配置下只有“有击杀者的死亡”会触发，是否允许自然死亡触发由 `voodooNonKillerDeaths` 控制。
+- 调查官：`RoleMineItem` 放角色检测器，`TrapperShopHandler` 只卖这个核心道具，HUD 和报告展示走角色专属客户端 mixin。
+- 演尸官：`CoronerPlayerComponent` 保存伪装、尸体检查记录和金币，`CoronerMorphAbility` 负责变形目标，`CoronerExamineRewardMixin` 在靠近尸体时自动结算奖励，`CoronerHudMixin` / `CoronerBodyExamineHudMixin` 显示死因和身份。
+- 回溯者：`RecallerAbility` 先存点位，再花钱传送，`RecallerPlayerComponent` 和 `RecallerShopHandler` 负责位置、冷却和商店，末影珍珠投掷也会被记录进回放。
+- 先知：`CrystalBallItem` 负责 0.1 秒标记目标，`ProphetAbility` 花 125 金揭露角色，`ProphetDeathProtectionHandler` 给被揭露者一层巫毒免疫，`ProphetShopHandler` 只卖水晶球。
+- 圣母：`GoddessAbility` 把目标洗成随机平民角色，清空商店并发左轮，`GoddessRoleAssignedHandler` 只做分配时的冷却初始化。
+- 天使：`AngelAbility` 在“安抚”和“守护”间切换，`AngelPlayerComponent` 保存守护目标和安抚粒子状态，`AngelDeathProtectionHandler` 会让守护目标死时天使代死，`AngelConstants` 控制 30 秒守护、90 秒安抚和 2 格贴身判定。
+- 胆小鬼：`CowardPlayerComponent` 按周围危险调心情和感官反馈，`SedativePlayerComponent` 管镇静状态和过量死亡，`CowardShopHandler` 卖镇静试剂，`CowardRevolverCooldownMixin`、`CowardFovMixin`、`CowardCameraMixin` 和 `SedativeTrayViewMixin` 调整左轮抖动、视野和托盘行为。
+- 追忆者：`RemembererInteractionHandler` 负责摸取回忆书，`RemembererPlayerComponent` 管回忆和狙击冷却，`RemembererSniperManager`、`SniperRifleItem`、`SniperRifleBulletItem` 实现狙击枪，`RemembererReplayBookBuilder` 负责把三分钟内的事件写成书。
+- 服务员：`WaiterInteractionHandler` 判断玩家当前缺什么并递送，`WaiterShopHandler` 提供随机饮品、食物、药水、吧凳、钓鱼竿、唱片、篝火、烟熏炉、睡袋和书，`WaiterConstants` 里集中定义互动距离、价格和奖励。
+- 模仿者：`MimicRoleAssignedHandler` 只发假匕首，但杀手侧会把它当同伙看；`MimicBackfireDeathHandler` 在无辜者被推下列车时反噬自己，`KillerNeutralInstinctHandler` 和 `MimicInstinctHandler` 负责杀手视角提示。
+
+### 义警阵营
+
+- 更好的义警：`BetterVigilanteRoleAssignedHandler` 只发一颗手雷，能否进入池由 `Harpymodloader.setRoleMaximum(BETTER_VIGILANTE, vigilanteSlots >= 4 ? 1 : 0)` 动态控制，默认还会被 `shitpostRoles` 关闭。
+
+### 附加词条
+
+- 小孩子：只允许给变形怪，靠 `EntityAttributes.GENERIC_SCALE` 缩小模型。
+- 变色龙：走 `ChameleonPlayerComponent` 和客户端 mixin，重点是外观伪装。
+- 猜测者：`GuessC2SPacket` + `GuesserAbility`，可以猜平民职业，猜错以后按配置走 `none / death / explode`，是否允许平民拿到它由 `allowCivillianGuessers` 决定。
+- 盗墓者：当前主要是给尸体相关 HUD 和验尸视图开权限，`CoronerHudMixin` 里会把它当成可看尸体信息的 modifier。
+- 羽化者：只要任意一方带这个词条，就不会和另一名玩家发生实体碰撞，`DoNotCollideWithFeatherMixin` 负责这条规则。
+
+## 通用系统
+
+- `Noellesroles.java` 是总注册表，负责角色、词条、packet id、回放事件 id、动态最大人数和初始化顺序。
+- `NoellesRolesComponents.java` 负责把所有 CCA component 和 world component 一次性注册进去。
+- `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
+- `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath`，保持“先保命，再强制放行，再反噬”的顺序。
+- `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
+- `NoellesRolesShops.java` 负责支付、物品交付、特殊道具瞬发结算和购买回填。
+- `NoellesRolesTrayEffects.java` 和 `NoellesRolesBedEffects.java` 负责把炸弹、毒药、镇静等逻辑接进托盘和床。
+- `NoellesRolesReplayFormatters.java` 负责把 noellesroles 的专属事件翻译成回放文本。
+- `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
+- `Noellesroles.onInitialize()` 会动态控制一些角色池：`Conductor`、`Executioner`、`Vulture` 和 `Jester` 默认限 1，`Better Vigilante` 默认限 0，`Mimic` 和 `Vulture` 会按人数在 server tick 里动态开关；`shitpostRoles=false` 时还会自动禁用记者、更好的义警和亡语杀手。
+- `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
+
+## 新职业注册流程
+
+下面是给其他开发者看的标准接入方式。
+
+### 1. 先注册角色
+
+建议在 `src/main/java/org/agmas/noellesroles/Noellesroles.java` 里新增 `Identifier` 和 `Role` 字段，或者仿照现有结构单独做一个 `MyModRoles.java` 再在主入口调用。
+
+推荐写法：
+
+```java
+public static final Identifier MY_ROLE_ID = Identifier.of(MOD_ID, "my_role");
+
+public static final Role MY_ROLE = WatheRoles.registerCivilianRole(
+    new Role(
+        MY_ROLE_ID,
+        0x66CCFF,
+        true,
+        false,
+        Role.MoodType.REAL,
+        WatheRoles.CIVILIAN.getMaxSprintTime(),
+        false
+    )
+);
+```
+
+如果是杀手、中立或义警，就换成对应的 `registerKillerRole`、`registerNeutralRole` 或 `registerVigilanteRole`。
+
+### 2. 补语言文件
+
+至少补这些键：
+
+- `announcement.role.noellesroles.my_role`
+- `announcement.goals.noellesroles.my_role`
+
+如果有 HUD、提示、消息、商店说明，也一起补：
+
+- `hud.noellesroles.my_role.*`
+- `message.noellesroles.my_role.*`
+- `tip.noellesroles.my_role.*`
+
+`Harpymodloader.refreshRoles()` 会在找不到手写翻译时生成兜底文本，但正式发布最好还是自己写中文。
+
+### 3. 注册开局分配逻辑
+
+如果这个职业需要开局物品、初始冷却、初始状态，就新建：
+
+- `src/main/java/org/agmas/noellesroles/roles/my_role/MyRoleAssignedHandler.java`
+
+然后在 `NoellesRolesRoleAssignedBootstrap` 里按旧顺序加入一行：
+
+```java
+MyRoleAssignedHandler.onRoleAssigned(player, role);
+```
+
+如果你要在游戏中动态转职，也要记得：
+
+```java
+gameWorld.addRole(player, newRole);
+ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
+```
+
+### 4. 需要持久状态时再上组件
+
+如果职业要存冷却、目标、计数、伪装状态、标记等，就建 CCA 组件：
+
+- `src/main/java/org/agmas/noellesroles/roles/my_role/MyRolePlayerComponent.java`
+
+注册时照着 `NoellesRolesComponents` 里的写法加进去，并把 component id 同步写进 `fabric.mod.json` 的 `custom.cardinal-components`。
+
+建议默认用：
+
+- `RespawnCopyStrategy.NEVER_COPY`
+- `AutoSyncedComponent`
+- `ServerTickingComponent`，必要时再加 `ClientTickingComponent`
+
+### 5. 需要按键或目标选择时，加 packet
+
+如果是普通能力键，可以复用当前的 `ABILITY_PACKET` 分支；如果要独立目标选择，建议单独建 packet。
+
+标准路径：
+
+- `src/main/java/org/agmas/noellesroles/packet/role/my_role/`
+
+注册时要做两步：
+
+1. `PayloadTypeRegistry.playC2S().register(...)`
+2. `ServerPlayNetworking.registerGlobalReceiver(...)`
+
+如果有客户端选择界面，就在 `src/client/java/org/agmas/noellesroles/client/...` 里接一个按钮、屏幕或 HUD。
+
+### 6. 需要物品、实体或模型时
+
+- 物品放 `src/main/java/org/agmas/noellesroles/item/`
+- 实体放 `src/main/java/org/agmas/noellesroles/entities/`
+- 物品贴图放 `src/main/resources/assets/noellesroles/textures/item/`
+- 物品模型放 `src/main/resources/assets/noellesroles/models/item/`
+- 文本放 `src/main/resources/assets/noellesroles/lang/`
+
+如果你要让物品有默认冷却，记得在 `ModItems.init()` 里补 `GameConstants.ITEM_COOLDOWNS.put(...)`。
+
+### 7. 需要商店时
+
+两种做法：
+
+- 固定商店：写 `MyRoleShopHandler.getShopEntries()`，然后在 `NoellesRolesShopBootstrap` 里 `registerStatic(...)`
+- 默认杀手商店改写：写 `ShopApi.registerShopModifier(...)`
+
+如果商品是瞬发效果、不是单纯放进背包，还要在 `NoellesRolesShops.deliverPurchasedStack()` 里补交付分支。
+
+### 8. 需要死亡保护、反噬或特殊清理时
+
+把逻辑拆成独立处理器，再接进 `NoellesRolesDeathBootstrap`，不要直接把所有判断堆在主类里。
+
+常见结构：
+
+- `YourRoleDeathProtectionHandler`
+- `YourRoleBackfireDeathHandler`
+- `YourRoleDeathCleanupMixin`
+
+如果这个职业会在回合结束残留实体，也要在 `GameEvents.ON_FINISH_FINALIZE` 里清掉。
+
+### 9. 需要客户端表现时
+
+客户端相关内容统一放在：
+
+- `src/client/java/org/agmas/noellesroles/client/...`
+
+常见内容包括：
+
+- HUD
+- 角色头像
+- 光标高亮
+- 视角/相机
+- 皮肤和外观伪装
+
+如果是 mixin，记得加到：
+
+- `src/main/resources/noellesroles.mixins.json`
+- `src/client/resources/noellesroles.client.mixins.json`
+
+### 10. 需要回放和文本时
+
+如果你的职业会改变死亡、物品使用、身份揭露、转职、传送等关键事件，最好同步做两件事：
+
+1. `GameRecordManager.recordGlobalEvent(...)`
+2. 在 `NoellesRolesReplayFormatters` 里加对应的格式化器
+
+这样回放文本不会只剩一个“发生了某事”，而是能讲清楚是谁、做了什么、结果是什么。
+
+## 开发建议
+
+- 新职业先定阵营，再定是否需要组件、packet、商店和 client。
+- 先写最小闭环，再补 HUD 和回放。
+- 动态转职时一定要同步 `ModdedRoleAssigned`。
+- 尽量把常量收进 `Constants` 类里，别散落 magic number。
+- 如果你想让职业能被 `forceRole`、`listRoles` 和开局池稳定识别，务必走 `WatheRoles.register...` 和 `Harpymodloader.setRoleMaximum(...)`。
+- 服主日常开关角色可以直接用 HarpyModLoader 的 `/listRoles` 和 `/setEnabledRole <modid:path> true|false`，配置会写进 `HarpyModLoaderConfig` 的 `disabled` 列表。
+
+## 参考扩展
+
+这套仓库的结构和下面几个扩展思路很像：
+
+- `StupidExpress2.1`：集中式角色注册、动态最大值、商店改写、`ModdedRoleAssigned`。
+- `kinssaba`：大体量职业组件化、转职链、商店和 CCA 的分层方式。
+- `StarryExpress1.3.2`：更精简的中央注册 + 商店改写模板。
+
+如果你打算继续加职业，建议先顺着这几个模组的写法看一遍，再决定是新建一个大包，还是直接复用现有 `roles/<role>/` 结构。

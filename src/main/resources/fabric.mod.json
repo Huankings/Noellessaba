@@ -58,13 +58,14 @@
       "noellesroles:stalker",
       "noellesroles:bomber",
       "noellesroles:robber",
-        "noellesroles:operator",
-        "noellesroles:coward",
-        "noellesroles:rememberer",
-        "noellesroles:sedative",
-        "noellesroles:spiritualist_player",
+      "noellesroles:operator",
+      "noellesroles:coward",
+      "noellesroles:rememberer",
+      "noellesroles:sedative",
+      "noellesroles:spiritualist_player",
       "noellesroles:spiritualist_host",
-      "noellesroles:hidden_bodies"
+      "noellesroles:hidden_bodies",
+      "noellesroles:waiter"
     ]
   },
   "mixins": [
