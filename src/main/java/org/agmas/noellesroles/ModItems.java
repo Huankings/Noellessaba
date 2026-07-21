@@ -15,6 +15,7 @@ import org.agmas.noellesroles.item.*;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.cook.CookConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
+import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 
 public class ModItems {
@@ -43,6 +44,8 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(MEDICAL_KIT, PhysicianConstants.MEDICAL_KIT_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PAN, CookConstants.PAN_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PILL, PhysicianConstants.PILL_COOLDOWN_TICKS);
+        // 静语者胶带冷却来自原 StarryExpress Muzzler 配置，现固定为 NoellesRoles 常量。
+        GameConstants.ITEM_COOLDOWNS.put(TAPE, MuzzlerConstants.TAPE_COOLDOWN_TICKS);
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -74,6 +77,7 @@ public class ModItems {
             entries.add(MEDICAL_KIT);
             entries.add(PAN);
             entries.add(PILL);
+            entries.add(TAPE);
             entries.add(PHONE);
             entries.add(DEFENSE_VIAL);
             entries.add(SEDATIVE);
@@ -184,6 +188,11 @@ public class ModItems {
     public static final Item PILL = register(
             new PillItem(new Item.Settings().maxCount(1)),
             "pill"
+    );
+    //静语者胶带
+    public static final Item TAPE = register(
+            new TapeItem(new Item.Settings().maxCount(1)),
+            "tape"
     );
     //黑客手机
     public static final Item PHONE = register(

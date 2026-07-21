@@ -19,5 +19,13 @@
     "sounds": [
       "noellesroles:item/bomb_explode"
     ]
+  },
+  "item.tape.apply": {
+    "subtitle": "subtitles.noellesroles.item.tape_apply",
+    "sounds": [
+      "noellesroles:item/tape_apply_1",
+      "noellesroles:item/tape_apply_2",
+      "noellesroles:item/tape_apply_3"
+    ]
   }
 }

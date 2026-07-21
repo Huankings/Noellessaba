@@ -21,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
+import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManager;
@@ -83,6 +84,16 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         // 新增：被控制者不能说话
         ControlledPlayerComponent controlledComp = ControlledPlayerComponent.KEY.get(spectator);
         if (controlledComp.isControlled) {
+            event.cancel();
+            return;
+        }
+
+        /*
+         * 静语者胶带会封住受害者的嘴。
+         * 这里只拦截仍在对局中存活的玩家：死亡旁观后的语音可继续交给 Wathe/VoiceChat 自己的规则处理。
+         */
+        if (SilencePlayerComponent.KEY.get(spectator).isSilenced()
+                && GameFunctions.isPlayerAliveAndSurvival(spectator)) {
             event.cancel();
             return;
         }

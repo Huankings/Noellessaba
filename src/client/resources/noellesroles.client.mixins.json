@@ -74,7 +74,10 @@
     "roles.engineer.StunnedMouseMixin",
     "roles.bomber.TimedBombBedViewMixin",
     "roles.bomber.TimedBombTrayViewMixin",
-    "roles.stalker.StalkerHudMixin"
+    "roles.stalker.StalkerHudMixin",
+    "roles.starstruck.StarstruckHudMixin",
+    "roles.muzzler.MuzzlerPsychoDroneMixin",
+    "roles.muzzler.MuzzlerPsychoDroneLoopMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -96,6 +99,7 @@
     "roles.rememberer.SniperRifleScopeFovMixin",
     "roles.rememberer.SniperRifleScopeOverlayMixin",
     "roles.rememberer.SniperRifleMovementSpeedMixin",
+    "roles.starstruck.StarstruckMovementSpeedMixin",
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",
     "roles.rememberer.SniperRifleRenderPoseMixin",

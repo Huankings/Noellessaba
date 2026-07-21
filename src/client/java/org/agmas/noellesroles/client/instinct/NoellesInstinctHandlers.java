@@ -13,6 +13,7 @@ import org.agmas.noellesroles.client.instinct.roles.hacker.HackerInstinctHandler
 import org.agmas.noellesroles.client.instinct.roles.jester.JesterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.starstruck.StarstruckInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.waiter.WaiterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.winder.WinderInstinctHandler;
 
@@ -36,6 +37,7 @@ public final class NoellesInstinctHandlers {
         PhysicianInstinctHandler.register();
         DreamerInstinctHandler.register();
         HackerInstinctHandler.register();
+        StarstruckInstinctHandler.register();
         KillerNeutralInstinctHandler.register();
     }
 

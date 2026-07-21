@@ -46,6 +46,13 @@
 
     "announcement.goals.noellesroles.bartender": "See players that drink through walls!",
     "announcement.role.noellesroles.bartender": "Bartender",
+    "announcement.role.noellesroles.starstruck": "Starstruck",
+    "announcement.goals.noellesroles.starstruck": "Show your true power at the critical moment.",
+    "tip.noellesroles.starstruck": "Press %s to use astral power",
+    "announcement.role.noellesroles.muzzler": "Muzzler",
+    "announcement.goals.noellesroles.muzzler": "Stop passengers from telling on you...",
+    "tip.noellesroles.muzzler.silenced": "Mouth taped shut",
+    "subtitles.noellesroles.item.tape_apply": "Someone is applying tape",
     "announcement.goals.noellesroles.magician": "Stage a perfect deception.",
     "announcement.role.noellesroles.magician": "Magician",
 
@@ -160,6 +167,8 @@
     "death_reason.noellesroles.modded_backfire": "guilt.",
     "death_reason.noellesroles.bomb": "a timed bomb explosion.",
     "death_reason.noellesroles.sniper_rifle": "a sniper rifle shot.",
+    "death_reason.noellesroles.silenced_and_outside": "suffocation.",
+    "death_reason.noellesroles.tape_removed_low_mood": "despair while removing tape.",
     "death_reason.noellesroles.guess_explode": "a failed-guess self-destruction.",
     "death_reason.noellesroles.guess_explode_nearby": "caught in a failed-guess explosion.",
     "replay.death.noellesroles.bomb.killed": "%s was finally blown up by %s's timed bomb",
@@ -385,6 +394,8 @@
       "item.noellesroles.pan.tooltip": "Right-click, hold for a second, and stun a nearby target for 5 seconds\nIf shot while holding, the pan breaks and blocks that shot\n45 seconds cooldown",
       "item.noellesroles.pill": "Pill",
       "item.noellesroles.pill.tooltip": "Right-click to eat\nProtects the player from one blockable lethal hit\nSingle use, 3 minutes cooldown",
+      "item.noellesroles.tape": "Tape",
+      "item.noellesroles.tape.tooltip": "Use it to tape another player's mouth shut\nSilenced players suffocate if they stay outside too long\nOther players cannot see the tape in your hand",
       "replay.item_use.noellesroles.medical_kit": "%s used a medical kit to clear %s's abnormal status",
       "replay.item_use.noellesroles.pill": "%s drank a pill",
       "replay.item_hit.noellesroles.pan": "%s stunned %s with a pan",
@@ -396,5 +407,11 @@
       "replay.death.noellesroles.sedative_overdose.died": "%s died from a sedative overdose",
       "replay.stage.noellesroles.stalker.phase1": "Phase One",
       "replay.stage.noellesroles.stalker.phase2": "Phase Two",
-      "replay.stage.noellesroles.stalker.phase3": "Phase Three"
+      "replay.stage.noellesroles.stalker.phase3": "Phase Three",
+      "replay.skill_use.noellesroles.starstruck": "%s activated astral power",
+      "replay.global.noellesroles.starstruck_end": "%s's astral power ended",
+      "replay.item_use.noellesroles.tape": "%s taped %s's mouth shut",
+      "replay.global.noellesroles.tape_removed": "%s tore off %s's tape from %s",
+      "replay.death.noellesroles.silenced_and_outside.died": "%s suffocated outside because of %s's tape",
+      "replay.death.noellesroles.tape_removed_low_mood.died": "%s died in pain while %s was tearing off %s's tape"
   }

@@ -72,7 +72,9 @@
       "noellesroles:hidden_bodies",
       "noellesroles:waiter",
       "noellesroles:cook",
-      "noellesroles:physician"
+      "noellesroles:physician",
+      "noellesroles:starstruck",
+      "noellesroles:silence"
     ]
   },
   "mixins": [

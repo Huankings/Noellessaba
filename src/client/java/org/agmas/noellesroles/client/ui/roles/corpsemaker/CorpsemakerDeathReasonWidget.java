@@ -42,9 +42,8 @@ public class CorpsemakerDeathReasonWidget extends ButtonWidget {
         if (item == Items.OMINOUS_BOTTLE) return "noellesroles:voodoo";
         if (item == ModItems.THROWING_AXE) return "noellesroles:throwing_axe";
         if (item == ModItems.TIMED_BOMB) return "noellesroles:bomb";
-        if (FabricLoader.getInstance().isModLoaded("starexpress")) {
-            if (item == Registries.ITEM.get(Identifier.of("starexpress", "tape"))) return "starexpress:silenced_and_outside";
-        }
+        // 静语者已从 StarryExpress 搬到 NoellesRoles，新的胶带死因也随 Noelles 命名空间显示。
+        if (item == ModItems.TAPE) return "noellesroles:silenced_and_outside";
         if (FabricLoader.getInstance().isModLoaded("stupid_express")) {
             if (item == Registries.ITEM.get(Identifier.of("stupid_express", "lighter"))) return "stupid_express:ignited";
         }

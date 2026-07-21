@@ -263,6 +263,39 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatStarstruckAbility(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.skill_use.noellesroles.starstruck", actor);
+    }
+
+    @Nullable
+    public static Text formatStarstruckAbilityEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.starstruck_end", actor);
+    }
+
+    @Nullable
+    public static Text formatTapeUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.item_use.noellesroles.tape", actor, target);
+    }
+
+    @Nullable
+    public static Text formatTapeRemoved(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text remover = actorText(event, match);
+        Text victim = targetText(event, match);
+        Text silencer = playerFromKey(event, match, "silencer");
+        if (remover == null || victim == null || silencer == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.tape_removed", remover, victim, silencer);
+    }
+
+    @Nullable
     public static Text formatDreamerCounts(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         if (actor == null) {
@@ -1366,6 +1399,27 @@ public final class NoellesRolesReplayFormatters {
                 shooter,
                 ReplayGenerator.resolveItemName(event.data(), world)
         );
+    }
+
+    @Nullable
+    public static Text formatSilencedOutsideDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text silencer = playerFromKey(event, match, "silencer");
+        if (victim == null || silencer == null) {
+            return null;
+        }
+        return Text.translatable("replay.death.noellesroles.silenced_and_outside.died", victim, silencer);
+    }
+
+    @Nullable
+    public static Text formatTapeRemovedLowMoodDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text remover = playerFromKey(event, match, "remover");
+        Text silencer = playerFromKey(event, match, "silencer");
+        if (victim == null || remover == null || silencer == null) {
+            return null;
+        }
+        return Text.translatable("replay.death.noellesroles.tape_removed_low_mood.died", victim, remover, silencer);
     }
 
     @Nullable

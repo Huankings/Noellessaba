@@ -41,6 +41,14 @@
   "announcement.role.noellesroles.cook": "厨师",
   "announcement.goals.noellesroles.cook": "透过墙壁看见吃过东西的玩家！",
 
+  "announcement.role.noellesroles.starstruck": "星界使者",
+  "announcement.goals.noellesroles.starstruck": "在关键时刻发挥你的真正实力",
+  "tip.noellesroles.starstruck": "按下 %s 键使用星界能力",
+
+  "announcement.role.noellesroles.muzzler": "静语者",
+  "announcement.goals.noellesroles.muzzler": "阻止乘客告密...",
+  "tip.noellesroles.muzzler.silenced": "被堵住了嘴",
+  "subtitles.noellesroles.item.tape_apply": "有谁正在使用胶带",
 
   "announcement.goals.noellesroles.conductor": "你能打开魔女岛上所有的门",
   "announcement.role.noellesroles.conductor": "典狱长",
@@ -308,6 +316,8 @@
   "item.noellesroles.medical_kit.tooltip": "用于玩家，可移除真毒和幻觉试剂效果\n冷却 1 分钟",
   "item.noellesroles.pill": "药丸",
   "item.noellesroles.pill.tooltip": "右键食用\n让玩家额外承受一次可被护盾抵挡的伤害\n一次性物品，冷却 3 分钟",
+  "item.noellesroles.tape": "胶带",
+  "item.noellesroles.tape.tooltip": "用来封住其它玩家的嘴\n被封住嘴的玩家在外面待太久会窒息\n其他人无法看到手中的胶带",
   "item.noellesroles.defense_vial": "去毒试剂",
   "item.noellesroles.defense_vial.tooltip": "右键点击食物/饮品托盘以使用\n清除托盘上已施加的毒药\n让食用的玩家可以额外承受一次伤害。",
   "item.noellesroles.wind_mark": "风之印记",
@@ -390,6 +400,8 @@
   "death_reason.noellesroles.sedative_overdose": "镇静剂摄入过量",
   "death_reason.noellesroles.spiritualist_soul_guard": "灵魂庇护",
   "death_reason.noellesroles.sniper_rifle": "被狙击枪狙杀",
+  "death_reason.noellesroles.silenced_and_outside": "窒息而死",
+  "death_reason.noellesroles.tape_removed_low_mood": "由于心情过于低落而死",
   "replay.death.noellesroles.bomb.killed": "%s 最终被 %s 的定时炸弹炸死",
   "replay.death.noellesroles.throwing_axe.killed": "%s 被 %s 的飞斧贯穿",
   "replay.death.noellesroles.voodoo.died": "%s 被巫毒魔法杀害",
@@ -539,7 +551,13 @@
   "replay.shield_blocked.noellesroles.pill.item": "%s 的药丸抵挡住了来自 %s 的伤害",
   "replay.shield_blocked.noellesroles.pill.by_item": "%s 的药丸抵挡住了来自 %s 的 %s 伤害",
   "replay.shield_blocked.noellesroles.pan.item": "%s 的平底锅抵挡了来自 %s 的伤害",
-  "replay.shield_blocked.noellesroles.pan.by_item": "%s 的平底锅抵挡了来自 %s 的 %s 伤害"
+  "replay.shield_blocked.noellesroles.pan.by_item": "%s 的平底锅抵挡了来自 %s 的 %s 伤害",
+  "replay.skill_use.noellesroles.starstruck": "%s 发动了星界能力",
+  "replay.global.noellesroles.starstruck_end": "%s 的星界能力时间结束",
+  "replay.item_use.noellesroles.tape": "%s 给 %s 贴上了胶带",
+  "replay.global.noellesroles.tape_removed": "%s 撕下了贴在 %s 上的 %s 的胶带",
+  "replay.death.noellesroles.silenced_and_outside.died": "%s 因 %s 的胶带在室外窒息而死",
+  "replay.death.noellesroles.tape_removed_low_mood.died": "%s 因 %s 在撕掉 %s 的胶带的过程中痛苦而亡"
 }
 
 

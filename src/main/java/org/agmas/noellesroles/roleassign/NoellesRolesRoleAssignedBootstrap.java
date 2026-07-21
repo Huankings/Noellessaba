@@ -25,7 +25,9 @@ import org.agmas.noellesroles.roles.physician.PhysicianRoleAssignedHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetRoleAssignedHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererRoleAssignedHandler;
 import org.agmas.noellesroles.roles.robber.RobberRoleAssignedHandler;
+import org.agmas.noellesroles.roles.muzzler.MuzzlerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerRoleAssignedHandler;
+import org.agmas.noellesroles.roles.starstruck.StarstruckRoleAssignedHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistRoleAssignedHandler;
 import org.agmas.noellesroles.roles.vulture.VultureRoleAssignedHandler;
 import org.agmas.noellesroles.roles.winder.WinderRoleAssignedHandler;
@@ -93,6 +95,8 @@ public final class NoellesRolesRoleAssignedBootstrap {
             JesterRoleAssignedHandler.onRoleAssigned(player, role);
             ConductorRoleAssignedHandler.onRoleAssigned(player, role);
             AwesomeBinglusRoleAssignedHandler.onRoleAssigned(player, role);
+            StarstruckRoleAssignedHandler.onRoleAssigned(player, role);
+            MuzzlerRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

@@ -48,6 +48,18 @@ public class AbilityPlayerComponent implements AutoSyncedComponent, ServerTickin
         this.sync();
     }
 
+    /**
+     * 按增量调整能力冷却，并把结果压到 0 以上。
+     *
+     * <p>星界使者完成任务会减少当前剩余冷却。这里放在通用能力组件里，
+     * 是因为 NoellesRoles 已经让多个职业共用同一个能力冷却栏；
+     * 由组件自己负责同步和下限钳制，可以避免每个职业各自手写一遍时出现负冷却。</p>
+     */
+    public void changeCooldown(int ticks) {
+        this.cooldown = Math.max(0, this.cooldown + ticks);
+        this.sync();
+    }
+
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("cooldown", this.cooldown);
     }

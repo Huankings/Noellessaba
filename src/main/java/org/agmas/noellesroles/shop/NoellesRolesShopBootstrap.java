@@ -17,6 +17,7 @@ import org.agmas.noellesroles.roles.coroner.CoronerShopHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerShopHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.hacker.HackerShopHandler;
+import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianShopHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetShopHandler;
 import org.agmas.noellesroles.roles.recaller.RecallerShopHandler;
@@ -79,6 +80,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(Noellesroles.MOD_ID, "robber_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 RobberShopHandler::modifyShop
+        );
+        /*
+         * 静语者只替换默认杀手商店的左轮格子为胶带。
+         * 这里也走 ShopModifier，保证其它默认杀手商品和 Wathe 的购买副作用全部保留。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(Noellesroles.MOD_ID, "muzzler_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                MuzzlerShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。

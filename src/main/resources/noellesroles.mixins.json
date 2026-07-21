@@ -75,7 +75,8 @@
     "roles.waiter.WaiterTaskIncomeMixin",
     "roles.waiter.FoodPlatterWaiterTakeMixin",
     "roles.cook.CookFinishEatMixin",
-    "roles.physician.PhysicianTipPoisonMixin"
+    "roles.physician.PhysicianTipPoisonMixin",
+    "roles.muzzler.MuzzlerBatHitSoundMixin"
 
   ],
   "injectors": {

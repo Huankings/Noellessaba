@@ -35,7 +35,9 @@ import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
 import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
 import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
+import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
+import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
@@ -98,6 +100,8 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, PhysicianPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(PhysicianPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SpiritualistPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpiritualistPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SpiritualistHostComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpiritualistHostComponent::new);
+        registry.beginRegistration(PlayerEntity.class, StarstruckPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(StarstruckPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, SilencePlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SilencePlayerComponent::new);
     }
 
     @Override
