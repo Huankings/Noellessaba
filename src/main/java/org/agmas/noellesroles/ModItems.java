@@ -3,6 +3,8 @@ package org.agmas.noellesroles;
 import com.mojang.serialization.Codec;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.item.RevolverItem;
+import dev.doctor4t.wathe.index.WatheItems;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.network.codec.PacketCodecs;
@@ -41,6 +43,51 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(MEDICAL_KIT, PhysicianConstants.MEDICAL_KIT_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PAN, CookConstants.PAN_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PILL, PhysicianConstants.PILL_COOLDOWN_TICKS);
+
+        /*
+         * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
+         *
+         * 只放对局中会真正拿在手里使用的物品，不把商店图标、即时结算图标塞进来，
+         * 这样创造物品栏里的展示会和实际可玩道具保持一致，也不会出现一堆纯按钮占位物。
+         *
+         * 参考 kinssaba / StupidExpress / StarryExpress 的做法，都是通过 Wathe 的
+         * equipment 组来追加扩展物品；这里采用同样的方式，但保持 NoellesRoles 现有的
+         * 原生注册方式不变，避免改动面扩大。
+         */
+        ItemGroupEvents.modifyEntriesEvent(WatheItems.EQUIPMENT_GROUP).register(entries -> {
+            // 伪装与进攻类武器
+            entries.add(FAKE_KNIFE);
+            entries.add(FAKE_GRENADE);
+            entries.add(FAKE_REVOLVER);
+            entries.add(THROWING_AXE);
+            entries.add(CRYSTAL_BALL);
+            entries.add(ROBBER_PISTOL);
+            entries.add(BAYONET);
+            entries.add(SILENCED_REVOLVER);
+            entries.add(SILENT_GRENADE);
+
+            // 角色机制与功能道具
+            entries.add(MASTER_KEY);
+            entries.add(DELUSION_VIAL);
+            entries.add(WIND_MARK);
+            entries.add(DREAM_IMPRINT);
+            entries.add(MEDICAL_KIT);
+            entries.add(PAN);
+            entries.add(PILL);
+            entries.add(PHONE);
+            entries.add(DEFENSE_VIAL);
+            entries.add(SEDATIVE);
+            entries.add(ROLE_MINE);
+            entries.add(TOOLBOX);
+            entries.add(CAPTURE_DEVICE);
+            entries.add(TIMED_BOMB);
+            entries.add(SNIPER_RIFLE);
+            entries.add(SNIPER_RIFLE_BULLET);
+            entries.add(SLEEPING_BAG);
+            entries.add(BOOK);
+
+
+        });
     }
 
     /**
