@@ -11,6 +11,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.item.*;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerConstants;
 
 public class ModItems {
     public static void init() {
@@ -32,6 +33,9 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(TIMED_BOMB, BomberPlayerComponent.BOMBER_START_COOLDOWN_TICKS);
         // 狙击枪同样有多种冷却来源，这里登记开局 30 秒作为默认基线。
         GameConstants.ITEM_COOLDOWNS.put(SNIPER_RIFLE, org.agmas.noellesroles.roles.rememberer.RemembererConstants.SNIPER_START_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(ICON_WEAPON_COOLDOWN_REFRESH, HackerConstants.REFRESH_WEAPON_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(ICON_ABILITY_COOLDOWN_REFRESH, HackerConstants.REFRESH_ABILITY_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(ICON_POTION_EFFECT_REFRESH, HackerConstants.REFRESH_POTION_EFFECT_TICKS);
     }
 
     /**
@@ -109,6 +113,16 @@ public class ModItems {
             new WindMarkItem(new Item.Settings().maxCount(1)),
             "wind_mark"
     );
+    //梦之印记
+    public static final Item DREAM_IMPRINT = register(
+            new DreamImprintItem(new Item.Settings().maxCount(4)),
+            "dream_imprint"
+    );
+    //黑客手机
+    public static final Item PHONE = register(
+            new PhoneItem(new Item.Settings().maxCount(1)),
+            "phone"
+    );
     //防御试剂
     public static final Item DEFENSE_VIAL = register(
             new Item(new Item.Settings().maxCount(1)),
@@ -185,6 +199,21 @@ public class ModItems {
     public static final Item BAYONET_COLDOWN_REFRESH = register(
             new BayonetCooldownRefreshItem(new Item.Settings().maxCount(1)),
             "bayonet_coldown_refresh"
+    );
+    // 黑客刷新武器冷却图标
+    public static final Item ICON_WEAPON_COOLDOWN_REFRESH = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "icon_weapon_cooldown_refresh"
+    );
+    // 黑客刷新技能冷却图标
+    public static final Item ICON_ABILITY_COOLDOWN_REFRESH = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "icon_ability_cooldown_refresh"
+    );
+    // 黑客清除药水状态图标
+    public static final Item ICON_POTION_EFFECT_REFRESH = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "icon_potion_effect_refresh"
     );
 
 

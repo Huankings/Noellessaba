@@ -87,6 +87,7 @@
     "roles.robber.RobberGunCrosshairMixin",
     "roles.assassin.AssassinBayonetCrosshairMixin",
     "roles.assassin.AssassinBodyCanHitMixin",
+    "roles.dreamer.DreamerHudMixin",
     "roles.bartender.DefenseVialViewMixin",
     "roles.conductor.MasterKeyHudMixin",
     "roles.executioner.ExecutionerHudMixin",

@@ -28,16 +28,16 @@ public final class WaiterConstants {
     public static final int MAX_TRAY_ITEM_COUNT = 2;
 
     // 服务员商店价格，顺序由 WaiterShopHandler#getShopEntries 决定。
-    public static final int RANDOM_DRINK_PRICE = 100;
-    public static final int RANDOM_FOOD_PRICE = 100;
-    public static final int RANDOM_POTION_PRICE = 100;
-    public static final int BAR_STOOL_PRICE = 100;
-    public static final int FISHING_ROD_PRICE = 100;
-    public static final int MUSIC_DISC_PRICE = 100;
-    public static final int CAMPFIRE_PRICE = 100;
-    public static final int SMOKER_PRICE = 100;
-    public static final int SLEEPING_BAG_PRICE = 100;
-    public static final int BOOK_PRICE = 100;
+    public static final int RANDOM_DRINK_PRICE = 75;
+    public static final int RANDOM_FOOD_PRICE = 75;
+    public static final int RANDOM_POTION_PRICE = 75;
+    public static final int BAR_STOOL_PRICE = 75;
+    public static final int FISHING_ROD_PRICE = 75;
+    public static final int MUSIC_DISC_PRICE = 75;
+    public static final int CAMPFIRE_PRICE = 75;
+    public static final int SMOKER_PRICE = 75;
+    public static final int SLEEPING_BAG_PRICE = 75;
+    public static final int BOOK_PRICE = 75;
 
     // 商店钓鱼竿固定为 1 耐久、饵钓 5；购买交付时会再写入附魔，避免注册期缺少玩家 registry。
     public static final int FISHING_ROD_MAX_DAMAGE = 1;
@@ -45,15 +45,15 @@ public final class WaiterConstants {
 
     // 随机药水池和具体效果参数。
     public static final int RANDOM_POTION_VARIANTS = 5;
-    public static final int STRONG_EFFECT_AMPLIFIER = 1;
+    public static final int STRONG_EFFECT_AMPLIFIER = 0;
     public static final int BASE_EFFECT_AMPLIFIER = 0;
     // 商店随机药水图标使用再生药水色，实际购买后会随机生成具体药水。
     public static final int REGENERATION_POTION_COLOR = 0xCD5CAB;
     public static final int INSTANT_EFFECT_DURATION_TICKS = 1;
     public static final int REGENERATION_DURATION_TICKS = GameConstants.getInTicks(0, 22);
-    public static final int STRENGTH_DURATION_TICKS = GameConstants.getInTicks(1, 30);
-    public static final int WATER_BREATHING_DURATION_TICKS = GameConstants.getInTicks(3, 0);
-    public static final int FIRE_RESISTANCE_DURATION_TICKS = GameConstants.getInTicks(3, 0);
+    public static final int STRENGTH_DURATION_TICKS = GameConstants.getInTicks(0, 30);
+    public static final int WATER_BREATHING_DURATION_TICKS = GameConstants.getInTicks(0, 20);
+    public static final int FIRE_RESISTANCE_DURATION_TICKS = GameConstants.getInTicks(0, 25);
 
     // 毒药物品经服务员递予后沿用 Wathe 的毒药系统；如果目标已有毒，则提前一段随机时间结算。
     public static final int POISON_STACK_ACCELERATION_MIN_TICKS = 100;

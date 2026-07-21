@@ -243,6 +243,57 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatDreamImprintUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.item_use.noellesroles.dream_imprint", actor, target);
+    }
+
+    @Nullable
+    public static Text formatHackerReveal(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.skill_use.noellesroles.hacker", actor, target);
+    }
+
+    @Nullable
+    public static Text formatDreamerCounts(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.dreamer_counts",
+                actor,
+                event.data().getInt("counts"),
+                event.data().getInt("required")
+        );
+    }
+
+    @Nullable
+    public static Text formatDreamImprintShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        if (victim == null) {
+            return null;
+        }
+
+        Text damageName = DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        if (event.data().containsUuid("actor")) {
+            Text attacker = actorText(event, match);
+            if (attacker != null) {
+                return Text.translatable("replay.shield_blocked.noellesroles.dream_imprint.by_item", victim, attacker, damageName);
+            }
+        }
+        return Text.translatable("replay.shield_blocked.noellesroles.dream_imprint.item", victim, damageName);
+    }
+
+    @Nullable
     public static Text formatDelusionStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = victimFromGlobal(event, match);
         return victim == null ? null : Text.translatable("replay.global.noellesroles.delusion_started", victim);

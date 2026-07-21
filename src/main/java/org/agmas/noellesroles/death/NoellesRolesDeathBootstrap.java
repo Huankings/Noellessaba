@@ -4,6 +4,7 @@ import dev.doctor4t.wathe.api.event.AllowPlayerDeath;
 import org.agmas.noellesroles.roles.angel.AngelDeathProtectionHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderDeathProtectionHandler;
 import org.agmas.noellesroles.roles.controller.ControllerDeathProtectionHandler;
+import org.agmas.noellesroles.roles.dreamer.DreamerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerBackfireDeathHandler;
 import org.agmas.noellesroles.roles.jester.JesterDeathProtectionHandler;
 import org.agmas.noellesroles.roles.mimic.MimicBackfireDeathHandler;
@@ -51,7 +52,7 @@ public final class NoellesRolesDeathBootstrap {
      * 注册第一段“受害者自身保命 / 免死 / 强制放行”链路。
      *
      * <p>这一段必须保持与旧代码完全同序：</p>
-     * <p>Angel -> Controller -> Stalker -> 强制放行 -> Jester -> Bartender -> Prophet</p>
+     * <p>Angel -> Controller -> Stalker -> 强制放行 -> Jester -> Dreamer -> Bartender -> Prophet</p>
      *
      * <p>任何一个处理器返回 {@code false} 都会像旧实现一样立刻短路，
      * 后面的职业不再继续判定。</p>
@@ -81,6 +82,9 @@ public final class NoellesRolesDeathBootstrap {
             }
 
             if (!JesterDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
+                return false;
+            }
+            if (!DreamerDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
                 return false;
             }
             if (!BartenderDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {

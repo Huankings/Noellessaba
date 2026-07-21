@@ -58,6 +58,7 @@
     "roles.rememberer.RemembererReseterMixin",
     "roles.rememberer.SniperRifleSelectedSlotCooldownMixin",
     "roles.rememberer.SniperRiflePsychoShieldBypassMixin",
+    "roles.hacker.HackerAvoidMimicMixin",
     "GameFunctionsDeathProcessMixin",
     "roles.stalker.StalkerLeftClickKillMixin",
     "roles.stalker.StalkerKillCountMixin",

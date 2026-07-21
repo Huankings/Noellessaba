@@ -16,8 +16,13 @@ import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.agmas.noellesroles.roles.coroner.CoronerPlayerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerKillerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
+import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
@@ -82,6 +87,10 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, CowardPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(CowardPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SedativePlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SedativePlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, RemembererPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(RemembererPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, DreamerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DreamerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, DreamerKillerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DreamerKillerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, HackerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(HackerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, HackerPhoneComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(HackerPhoneComponent::new);
         // 服务员可见状态写在目标玩家身上，所以这里把 WaiterPlayerComponent 也作为普通玩家组件注册。
         registry.beginRegistration(PlayerEntity.class, WaiterPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WaiterPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SpiritualistPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpiritualistPlayerComponent::new);
@@ -92,5 +101,6 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry worldComponentFactoryRegistry) {
         worldComponentFactoryRegistry.register(ConfigWorldComponent.KEY, ConfigWorldComponent::new);
         worldComponentFactoryRegistry.register(HiddenBodiesWorldComponent.KEY, HiddenBodiesWorldComponent::new);
+        worldComponentFactoryRegistry.register(HackerSafeTimeComponent.KEY, HackerSafeTimeComponent::new);
     }
 }

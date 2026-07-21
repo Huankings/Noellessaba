@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.voice;
 
+import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
@@ -10,9 +11,11 @@ import de.maxhenkel.voicechat.api.events.LocationalSoundPacketEvent;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.events.SoundPacketEvent;
 import de.maxhenkel.voicechat.api.events.StaticSoundPacketEvent;
+import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
 import de.maxhenkel.voicechat.api.packets.EntitySoundPacket;
 import de.maxhenkel.voicechat.api.packets.StaticSoundPacket;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.compat.TrainVoicePlugin;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
@@ -30,6 +33,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
+    public static final UUID KILLER_GROUP_ID = UUID.nameUUIDFromBytes((Noellesroles.MOD_ID + ":hacker_killer_group").getBytes(StandardCharsets.UTF_8));
+    public static Group KILLER_GROUP;
 
     @Override
     public String getPluginId() {
@@ -39,6 +44,33 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
     @Override
     public void initialize(VoicechatApi api) {
         VoicechatPlugin.super.initialize(api);
+    }
+
+    public static void addKillerGroup(UUID player) {
+        if (TrainVoicePlugin.isVoiceChatMissing()) {
+            return;
+        }
+        VoicechatConnection connection = TrainVoicePlugin.SERVER_API.getConnectionOf(player);
+        if (connection == null) {
+            return;
+        }
+
+        /*
+         * 手机语音组是黑客职业的私有频道。
+         * 只在第一次有人切入时创建隐藏持久组，后续玩家复用同一个 group。
+         */
+        if (KILLER_GROUP == null) {
+            KILLER_GROUP = TrainVoicePlugin.SERVER_API.groupBuilder()
+                    .setHidden(true)
+                    .setId(KILLER_GROUP_ID)
+                    .setName("Killer Group")
+                    .setPersistent(true)
+                    .setType(Group.Type.OPEN)
+                    .build();
+        }
+        if (KILLER_GROUP != null) {
+            connection.setGroup(KILLER_GROUP);
+        }
     }
 
     public void paranoidEvent(MicrophonePacketEvent event) {
@@ -336,6 +368,7 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         registration.registerEvent(LocationalSoundPacketEvent.class, this::handleSoundPacket);
         registration.registerEvent(EntitySoundPacketEvent.class, this::handleSoundPacket);
         registration.registerEvent(StaticSoundPacketEvent.class, this::handleSoundPacket);
+        registration.registerEvent(VoicechatServerStartedEvent.class, event -> TrainVoicePlugin.SERVER_API = event.getVoicechat());
         VoicechatPlugin.super.registerEvents(registration);
     }
 }

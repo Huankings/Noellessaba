@@ -1,0 +1,6 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "noellesroles:item/icon_ability_cooldown_refresh"
+	}
+}

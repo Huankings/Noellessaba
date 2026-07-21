@@ -5,6 +5,7 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.Noellesroles;
+import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class NoellesRolesItemExtraModel {
@@ -14,6 +15,10 @@ public class NoellesRolesItemExtraModel {
      */
     public static Identifier getCooldownId() {
         return Identifier.of(Noellesroles.MOD_ID, "item_cooldown");
+    }
+
+    public static Identifier getKillerGroupId() {
+        return Identifier.of(Noellesroles.MOD_ID, "killer_group");
     }
 
     /**
@@ -26,5 +31,18 @@ public class NoellesRolesItemExtraModel {
         });
         // 未来可以在此添加其他自定义模型谓词，例如：
         // ModelPredicateProviderRegistry.register(item, getSomeOtherId(), ...);
+    }
+
+    /**
+     * 黑客手机需要额外的 killer_group 谓词来切换贴图。
+     *
+     * <p>不要把这个谓词注册给所有物品，否则任何带同名 override 的物品都会被手机状态误影响。</p>
+     */
+    public static void registerPhoneModel(@NotNull Item item) {
+        registerExtraModel(item);
+        ModelPredicateProviderRegistry.register(item, getKillerGroupId(), (itemStack, world, entity, seed) -> {
+            if (MinecraftClient.getInstance().player == null) return 0.0F;
+            return HackerPhoneComponent.KEY.get(MinecraftClient.getInstance().player).groupKiller ? 1.0F : 0.0F;
+        });
     }
 }

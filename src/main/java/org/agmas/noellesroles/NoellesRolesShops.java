@@ -19,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
 import org.agmas.noellesroles.shop.PlayerShopComponentAccessor;
@@ -165,6 +166,15 @@ public class NoellesRolesShops {
              * 而不是玩家背包有没有空位。
              */
             return AssassinPlayerComponent.tryRefreshBayonetCooldown(player);
+        }
+        if (item == ModItems.ICON_WEAPON_COOLDOWN_REFRESH) {
+            return HackerComponent.refreshWeaponCooldown(player);
+        }
+        if (item == ModItems.ICON_ABILITY_COOLDOWN_REFRESH) {
+            return HackerComponent.refreshAbilityCooldown(player);
+        }
+        if (item == ModItems.ICON_POTION_EFFECT_REFRESH) {
+            return HackerComponent.refreshPotionEffect(player);
         }
         if (item == ModItems.RANDOM_DRINK) {
             return player.giveItemStack(WaiterShopHandler.createRandomCocktailStack(player.getRandom()));

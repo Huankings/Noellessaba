@@ -34,6 +34,8 @@ import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
 import org.agmas.noellesroles.client.roles.executioner.ExecutionerMoodHud;
+import org.agmas.noellesroles.client.roles.dreamer.DreamerMoodHud;
+import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
@@ -89,6 +91,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         ExecutionerMoodHud.register();
         JesterMoodHud.register();
         RemembererMoodHud.register();
+        DreamerMoodHud.register();
+        HackerMoodHud.register();
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
         registerItemTooltipsAndModels();
@@ -269,6 +273,11 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE_BULLET, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET_COLDOWN_REFRESH, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.DREAM_IMPRINT, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PHONE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.ICON_POTION_EFFECT_REFRESH, itemStack, list);
             // 服务员新增物品也走同一套 tooltip 生成器，文案全部在 lang 里维护。
             NoellesRolesItemToolTip.addItemtip(ModItems.SLEEPING_BAG, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BOOK, itemStack, list);
@@ -300,6 +309,11 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENT_GRENADE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SNIPER_RIFLE_BULLET);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.DREAM_IMPRINT);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_WEAPON_COOLDOWN_REFRESH);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);
+        NoellesRolesItemExtraModel.registerPhoneModel(ModItems.PHONE);
         // 这些服务员物品/图标需要额外模型来呈现和原版物品一致的视觉效果。
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SLEEPING_BAG);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOOK);

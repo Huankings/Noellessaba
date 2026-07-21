@@ -56,8 +56,16 @@ import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerConstants;
+import org.agmas.noellesroles.roles.dreamer.DreamerDelusionHandler;
+import org.agmas.noellesroles.roles.dreamer.DreamerKillerComponent;
 import org.agmas.noellesroles.framing.FramingShopEntry;
 import org.agmas.noellesroles.roles.goddess.GoddessAbility;
+import org.agmas.noellesroles.roles.hacker.HackerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerConstants;
+import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
+import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.magician.MagicianAbility;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
@@ -162,6 +170,8 @@ public class Noellesroles implements ModInitializer {
     public static Identifier ANGEL_ID = Identifier.of(MOD_ID, "angel");
     public static Identifier COWARD_ID = Identifier.of(MOD_ID, "coward");
     public static Identifier REMEMBERER_ID = Identifier.of(MOD_ID, "rememberer");
+    public static Identifier DREAMER_ID = Identifier.of(MOD_ID, "dreamer");
+    public static Identifier HACKER_ID = Identifier.of(MOD_ID, "hacker");
     // 服务员职业 ID，对应 lang、角色注册和回放事件命名。
     public static Identifier WAITER_ID = Identifier.of(MOD_ID, "waiter");
     public static Identifier SPIRITUALIST_ID = Identifier.of(MOD_ID, "spiritualist");
@@ -254,6 +264,9 @@ public class Noellesroles implements ModInitializer {
     // 服务员递送成功和自用成功的回放事件。
     public static final Identifier WAITER_SERVE_EVENT = Identifier.of(MOD_ID, "waiter_serve");
     public static final Identifier WAITER_SELF_USE_EVENT = Identifier.of(MOD_ID, "waiter_self_use");
+    public static final Identifier DREAMER_COUNTS_EVENT = Identifier.of(MOD_ID, "dreamer_counts");
+    public static final Identifier DREAM_IMPRINT_SHIELD_SOURCE = Identifier.of(MOD_ID, "dream_imprint");
+    public static final Identifier HACKER_REVEAL_EVENT = Identifier.of(MOD_ID, "hacker_reveal");
     public static final Identifier SPIRITUALIST_ACTIVE_SHIELD_SOURCE = Identifier.of(MOD_ID, "spiritualist_active_shield");
     public static final Identifier SPIRITUALIST_LINGERING_SHIELD_SOURCE = Identifier.of(MOD_ID, "spiritualist_lingering_shield");
     public static final Identifier SPIRITUALIST_SOUL_GUARD_DEATH_REASON = Identifier.of(MOD_ID, "spiritualist_soul_guard");
@@ -283,6 +296,10 @@ public class Noellesroles implements ModInitializer {
     public static Role ASSASSIN = WatheRoles.registerRole(new Role(ASSASSIN_ID, new Color(34, 68, 36).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //狂信者(杀手中立)
     public static Role JESTER = WatheRoles.registerRole(new Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false, Role.MoodType.FAKE,-1,true));
+    //梦者(杀手侧中立)
+    public static Role DREAMER = WatheRoles.registerNeutralRole(new Role(DREAMER_ID, DreamerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
+    //黑客(杀手侧中立)
+    public static Role HACKER = WatheRoles.registerNeutralRole(new Role(HACKER_ID, HackerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
     //变形怪(杀手)
     public static Role MORPHLING =WatheRoles.registerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //列车长(好人)
@@ -384,6 +401,8 @@ public class Noellesroles implements ModInitializer {
         KILLER_SIDED_NEUTRALS.add(VULTURE);
         KILLER_SIDED_NEUTRALS.add(JESTER);
         KILLER_SIDED_NEUTRALS.add(EXECUTIONER);
+        KILLER_SIDED_NEUTRALS.add(DREAMER);
+        KILLER_SIDED_NEUTRALS.add(HACKER);
 
         VANNILA_ROLE_IDS.add(WatheRoles.LOOSE_END.identifier());
         VANNILA_ROLE_IDS.add(WatheRoles.VIGILANTE.identifier());
@@ -405,6 +424,8 @@ public class Noellesroles implements ModInitializer {
         OperatorCommunicationManager.init();
         RemembererInteractionHandler.init();
         RemembererSniperManager.init();
+        DreamerDelusionHandler.init();
+        HackerSafeTimeComponent.init();
         // 服务员的右键递送、自用、透视、托盘取物和收入拦截都在这里统一接入。
         WaiterInteractionHandler.init();
         MagicianPlaybackManager.init();
@@ -414,6 +435,8 @@ public class Noellesroles implements ModInitializer {
         Harpymodloader.setRoleMaximum(EXECUTIONER_ID,1);
         Harpymodloader.setRoleMaximum(VULTURE_ID,1);
         Harpymodloader.setRoleMaximum(JESTER_ID,1);
+        Harpymodloader.setRoleMaximum(DREAMER_ID,1);
+        Harpymodloader.setRoleMaximum(HACKER_ID,0);
         Harpymodloader.setRoleMaximum(BETTER_VIGILANTE_ID,0);
 
 
@@ -496,6 +519,8 @@ public class Noellesroles implements ModInitializer {
                 PROPHET,
                 REMEMBERER,
                 ENGINEER,
+                DREAMER,
+                HACKER,
                 COWARD,
                 WAITER
         ));
@@ -529,6 +554,7 @@ public class Noellesroles implements ModInitializer {
                 BRAINWASHER,
                 WINDER,
                 PROPHET,
+                HACKER,
                 COWARD,
                 REMEMBERER,
                 WAITER,
@@ -551,6 +577,8 @@ public class Noellesroles implements ModInitializer {
                 MIMIC,
                 JESTER,
                 EXECUTIONER,
+                DREAMER,
+                HACKER,
                 CORONER,
                 ENGINEER,
                 RECALLER
@@ -597,6 +625,10 @@ public class Noellesroles implements ModInitializer {
             DelusionPlayerComponent.KEY.get(playerEntity).reset();
             PhantomPlayerComponent.KEY.get(playerEntity).reset();
             WaiterPlayerComponent.KEY.get(playerEntity).reset();
+            DreamerComponent.KEY.get(playerEntity).reset();
+            DreamerKillerComponent.KEY.get(playerEntity).reset();
+            HackerComponent.KEY.get(playerEntity).reset();
+            HackerPhoneComponent.KEY.get(playerEntity).reset();
         }));
         CanSeePoison.EVENT.register((player)->{
             GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
@@ -697,6 +729,11 @@ public class Noellesroles implements ModInitializer {
                 Harpymodloader.setRoleMaximum(VULTURE,1);
             } else {
                 Harpymodloader.setRoleMaximum(VULTURE,0);
+            }
+            if (server.getPlayerManager().getCurrentPlayerCount() >= HackerConstants.PLAYER_LIMIT) {
+                Harpymodloader.setRoleMaximum(HACKER,1);
+            } else {
+                Harpymodloader.setRoleMaximum(HACKER,0);
             }
 
             /*
@@ -893,7 +930,9 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(Items.ENDER_PEARL), NoellesRolesReplayFormatters::formatRecallerEnderPearl);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.FAKE_GRENADE), NoellesRolesReplayFormatters::formatFakeGrenadeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SILENT_GRENADE), NoellesRolesReplayFormatters::formatSilentGrenadeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DREAM_IMPRINT), NoellesRolesReplayFormatters::formatDreamImprintUse);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
+        ReplayRegistry.registerSkillFormatter(HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
 
         /*
          * 托盘放置事件优先按 tray effect 分发。
@@ -923,6 +962,7 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerShieldSourceFormatter(ANGEL_GUARD_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatAngelGuardShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(SPIRITUALIST_ACTIVE_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatSpiritualistActiveShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(SPIRITUALIST_LINGERING_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatSpiritualistLingeringShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(DREAM_IMPRINT_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatDreamImprintShieldBlocked);
 
         ReplayRegistry.registerGlobalEventFormatter(DELUSION_STARTED_EVENT, NoellesRolesReplayFormatters::formatDelusionStarted);
         ReplayRegistry.registerGlobalEventFormatter(DELUSION_ENDED_EVENT, NoellesRolesReplayFormatters::formatDelusionEnded);
@@ -999,6 +1039,7 @@ public class Noellesroles implements ModInitializer {
         // 服务员回放文本单独注册，方便显示“递予了谁/带了什么试剂/完成了哪个任务”。
         ReplayRegistry.registerGlobalEventFormatter(WAITER_SERVE_EVENT, NoellesRolesReplayFormatters::formatWaiterServe);
         ReplayRegistry.registerGlobalEventFormatter(WAITER_SELF_USE_EVENT, NoellesRolesReplayFormatters::formatWaiterSelfUse);
+        ReplayRegistry.registerGlobalEventFormatter(DREAMER_COUNTS_EVENT, NoellesRolesReplayFormatters::formatDreamerCounts);
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_RECORDING_STARTED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStarted);
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_RECORDING_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingFinished);
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_RECORDING_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStoppedEarly);
