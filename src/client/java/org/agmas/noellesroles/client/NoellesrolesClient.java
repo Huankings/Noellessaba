@@ -278,7 +278,6 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_POTION_EFFECT_REFRESH, itemStack, list);
-            // 服务员新增物品也走同一套 tooltip 生成器，文案全部在 lang 里维护。
             NoellesRolesItemToolTip.addItemtip(ModItems.SLEEPING_BAG, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BOOK, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_FOOD, itemStack, list);
@@ -314,7 +313,6 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);
         NoellesRolesItemExtraModel.registerPhoneModel(ModItems.PHONE);
-        // 这些服务员物品/图标需要额外模型来呈现和原版物品一致的视觉效果。
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SLEEPING_BAG);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOOK);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_FOOD);

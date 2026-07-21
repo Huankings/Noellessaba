@@ -172,7 +172,6 @@ public class Noellesroles implements ModInitializer {
     public static Identifier REMEMBERER_ID = Identifier.of(MOD_ID, "rememberer");
     public static Identifier DREAMER_ID = Identifier.of(MOD_ID, "dreamer");
     public static Identifier HACKER_ID = Identifier.of(MOD_ID, "hacker");
-    // 服务员职业 ID，对应 lang、角色注册和回放事件命名。
     public static Identifier WAITER_ID = Identifier.of(MOD_ID, "waiter");
     public static Identifier SPIRITUALIST_ID = Identifier.of(MOD_ID, "spiritualist");
     public static Identifier OPERATOR_ID = Identifier.of(MOD_ID, "operator");
@@ -261,7 +260,6 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier OPERATOR_BROADCAST_INTERRUPTED_EVENT = Identifier.of(MOD_ID, "operator_broadcast_interrupted");
     public static final Identifier REMEMBERER_RECALL_EVENT = Identifier.of(MOD_ID, "rememberer_recall");
     public static final Identifier REMEMBERER_SNIPER_RELOADED_EVENT = Identifier.of(MOD_ID, "rememberer_sniper_reloaded");
-    // 服务员递送成功和自用成功的回放事件。
     public static final Identifier WAITER_SERVE_EVENT = Identifier.of(MOD_ID, "waiter_serve");
     public static final Identifier WAITER_SELF_USE_EVENT = Identifier.of(MOD_ID, "waiter_self_use");
     public static final Identifier DREAMER_COUNTS_EVENT = Identifier.of(MOD_ID, "dreamer_counts");
@@ -283,71 +281,71 @@ public class Noellesroles implements ModInitializer {
 
     public static HashMap<Role, RoleAnnouncementTexts.RoleAnnouncementText> roleRoleAnnouncementTextHashMap = new HashMap<>();
     //造尸怪(杀手)
-    public static Role CORPSEMAKER = WatheRoles.registerRole(new Role(CORPSEMAKER_ID, new Color(12, 0, 228).getRGB(), false, true, Role.MoodType.FAKE,-1, true));
+    public static Role CORPSEMAKER = WatheRoles.registerKillerRole(new Role(CORPSEMAKER_ID, new Color(12, 0, 228).getRGB(), false, true, Role.MoodType.FAKE,-1, true));
     //潜行者(杀手)
-    public static Role STALKER = WatheRoles.registerRole(new Role(STALKER_ID, new Color(186, 85, 211).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    public static Role STALKER = WatheRoles.registerKillerRole(new Role(STALKER_ID, new Color(186, 85, 211).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //附体师(杀手)
-    public static Role CONTROLLER = WatheRoles.registerRole(new Role(CONTROLLER_ID, new Color(128, 0, 128).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    public static Role CONTROLLER = WatheRoles.registerKillerRole(new Role(CONTROLLER_ID, new Color(128, 0, 128).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //炸弹客(杀手)
-    public static Role BOMBER = WatheRoles.registerRole(new Role(BOMBER_ID, new Color(50, 50, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    public static Role BOMBER = WatheRoles.registerKillerRole(new Role(BOMBER_ID, new Color(50, 50, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //强盗(杀手)
-    public static Role ROBBER = WatheRoles.registerRole(new Role(ROBBER_ID, new Color(220, 82, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    public static Role ROBBER = WatheRoles.registerKillerRole(new Role(ROBBER_ID, new Color(220, 82, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //刺客(杀手)
-    public static Role ASSASSIN = WatheRoles.registerRole(new Role(ASSASSIN_ID, new Color(34, 68, 36).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    public static Role ASSASSIN = WatheRoles.registerKillerRole(new Role(ASSASSIN_ID, new Color(34, 68, 36).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //狂信者(杀手中立)
-    public static Role JESTER = WatheRoles.registerRole(new Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false, Role.MoodType.FAKE,-1,true));
-    //梦者(杀手侧中立)
+    public static Role JESTER = WatheRoles.registerNeutralRole(new Role(JESTER_ID,new Color(255,86,243).getRGB() ,false,false, Role.MoodType.FAKE,-1,true));
+    //梦者(杀手中立)
     public static Role DREAMER = WatheRoles.registerNeutralRole(new Role(DREAMER_ID, DreamerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
-    //黑客(杀手侧中立)
+    //黑客(杀手中立)
     public static Role HACKER = WatheRoles.registerNeutralRole(new Role(HACKER_ID, HackerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
     //变形怪(杀手)
-    public static Role MORPHLING =WatheRoles.registerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
+    public static Role MORPHLING =WatheRoles.registerKillerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //列车长(好人)
-    public static Role CONDUCTOR =WatheRoles.registerRole(new Role(CONDUCTOR_ID, new Color(255, 205, 84).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role CONDUCTOR =WatheRoles.registerCivilianRole(new Role(CONDUCTOR_ID, new Color(255, 205, 84).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //记者(好人)
-    public static Role AWESOME_BINGLUS = WatheRoles.registerRole(new Role(AWESOME_BINGLUS_ID, new Color(155, 255, 168).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role AWESOME_BINGLUS = WatheRoles.registerCivilianRole(new Role(AWESOME_BINGLUS_ID, new Color(155, 255, 168).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //工程师(好人)
-    public static Role ENGINEER = WatheRoles.registerRole(new Role(ENGINEER_ID, new Color(100, 149, 237).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role ENGINEER = WatheRoles.registerCivilianRole(new Role(ENGINEER_ID, new Color(100, 149, 237).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //酒保(好人)
-    public static Role BARTENDER =WatheRoles.registerRole(new Role(BARTENDER_ID, new Color(217,241,240).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role BARTENDER =WatheRoles.registerCivilianRole(new Role(BARTENDER_ID, new Color(217,241,240).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //风灵师(好人)
-    public static Role WINDER = WatheRoles.registerRole(new Role(WINDER_ID, new Color(66, 215, 215).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role WINDER = WatheRoles.registerCivilianRole(new Role(WINDER_ID, new Color(66, 215, 215).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //灵术师(好人)
-    public static Role SPIRITUALIST = WatheRoles.registerRole(new Role(SPIRITUALIST_ID, SpiritualistConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role SPIRITUALIST = WatheRoles.registerCivilianRole(new Role(SPIRITUALIST_ID, SpiritualistConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //接线员(好人)
-    public static Role OPERATOR = WatheRoles.registerRole(new Role(OPERATOR_ID, new Color(75, 221, 192).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role OPERATOR = WatheRoles.registerCivilianRole(new Role(OPERATOR_ID, new Color(75, 221, 192).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //魔术师(杀手)
-    public static Role MAGICIAN = WatheRoles.registerRole(new Role(MAGICIAN_ID, MagicianConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
+    public static Role MAGICIAN = WatheRoles.registerKillerRole(new Role(MAGICIAN_ID, MagicianConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //大嗓门(好人)
-    public static Role NOISEMAKER =WatheRoles.registerRole(new Role(NOISEMAKER_ID, new Color(200, 255, 0).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role NOISEMAKER =WatheRoles.registerCivilianRole(new Role(NOISEMAKER_ID, new Color(200, 255, 0).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //交换者(杀手)
-    public static Role SWAPPER = WatheRoles.registerRole(new Role(SWAPPER_ID, new Color(57, 4, 170).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
+    public static Role SWAPPER = WatheRoles.registerKillerRole(new Role(SWAPPER_ID, new Color(57, 4, 170).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //幻灵(杀手)
-    public static Role PHANTOM =WatheRoles.registerRole(new Role(PHANTOM_ID, new Color(80, 5, 5, 192).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
+    public static Role PHANTOM =WatheRoles.registerKillerRole(new Role(PHANTOM_ID, new Color(80, 5, 5, 192).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //巫毒师(好人)
-    public static Role VOODOO =WatheRoles.registerRole(new Role(VOODOO_ID, new Color(128, 114, 253).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role VOODOO =WatheRoles.registerCivilianRole(new Role(VOODOO_ID, new Color(128, 114, 253).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //亡语杀手(杀手)
-    public static Role THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES =WatheRoles.registerRole(new Role(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID, new Color(255, 0, 0, 192).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
+    public static Role THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES =WatheRoles.registerKillerRole(new Role(THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID, new Color(255, 0, 0, 192).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //调查官(好人)
-    public static Role TRAPPER =WatheRoles.registerRole(new Role(TRAPPER_ID, new Color(132, 186, 167).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role TRAPPER =WatheRoles.registerCivilianRole(new Role(TRAPPER_ID, new Color(132, 186, 167).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //验尸官(好人)
-    public static Role CORONER =WatheRoles.registerRole(new Role(CORONER_ID, new Color(122, 122, 122).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role CORONER =WatheRoles.registerCivilianRole(new Role(CORONER_ID, new Color(122, 122, 122).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //仇杀客(杀手中立)
-    public static Role EXECUTIONER =WatheRoles.registerRole(new Role(EXECUTIONER_ID, new Color(74, 27, 5).getRGB(),false,false,Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime()*3/2,true));
+    public static Role EXECUTIONER =WatheRoles.registerNeutralRole(new Role(EXECUTIONER_ID, new Color(74, 27, 5).getRGB(),false,false,Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime()*3/2,true));
     //回溯者(好人)
-    public static Role RECALLER = WatheRoles.registerRole(new Role(RECALLER_ID, new Color(158, 255, 255).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role RECALLER = WatheRoles.registerCivilianRole(new Role(RECALLER_ID, new Color(158, 255, 255).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //先知(好人)
-    public static Role PROPHET = WatheRoles.registerRole(new Role(PROPHET_ID, new Color(207, 42, 177).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role PROPHET = WatheRoles.registerCivilianRole(new Role(PROPHET_ID, new Color(207, 42, 177).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //秃鹫(杀手中立)
-    public static Role VULTURE =WatheRoles.registerRole(new Role(VULTURE_ID, new Color(181, 103, 0).getRGB(),false,false,Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime()+100,true));
+    public static Role VULTURE =WatheRoles.registerNeutralRole(new Role(VULTURE_ID, new Color(181, 103, 0).getRGB(),false,false,Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime()+100,true));
     //更好的义警(义警)
     public static Role BETTER_VIGILANTE =WatheRoles.registerVigilanteRole(new Role(BETTER_VIGILANTE_ID, new Color(0, 255, 255).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //洗脑师(杀手)
-    public static Role BRAINWASHER = WatheRoles.registerRole(new Role(BRAINWASHER_ID, new Color(255, 105, 180).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    public static Role BRAINWASHER = WatheRoles.registerKillerRole(new Role(BRAINWASHER_ID, new Color(255, 105, 180).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //圣母(好人)
-    public static Role GODDESS = WatheRoles.registerRole(new Role(GODDESS_ID, Color.WHITE.getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role GODDESS = WatheRoles.registerCivilianRole(new Role(GODDESS_ID, Color.WHITE.getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //天使(好人)
-    public static Role ANGEL = WatheRoles.registerRole(new Role(ANGEL_ID, new Color(236, 220, 239).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static Role ANGEL = WatheRoles.registerCivilianRole(new Role(ANGEL_ID, new Color(236, 220, 239).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //胆小鬼(好人)
     public static Role COWARD = WatheRoles.registerCivilianRole(new Role(COWARD_ID, new Color(208, 232, 140).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //追忆者(好人)
@@ -357,7 +355,7 @@ public class Noellesroles implements ModInitializer {
 
     //public static Role GUESSER =WatheRoles.registerRole(new Role(GUESSER_ID, new Color(158, 43, 25, 191).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //模仿者(好人)
-    public static Role MIMIC = WatheRoles.registerRole(new Role(MIMIC_ID, new Color(255, 137, 155).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    public static Role MIMIC = WatheRoles.registerCivilianRole(new Role(MIMIC_ID, new Color(255, 137, 155).getRGB(),true,false,Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(),false));
 
     //小孩子
     public static Modifier TINY = HMLModifiers.registerModifier(new Modifier(TINY_ID, new Color(255, 166, 0).getRGB(), new ArrayList<>(List.of(MORPHLING)),null,false,false));
@@ -426,7 +424,6 @@ public class Noellesroles implements ModInitializer {
         RemembererSniperManager.init();
         DreamerDelusionHandler.init();
         HackerSafeTimeComponent.init();
-        // 服务员的右键递送、自用、透视、托盘取物和收入拦截都在这里统一接入。
         WaiterInteractionHandler.init();
         MagicianPlaybackManager.init();
 
@@ -1036,7 +1033,6 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerGlobalEventFormatter(OPERATOR_BROADCAST_INTERRUPTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastInterrupted);
         ReplayRegistry.registerGlobalEventFormatter(REMEMBERER_RECALL_EVENT, NoellesRolesReplayFormatters::formatRemembererRecall);
         ReplayRegistry.registerGlobalEventFormatter(REMEMBERER_SNIPER_RELOADED_EVENT, NoellesRolesReplayFormatters::formatRemembererSniperReloaded);
-        // 服务员回放文本单独注册，方便显示“递予了谁/带了什么试剂/完成了哪个任务”。
         ReplayRegistry.registerGlobalEventFormatter(WAITER_SERVE_EVENT, NoellesRolesReplayFormatters::formatWaiterServe);
         ReplayRegistry.registerGlobalEventFormatter(WAITER_SELF_USE_EVENT, NoellesRolesReplayFormatters::formatWaiterSelfUse);
         ReplayRegistry.registerGlobalEventFormatter(DREAMER_COUNTS_EVENT, NoellesRolesReplayFormatters::formatDreamerCounts);
