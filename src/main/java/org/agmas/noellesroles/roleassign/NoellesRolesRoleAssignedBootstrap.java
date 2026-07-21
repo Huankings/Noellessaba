@@ -6,6 +6,7 @@ import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.roles.angel.AngelRoleAssignedHandler;
 import org.agmas.noellesroles.roles.assassin.AssassinRoleAssignedHandler;
 import org.agmas.noellesroles.roles.awesomebinglus.AwesomeBinglusRoleAssignedHandler;
+import org.agmas.noellesroles.roles.avaricious.AvariciousRoleAssignedHandler;
 import org.agmas.noellesroles.roles.bettervigilante.BetterVigilanteRoleAssignedHandler;
 import org.agmas.noellesroles.roles.bomber.BomberRoleAssignedHandler;
 import org.agmas.noellesroles.roles.brainwasher.BrainwasherRoleAssignedHandler;
@@ -20,6 +21,7 @@ import org.agmas.noellesroles.roles.hacker.HackerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.jester.JesterRoleAssignedHandler;
 import org.agmas.noellesroles.roles.magician.MagicianRoleAssignedHandler;
 import org.agmas.noellesroles.roles.mimic.MimicRoleAssignedHandler;
+import org.agmas.noellesroles.roles.necromancer.NecromancerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.operator.OperatorRoleAssignedHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianRoleAssignedHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetRoleAssignedHandler;
@@ -97,6 +99,8 @@ public final class NoellesRolesRoleAssignedBootstrap {
             AwesomeBinglusRoleAssignedHandler.onRoleAssigned(player, role);
             StarstruckRoleAssignedHandler.onRoleAssigned(player, role);
             MuzzlerRoleAssignedHandler.onRoleAssigned(player, role);
+            AvariciousRoleAssignedHandler.onRoleAssigned(player, role);
+            NecromancerRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

@@ -53,6 +53,16 @@
     "announcement.goals.noellesroles.muzzler": "Stop passengers from telling on you...",
     "tip.noellesroles.muzzler.silenced": "Mouth taped shut",
     "subtitles.noellesroles.item.tape_apply": "Someone is applying tape",
+    "announcement.role.noellesroles.avaricious": "Avaricious",
+    "announcement.goals.noellesroles.avaricious": "Stay near victims and get rich.",
+    "hud.noellesroles.avaricious.payout_timer": "Payout in: %ss",
+    "hud.noellesroles.avaricious.expected_payout": "Expected payout: %s coins",
+    "announcement.role.noellesroles.necromancer": "Necromancer",
+    "announcement.goals.noellesroles.necromancer": "Bring back the dead to do your bidding.",
+    "hud.noellesroles.necromancer.possible_revive": "Interact to revive this player as a killer",
+    "hud.noellesroles.necromancer.no_possible_revive": "One of your killer cohorts must die before you revive",
+    "hud.noellesroles.necromancer.cooldown": "You must wait %ss before attempting this.",
+    "message.noellesroles.necromancer.announcement_fallback": "Missing revived role announcement; using the vanilla killer announcement.",
     "announcement.goals.noellesroles.magician": "Stage a perfect deception.",
     "announcement.role.noellesroles.magician": "Magician",
 
@@ -412,6 +422,8 @@
       "replay.global.noellesroles.starstruck_end": "%s's astral power ended",
       "replay.item_use.noellesroles.tape": "%s taped %s's mouth shut",
       "replay.global.noellesroles.tape_removed": "%s tore off %s's tape from %s",
+      "replay.global.noellesroles.avaricious_stole_coins": "%s stole %s coins in total",
+      "replay.global.noellesroles.necromancer_revived": "%s revived %s",
       "replay.death.noellesroles.silenced_and_outside.died": "%s suffocated outside because of %s's tape",
       "replay.death.noellesroles.tape_removed_low_mood.died": "%s died in pain while %s was tearing off %s's tape"
   }

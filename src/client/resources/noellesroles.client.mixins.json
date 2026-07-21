@@ -77,7 +77,9 @@
     "roles.stalker.StalkerHudMixin",
     "roles.starstruck.StarstruckHudMixin",
     "roles.muzzler.MuzzlerPsychoDroneMixin",
-    "roles.muzzler.MuzzlerPsychoDroneLoopMixin"
+    "roles.muzzler.MuzzlerPsychoDroneLoopMixin",
+    "roles.avaricious.AvariciousHudMixin",
+    "roles.necromancer.NecromancerHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

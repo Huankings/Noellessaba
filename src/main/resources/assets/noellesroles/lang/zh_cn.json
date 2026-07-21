@@ -50,6 +50,18 @@
   "tip.noellesroles.muzzler.silenced": "被堵住了嘴",
   "subtitles.noellesroles.item.tape_apply": "有谁正在使用胶带",
 
+  "announcement.role.noellesroles.avaricious": "扒手",
+  "announcement.goals.noellesroles.avaricious": "靠近受害者以获取财富",
+  "hud.noellesroles.avaricious.payout_timer": "偷取倒计时 %s 秒",
+  "hud.noellesroles.avaricious.expected_payout": "预计可偷取 %s 金币",
+
+  "announcement.role.noellesroles.necromancer": "死灵法师",
+  "announcement.goals.noellesroles.necromancer": "复活死者，让他们为你效力",
+  "hud.noellesroles.necromancer.possible_revive": "与其互动可将此玩家复活为杀手",
+  "hud.noellesroles.necromancer.no_possible_revive": "在使用能力之前，你的一名同伴必须先死亡",
+  "hud.noellesroles.necromancer.cooldown": "你必须等待 %s 秒后才能尝试",
+  "message.noellesroles.necromancer.announcement_fallback": "复活职业公告缺失，已使用原版杀手公告兜底",
+
   "announcement.goals.noellesroles.conductor": "你能打开魔女岛上所有的门",
   "announcement.role.noellesroles.conductor": "典狱长",
   "tip.master_key_invisible_count": "当人数少于 %s 时，万能钥匙会显示为撬锁器。",
@@ -556,6 +568,8 @@
   "replay.global.noellesroles.starstruck_end": "%s 的星界能力时间结束",
   "replay.item_use.noellesroles.tape": "%s 给 %s 贴上了胶带",
   "replay.global.noellesroles.tape_removed": "%s 撕下了贴在 %s 上的 %s 的胶带",
+  "replay.global.noellesroles.avaricious_stole_coins": "%s 偷取了共 %s 金币",
+  "replay.global.noellesroles.necromancer_revived": "%s 复活了 %s",
   "replay.death.noellesroles.silenced_and_outside.died": "%s 因 %s 的胶带在室外窒息而死",
   "replay.death.noellesroles.tape_removed_low_mood.died": "%s 因 %s 在撕掉 %s 的胶带的过程中痛苦而亡"
 }

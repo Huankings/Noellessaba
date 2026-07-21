@@ -1245,6 +1245,26 @@ public final class NoellesRolesReplayFormatters {
         return Text.translatable("replay.global.noellesroles.magician_playback_forced_end", actor, disguise, attacker, weapon);
     }
 
+    @Nullable
+    public static Text formatAvariciousStoleCoins(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable(
+                "replay.global.noellesroles.avaricious_stole_coins",
+                actor,
+                event.data().getInt("amount")
+        );
+    }
+
+    @Nullable
+    public static Text formatNecromancerRevived(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text revived = playerFromKey(event, match, "revived_player");
+        if (actor == null || revived == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.necromancer_revived", actor, revived);
+    }
+
     private static Text weaponNameText(String weaponName) {
         /*
          * 强制结束播放的武器名现在会尽量保存翻译 key，而不是服务端已经翻译好的字符串。

@@ -30,12 +30,14 @@ import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
+import org.agmas.noellesroles.roles.avaricious.AvariciousPayoutComponent;
 import org.agmas.noellesroles.roles.phantom.PhantomPlayerComponent;
 import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
 import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
 import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
+import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
@@ -109,5 +111,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(ConfigWorldComponent.KEY, ConfigWorldComponent::new);
         worldComponentFactoryRegistry.register(HiddenBodiesWorldComponent.KEY, HiddenBodiesWorldComponent::new);
         worldComponentFactoryRegistry.register(HackerSafeTimeComponent.KEY, HackerSafeTimeComponent::new);
+        worldComponentFactoryRegistry.register(AvariciousPayoutComponent.KEY, AvariciousPayoutComponent::new);
+        worldComponentFactoryRegistry.register(NecromancerWorldComponent.KEY, NecromancerWorldComponent::new);
     }
 }

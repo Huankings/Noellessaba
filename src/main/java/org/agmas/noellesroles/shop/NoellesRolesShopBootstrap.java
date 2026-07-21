@@ -18,6 +18,7 @@ import org.agmas.noellesroles.roles.dreamer.DreamerShopHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.hacker.HackerShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
+import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianShopHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetShopHandler;
 import org.agmas.noellesroles.roles.recaller.RecallerShopHandler;
@@ -89,6 +90,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(Noellesroles.MOD_ID, "muzzler_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 MuzzlerShopHandler::modifyShop
+        );
+        /*
+         * 死灵法师沿用 StupidExpress 默认配置：有杀手能力，但没有杀手商店。
+         * 这里清空 ShopApi 已经解析出的默认杀手商品，避免只隐藏客户端界面却仍可服务端购买。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(Noellesroles.MOD_ID, "necromancer_no_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                NecromancerShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。

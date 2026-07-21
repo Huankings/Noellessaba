@@ -45,6 +45,7 @@ import org.agmas.harpymodloader.modifiers.Modifier;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.angel.AngelConstants;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
+import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
 import org.agmas.noellesroles.roles.brainwasher.BrainwasherAbility;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.roles.controller.ControllerPossessAbility;
@@ -118,6 +119,9 @@ import org.agmas.noellesroles.roles.physician.PhysicianStatusAlertHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerInteractionHandler;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
+import org.agmas.noellesroles.roles.necromancer.NecromancerConstants;
+import org.agmas.noellesroles.roles.necromancer.NecromancerRevivalHandler;
+import org.agmas.noellesroles.roles.necromancer.NecromancerRoleLimitHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerAbility;
 import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.starstruck.StarstruckConstants;
@@ -192,6 +196,8 @@ public class Noellesroles implements ModInitializer {
     public static Identifier PHYSICIAN_ID = Identifier.of(MOD_ID, "physician");
     public static Identifier STARSTRUCK_ID = Identifier.of(MOD_ID, "starstruck");
     public static Identifier MUZZLER_ID = Identifier.of(MOD_ID, "muzzler");
+    public static Identifier AVARICIOUS_ID = Identifier.of(MOD_ID, "avaricious");
+    public static Identifier NECROMANCER_ID = Identifier.of(MOD_ID, "necromancer");
     public static Identifier FAKE_DEATH_REASON = Identifier.of(Noellesroles.MOD_ID, "fake");
     public static Identifier STALKER_EXECUTION_DEATH = Identifier.of(MOD_ID, "stalker_execution");
     public static Identifier DEATH_REASON_BOMB = Identifier.of(MOD_ID, "bomb");
@@ -300,6 +306,8 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier MAGICIAN_PLAYBACK_FINISHED_EVENT = Identifier.of(MOD_ID, "magician_playback_finished");
     public static final Identifier MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT = Identifier.of(MOD_ID, "magician_playback_stopped_early");
     public static final Identifier MAGICIAN_PLAYBACK_FORCED_END_EVENT = Identifier.of(MOD_ID, "magician_playback_forced_end");
+    public static final Identifier AVARICIOUS_STOLE_COINS_EVENT = Identifier.of(MOD_ID, "avaricious_stole_coins");
+    public static final Identifier NECROMANCER_REVIVED_EVENT = Identifier.of(MOD_ID, "necromancer_revived");
 
 
 
@@ -349,6 +357,10 @@ public class Noellesroles implements ModInitializer {
     public static Role STARSTRUCK = WatheRoles.registerCivilianRole(new Role(STARSTRUCK_ID, StarstruckConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime() + StarstruckConstants.SPRINT_TIME_BONUS_TICKS, false));
     // 静语者(杀手)
     public static Role MUZZLER = WatheRoles.registerKillerRole(new Role(MUZZLER_ID, MuzzlerConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, WatheRoles.KILLER.getMaxSprintTime(), true));
+    // 扒手(杀手)
+    public static Role AVARICIOUS = WatheRoles.registerKillerRole(new Role(AVARICIOUS_ID, AvariciousConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
+    // 死灵法师(杀手)
+    public static Role NECROMANCER = WatheRoles.registerKillerRole(new Role(NECROMANCER_ID, NecromancerConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //大嗓门(好人)
     public static Role NOISEMAKER =WatheRoles.registerCivilianRole(new Role(NOISEMAKER_ID, new Color(200, 255, 0).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
     //交换者(杀手)
@@ -462,6 +474,8 @@ public class Noellesroles implements ModInitializer {
         WaiterInteractionHandler.init();
         StarstruckAbility.registerTaskCompletionApi();
         MuzzlerInteractionHandler.init();
+        NecromancerRevivalHandler.init();
+        NecromancerRoleLimitHandler.init();
         MagicianPlaybackManager.init();
 
 
@@ -607,6 +621,18 @@ public class Noellesroles implements ModInitializer {
                 Identifier.of(MOD_ID, "task_income"),
                 TaskCompletionApi.DEFAULT_PRIORITY,
                 context -> taskIncomeRoles.contains(context.role()) ? 50 : 0
+        );
+
+        /*
+         * 扒手虽然是杀手阵营、也能使用默认杀手商店，但它的设计金币来源是“靠近玩家定时结算”。
+         * 这里显式拒绝 Wathe 通用杀手被动收入，避免它同时吃到两套经济来源。
+         */
+        EconomyApi.registerPassiveIncomeRule(
+                Identifier.of(MOD_ID, "avaricious_no_default_passive_income"),
+                EconomyApi.DEFAULT_PRIORITY,
+                context -> context.role() == AVARICIOUS
+                        ? EconomyApi.PassiveIncomeDecision.DENY
+                        : EconomyApi.PassiveIncomeDecision.PASS
         );
 
         /*
@@ -1105,6 +1131,8 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackFinished);
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackStoppedEarly);
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_FORCED_END_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackForcedEnd);
+        ReplayRegistry.registerGlobalEventFormatter(AVARICIOUS_STOLE_COINS_EVENT, NoellesRolesReplayFormatters::formatAvariciousStoleCoins);
+        ReplayRegistry.registerGlobalEventFormatter(NECROMANCER_REVIVED_EVENT, NoellesRolesReplayFormatters::formatNecromancerRevived);
         ReplayRegistry.registerDeathReasonFormatter(ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
         ReplayRegistry.registerDeathReasonFormatter(SPIRITUALIST_SOUL_GUARD_DEATH_REASON, NoellesRolesReplayFormatters::formatSpiritualistSoulGuardDeath);

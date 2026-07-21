@@ -74,7 +74,9 @@
       "noellesroles:cook",
       "noellesroles:physician",
       "noellesroles:starstruck",
-      "noellesroles:silence"
+      "noellesroles:silence",
+      "noellesroles:avaricious_payout",
+      "noellesroles:necromancer"
     ]
   },
   "mixins": [
