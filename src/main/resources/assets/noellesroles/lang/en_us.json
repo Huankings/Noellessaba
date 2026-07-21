@@ -373,12 +373,6 @@
       "replay.global.noellesroles.controller_possess_stopped_early": "%s ended their possession of %s early",
       "replay.global.noellesroles.controller_possess_ended": "%s's possession ended",
       "replay.death.noellesroles.sedative_overdose.died": "%s died from a sedative overdose",
-      "guidebook.role.noellesroles:dreamer": "Dreamer",
-      "guidebook.role.title.noellesroles:dreamer": "Illusion Weaver",
-      "guidebook.role.description.noellesroles:dreamer": "The Dreamer serves the killer organization, walking between reality and illusion.\n\nStarts with Dream Imprint, which can be used on a target, allowing them to withstand one extra attack.\n\nWhen a marked target takes damage, they are instantly teleported back to the Dreamer, and the Dreamer gains one count toward the number of non-killer players who have taken the Illusion Reagent.\n\nThe number of non-killer players required to take the Illusion Reagent is one-quarter of the total players. When enough non-killer players have taken it, the Dreamer's identity transforms into a killer.\n\nTo the Dreamer, reality is merely a dream that can be rewritten.",
-      "guidebook.role.noellesroles:hacker": "Hacker",
-      "guidebook.role.title.noellesroles:hacker": "Shadow Supporter",
-      "guidebook.role.description.noellesroles:hacker": "The Hacker is a technical elite working in the shadows to help killers achieve their winning goal.\n\nThe Hacker equips all killers with phones, enabling remote communication.\n\nCracking roles is also a skill a hacker should possess. After staring at a player long enough, they can crack that player's role, send it to all killers' phones, and get coins.\n\nThe Hacker can also use technology to help killers turn off lights, refresh weapon or ability cooldowns, and clear potion effects from them.\n\nRemember, the Hacker needs to stay undercover. Never reveal your role to civilians too early...",
       "replay.stage.noellesroles.stalker.phase1": "Phase One",
       "replay.stage.noellesroles.stalker.phase2": "Phase Two",
       "replay.stage.noellesroles.stalker.phase3": "Phase Three"
