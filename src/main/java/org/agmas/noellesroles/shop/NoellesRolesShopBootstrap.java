@@ -11,11 +11,13 @@ import org.agmas.noellesroles.roles.assassin.AssassinShopHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderShopHandler;
 import org.agmas.noellesroles.roles.bomber.BomberShopHandler;
 import org.agmas.noellesroles.roles.controller.ControllerShopHandler;
+import org.agmas.noellesroles.roles.cook.CookShopHandler;
 import org.agmas.noellesroles.roles.coward.CowardShopHandler;
 import org.agmas.noellesroles.roles.coroner.CoronerShopHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerShopHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.hacker.HackerShopHandler;
+import org.agmas.noellesroles.roles.physician.PhysicianShopHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetShopHandler;
 import org.agmas.noellesroles.roles.recaller.RecallerShopHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererShopHandler;
@@ -52,7 +54,8 @@ public final class NoellesRolesShopBootstrap {
         registerStatic(Noellesroles.NOISEMAKER, NoisemakerShopHandler::getShopEntries);
         registerStatic(Noellesroles.CORONER, CoronerShopHandler::getShopEntries);
         registerStatic(Noellesroles.COWARD, CowardShopHandler::getShopEntries);
-        // 服务员商店是静态列表，顺序、价格和商品类型都在 WaiterShopHandler 里集中维护。
+        registerStatic(Noellesroles.COOK, CookShopHandler::getShopEntries);
+        registerStatic(Noellesroles.PHYSICIAN, PhysicianShopHandler::getShopEntries);
         registerStatic(Noellesroles.WAITER, WaiterShopHandler::getShopEntries);
 
         // 杀手阵营静态商店。

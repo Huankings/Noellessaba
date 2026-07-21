@@ -8,6 +8,7 @@ import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerAppearanceH
 import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.morphling.MorphlingAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.hacker.HackerTargetHudHandler;
+import org.agmas.noellesroles.client.appearance.roles.physician.PhysicianBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.spiritualist.SpiritualistAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.shared.InvisibleNameHudHandler;
 
@@ -32,5 +33,6 @@ public final class NoellesAppearanceHandlers {
         HackerCohortHudHandler.register();
         KillerSidedNeutralTargetHudHandler.register();
         HackerTargetHudHandler.register();
+        PhysicianBodyHudHandler.register();
     }
 }

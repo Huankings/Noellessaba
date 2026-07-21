@@ -522,7 +522,28 @@
   "guidebook.role.description.noellesroles:hacker": "黑客是杀手团队中的技术精英，他会在暗地里帮助杀手达成获胜目标。\n\n黑客为所有杀手都配备了手机，这可以方便他们远程交流。\n\n破解身份的技术也是一个黑客该具备的技能，他可以在对着一名玩家看足够久的时间后完成对其身份的破解，并发送到全体杀手同伙的手机上，然后获得报酬。\n\n当然，黑客也可以利用自己的技术帮助杀手关闭灯光、刷新武器冷却或技能冷却，甚至是清除他们身上的的药水效果！\n\n铭记黑客需要伪装，万万不可过早向平民暴露自己的身份...",
   "replay.stage.noellesroles.stalker.phase1": "一阶段",
   "replay.stage.noellesroles.stalker.phase2": "二阶段",
-  "replay.stage.noellesroles.stalker.phase3": "三阶段"
+  "replay.stage.noellesroles.stalker.phase3": "三阶段",
+  "announcement.role.noellesroles.cook": "厨师",
+  "announcement.goals.noellesroles.cook": "透过墙壁看见吃过东西的玩家！",
+  "announcement.role.noellesroles.physician": "医师",
+  "announcement.goals.noellesroles.physician": "透过墙壁看见中毒或幻觉的玩家，然后治疗他们",
+  "tip.noellesroles.physician.medical_kit": "你感觉好多了",
+  "tip.noellesroles.physician.poisoned": "有人似乎出现了异常状态",
+  "hud.physician.death_info": "死于 %s 秒前，死因是",
+  "item.noellesroles.medical_kit": "医疗箱",
+  "item.noellesroles.medical_kit.tooltip": "用于玩家，可移除真毒和幻觉试剂效果\n冷却 1 分钟",
+  "item.noellesroles.pan": "平底锅",
+  "item.noellesroles.pan.tooltip": "右键蓄力一秒，靠近目标即可击晕 5 秒\n当蓄力期间遭受枪击，则摧毁平底锅来抵消此次伤害\n冷却 45 秒",
+  "item.noellesroles.pill": "药丸",
+  "item.noellesroles.pill.tooltip": "右键食用\n让玩家额外承受一次可被护盾抵挡的伤害\n一次性物品，冷却 3 分钟",
+  "replay.item_use.noellesroles.medical_kit": "%s 用医疗箱解除了 %s 的异常状态",
+  "replay.item_use.noellesroles.pill": "%s 饮用了药丸",
+  "replay.item_hit.noellesroles.pan": "%s 用平底锅敲晕了 %s",
+  "replay.global.noellesroles.pan_stun_end": "%s 的眩晕状态解除",
+  "replay.shield_blocked.noellesroles.pill.item": "%s 的药丸抵挡住了来自 %s 的伤害",
+  "replay.shield_blocked.noellesroles.pill.by_item": "%s 的药丸抵挡住了来自 %s 的 %s 伤害",
+  "replay.shield_blocked.noellesroles.pan.item": "%s 的平底锅抵挡了来自 %s 的伤害",
+  "replay.shield_blocked.noellesroles.pan.by_item": "%s 的平底锅抵挡了来自 %s 的 %s 伤害"
 }
 
 

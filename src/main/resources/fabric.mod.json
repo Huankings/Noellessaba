@@ -70,7 +70,9 @@
       "noellesroles:spiritualist_player",
       "noellesroles:spiritualist_host",
       "noellesroles:hidden_bodies",
-      "noellesroles:waiter"
+      "noellesroles:waiter",
+      "noellesroles:cook",
+      "noellesroles:physician"
     ]
   },
   "mixins": [

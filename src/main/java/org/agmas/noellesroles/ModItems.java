@@ -11,7 +11,9 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.item.*;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.cook.CookConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
+import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 
 public class ModItems {
     public static void init() {
@@ -36,6 +38,9 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(ICON_WEAPON_COOLDOWN_REFRESH, HackerConstants.REFRESH_WEAPON_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(ICON_ABILITY_COOLDOWN_REFRESH, HackerConstants.REFRESH_ABILITY_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(ICON_POTION_EFFECT_REFRESH, HackerConstants.REFRESH_POTION_EFFECT_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(MEDICAL_KIT, PhysicianConstants.MEDICAL_KIT_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(PAN, CookConstants.PAN_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(PILL, PhysicianConstants.PILL_COOLDOWN_TICKS);
     }
 
     /**
@@ -117,6 +122,21 @@ public class ModItems {
     public static final Item DREAM_IMPRINT = register(
             new DreamImprintItem(new Item.Settings().maxCount(4)),
             "dream_imprint"
+    );
+    //医疗箱
+    public static final Item MEDICAL_KIT = register(
+            new MedicalKitItem(new Item.Settings().maxCount(1)),
+            "medical_kit"
+    );
+    //平底锅
+    public static final Item PAN = register(
+            new PanItem(new Item.Settings().maxCount(1)),
+            "pan"
+    );
+    //药丸
+    public static final Item PILL = register(
+            new PillItem(new Item.Settings().maxCount(1)),
+            "pill"
     );
     //黑客手机
     public static final Item PHONE = register(

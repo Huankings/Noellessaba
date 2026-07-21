@@ -52,8 +52,13 @@ public final class AssassinVisibility {
     }
 
     public static boolean isPhysician(@Nullable Role role) {
-        return role != null
-                && FabricLoader.getInstance().isModLoaded("kinswathe")
+        if (role == null) {
+            return false;
+        }
+        if (role == Noellesroles.PHYSICIAN) {
+            return true;
+        }
+        return FabricLoader.getInstance().isModLoaded("kinswathe")
                 && PHYSICIAN_ROLE_ID.equals(role.identifier());
     }
 }

@@ -294,6 +294,80 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatMedicalKitUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.item_use.noellesroles.medical_kit", actor, target);
+    }
+
+    @Nullable
+    public static Text formatPillUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.pill", actor);
+    }
+
+    @Nullable
+    public static Text formatPanHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.item_hit.noellesroles.pan", actor, target);
+    }
+
+    @Nullable
+    public static Text formatPanStunEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        return victim == null ? null : Text.translatable("replay.global.noellesroles.pan_stun_end", victim);
+    }
+
+    @Nullable
+    public static Text formatPillShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        return formatSimpleShieldBlocked(
+                event,
+                match,
+                world,
+                "replay.shield_blocked.noellesroles.pill.item",
+                "replay.shield_blocked.noellesroles.pill.by_item"
+        );
+    }
+
+    @Nullable
+    public static Text formatPanShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        return formatSimpleShieldBlocked(
+                event,
+                match,
+                world,
+                "replay.shield_blocked.noellesroles.pan.item",
+                "replay.shield_blocked.noellesroles.pan.by_item"
+        );
+    }
+
+    private static @Nullable Text formatSimpleShieldBlocked(GameRecordEvent event,
+                                                            GameRecordManager.MatchRecord match,
+                                                            ServerWorld world,
+                                                            String itemKey,
+                                                            String byItemKey) {
+        Text victim = targetText(event, match);
+        if (victim == null) {
+            return null;
+        }
+
+        Text damageName = DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        if (event.data().containsUuid("actor")) {
+            Text attacker = actorText(event, match);
+            if (attacker != null) {
+                return Text.translatable(byItemKey, victim, attacker, damageName);
+            }
+        }
+        return Text.translatable(itemKey, victim, damageName);
+    }
+
+    @Nullable
     public static Text formatDelusionStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = victimFromGlobal(event, match);
         return victim == null ? null : Text.translatable("replay.global.noellesroles.delusion_started", victim);

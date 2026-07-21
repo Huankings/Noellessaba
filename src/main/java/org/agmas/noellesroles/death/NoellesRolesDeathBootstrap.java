@@ -4,10 +4,12 @@ import dev.doctor4t.wathe.api.event.AllowPlayerDeath;
 import org.agmas.noellesroles.roles.angel.AngelDeathProtectionHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderDeathProtectionHandler;
 import org.agmas.noellesroles.roles.controller.ControllerDeathProtectionHandler;
+import org.agmas.noellesroles.roles.cook.CookDeathProtectionHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerBackfireDeathHandler;
 import org.agmas.noellesroles.roles.jester.JesterDeathProtectionHandler;
 import org.agmas.noellesroles.roles.mimic.MimicBackfireDeathHandler;
+import org.agmas.noellesroles.roles.physician.PhysicianDeathProtectionHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetDeathProtectionHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistDeathProtectionHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
@@ -85,6 +87,12 @@ public final class NoellesRolesDeathBootstrap {
                 return false;
             }
             if (!DreamerDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
+                return false;
+            }
+            if (!CookDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
+                return false;
+            }
+            if (!PhysicianDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
                 return false;
             }
             if (!BartenderDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {

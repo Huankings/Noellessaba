@@ -99,6 +99,7 @@
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",
     "roles.rememberer.SniperRifleRenderPoseMixin",
-    "roles.waiter.WaiterCrosshairMixin"
+    "roles.waiter.WaiterCrosshairMixin",
+    "roles.cook.PanCrosshairMixin"
   ]
 }

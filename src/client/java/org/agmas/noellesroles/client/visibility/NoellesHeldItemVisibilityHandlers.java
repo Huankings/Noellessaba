@@ -26,6 +26,7 @@ public final class NoellesHeldItemVisibilityHandlers {
          */
         HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.BARTENDER, ModItems.DEFENSE_VIAL);
         HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.ENGINEER, ModItems.CAPTURE_DEVICE);
+        HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.PHYSICIAN, ModItems.PILL);
         HeldItemInvisibilityApi.registerHiddenItems(Noellesroles.TRAPPER, List.of(
                 Items.PAPER,
                 ModItems.ROLE_MINE

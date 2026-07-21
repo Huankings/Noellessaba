@@ -73,9 +73,9 @@
     "roles.spiritualist.PlayerEntityPoseInvoker",
     "roles.waiter.PlayerMoodComponentAccessor",
     "roles.waiter.WaiterTaskIncomeMixin",
-    "roles.waiter.FoodPlatterWaiterTakeMixin"
-
-
+    "roles.waiter.FoodPlatterWaiterTakeMixin",
+    "roles.cook.CookFinishEatMixin",
+    "roles.physician.PhysicianTipPoisonMixin"
 
   ],
   "injectors": {

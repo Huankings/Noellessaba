@@ -52,8 +52,10 @@ import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.mixin.roles.spiritualist.PlayerEntityPoseInvoker;
 import org.agmas.noellesroles.roles.assassin.BayonetKnockbackHandler;
+import org.agmas.noellesroles.roles.cook.CookConstants;
 import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
+import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
 import org.jetbrains.annotations.NotNull;
@@ -499,7 +501,7 @@ public final class SpiritualistManager {
             int usedTicks = host.getItemUseTime();
             host.stopUsingItem();
             tryHandleWatheKnifeRelease(host, releasedStack, usedTicks);
-            tryHandleKinsWatheChargedRelease(host, releasedStack, usedTicks);
+            tryHandlePacketBackedChargedRelease(host, releasedStack, usedTicks);
             component.lastPossessionUsing = false;
             return;
         }
@@ -1037,14 +1039,27 @@ public final class SpiritualistManager {
     }
 
     /**
-     * 软兼容 kinswathe 那类“起手在 item.use，真正效果在 onStoppedUsing 客户端发包”的蓄力武器。
+     * 处理“起手在 item.use，真正效果在 onStoppedUsing 客户端发包”的蓄力武器。
+     *
+     * <p>灵术师附身时没有宿主自己的客户端发包，所以这里在服务端补齐释放结算。
+     * 平底锅已经从 kinssaba 搬到 NoellesRoles，优先走本模组物品和眩晕组件；
+     * 旧 kinssaba 猎刀/平底锅兼容仍保留，方便玩家混用旧包时不丢手感。</p>
      */
-    private static void tryHandleKinsWatheChargedRelease(
+    private static void tryHandlePacketBackedChargedRelease(
             @NotNull ServerPlayerEntity host,
             @NotNull ItemStack releasedStack,
             int usedTicks
     ) {
-        if (!isKinsWatheLoaded() || host.isSpectator()) {
+        if (host.isSpectator()) {
+            return;
+        }
+
+        if (releasedStack.isOf(ModItems.PAN)) {
+            tryHandleNoellesPanRelease(host, releasedStack, usedTicks);
+            return;
+        }
+
+        if (!isKinsWatheLoaded()) {
             return;
         }
 
@@ -1056,6 +1071,37 @@ public final class SpiritualistManager {
         if (isItemId(releasedStack, KINSWATHE_PAN_ID)) {
             tryHandleKinsWathePanRelease(host, releasedStack, usedTicks);
         }
+    }
+
+    private static void tryHandleNoellesPanRelease(
+            @NotNull ServerPlayerEntity host,
+            @NotNull ItemStack releasedStack,
+            int usedTicks
+    ) {
+        if (usedTicks < CookConstants.PAN_MIN_USE_TICKS
+                || usedTicks > CookConstants.PAN_MAX_USE_TICKS_FOR_HIT) {
+            return;
+        }
+
+        HitResult collision = ProjectileUtil.getCollision(
+                host,
+                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                CookConstants.PAN_TARGET_RANGE
+        );
+        if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
+            return;
+        }
+        if (target.distanceTo(host) > CookConstants.PAN_TARGET_RANGE) {
+            return;
+        }
+
+        StunnedPlayerComponent.KEY.get(target).stun(CookConstants.PAN_STUN_TICKS, Noellesroles.PAN_STUN_END_EVENT);
+        if (target instanceof ServerPlayerEntity serverTarget) {
+            GameRecordManager.recordItemHit(host, releasedStack, serverTarget, null);
+        }
+        applyPacketBackedItemAfterUsing(host, releasedStack.getItem(), null);
+        target.playSound(SoundEvents.BLOCK_ANVIL_LAND, 0.8f, 0.8f);
+        host.swingHand(Hand.MAIN_HAND);
     }
 
     private static void tryHandleKinsWatheHuntingKnifeRelease(
@@ -1091,7 +1137,7 @@ public final class SpiritualistManager {
         }
 
         resetKinsHunterComponent(host);
-        applyExternalItemAfterUsing(host, releasedStack.getItem(), null);
+        applyPacketBackedItemAfterUsing(host, releasedStack.getItem(), null);
         GameFunctions.killPlayer(target, true, host, GameConstants.DeathReasons.KNIFE);
         target.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0f, 1.0f);
         host.swingHand(Hand.MAIN_HAND);
@@ -1123,7 +1169,7 @@ public final class SpiritualistManager {
         if (target instanceof ServerPlayerEntity serverTarget) {
             GameRecordManager.recordItemHit(host, releasedStack, serverTarget, null);
         }
-        applyExternalItemAfterUsing(host, releasedStack.getItem(), null);
+        applyPacketBackedItemAfterUsing(host, releasedStack.getItem(), null);
         target.playSound(SoundEvents.BLOCK_ANVIL_LAND, 0.8f, 0.8f);
         host.swingHand(Hand.MAIN_HAND);
     }
@@ -1249,12 +1295,12 @@ public final class SpiritualistManager {
     }
 
     /**
-     * 复刻 kinswathe 的 KinsWatheItems#setItemAfterUsing，但只依赖 Wathe 本体与运行时物品实例。
+     * 复刻“客户端发包型物品命中后设置冷却 / 可选消耗”的收束逻辑。
      *
-     * <p>这样我们就能在“kinswathe 已加载”时复用它的冷却语义，
-     * 同时不需要给 noellesroles 添加任何编译时硬依赖。</p>
+     * <p>kinssaba 猎刀和平底锅、NoellesRoles 平底锅都把真正命中结算放在客户端包里。
+     * 灵术师附身代理在服务端补结算时，也必须补上同样的冷却/消耗步骤。</p>
      */
-    private static void applyExternalItemAfterUsing(
+    private static void applyPacketBackedItemAfterUsing(
             @NotNull PlayerEntity player,
             @NotNull Item item,
             @Nullable Hand hand

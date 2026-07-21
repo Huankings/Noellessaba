@@ -12,6 +12,7 @@ import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
+import org.agmas.noellesroles.roles.cook.CookPlayerComponent;
 import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
@@ -30,6 +31,7 @@ import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
 import org.agmas.noellesroles.roles.phantom.PhantomPlayerComponent;
+import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
 import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
 import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
@@ -92,6 +94,8 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, HackerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(HackerComponent::new);
         registry.beginRegistration(PlayerEntity.class, HackerPhoneComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(HackerPhoneComponent::new);
         registry.beginRegistration(PlayerEntity.class, WaiterPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WaiterPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, CookPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(CookPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, PhysicianPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(PhysicianPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SpiritualistPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpiritualistPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SpiritualistHostComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpiritualistHostComponent::new);
     }
