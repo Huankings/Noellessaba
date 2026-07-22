@@ -301,6 +301,24 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatCleanerClearItems(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable("replay.skill_use.noellesroles.cleaner", actor, event.data().getInt("price"));
+    }
+
+    @Nullable
+    public static Text formatHunterRefresh(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable("replay.skill_use.noellesroles.hunter", actor, event.data().getInt("price"));
+    }
+
+    @Nullable
     public static Text formatStarstruckAbilityEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.starstruck_end", actor);
@@ -314,6 +332,26 @@ public final class NoellesRolesReplayFormatters {
             return null;
         }
         return Text.translatable("replay.item_use.noellesroles.tape", actor, target);
+    }
+
+    @Nullable
+    public static Text formatSulfuricAcidBarrelUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text corpseOwner = playerFromKey(event, match, "body_owner");
+        if (actor == null || corpseOwner == null) {
+            return null;
+        }
+        return Text.translatable("replay.item_use.noellesroles.sulfuric_acid_barrel", actor, corpseOwner);
+    }
+
+    @Nullable
+    public static Text formatHuntingKnifeHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.item_hit.noellesroles.hunting_knife", actor, target);
     }
 
     @Nullable

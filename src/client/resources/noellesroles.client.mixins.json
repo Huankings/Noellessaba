@@ -81,7 +81,11 @@
     "roles.muzzler.MuzzlerPsychoDroneMixin",
     "roles.muzzler.MuzzlerPsychoDroneLoopMixin",
     "roles.avaricious.AvariciousHudMixin",
-    "roles.necromancer.NecromancerHudMixin"
+    "roles.necromancer.NecromancerHudMixin",
+    "roles.cleaner.CleanerHudMixin",
+    "roles.hunter.HunterFovMixin",
+    "roles.hunter.HunterHudMixin",
+    "roles.hunter.HunterLockSlotMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -108,6 +112,7 @@
     "roles.rememberer.SniperRifleArmPoseMixin",
     "roles.rememberer.SniperRifleRenderPoseMixin",
     "roles.waiter.WaiterCrosshairMixin",
-    "roles.cook.PanCrosshairMixin"
+    "roles.cook.PanCrosshairMixin",
+    "roles.hunter.HuntingKnifeCrosshairMixin"
   ]
 }

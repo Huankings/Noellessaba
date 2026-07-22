@@ -17,6 +17,7 @@ import org.agmas.noellesroles.roles.coroner.CoronerShopHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerShopHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.hacker.HackerShopHandler;
+import org.agmas.noellesroles.roles.hunter.HunterShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianShopHandler;
@@ -90,6 +91,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(Noellesroles.MOD_ID, "muzzler_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 MuzzlerShopHandler::modifyShop
+        );
+        /*
+         * 追猎者和 kinssaba 一样只对默认杀手商店做局部改动：
+         * 删除毒物、插入猎刀、提高普通匕首价格。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(Noellesroles.MOD_ID, "hunter_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                HunterShopHandler::modifyShop
         );
         /*
          * 死灵法师沿用 StupidExpress 默认配置：有杀手能力，但没有杀手商店。

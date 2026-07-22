@@ -24,6 +24,7 @@ import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
+import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
@@ -104,6 +105,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, SpiritualistHostComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpiritualistHostComponent::new);
         registry.beginRegistration(PlayerEntity.class, StarstruckPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(StarstruckPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SilencePlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SilencePlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, HunterPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(HunterPlayerComponent::new);
     }
 
     @Override

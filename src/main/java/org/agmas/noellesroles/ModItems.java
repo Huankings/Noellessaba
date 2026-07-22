@@ -13,8 +13,10 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.item.*;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.agmas.noellesroles.roles.cook.CookConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
+import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 
@@ -46,6 +48,9 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(PILL, PhysicianConstants.PILL_COOLDOWN_TICKS);
         // 静语者胶带冷却来自原 StarryExpress Muzzler 配置，现固定为 NoellesRoles 常量。
         GameConstants.ITEM_COOLDOWNS.put(TAPE, MuzzlerConstants.TAPE_COOLDOWN_TICKS);
+        // 猎刀和硫酸桶来自 kinssaba，冷却值迁入各自职业常量，避免继续读取 kinssaba config。
+        GameConstants.ITEM_COOLDOWNS.put(HUNTING_KNIFE, HunterConstants.HUNTING_KNIFE_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(SULFURIC_ACID_BARREL, CleanerConstants.SULFURIC_ACID_BARREL_COOLDOWN_TICKS);
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -78,6 +83,8 @@ public class ModItems {
             entries.add(PAN);
             entries.add(PILL);
             entries.add(TAPE);
+            entries.add(HUNTING_KNIFE);
+            entries.add(SULFURIC_ACID_BARREL);
             entries.add(PHONE);
             entries.add(DEFENSE_VIAL);
             entries.add(SEDATIVE);
@@ -193,6 +200,16 @@ public class ModItems {
     public static final Item TAPE = register(
             new TapeItem(new Item.Settings().maxCount(1)),
             "tape"
+    );
+    // 猎刀
+    public static final Item HUNTING_KNIFE = register(
+            new HuntingKnifeItem(new Item.Settings().maxCount(1)),
+            "hunting_knife"
+    );
+    // 硫酸桶
+    public static final Item SULFURIC_ACID_BARREL = register(
+            new SulfuricAcidBarrelItem(new Item.Settings().maxCount(1)),
+            "sulfuric_acid_barrel"
     );
     //黑客手机
     public static final Item PHONE = register(

@@ -57,6 +57,8 @@ import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
+import org.agmas.noellesroles.roles.hunter.HunterConstants;
+import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1042,7 +1044,7 @@ public final class SpiritualistManager {
      * 处理“起手在 item.use，真正效果在 onStoppedUsing 客户端发包”的蓄力武器。
      *
      * <p>灵术师附身时没有宿主自己的客户端发包，所以这里在服务端补齐释放结算。
-     * 平底锅已经从 kinssaba 搬到 NoellesRoles，优先走本模组物品和眩晕组件；
+     * 平底锅和猎刀已经从 kinssaba 搬到 NoellesRoles，优先走本模组物品、组件和回放；
      * 旧 kinssaba 猎刀/平底锅兼容仍保留，方便玩家混用旧包时不丢手感。</p>
      */
     private static void tryHandlePacketBackedChargedRelease(
@@ -1051,6 +1053,11 @@ public final class SpiritualistManager {
             int usedTicks
     ) {
         if (host.isSpectator()) {
+            return;
+        }
+
+        if (releasedStack.isOf(ModItems.HUNTING_KNIFE)) {
+            tryHandleNoellesHuntingKnifeRelease(host, releasedStack, usedTicks);
             return;
         }
 
@@ -1071,6 +1078,61 @@ public final class SpiritualistManager {
         if (isItemId(releasedStack, KINSWATHE_PAN_ID)) {
             tryHandleKinsWathePanRelease(host, releasedStack, usedTicks);
         }
+    }
+
+    private static void tryHandleNoellesHuntingKnifeRelease(
+            @NotNull ServerPlayerEntity host,
+            @NotNull ItemStack releasedStack,
+            int usedTicks
+    ) {
+        if (usedTicks < HunterConstants.HUNTING_KNIFE_MIN_USE_TICKS
+                || usedTicks > POSSESSION_HUNTING_KNIFE_MAX_USE_TICKS_FOR_HIT) {
+            return;
+        }
+
+        /*
+         * 猎刀正常使用时，客户端松手后会发送 HuntingKnifeC2SPacket。
+         * 附身状态下真正按键的是灵术师客户端，宿主客户端不会帮宿主发包；
+         * 所以这里在服务端用宿主当前朝向重新做一次命中判定，补回等价的猎刀结算。
+         */
+        HitResult collision = ProjectileUtil.getCollision(
+                host,
+                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+        );
+        if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
+            return;
+        }
+        if (target.distanceTo(host) > HunterConstants.HUNTING_KNIFE_TARGET_RANGE) {
+            return;
+        }
+
+        if (target instanceof ServerPlayerEntity serverTarget) {
+            /*
+             * 回放里传入 releasedStack，确保展示的是 NoellesRoles 的“猎刀”物品名，
+             * 死因仍沿用 Wathe 的 knife_stab，保持和普通猎刀发包一致。
+             */
+            GameRecordManager.recordItemHit(
+                    host,
+                    releasedStack,
+                    GameConstants.DeathReasons.KNIFE,
+                    serverTarget,
+                    null
+            );
+        }
+
+        /*
+         * host.stopUsingItem() 已经触发了 HuntingKnifeItem#setTemporaryCooldown，
+         * 这里成功命中后再按真正击杀逻辑收束组件，并覆盖为完整击杀冷却。
+         * 创造/旁观语义玩家用于调试时不写冷却，和 HuntingKnifeC2SPacket 保持一致。
+         */
+        HunterPlayerComponent.KEY.get(host).reset();
+        if (!GameFunctions.isPlayerSpectatingOrCreative(host)) {
+            host.getItemCooldownManager().set(ModItems.HUNTING_KNIFE, HunterConstants.HUNTING_KNIFE_COOLDOWN_TICKS);
+        }
+        GameFunctions.killPlayer(target, true, host, GameConstants.DeathReasons.KNIFE);
+        target.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0f, 1.0f);
+        host.swingHand(Hand.MAIN_HAND, true);
     }
 
     private static void tryHandleNoellesPanRelease(

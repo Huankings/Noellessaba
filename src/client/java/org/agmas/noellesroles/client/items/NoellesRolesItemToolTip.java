@@ -4,6 +4,7 @@ import dev.doctor4t.ratatouille.util.TextUtils;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.util.WatheItemTooltips;
 import dev.doctor4t.wathe.game.GameConstants;
+import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.item.Item;
@@ -14,6 +15,8 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.hunter.HunterConstants;
+import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +78,17 @@ public class NoellesRolesItemToolTip {
             return displayedTicks > 0 ? displayedTicks : getItemCooldownTicks(item);
         }
 
+        if (item == ModItems.HUNTING_KNIFE) {
+            HunterPlayerComponent hunter = HunterPlayerComponent.KEY.get(client.player);
+            if (hunter.isUsingStartCooldown(item)) {
+                return HunterConstants.HUNTING_KNIFE_START_COOLDOWN_TICKS;
+            }
+            if (hunter.knifeTicks > 0) {
+                return GameConstants.getInTicks(0, hunter.knifeTicks / 10);
+            }
+            return getItemCooldownTicks(item);
+        }
+
         if (item != ModItems.TIMED_BOMB) {
             return getItemCooldownTicks(item);
         }
@@ -130,6 +144,21 @@ public class NoellesRolesItemToolTip {
             initItemCooldown(); // 确保预设冷却已加载
             ItemCooldownManager itemCooldown = MinecraftClient.getInstance().player.getItemCooldownManager();
             if (itemCooldown != null && itemCooldown.isCoolingDown(item)) {
+                /*
+                 * 调试身份不受猎刀冷却影响，tooltip 也不要继续显示冷却倒计时，
+                 * 否则界面会和实际“可继续使用”的行为互相矛盾。
+                 */
+                if (item == ModItems.HUNTING_KNIFE && GameFunctions.isPlayerSpectatingOrCreative(MinecraftClient.getInstance().player)) {
+                    return;
+                }
+                /*
+                 * 猎刀松开“疾跑举刀”后会写入一段临时冷却。
+                 * kinssaba 对这类冷却只显示“冷却中...”，避免把短暂、动态的两倍举刀时间误展示成固定物品冷却。
+                 */
+                if (item == ModItems.HUNTING_KNIFE && HunterPlayerComponent.KEY.get(MinecraftClient.getInstance().player).knifeTicks > 0) {
+                    list.add(Text.translatable("tip.noellesroles.cooldown_temporary").withColor(WatheItemTooltips.COOLDOWN_COLOR));
+                    return;
+                }
                 float progress = itemCooldown.getCooldownProgress(item, 0);
                 int totalTicks = getCurrentCooldownTicks(item);
                 if (totalTicks > 0) {

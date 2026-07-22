@@ -52,6 +52,8 @@
     "roles.assassin.AssassinReseterMixin",
     "roles.assassin.SilentGrenadeMixin",
     "roles.assassin.SilencedRevolverGunShootMixin",
+    "roles.hunter.HunterLockSlotMixin",
+    "roles.hunter.HunterSprintMixin",
     "roles.robber.RobberReseterMixin",
     "roles.operator.OperatorReseterMixin",
     "roles.coward.CowardRevolverCooldownMixin",

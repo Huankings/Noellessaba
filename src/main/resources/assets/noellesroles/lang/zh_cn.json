@@ -2,6 +2,7 @@
   "key.noellesroles.ability": "能力",
   "tip.selected": "已选中",
   "tip.noellesroles.cooldown": "能力在 %s 秒后可用",
+  "tip.noellesroles.cooldown_temporary": "冷却中...",
   "ui.noellesroles.pagination.previous": "上一页",
   "ui.noellesroles.pagination.next": "下一页",
   "entity.noellesroles.magician_playback": "魔术师皮套",
@@ -30,7 +31,6 @@
 
   "announcement.goals.noellesroles.morphling": "变成其他人的样子愚弄所有人。",
   "announcement.role.noellesroles.morphling": "变形怪",
-  "tip.phantom": "按下 %s 键来隐形！",
   "hud.noellesroles.morphling.ready": "变形已就绪",
   "hud.noellesroles.morphling.active": "变形中，剩余 %s 秒结束",
   "hud.noellesroles.morphling.cooldown": "冷却中，剩余 %s 秒结束",
@@ -87,6 +87,16 @@
 
   "announcement.goals.noellesroles.assassin": "悄无声息的完成谋杀！",
   "announcement.role.noellesroles.assassin": "刺客",
+
+  "announcement.goals.noellesroles.cleaner": "扫除一切障碍！",
+  "announcement.role.noellesroles.cleaner": "清道夫",
+  "tip.noellesroles.cleaner.use": "按下 %s 键清理掉落物",
+  "tip.noellesroles.cleaner.not_enough_money": "需要 %s§f\uE781§r 清理掉落物",
+
+  "announcement.goals.noellesroles.hunter": "尽情享受你的猎物！",
+  "announcement.role.noellesroles.hunter": "追猎者",
+  "tip.noellesroles.hunter.use": "按下 %s 键刷新匕首猎刀冷却",
+  "tip.noellesroles.hunter.not_enough_money": "需要 %s§f\uE781§r 刷新匕首猎刀冷却",
 
 
   "announcement.goals.noellesroles.bartender": "透过墙壁看见喝酒和中毒的玩家！",
@@ -163,6 +173,7 @@
 
   "announcement.goals.noellesroles.phantom": "可以隐形，但要小心你还有碰撞体积。",
   "announcement.role.noellesroles.phantom": "幻灵",
+  "tip.phantom": "按下 %s 键来隐形！",
 
   "announcement.goals.noellesroles.noisemaker": "你可以广播所有人的位置,而自己被遇害后发光。",
   "announcement.role.noellesroles.noisemaker": "大嗓门",
@@ -360,6 +371,10 @@
   "item.noellesroles.robber_pistol.tooltip": "一把特制的手枪，可远程击杀其他玩家\n击杀后有概率保留，消失或掉落，同时物品进入冷却",
   "item.noellesroles.bayonet": "刺刀",
   "item.noellesroles.bayonet.tooltip": "右键无需蓄力，靠近玩家即可发动暗杀\n蓄力和击杀都不会带任何声音\n击杀后冷却 35 秒\n攻击可击退玩家（无冷却）",
+  "item.noellesroles.hunting_knife": "猎刀",
+  "item.noellesroles.hunting_knife.tooltip": "右键蓄力一秒，靠近目标即可发动暗杀\n相较于匕首，拥有更持久的蓄力时间\n如果疾跑后停止蓄力，冷却两倍蓄力时间\n击杀后冷却 45 秒\n攻击可击退玩家（无冷却）",
+  "item.noellesroles.sulfuric_acid_barrel": "硫酸桶",
+  "item.noellesroles.sulfuric_acid_barrel.tooltip": "用于尸体，可将其溶解移除\n冷却 45 秒",
   "item.noellesroles.silenced_revolver": "无声左轮",
   "item.noellesroles.silenced_revolver.tooltip": "瞄准、右键点击并射击\n射击无任何声音\n若击杀无辜者则会掉落",
   "item.noellesroles.silent_grenade": "无声手雷",
@@ -565,6 +580,8 @@
   "replay.skill_use.noellesroles.bellringer": "%s 减少了 %s 秒的时间，花费 %s §f\uE781§r",
   "replay.skill_use.noellesroles.detective.innocent": "%s 调查出 %s 的身份为平民",
   "replay.skill_use.noellesroles.detective.notinnocent": "%s 调查出 %s 的身份不是平民",
+  "replay.skill_use.noellesroles.cleaner": "%s 清理了场上掉落物，花费 %s §f\uE781§r",
+  "replay.skill_use.noellesroles.hunter": "%s 刷新了匕首和猎刀的冷却时间，花费 %s §f\uE781§r",
   "replay.item_use.noellesroles.dream_imprint": "%s 用梦之印记烙印了 %s",
   "replay.global.noellesroles.dreamer_counts": "%s 当前的幻觉人数 %s/%s",
   "replay.shield_blocked.noellesroles.dream_imprint.item": "%s 的梦之印记护盾抵挡了来自 %s 的伤害",
@@ -575,6 +592,8 @@
   "replay.item_use.noellesroles.medical_kit": "%s 用医疗箱解除了 %s 的异常状态",
   "replay.item_use.noellesroles.pill": "%s 饮用了药丸",
   "replay.item_hit.noellesroles.pan": "%s 用平底锅敲晕了 %s",
+  "replay.item_use.noellesroles.sulfuric_acid_barrel": "%s 使用硫酸桶溶解了 %s 的尸体",
+  "replay.item_hit.noellesroles.hunting_knife": "%s 用猎刀刺杀了 %s",
   "replay.global.noellesroles.pan_stun_end": "%s 的眩晕状态解除",
   "replay.shield_blocked.noellesroles.pill.item": "%s 的药丸抵挡住了来自 %s 的伤害",
   "replay.shield_blocked.noellesroles.pill.by_item": "%s 的药丸抵挡住了来自 %s 的 %s 伤害",

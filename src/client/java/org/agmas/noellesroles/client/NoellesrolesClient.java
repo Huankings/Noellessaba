@@ -284,6 +284,8 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.PAN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PILL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.TAPE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.HUNTING_KNIFE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SULFURIC_ACID_BARREL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PHONE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
@@ -323,6 +325,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.PAN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.PILL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.TAPE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.HUNTING_KNIFE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SULFURIC_ACID_BARREL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_WEAPON_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);
