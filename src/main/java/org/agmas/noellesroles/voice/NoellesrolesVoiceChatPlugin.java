@@ -21,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
@@ -84,6 +85,16 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         // 新增：被控制者不能说话
         ControlledPlayerComponent controlledComp = ControlledPlayerComponent.KEY.get(spectator);
         if (controlledComp.isControlled) {
+            event.cancel();
+            return;
+        }
+
+        /*
+         * 绑匪迷药控制期间，目标处于“黑屏且无法主动行动”的状态；
+         * 语音也要在同一入口拦截，否则玩家仍能通过语音报点破坏迷药效果。
+         */
+        if (KidnapperComponent.KEY.get(spectator).controlTicks > 0
+                && GameFunctions.isPlayerAliveAndSurvival(spectator)) {
             event.cancel();
             return;
         }

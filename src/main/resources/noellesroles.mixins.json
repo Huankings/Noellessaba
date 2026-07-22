@@ -80,7 +80,11 @@
     "roles.physician.PhysicianTipPoisonMixin",
     "roles.muzzler.MuzzlerBatHitSoundMixin",
     "roles.avaricious.AvariciousGoldPayoutMixin",
-    "roles.necromancer.NecromancerKillTrackerMixin"
+    "roles.necromancer.NecromancerKillTrackerMixin",
+    "roles.drugmaker.DrugmakerGiveCoinsMixin",
+    "roles.kidnapper.KidnapperMoneyIncreaseMixin",
+    "roles.robot.RobotNoPoisonMixin",
+    "roles.robot.RobotBedPoisonMixin"
 
   ],
   "injectors": {

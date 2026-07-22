@@ -15,9 +15,11 @@ import org.agmas.noellesroles.roles.cook.CookShopHandler;
 import org.agmas.noellesroles.roles.coward.CowardShopHandler;
 import org.agmas.noellesroles.roles.coroner.CoronerShopHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerShopHandler;
+import org.agmas.noellesroles.roles.drugmaker.DrugmakerShopHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.hacker.HackerShopHandler;
 import org.agmas.noellesroles.roles.hunter.HunterShopHandler;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianShopHandler;
@@ -100,6 +102,20 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(Noellesroles.MOD_ID, "hunter_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 HunterShopHandler::modifyShop
+        );
+        /*
+         * 制毒师/绑匪来自 kinssaba，二者都是“默认杀手商店局部改写”：
+         * 只插入/移除少数商品，不接管 Wathe 购买结算。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(Noellesroles.MOD_ID, "drugmaker_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                DrugmakerShopHandler::modifyShop
+        );
+        ShopApi.registerShopModifier(
+                Identifier.of(Noellesroles.MOD_ID, "kidnapper_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                KidnapperShopHandler::modifyShop
         );
         /*
          * 死灵法师沿用 StupidExpress 默认配置：有杀手能力，但没有杀手商店。

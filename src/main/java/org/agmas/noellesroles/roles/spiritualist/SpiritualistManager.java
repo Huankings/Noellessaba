@@ -89,10 +89,8 @@ public final class SpiritualistManager {
      * 只需要改这里，不用再去方法体里翻散落的 magic number。</p>
      */
     private static final String KINSWATHE_MOD_ID = "kinswathe";
-    private static final Identifier KINSWATHE_BLOWGUN_ID = Identifier.of(KINSWATHE_MOD_ID, "blowgun");
     private static final Identifier KINSWATHE_HUNTING_KNIFE_ID = Identifier.of(KINSWATHE_MOD_ID, "hunting_knife");
     private static final Identifier KINSWATHE_PAN_ID = Identifier.of(KINSWATHE_MOD_ID, "pan");
-    private static final Identifier KINSWATHE_ROBOT_ROLE_ID = Identifier.of(KINSWATHE_MOD_ID, "robot");
     private static final Identifier KINSWATHE_PAN_STUN_END_ID = Identifier.of(KINSWATHE_MOD_ID, "pan_stun_end");
 
     // 刺刀、猎刀、平底锅都沿用原物品的 3 格近战命中距离。
@@ -113,8 +111,8 @@ public final class SpiritualistManager {
     // 强盗手枪击杀无辜者后的概率分支：20% 保留，30% 掉左轮，50% 消失。
     private static final int ROBBER_PISTOL_KEEP_CHANCE_PERCENT = 20;
     private static final int ROBBER_PISTOL_DROP_REVOLVER_CHANCE_PERCENT = 50;
-    // kinswathe 失败提示文本用的红色值。
-    private static final int KINSWATHE_FAILURE_TEXT_COLOR = 0xFF5555;
+    // 迁移自 kinswathe 的投毒失败提示文本用红色值。
+    private static final int POISON_FAILURE_TEXT_COLOR = 0xFF5555;
 
     private SpiritualistManager() {
     }
@@ -713,7 +711,7 @@ public final class SpiritualistManager {
             return;
         }
 
-        tryHandleKinsWatheBlowgunAfterUse(host, heldStack);
+        tryHandleNoellesBlowgunAfterUse(host, heldStack);
     }
 
     /**
@@ -978,17 +976,17 @@ public final class SpiritualistManager {
     }
 
     /**
-     * 软兼容 kinswathe 的吹矢。
+     * 处理 NoellesRoles 自己的吹矢。
      *
      * <p>吹矢本体的 use() 会在服务端设置冷却和播放吹气声，
      * 真正的中毒结算却依赖客户端发 BlowgunC2SPacket。
      * 附身时没有宿主自己的客户端，所以这里补一次完全等价的服务器结算。</p>
      */
-    private static void tryHandleKinsWatheBlowgunAfterUse(
+    private static void tryHandleNoellesBlowgunAfterUse(
             @NotNull ServerPlayerEntity host,
             @NotNull ItemStack heldStack
     ) {
-        if (!isKinsWatheLoaded() || !isItemId(heldStack, KINSWATHE_BLOWGUN_ID)) {
+        if (!heldStack.isOf(ModItems.BLOWGUN)) {
             return;
         }
 
@@ -1008,14 +1006,14 @@ public final class SpiritualistManager {
         ItemStack replayStack = heldStack.copy();
         replayStack.setCount(1);
 
-        if (isRoleId(gameWorld, target, KINSWATHE_ROBOT_ROLE_ID)) {
+        if (gameWorld.isRole(target, Noellesroles.ROBOT)) {
             if (target instanceof ServerPlayerEntity serverTarget) {
                 NbtCompound extra = new NbtCompound();
                 extra.putBoolean("robot_failed", true);
                 GameRecordManager.recordItemHit(host, replayStack, serverTarget, extra);
             }
             host.sendMessage(
-                    Text.translatable("tip.kinswathe.drugmaker.poison_failed").withColor(KINSWATHE_FAILURE_TEXT_COLOR),
+                    Text.translatable("tip.noellesroles.drugmaker.poison_failed").withColor(POISON_FAILURE_TEXT_COLOR),
                     true
             );
             return;

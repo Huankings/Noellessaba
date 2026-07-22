@@ -16,6 +16,8 @@ import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 /**
  * noellesroles 自己的回放文案格式化器。
  *
@@ -66,6 +68,14 @@ public final class NoellesRolesReplayFormatters {
             return null;
         }
         return ReplayGenerator.formatPlayerName(event.data().getUuid(key), ReplayGenerator.getPlayerInfoCache(match));
+    }
+
+    private static @Nullable Text playerText(@Nullable UUID uuid, GameRecordManager.MatchRecord match) {
+        return uuid == null ? null : ReplayGenerator.formatPlayerName(uuid, ReplayGenerator.getPlayerInfoCache(match));
+    }
+
+    private static @Nullable UUID uuid(NbtCompound data, String key) {
+        return data.containsUuid(key) ? data.getUuid(key) : null;
     }
 
     private static MutableText roleText(@Nullable String rawRoleId) {
@@ -316,6 +326,91 @@ public final class NoellesRolesReplayFormatters {
             return null;
         }
         return Text.translatable("replay.skill_use.noellesroles.hunter", actor, event.data().getInt("price"));
+    }
+
+    @Nullable
+    public static Text formatRobotNightVision(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.skill_use.noellesroles.robot", actor);
+    }
+
+    @Nullable
+    public static Text formatKidnapperRelease(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        Text target = targetText(event, match);
+        if (target != null) {
+            return Text.translatable("replay.skill_use.noellesroles.kidnapper.release", actor, target);
+        }
+        return Text.translatable("replay.skill_use.noellesroles.kidnapper.release_end", actor);
+    }
+
+    @Nullable
+    public static Text formatKnockoutDrugUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        if (event.data().getBoolean("robot_failed")) {
+            return Text.translatable("replay.item_use.noellesroles.knockout_drug.failed_robot", target, actor);
+        }
+        return Text.translatable("replay.item_use.noellesroles.knockout_drug", actor, target);
+    }
+
+    @Nullable
+    public static Text formatPoisonInjectorUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        if (event.data().getBoolean("robot_failed")) {
+            return Text.translatable("replay.item_use.noellesroles.poison_injector.failed_robot", target, actor);
+        }
+        return Text.translatable("replay.item_use.noellesroles.poison_injector", actor, target);
+    }
+
+    @Nullable
+    public static Text formatBlowgunHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        if (event.data().getBoolean("robot_failed")) {
+            return Text.translatable("replay.item_hit.noellesroles.blowgun.failed_robot", target, actor);
+        }
+        return Text.translatable("replay.item_hit.noellesroles.blowgun", actor, target);
+    }
+
+    @Nullable
+    public static Text formatRobotNightVisionEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.robot_night_vision_end", actor);
+    }
+
+    @Nullable
+    public static Text formatRobotPoisonImmune(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        Text item = ReplayGenerator.resolveItemName(event.data(), world);
+        Text poisoner = playerText(uuid(event.data(), "poisoner"), match);
+        return poisoner == null ? null : Text.translatable("replay.global.noellesroles.robot.poison_immune", actor, item, poisoner);
+    }
+
+    @Nullable
+    public static Text formatRobotBedPoisonImmune(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        Text poisoner = playerText(uuid(event.data(), "poisoner"), match);
+        return poisoner == null ? null : Text.translatable("replay.global.noellesroles.robot.bed_poison_immune", actor, poisoner);
     }
 
     @Nullable

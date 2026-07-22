@@ -42,6 +42,7 @@ import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
+import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckMoodHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
@@ -98,6 +99,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         DreamerMoodHud.register();
         HackerMoodHud.register();
         StarstruckMoodHud.register();
+        RobotMoodHud.register();
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
@@ -286,6 +288,9 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.TAPE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.HUNTING_KNIFE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SULFURIC_ACID_BARREL, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BLOWGUN, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.POISON_INJECTOR, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.KNOCKOUT_DRUG, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PHONE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
@@ -327,6 +332,9 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.TAPE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.HUNTING_KNIFE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SULFURIC_ACID_BARREL);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BLOWGUN);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.POISON_INJECTOR);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.KNOCKOUT_DRUG);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_WEAPON_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);

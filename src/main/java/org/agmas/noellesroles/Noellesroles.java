@@ -76,6 +76,10 @@ import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterAbility;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
+import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.magician.MagicianAbility;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
@@ -85,6 +89,7 @@ import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.item.BayonetKnockbackC2SPacket;
 import org.agmas.noellesroles.packet.item.BayonetStabC2SPacket;
+import org.agmas.noellesroles.packet.item.BlowgunC2SPacket;
 import org.agmas.noellesroles.packet.item.CrystalBallMarkC2SPacket;
 import org.agmas.noellesroles.packet.item.HuntingKnifeC2SPacket;
 import org.agmas.noellesroles.packet.item.PanC2SPacket;
@@ -114,6 +119,9 @@ import org.agmas.noellesroles.roles.prophet.ProphetAbility;
 import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
 import org.agmas.noellesroles.roles.recaller.RecallerAbility;
+import org.agmas.noellesroles.roles.robot.RobotAbility;
+import org.agmas.noellesroles.roles.robot.RobotConstants;
+import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorAbility;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistAbility;
@@ -206,6 +214,9 @@ public class Noellesroles implements ModInitializer {
     public static Identifier SPIRITUALIST_ID = Identifier.of(MOD_ID, "spiritualist");
     public static Identifier OPERATOR_ID = Identifier.of(MOD_ID, "operator");
     public static Identifier MAGICIAN_ID = Identifier.of(MOD_ID, "magician");
+    public static Identifier DRUGMAKER_ID = Identifier.of(MOD_ID, "drugmaker");
+    public static Identifier KIDNAPPER_ID = Identifier.of(MOD_ID, "kidnapper");
+    public static Identifier ROBOT_ID = Identifier.of(MOD_ID, "robot");
     public static Identifier COOK_ID = Identifier.of(MOD_ID, "cook");
     public static Identifier PHYSICIAN_ID = Identifier.of(MOD_ID, "physician");
     public static Identifier STARSTRUCK_ID = Identifier.of(MOD_ID, "starstruck");
@@ -327,6 +338,11 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier MAGICIAN_PLAYBACK_FORCED_END_EVENT = Identifier.of(MOD_ID, "magician_playback_forced_end");
     public static final Identifier AVARICIOUS_STOLE_COINS_EVENT = Identifier.of(MOD_ID, "avaricious_stole_coins");
     public static final Identifier NECROMANCER_REVIVED_EVENT = Identifier.of(MOD_ID, "necromancer_revived");
+    public static final Identifier ROBOT_NIGHT_VISION_EVENT = Identifier.of(MOD_ID, "robot_night_vision");
+    public static final Identifier ROBOT_NIGHT_VISION_END_EVENT = Identifier.of(MOD_ID, "robot_night_vision_end");
+    public static final Identifier ROBOT_POISON_IMMUNE_EVENT = Identifier.of(MOD_ID, "robot_poison_immune");
+    public static final Identifier ROBOT_BED_POISON_IMMUNE_EVENT = Identifier.of(MOD_ID, "robot_bed_poison_immune");
+    public static final Identifier KIDNAPPER_RELEASE_EVENT = Identifier.of(MOD_ID, "kidnapper_release");
 
 
 
@@ -376,6 +392,10 @@ public class Noellesroles implements ModInitializer {
     public static Role OPERATOR = WatheRoles.registerCivilianRole(new Role(OPERATOR_ID, new Color(75, 221, 192).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //魔术师(杀手)
     public static Role MAGICIAN = WatheRoles.registerKillerRole(new Role(MAGICIAN_ID, MagicianConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
+    // 制毒师(杀手)
+    public static Role DRUGMAKER = WatheRoles.registerKillerRole(new Role(DRUGMAKER_ID, DrugmakerConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
+    // 绑匪(杀手)
+    public static Role KIDNAPPER = WatheRoles.registerKillerRole(new Role(KIDNAPPER_ID, KidnapperConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //厨师(好人)
     public static Role COOK = WatheRoles.registerCivilianRole(new Role(COOK_ID, CookConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //医师(好人)
@@ -424,6 +444,8 @@ public class Noellesroles implements ModInitializer {
     public static Role REMEMBERER = WatheRoles.registerCivilianRole(new Role(REMEMBERER_ID, new Color(46, 46, 66).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     // 服务员(好人)
     public static Role WAITER = WatheRoles.registerCivilianRole(new Role(WAITER_ID, WaiterConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.VIGILANTE.getMaxSprintTime(), false));
+    // 机器人(好人)
+    public static Role ROBOT = WatheRoles.registerCivilianRole(new Role(ROBOT_ID, RobotConstants.ROLE_COLOR, true, false, Role.MoodType.FAKE, -1, false));
 
     //public static Role GUESSER =WatheRoles.registerRole(new Role(GUESSER_ID, new Color(158, 43, 25, 191).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //模仿者(好人)
@@ -535,6 +557,7 @@ public class Noellesroles implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(BayonetKnockbackC2SPacket.ID, BayonetKnockbackC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(BayonetStabC2SPacket.ID, BayonetStabC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(HuntingKnifeC2SPacket.ID, HuntingKnifeC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(BlowgunC2SPacket.ID, BlowgunC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(PanC2SPacket.ID, PanC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SpiritualistPossessionControlC2SPacket.ID, SpiritualistPossessionControlC2SPacket.CODEC);
@@ -742,6 +765,9 @@ public class Noellesroles implements ModInitializer {
             StarstruckPlayerComponent.KEY.get(playerEntity).reset();
             SilencePlayerComponent.KEY.get(playerEntity).reset();
             HunterPlayerComponent.KEY.get(playerEntity).reset();
+            DrugmakerPlayerComponent.KEY.get(playerEntity).reset();
+            KidnapperComponent.KEY.get(playerEntity).resetAll();
+            RobotPlayerComponent.KEY.get(playerEntity).reset();
         }));
         CanSeePoison.EVENT.register((player)->{
             GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
@@ -848,6 +874,17 @@ public class Noellesroles implements ModInitializer {
             } else {
                 Harpymodloader.setRoleMaximum(HACKER,0);
             }
+            /*
+             * 制毒师现在按“本局理论杀手位数”决定是否进池，而不是按总玩家人数写死 10 人门槛。
+             *
+             * Harpy 的分配顺序是：先根据 ready 玩家数 / killerDividend 选出原版杀手位，
+             * 再让扩展杀手职业替换这些杀手位。因此这里必须在开局前用同一套公式预估杀手位，
+             * 不能等角色分配结束后再数已分配杀手，否则制毒师本身就没有机会参与本轮刷新。
+             */
+            ServerWorld overworld = server.getOverworld();
+            GameWorldComponent gameWorld = GameWorldComponent.KEY.get(overworld);
+            int killerSlots = (int) Math.floor((float) GameFunctions.getReadyPlayerCount(overworld) / (float) gameWorld.getKillerDividend());
+            Harpymodloader.setRoleMaximum(DRUGMAKER, killerSlots >= DrugmakerConstants.MIN_KILLER_COUNT ? 1 : 0);
 
             /*
              * 更好的义警属于“义警阵营替换职业”，
@@ -858,8 +895,6 @@ public class Noellesroles implements ModInitializer {
              */
             int vigilanteSlots = 0;
             if (!server.getPlayerManager().getPlayerList().isEmpty()) {
-                ServerWorld overworld = server.getOverworld();
-                GameWorldComponent gameWorld = GameWorldComponent.KEY.get(overworld);
                 vigilanteSlots = (int) Math.floor((float) server.getPlayerManager().getCurrentPlayerCount() / (float) gameWorld.getVigilanteDividend());
             }
             Harpymodloader.setRoleMaximum(BETTER_VIGILANTE, vigilanteSlots >= 4 ? 1 : 0);
@@ -1000,6 +1035,8 @@ public class Noellesroles implements ModInitializer {
             context.server().execute(() -> OperatorAbility.handle(payload, context.player()));
         });
 
+        ServerPlayNetworking.registerGlobalReceiver(BlowgunC2SPacket.ID, new BlowgunC2SPacket.Receiver());
+
         ServerPlayNetworking.registerGlobalReceiver(Noellesroles.ABILITY_PACKET, (payload, context) -> {
             context.server().execute(() -> {
                 var player = context.player();
@@ -1029,6 +1066,8 @@ public class Noellesroles implements ModInitializer {
                     CleanerAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.HUNTER)) {
                     HunterAbility.handle(player);
+                } else if (gameWorld.isRole(player, Noellesroles.ROBOT)) {
+                    RobotAbility.handle(player);
                 }
                 // 可继续添加其他使用ABILITY_PACKET的角色
             });
@@ -1057,18 +1096,23 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SILENT_GRENADE), NoellesRolesReplayFormatters::formatSilentGrenadeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DREAM_IMPRINT), NoellesRolesReplayFormatters::formatDreamImprintUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TAPE), NoellesRolesReplayFormatters::formatTapeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.KNOCKOUT_DRUG), NoellesRolesReplayFormatters::formatKnockoutDrugUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.POISON_INJECTOR), NoellesRolesReplayFormatters::formatPoisonInjectorUse);
         ReplayRegistry.registerItemUseFormatter(SULFURIC_ACID_BARREL_USE_EVENT, NoellesRolesReplayFormatters::formatSulfuricAcidBarrelUse);
         ReplayRegistry.registerItemUseFormatter(MEDICAL_KIT_USE_EVENT, NoellesRolesReplayFormatters::formatMedicalKitUse);
         ReplayRegistry.registerItemUseFormatter(PILL_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPillUse);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PAN), NoellesRolesReplayFormatters::formatPanHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.HUNTING_KNIFE), NoellesRolesReplayFormatters::formatHuntingKnifeHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOWGUN), NoellesRolesReplayFormatters::formatBlowgunHit);
         ReplayRegistry.registerSkillFormatter(HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
         ReplayRegistry.registerSkillFormatter(BELLRINGER_REDUCE_TIME_EVENT, NoellesRolesReplayFormatters::formatBellringerReduceTime);
         ReplayRegistry.registerSkillFormatter(DETECTIVE_CHECK_EVENT, NoellesRolesReplayFormatters::formatDetectiveCheck);
         ReplayRegistry.registerSkillFormatter(STARSTRUCK_ABILITY_EVENT, NoellesRolesReplayFormatters::formatStarstruckAbility);
         ReplayRegistry.registerSkillFormatter(CLEANER_CLEAR_ITEMS_EVENT, NoellesRolesReplayFormatters::formatCleanerClearItems);
         ReplayRegistry.registerSkillFormatter(HUNTER_REFRESH_EVENT, NoellesRolesReplayFormatters::formatHunterRefresh);
+        ReplayRegistry.registerSkillFormatter(ROBOT_NIGHT_VISION_EVENT, NoellesRolesReplayFormatters::formatRobotNightVision);
+        ReplayRegistry.registerSkillFormatter(KIDNAPPER_RELEASE_EVENT, NoellesRolesReplayFormatters::formatKidnapperRelease);
 
         /*
          * 托盘放置事件优先按 tray effect 分发。
@@ -1189,6 +1233,9 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerGlobalEventFormatter(MAGICIAN_PLAYBACK_FORCED_END_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackForcedEnd);
         ReplayRegistry.registerGlobalEventFormatter(AVARICIOUS_STOLE_COINS_EVENT, NoellesRolesReplayFormatters::formatAvariciousStoleCoins);
         ReplayRegistry.registerGlobalEventFormatter(NECROMANCER_REVIVED_EVENT, NoellesRolesReplayFormatters::formatNecromancerRevived);
+        ReplayRegistry.registerGlobalEventFormatter(ROBOT_NIGHT_VISION_END_EVENT, NoellesRolesReplayFormatters::formatRobotNightVisionEnd);
+        ReplayRegistry.registerGlobalEventFormatter(ROBOT_POISON_IMMUNE_EVENT, NoellesRolesReplayFormatters::formatRobotPoisonImmune);
+        ReplayRegistry.registerGlobalEventFormatter(ROBOT_BED_POISON_IMMUNE_EVENT, NoellesRolesReplayFormatters::formatRobotBedPoisonImmune);
         ReplayRegistry.registerDeathReasonFormatter(ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
         ReplayRegistry.registerDeathReasonFormatter(SPIRITUALIST_SOUL_GUARD_DEATH_REASON, NoellesRolesReplayFormatters::formatSpiritualistSoulGuardDeath);

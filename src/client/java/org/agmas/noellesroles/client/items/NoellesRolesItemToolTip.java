@@ -15,8 +15,12 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
+import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +52,30 @@ public class NoellesRolesItemToolTip {
             RobberPlayerComponent robberComponent = RobberPlayerComponent.KEY.get(client.player);
             if (robberComponent.isUsingStartCooldown(item)) {
                 return RobberPlayerComponent.ROBBER_START_COOLDOWN_TICKS;
+            }
+            return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.BLOWGUN || item == ModItems.POISON_INJECTOR) {
+            /*
+             * 制毒师两件道具开局只锁 30 秒，但普通使用后是 45 秒。
+             * 这里读取服务端同步的“开局冷却来源”标记，确保 tooltip 秒数和物品冷却遮罩都按 30 秒流逝。
+             */
+            DrugmakerPlayerComponent drugmakerComponent = DrugmakerPlayerComponent.KEY.get(client.player);
+            if (drugmakerComponent.isUsingStartCooldown(item)) {
+                return DrugmakerConstants.START_COOLDOWN_TICKS;
+            }
+            return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.KNOCKOUT_DRUG) {
+            /*
+             * 迷药同样有 30 秒开局冷却和 45 秒普通冷却两种来源。
+             * 不单独判断的话，客户端只能用 45 秒总长乘以 30 秒冷却比例，倒计时就会显示偏大。
+             */
+            KidnapperComponent kidnapperComponent = KidnapperComponent.KEY.get(client.player);
+            if (kidnapperComponent.isUsingStartCooldown(item)) {
+                return KidnapperConstants.START_COOLDOWN_TICKS;
             }
             return getItemCooldownTicks(item);
         }
@@ -148,7 +176,7 @@ public class NoellesRolesItemToolTip {
                  * 调试身份不受猎刀冷却影响，tooltip 也不要继续显示冷却倒计时，
                  * 否则界面会和实际“可继续使用”的行为互相矛盾。
                  */
-                if (item == ModItems.HUNTING_KNIFE && GameFunctions.isPlayerSpectatingOrCreative(MinecraftClient.getInstance().player)) {
+                if (isIgnoredForSpectatorOrCreative(item) && GameFunctions.isPlayerSpectatingOrCreative(MinecraftClient.getInstance().player)) {
                     return;
                 }
                 /*
@@ -171,5 +199,12 @@ public class NoellesRolesItemToolTip {
                 }
             }
         }
+    }
+
+    private static boolean isIgnoredForSpectatorOrCreative(@NotNull Item item) {
+        return item == ModItems.HUNTING_KNIFE
+                || item == ModItems.BLOWGUN
+                || item == ModItems.POISON_INJECTOR
+                || item == ModItems.KNOCKOUT_DRUG;
     }
 }

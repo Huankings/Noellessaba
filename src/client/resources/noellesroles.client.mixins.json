@@ -85,7 +85,11 @@
     "roles.cleaner.CleanerHudMixin",
     "roles.hunter.HunterFovMixin",
     "roles.hunter.HunterHudMixin",
-    "roles.hunter.HunterLockSlotMixin"
+    "roles.hunter.HunterLockSlotMixin",
+    "roles.kidnapper.KidnapperControlledMixin",
+    "roles.kidnapper.KidnapperKeyControlledMixin",
+    "roles.kidnapper.KidnapperControlledMouseMixin",
+    "roles.robot.RobotHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -113,6 +117,7 @@
     "roles.rememberer.SniperRifleRenderPoseMixin",
     "roles.waiter.WaiterCrosshairMixin",
     "roles.cook.PanCrosshairMixin",
-    "roles.hunter.HuntingKnifeCrosshairMixin"
+    "roles.hunter.HuntingKnifeCrosshairMixin",
+    "roles.drugmaker.DrugmakerCrosshairMixin"
   ]
 }
