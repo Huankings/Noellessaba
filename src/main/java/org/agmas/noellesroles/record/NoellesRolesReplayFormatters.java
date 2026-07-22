@@ -263,6 +263,38 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatBellringerReduceTime(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.skill_use.noellesroles.bellringer",
+                actor,
+                event.data().getInt("seconds"),
+                event.data().getInt("price")
+        );
+    }
+
+    @Nullable
+    public static Text formatDetectiveCheck(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+
+        boolean innocent = event.data().getBoolean("innocent");
+        return Text.translatable(
+                innocent
+                        ? "replay.skill_use.noellesroles.detective.innocent"
+                        : "replay.skill_use.noellesroles.detective.notinnocent",
+                actor,
+                target
+        );
+    }
+
+    @Nullable
     public static Text formatStarstruckAbility(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.skill_use.noellesroles.starstruck", actor);

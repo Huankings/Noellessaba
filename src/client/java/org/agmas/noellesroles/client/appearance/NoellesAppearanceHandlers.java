@@ -5,6 +5,7 @@ import org.agmas.noellesroles.client.appearance.killer_sided.HackerCohortHudHand
 import org.agmas.noellesroles.client.appearance.killer_sided.KillerSidedNeutralTargetHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.controller.ControllerAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerAppearanceHandler;
+import org.agmas.noellesroles.client.appearance.roles.detective.DetectiveTargetHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.morphling.MorphlingAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.hacker.HackerTargetHudHandler;
@@ -34,6 +35,7 @@ public final class NoellesAppearanceHandlers {
         HackerCohortHudHandler.register();
         KillerSidedNeutralTargetHudHandler.register();
         HackerTargetHudHandler.register();
+        DetectiveTargetHudHandler.register();
         PhysicianBodyHudHandler.register();
         MuzzlerSilencedTipHudHandler.register();
     }

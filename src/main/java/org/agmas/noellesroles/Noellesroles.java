@@ -46,6 +46,8 @@ import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.angel.AngelConstants;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
+import org.agmas.noellesroles.roles.bellringer.BellringerAbility;
+import org.agmas.noellesroles.roles.bellringer.BellringerConstants;
 import org.agmas.noellesroles.roles.brainwasher.BrainwasherAbility;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.roles.controller.ControllerPossessAbility;
@@ -56,6 +58,8 @@ import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
 import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
+import org.agmas.noellesroles.roles.detective.DetectiveAbility;
+import org.agmas.noellesroles.roles.detective.DetectiveConstants;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
 import org.agmas.noellesroles.roles.dreamer.DreamerConstants;
@@ -154,6 +158,8 @@ public class Noellesroles implements ModInitializer {
     public static Identifier MORPHLING_ID = Identifier.of(MOD_ID, "morphling");
     public static Identifier CONDUCTOR_ID = Identifier.of(MOD_ID, "conductor");
     public static Identifier BARTENDER_ID = Identifier.of(MOD_ID, "bartender");
+    public static Identifier BELLRINGER_ID = Identifier.of(MOD_ID, "bellringer");
+    public static Identifier DETECTIVE_ID = Identifier.of(MOD_ID, "detective");
     public static Identifier WINDER_ID = Identifier.of(MOD_ID, "winder");
     public static Identifier NOISEMAKER_ID = Identifier.of(MOD_ID, "noisemaker");
     public static Identifier PHANTOM_ID = Identifier.of(MOD_ID, "phantom");
@@ -289,6 +295,8 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier DREAMER_COUNTS_EVENT = Identifier.of(MOD_ID, "dreamer_counts");
     public static final Identifier DREAM_IMPRINT_SHIELD_SOURCE = Identifier.of(MOD_ID, "dream_imprint");
     public static final Identifier HACKER_REVEAL_EVENT = Identifier.of(MOD_ID, "hacker_reveal");
+    public static final Identifier BELLRINGER_REDUCE_TIME_EVENT = Identifier.of(MOD_ID, "bellringer_reduce_time");
+    public static final Identifier DETECTIVE_CHECK_EVENT = Identifier.of(MOD_ID, "detective_check");
     public static final Identifier MEDICAL_KIT_USE_EVENT = Identifier.of(MOD_ID, "medical_kit");
     public static final Identifier PILL_SHIELD_SOURCE = Identifier.of(MOD_ID, "pill");
     public static final Identifier PAN_SHIELD_SOURCE = Identifier.of(MOD_ID, "pan");
@@ -341,6 +349,10 @@ public class Noellesroles implements ModInitializer {
     public static Role ENGINEER = WatheRoles.registerCivilianRole(new Role(ENGINEER_ID, new Color(100, 149, 237).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //酒保(好人)
     public static Role BARTENDER =WatheRoles.registerCivilianRole(new Role(BARTENDER_ID, new Color(217,241,240).getRGB(),true,false, Role.MoodType.REAL,WatheRoles.CIVILIAN.getMaxSprintTime(),false));
+    //敲钟人(好人)
+    public static Role BELLRINGER = WatheRoles.registerCivilianRole(new Role(BELLRINGER_ID, BellringerConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
+    //侦探(好人)
+    public static Role DETECTIVE = WatheRoles.registerCivilianRole(new Role(DETECTIVE_ID, DetectiveConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //风灵师(好人)
     public static Role WINDER = WatheRoles.registerCivilianRole(new Role(WINDER_ID, new Color(66, 215, 215).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //灵术师(好人)
@@ -559,6 +571,8 @@ public class Noellesroles implements ModInitializer {
          */
         EconomyApi.registerBalanceHudRoles(List.of(
                 BARTENDER,
+                BELLRINGER,
+                DETECTIVE,
                 RECALLER,
                 EXECUTIONER,
                 JESTER,
@@ -595,6 +609,8 @@ public class Noellesroles implements ModInitializer {
                 TRAPPER,
                 RECALLER,
                 BARTENDER,
+                BELLRINGER,
+                DETECTIVE,
                 MORPHLING,
                 NOISEMAKER,
                 CORPSEMAKER,
@@ -969,6 +985,10 @@ public class Noellesroles implements ModInitializer {
                     AngelAbility.handle(player, payload.targetId());
                 } else if (gameWorld.isRole(player, Noellesroles.PROPHET)) {
                     ProphetAbility.handle(player);
+                } else if (gameWorld.isRole(player, Noellesroles.BELLRINGER)) {
+                    BellringerAbility.handle(player);
+                } else if (gameWorld.isRole(player, Noellesroles.DETECTIVE)) {
+                    DetectiveAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.PHANTOM)) {
                     PhantomAbility.handle(player);
                 } else if (gameWorld.isRole(player, Noellesroles.WINDER)) {
@@ -1012,6 +1032,8 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PAN), NoellesRolesReplayFormatters::formatPanHit);
         ReplayRegistry.registerSkillFormatter(HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
+        ReplayRegistry.registerSkillFormatter(BELLRINGER_REDUCE_TIME_EVENT, NoellesRolesReplayFormatters::formatBellringerReduceTime);
+        ReplayRegistry.registerSkillFormatter(DETECTIVE_CHECK_EVENT, NoellesRolesReplayFormatters::formatDetectiveCheck);
         ReplayRegistry.registerSkillFormatter(STARSTRUCK_ABILITY_EVENT, NoellesRolesReplayFormatters::formatStarstruckAbility);
 
         /*
