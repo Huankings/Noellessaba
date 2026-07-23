@@ -12,6 +12,7 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
+import org.agmas.noellesroles.client.appearance.modifiers.graverobber.GraverobberBodyInfoAccess;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +47,12 @@ public final class PhysicianBodyHudHandler {
 
     private static Text getDeathInfo(@NotNull ClientPlayerEntity player, @NotNull PlayerBodyEntity body) {
         BodyDeathReasonComponent bodyDeathReason = BodyDeathReasonComponent.KEY.get(body);
-        if (bodyDeathReason.vultured) {
+        /*
+         * 这里和验尸官 / 盗墓者共用同一条规则：
+         * 只有仍然处于局内存活状态的查看者，才会被秃鹫啃过的尸体折叠成乱码。
+         * 死后的观察者仍然应该能看到完整的死因、时间和身份。
+         */
+        if (bodyDeathReason.vultured && GraverobberBodyInfoAccess.shouldObfuscateVulturedBodyInfo(player)) {
             int randomLength = player.getRandom().nextBetween(12, 26);
             return Text.literal("a".repeat(randomLength)).formatted(Formatting.OBFUSCATED);
         }

@@ -3,6 +3,7 @@ package org.agmas.noellesroles.client;
 import com.google.common.collect.Maps;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
+import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -19,6 +20,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.SkinTextures;
@@ -185,6 +187,7 @@ public class NoellesrolesClient implements ClientModInitializer {
                 }
 
                 noellesroles$maybeShowGrenadeThrowModeHint(mc.player);
+                noellesroles$refreshLookedAtBody(mc.player);
             }
 
             if (!client.options.attackKey.isPressed()) {
@@ -456,6 +459,17 @@ public class NoellesrolesClient implements ClientModInitializer {
         // 极端情况下玩家列表还没同步到自己条目时，
         // 当前玩家既然没有伪装覆盖，那直接读取自身皮肤也是原始皮肤，可作为最后兜底。
         LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES = client.player.getSkinTextures();
+    }
+
+    /**
+     * 把当前准心下的尸体缓存到一个独立字段里，只给秃鹫的能力键使用。
+     *
+     * <p>验尸官 / 医师 / 死灵法师的 HUD 已经迁到 Wathe 的 {@link RoleNameHudApi}，
+     * 不再依赖这份静态缓存；这里保留它，是为了让秃鹫按下能力键时还能拿到目标尸体 UUID，
+     * 同时避免再让能力目标取决于某个 HUD mixin 是否先执行。</p>
+     */
+    private static void noellesroles$refreshLookedAtBody(ClientPlayerEntity player) {
+        targetBody = RoleNameHudApi.findLookedAtBody(player, RoleNameHudApi.defaultLookRange(player));
     }
 
     private static void noellesroles$resetClientCaches() {
