@@ -86,6 +86,8 @@
     "roles.kidnapper.KidnapperControlledMixin",
     "roles.kidnapper.KidnapperKeyControlledMixin",
     "roles.kidnapper.KidnapperControlledMouseMixin",
+    "roles.convener.ConvenerHudMixin",
+    "roles.convener.ConvenerInventoryMixin",
     "roles.robot.RobotHudMixin"
   ],
   "injectors": {
@@ -109,6 +111,7 @@
     "roles.rememberer.SniperRifleScopeOverlayMixin",
     "roles.rememberer.SniperRifleMovementSpeedMixin",
     "roles.starstruck.StarstruckMovementSpeedMixin",
+    "roles.convener.ConvenerMovementSpeedMixin",
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",
     "roles.rememberer.SniperRifleRenderPoseMixin",

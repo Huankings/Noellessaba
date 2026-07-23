@@ -4,8 +4,11 @@ import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.killer.KillerNeutralInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.angel.AngelInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.amnesiac.AmnesiacInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.arsonist.ArsonistInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.bartender.BartenderInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.bomber.BomberInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.convener.ConvenerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.cook.CookInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.drugmaker.DrugmakerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.dreamer.DreamerInstinctHandler;
@@ -21,6 +24,10 @@ import org.agmas.noellesroles.client.instinct.roles.winder.WinderInstinctHandler
 public final class NoellesInstinctHandlers {
     public static final int PRIORITY_HIGH_INSTINCT_COLOR = 100;
     public static final int PRIORITY_ABILITY_MARK = 100;
+    public static final int PRIORITY_ROLE_INSTINCT_COLOR = 150;
+    public static final int PRIORITY_SPECIAL_NEUTRAL_COLOR = 200;
+    public static final int PRIORITY_CONVENER_COLOR = 1000;
+    public static final int PRIORITY_CONVENER_SUPPRESSION = 20000;
 
     private NoellesInstinctHandlers() {
     }
@@ -40,6 +47,9 @@ public final class NoellesInstinctHandlers {
         HackerInstinctHandler.register();
         StarstruckInstinctHandler.register();
         DrugmakerInstinctHandler.register();
+        AmnesiacInstinctHandler.register();
+        ArsonistInstinctHandler.register();
+        ConvenerInstinctHandler.register();
         KillerNeutralInstinctHandler.register();
     }
 

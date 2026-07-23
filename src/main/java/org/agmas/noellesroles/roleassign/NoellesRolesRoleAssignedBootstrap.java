@@ -4,6 +4,7 @@ import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.roles.angel.AngelRoleAssignedHandler;
+import org.agmas.noellesroles.roles.arsonist.ArsonistRoleAssignedHandler;
 import org.agmas.noellesroles.roles.assassin.AssassinRoleAssignedHandler;
 import org.agmas.noellesroles.roles.awesomebinglus.AwesomeBinglusRoleAssignedHandler;
 import org.agmas.noellesroles.roles.avaricious.AvariciousRoleAssignedHandler;
@@ -13,6 +14,7 @@ import org.agmas.noellesroles.roles.brainwasher.BrainwasherRoleAssignedHandler;
 import org.agmas.noellesroles.roles.cleaner.CleanerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.conductor.ConductorRoleAssignedHandler;
 import org.agmas.noellesroles.roles.controller.ControllerRoleAssignedHandler;
+import org.agmas.noellesroles.roles.convener.ConvenerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.coward.CowardRoleAssignedHandler;
 import org.agmas.noellesroles.roles.corpsemaker.CorpsemakerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerRoleAssignedHandler;
@@ -111,6 +113,8 @@ public final class NoellesRolesRoleAssignedBootstrap {
             MuzzlerRoleAssignedHandler.onRoleAssigned(player, role);
             AvariciousRoleAssignedHandler.onRoleAssigned(player, role);
             NecromancerRoleAssignedHandler.onRoleAssigned(player, role);
+            ArsonistRoleAssignedHandler.onRoleAssigned(player, role);
+            ConvenerRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

@@ -13,6 +13,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.item.*;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.arsonist.ArsonistConstants;
+import org.agmas.noellesroles.item.LighterItem;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.agmas.noellesroles.roles.cook.CookConstants;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
@@ -57,6 +59,9 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(BLOWGUN, DrugmakerConstants.BLOWGUN_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(POISON_INJECTOR, DrugmakerConstants.POISON_INJECTOR_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(KNOCKOUT_DRUG, KidnapperConstants.KNOCKOUT_DRUG_COOLDOWN_TICKS);
+        // 纵火犯道具的真实冷却会根据存活人数动态写入，这里登记默认值只用于客户端物品说明。
+        GameConstants.ITEM_COOLDOWNS.put(JERRY_CAN, ArsonistConstants.getDouseCooldownTicks(0));
+        GameConstants.ITEM_COOLDOWNS.put(LIGHTER, ArsonistConstants.getDouseCooldownTicks(0));
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -94,6 +99,8 @@ public class ModItems {
             entries.add(BLOWGUN);
             entries.add(POISON_INJECTOR);
             entries.add(KNOCKOUT_DRUG);
+            entries.add(JERRY_CAN);
+            entries.add(LIGHTER);
             entries.add(PHONE);
             entries.add(DEFENSE_VIAL);
             entries.add(SEDATIVE);
@@ -234,6 +241,16 @@ public class ModItems {
     public static final Item KNOCKOUT_DRUG = register(
             new KnockoutDrugItem(new Item.Settings().maxCount(4)),
             "knockout_drug"
+    );
+    // 汽油桶
+    public static final Item JERRY_CAN = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "jerry_can"
+    );
+    // 打火机
+    public static final Item LIGHTER = register(
+            new LighterItem(new Item.Settings().maxCount(1)),
+            "lighter"
     );
     //黑客手机
     public static final Item PHONE = register(

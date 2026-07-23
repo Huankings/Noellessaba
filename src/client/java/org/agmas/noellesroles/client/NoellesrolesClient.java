@@ -45,6 +45,7 @@ import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
 import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
+import org.agmas.noellesroles.client.roles.convener.ConvenerMoodHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckMoodHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
@@ -102,6 +103,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         HackerMoodHud.register();
         StarstruckMoodHud.register();
         RobotMoodHud.register();
+        ConvenerMoodHud.register();
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
@@ -294,6 +296,8 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.BLOWGUN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.POISON_INJECTOR, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.KNOCKOUT_DRUG, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.JERRY_CAN, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.LIGHTER, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PHONE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
@@ -338,6 +342,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BLOWGUN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.POISON_INJECTOR);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.KNOCKOUT_DRUG);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.JERRY_CAN);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.LIGHTER);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_WEAPON_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);

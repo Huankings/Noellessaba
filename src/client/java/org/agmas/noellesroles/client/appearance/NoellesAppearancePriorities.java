@@ -14,6 +14,11 @@ public final class NoellesAppearancePriorities {
     public static final int SPIRITUALIST = 2000;
 
     /**
+     * 召集者会在全体活人身上强制套尸体皮肤，必须高于普通主动变形。
+     */
+    public static final int CONVENER = 1000;
+
+    /**
      * 疯狂观察来自心情导致的视觉错乱；它低于召集者等强制全员伪装，
      * 但高于 Morphling/Controller/Coroner 这类普通主动变形。
      */

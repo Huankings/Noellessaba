@@ -566,6 +566,93 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatAmnesiacRoleStolen(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text corpseOwner = playerFromKey(event, match, "corpse_owner");
+        if (actor == null || corpseOwner == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.amnesiac_role_stolen", actor, corpseOwner);
+    }
+
+    @Nullable
+    public static Text formatArsonistDoused(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.arsonist_doused", actor, target);
+    }
+
+    @Nullable
+    public static Text formatArsonistLighterCooldownStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.arsonist_lighter_cooldown_started", actor);
+    }
+
+    @Nullable
+    public static Text formatArsonistLighterCooldownFinished(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.arsonist_lighter_cooldown_finished", actor);
+    }
+
+    @Nullable
+    public static Text formatConvenerSummon(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text corpseOwner = playerFromKey(event, match, "corpse_owner");
+        if (actor == null || corpseOwner == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.convener_summon",
+                actor,
+                corpseOwner,
+                event.data().getInt("summon_count"),
+                event.data().getInt("required_summons")
+        );
+    }
+
+    @Nullable
+    public static Text formatConvenerCounterShieldGained(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.convener_counter_shield_gained",
+                actor,
+                event.data().getInt("current_layers")
+        );
+    }
+
+    @Nullable
+    public static Text formatConvenerVoodooImmunity(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text protectedPlayer = actorText(event, match);
+        Text voodooCaster = playerFromKey(event, match, "voodoo_player");
+        if (protectedPlayer == null || voodooCaster == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.convener_voodoo_immunity",
+                protectedPlayer,
+                voodooCaster,
+                Text.translatable("death_reason.noellesroles.voodoo")
+        );
+    }
+
+    @Nullable
+    public static Text formatConvenerCounterShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        return formatSimpleShieldBlocked(
+                event,
+                match,
+                world,
+                "replay.shield_blocked.noellesroles.convener_counter_shield.item",
+                "replay.shield_blocked.noellesroles.convener_counter_shield.by_item"
+        );
+    }
+
+    @Nullable
     public static Text formatDelusionStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = victimFromGlobal(event, match);
         return victim == null ? null : Text.translatable("replay.global.noellesroles.delusion_started", victim);
@@ -1605,6 +1692,43 @@ public final class NoellesRolesReplayFormatters {
             return null;
         }
         return Text.translatable("replay.death.noellesroles.tape_removed_low_mood.died", victim, remover, silencer);
+    }
+
+    @Nullable
+    public static Text formatConvenerCounterKillDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text convener = actorText(event, match);
+        if (victim == null) {
+            return null;
+        }
+        if (convener == null) {
+            return Text.translatable("replay.death.unknown.died", victim);
+        }
+        return Text.translatable("replay.death.noellesroles.convener_counter_kill.killed", victim, convener);
+    }
+
+    @Nullable
+    public static Text formatArsonistIgnitedDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text arsonist = actorText(event, match);
+        if (victim == null) {
+            return null;
+        }
+        if (arsonist == null) {
+            return Text.translatable("replay.death.unknown.died", victim);
+        }
+        return Text.translatable("replay.death.noellesroles.ignited.killed", victim, arsonist);
+    }
+
+    @Nullable
+    public static Text formatArsonistFailedIgniteDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        /*
+         * failed_ignite 是纵火犯自己未满足点燃条件时的惩罚死亡。
+         * LighterItem 为了保留死亡来源会把 actor 也传成自己，但回放文案应按“自亡”显示，
+         * 避免出现“某人被自己点火失败杀死”这种读起来不自然的击杀记录。
+         */
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.failed_ignite.died", victim);
     }
 
     @Nullable

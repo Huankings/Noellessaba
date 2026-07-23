@@ -1,6 +1,5 @@
 package org.agmas.noellesroles;
 
-import dev.doctor4t.wathe.api.Faction;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.api.economy.EconomyApi;
@@ -12,7 +11,6 @@ import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
 import dev.doctor4t.wathe.api.event.CanSeePoison;
 import dev.doctor4t.wathe.api.event.GameEvents;
 import dev.doctor4t.wathe.api.event.ShouldDropOnDeath;
-import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -37,14 +35,19 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
-import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.harpymodloader.events.ModifierAssigned;
 import org.agmas.harpymodloader.events.ResetPlayerEvent;
 import org.agmas.harpymodloader.modifiers.HMLModifiers;
 import org.agmas.harpymodloader.modifiers.Modifier;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.angel.AngelConstants;
-import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
+import org.agmas.noellesroles.roles.amnesiac.AmnesiacConstants;
+import org.agmas.noellesroles.roles.amnesiac.AmnesiacRoleSelectionHandler;
+import org.agmas.noellesroles.roles.arsonist.ArsonistConstants;
+import org.agmas.noellesroles.roles.arsonist.ArsonistReplayTracker;
+import org.agmas.noellesroles.roles.arsonist.ArsonistVictoryRule;
+import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
+import org.agmas.noellesroles.roles.arsonist.OilDousingHandler;
 import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
 import org.agmas.noellesroles.roles.bellringer.BellringerAbility;
 import org.agmas.noellesroles.roles.bellringer.BellringerConstants;
@@ -52,11 +55,17 @@ import org.agmas.noellesroles.roles.brainwasher.BrainwasherAbility;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.roles.controller.ControllerPossessAbility;
 import org.agmas.noellesroles.roles.controller.ControllerReleaseAbility;
+import org.agmas.noellesroles.roles.convener.ConvenerCommunicationManager;
+import org.agmas.noellesroles.roles.convener.ConvenerDisguiseComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerMomentumComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerPlayerComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerSummonHandler;
+import org.agmas.noellesroles.roles.convener.ConvenerTaskShieldHandler;
+import org.agmas.noellesroles.roles.convener.ConvenerVictoryRule;
+import org.agmas.noellesroles.packet.role.convener.ConvenerMorphC2SPacket;
 import org.agmas.noellesroles.roles.coroner.CoronerMorphAbility;
 import org.agmas.noellesroles.roles.corpsemaker.CorpsemakerAbility;
 import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
-import org.agmas.noellesroles.roles.coward.CowardConstants;
-import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
 import org.agmas.noellesroles.roles.cleaner.CleanerAbility;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
@@ -151,13 +160,14 @@ import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderAbility;
-import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderTargetAbility;
 import org.agmas.noellesroles.bed.NoellesRolesBedEffects;
 import org.agmas.noellesroles.roleassign.NoellesRolesRoleAssignedBootstrap;
 import org.agmas.noellesroles.record.NoellesRolesReplayFormatters;
 import org.agmas.noellesroles.shop.NoellesRolesShopBootstrap;
 import org.agmas.noellesroles.tray.NoellesRolesTrayEffects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.*;
@@ -166,6 +176,7 @@ import java.util.List;
 public class Noellesroles implements ModInitializer {
 
     public static String MOD_ID = "noellesroles";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 
     public static Identifier JESTER_ID = Identifier.of(MOD_ID, "jester");
@@ -223,12 +234,18 @@ public class Noellesroles implements ModInitializer {
     public static Identifier MUZZLER_ID = Identifier.of(MOD_ID, "muzzler");
     public static Identifier AVARICIOUS_ID = Identifier.of(MOD_ID, "avaricious");
     public static Identifier NECROMANCER_ID = Identifier.of(MOD_ID, "necromancer");
+    public static Identifier AMNESIAC_ID = Identifier.of(MOD_ID, "amnesiac");
+    public static Identifier ARSONIST_ID = Identifier.of(MOD_ID, "arsonist");
+    public static Identifier CONVENER_ID = Identifier.of(MOD_ID, "convener");
     public static Identifier FAKE_DEATH_REASON = Identifier.of(Noellesroles.MOD_ID, "fake");
     public static Identifier STALKER_EXECUTION_DEATH = Identifier.of(MOD_ID, "stalker_execution");
     public static Identifier DEATH_REASON_BOMB = Identifier.of(MOD_ID, "bomb");
     public static Identifier DEATH_REASON_THROWING_AXE = Identifier.of(MOD_ID, "throwing_axe");
     public static Identifier DEATH_REASON_SEDATIVE_OVERDOSE = Identifier.of(MOD_ID, "sedative_overdose");
     public static Identifier DEATH_REASON_SNIPER_RIFLE = Identifier.of(MOD_ID, "sniper_rifle");
+    public static Identifier ARSONIST_IGNITED_DEATH_REASON = Identifier.of(MOD_ID, "ignited");
+    public static Identifier ARSONIST_FAILED_IGNITE_DEATH_REASON = Identifier.of(MOD_ID, "failed_ignite");
+    public static Identifier CONVENER_COUNTER_KILL_DEATH_REASON = Identifier.of(MOD_ID, "convener_counter_kill");
     public static Identifier SILENCED_OUTSIDE_DEATH_REASON = Identifier.of(MOD_ID, "silenced_and_outside");
     public static Identifier SILENCED_TAPE_REMOVED_DEATH_REASON = Identifier.of(MOD_ID, "tape_removed_low_mood");
     public static final Identifier DEFENSE_TRAY_EFFECT = Identifier.of(MOD_ID, "defense_vial");
@@ -271,6 +288,14 @@ public class Noellesroles implements ModInitializer {
     public static final Identifier WINDER_FLOAT_STARTED_EVENT = Identifier.of(MOD_ID, "winder_float_started");
     public static final Identifier WINDER_FLOAT_ENDED_EVENT = Identifier.of(MOD_ID, "winder_float_ended");
     public static final Identifier WINDER_FLOAT_STOPPED_EARLY_EVENT = Identifier.of(MOD_ID, "winder_float_stopped_early");
+    public static final Identifier AMNESIAC_ROLE_STOLEN_EVENT = Identifier.of(MOD_ID, "amnesiac_role_stolen");
+    public static final Identifier ARSONIST_DOUSED_EVENT = Identifier.of(MOD_ID, "arsonist_doused");
+    public static final Identifier ARSONIST_LIGHTER_COOLDOWN_STARTED_EVENT = Identifier.of(MOD_ID, "arsonist_lighter_cooldown_started");
+    public static final Identifier ARSONIST_LIGHTER_COOLDOWN_FINISHED_EVENT = Identifier.of(MOD_ID, "arsonist_lighter_cooldown_finished");
+    public static final Identifier CONVENER_SUMMON_EVENT = Identifier.of(MOD_ID, "convener_summon");
+    public static final Identifier CONVENER_COUNTER_SHIELD_GAINED_EVENT = Identifier.of(MOD_ID, "convener_counter_shield_gained");
+    public static final Identifier CONVENER_VOODOO_IMMUNITY_EVENT = Identifier.of(MOD_ID, "convener_voodoo_immunity");
+    public static final Identifier CONVENER_COUNTER_SHIELD_SOURCE = Identifier.of(MOD_ID, "convener_counter_shield");
     public static final Identifier STALKER_PHASE_ADVANCE_1_TO_2_EVENT = Identifier.of(MOD_ID, "stalker_phase_1_to_2");
     public static final Identifier STALKER_PHASE_ADVANCE_2_TO_3_EVENT = Identifier.of(MOD_ID, "stalker_phase_2_to_3");
     public static final Identifier STALKER_PHASE_REGRESS_3_TO_2_EVENT = Identifier.of(MOD_ID, "stalker_phase_3_to_2");
@@ -370,6 +395,12 @@ public class Noellesroles implements ModInitializer {
     public static Role DREAMER = WatheRoles.registerNeutralRole(new Role(DREAMER_ID, DreamerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
     //黑客(杀手中立)
     public static Role HACKER = WatheRoles.registerNeutralRole(new Role(HACKER_ID, HackerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
+    // 失忆患者(普通中立)
+    public static Role AMNESIAC = WatheRoles.registerNeutralRole(new Role(AMNESIAC_ID, AmnesiacConstants.ROLE_COLOR, false, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    // 纵火犯(独立中立)
+    public static Role ARSONIST = WatheRoles.registerNeutralRole(new Role(ARSONIST_ID, ArsonistConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
+    // 召集者(独立中立)
+    public static Role CONVENER = WatheRoles.registerNeutralRole(new Role(CONVENER_ID, org.agmas.noellesroles.roles.convener.ConvenerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
     //变形怪(杀手)
     public static Role MORPHLING =WatheRoles.registerKillerRole(new Role(MORPHLING_ID, new Color(170, 2, 61).getRGB(),false,true, Role.MoodType.FAKE,-1,true));
     //列车长(好人)
@@ -526,6 +557,14 @@ public class Noellesroles implements ModInitializer {
         NecromancerRevivalHandler.init();
         NecromancerRoleLimitHandler.init();
         MagicianPlaybackManager.init();
+        AmnesiacRoleSelectionHandler.init();
+        OilDousingHandler.init();
+        ArsonistReplayTracker.init();
+        ArsonistVictoryRule.init();
+        ConvenerCommunicationManager.init();
+        ConvenerSummonHandler.init();
+        ConvenerTaskShieldHandler.init();
+        ConvenerVictoryRule.init();
 
 
         Harpymodloader.setRoleMaximum(CONDUCTOR_ID,1);
@@ -537,6 +576,9 @@ public class Noellesroles implements ModInitializer {
         Harpymodloader.setRoleMaximum(BETTER_VIGILANTE_ID,0);
         Harpymodloader.setRoleMaximum(STARSTRUCK_ID, 1);
         Harpymodloader.setRoleMaximum(MUZZLER_ID, 1);
+        Harpymodloader.setRoleMaximum(AMNESIAC_ID, 1);
+        Harpymodloader.setRoleMaximum(ARSONIST_ID, 1);
+        Harpymodloader.setRoleMaximum(CONVENER_ID, 1);
 
 
         PayloadTypeRegistry.playC2S().register(MorphC2SPacket.ID, MorphC2SPacket.CODEC);
@@ -561,6 +603,7 @@ public class Noellesroles implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(PanC2SPacket.ID, PanC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SpiritualistPossessionControlC2SPacket.ID, SpiritualistPossessionControlC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(ConvenerMorphC2SPacket.ID, ConvenerMorphC2SPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SpiritualistPossessionViewS2CPacket.ID, SpiritualistPossessionViewS2CPacket.CODEC);
         NoellesRolesShopBootstrap.init();
         registerEconomyApi();
@@ -768,6 +811,16 @@ public class Noellesroles implements ModInitializer {
             DrugmakerPlayerComponent.KEY.get(playerEntity).reset();
             KidnapperComponent.KEY.get(playerEntity).resetAll();
             RobotPlayerComponent.KEY.get(playerEntity).reset();
+            DousedPlayerComponent.KEY.get(playerEntity).reset();
+            DousedPlayerComponent.KEY.get(playerEntity).sync();
+            /*
+             * 召集者有三份跨客户端状态：本人进度、当前伪装、召集后的爆发移速。
+             * ResetPlayerEvent 是每局清空玩家玩法状态的统一入口，放在这里能避免上一局的已解锁头像、
+             * 限时假皮肤或移速状态残留到下一局。
+             */
+            ConvenerPlayerComponent.KEY.get(playerEntity).reset();
+            ConvenerDisguiseComponent.KEY.get(playerEntity).clearDisguise();
+            ConvenerMomentumComponent.KEY.get(playerEntity).reset();
         }));
         CanSeePoison.EVENT.register((player)->{
             GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
@@ -933,6 +986,13 @@ public class Noellesroles implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(HuntingKnifeC2SPacket.ID, new HuntingKnifeC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(PanC2SPacket.ID, new PanC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket::handle);
+        ServerPlayNetworking.registerGlobalReceiver(ConvenerMorphC2SPacket.ID, (payload, context) -> {
+            /*
+             * 背包头像只是客户端展示，真正能否切换伪装必须在服务端校验。
+             * 因此包只携带目标 UUID，角色身份、是否已解锁都交给 ConvenerMorphC2SPacket#handle 复查。
+             */
+            context.server().execute(() -> ConvenerMorphC2SPacket.handle(payload, context.player()));
+        });
 
 
         ServerPlayNetworking.registerGlobalReceiver(GoddessC2SPacket.ID, (payload, context) -> {
@@ -1145,6 +1205,7 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerShieldSourceFormatter(DREAM_IMPRINT_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatDreamImprintShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(PILL_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPillShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(PAN_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPanShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(CONVENER_COUNTER_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatConvenerCounterShieldBlocked);
 
         ReplayRegistry.registerGlobalEventFormatter(DELUSION_STARTED_EVENT, NoellesRolesReplayFormatters::formatDelusionStarted);
         ReplayRegistry.registerGlobalEventFormatter(DELUSION_ENDED_EVENT, NoellesRolesReplayFormatters::formatDelusionEnded);
@@ -1186,6 +1247,13 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerGlobalEventFormatter(WINDER_FLOAT_STARTED_EVENT, NoellesRolesReplayFormatters::formatWinderFloatStarted);
         ReplayRegistry.registerGlobalEventFormatter(WINDER_FLOAT_ENDED_EVENT, NoellesRolesReplayFormatters::formatWinderFloatEnded);
         ReplayRegistry.registerGlobalEventFormatter(WINDER_FLOAT_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatWinderFloatStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(AMNESIAC_ROLE_STOLEN_EVENT, NoellesRolesReplayFormatters::formatAmnesiacRoleStolen);
+        ReplayRegistry.registerGlobalEventFormatter(ARSONIST_DOUSED_EVENT, NoellesRolesReplayFormatters::formatArsonistDoused);
+        ReplayRegistry.registerGlobalEventFormatter(ARSONIST_LIGHTER_COOLDOWN_STARTED_EVENT, NoellesRolesReplayFormatters::formatArsonistLighterCooldownStarted);
+        ReplayRegistry.registerGlobalEventFormatter(ARSONIST_LIGHTER_COOLDOWN_FINISHED_EVENT, NoellesRolesReplayFormatters::formatArsonistLighterCooldownFinished);
+        ReplayRegistry.registerGlobalEventFormatter(CONVENER_SUMMON_EVENT, NoellesRolesReplayFormatters::formatConvenerSummon);
+        ReplayRegistry.registerGlobalEventFormatter(CONVENER_COUNTER_SHIELD_GAINED_EVENT, NoellesRolesReplayFormatters::formatConvenerCounterShieldGained);
+        ReplayRegistry.registerGlobalEventFormatter(CONVENER_VOODOO_IMMUNITY_EVENT, NoellesRolesReplayFormatters::formatConvenerVoodooImmunity);
         ReplayRegistry.registerGlobalEventFormatter(STALKER_PHASE_ADVANCE_1_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance12);
         ReplayRegistry.registerGlobalEventFormatter(STALKER_PHASE_ADVANCE_2_TO_3_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance23);
         ReplayRegistry.registerGlobalEventFormatter(STALKER_PHASE_REGRESS_3_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseRegress32);
@@ -1242,5 +1310,12 @@ public class Noellesroles implements ModInitializer {
         ReplayRegistry.registerDeathReasonFormatter(DEATH_REASON_SNIPER_RIFLE, NoellesRolesReplayFormatters::formatSniperRifleDeath);
         ReplayRegistry.registerDeathReasonFormatter(SILENCED_OUTSIDE_DEATH_REASON, NoellesRolesReplayFormatters::formatSilencedOutsideDeath);
         ReplayRegistry.registerDeathReasonFormatter(SILENCED_TAPE_REMOVED_DEATH_REASON, NoellesRolesReplayFormatters::formatTapeRemovedLowMoodDeath);
+        ReplayRegistry.registerDeathReasonFormatter(CONVENER_COUNTER_KILL_DEATH_REASON, NoellesRolesReplayFormatters::formatConvenerCounterKillDeath);
+        /*
+         * 纵火犯两个死亡原因都来自打火机：
+         * ignited 是被纵火犯点燃的玩家，failed_ignite 是纵火犯条件不足时自爆惩罚。
+         */
+        ReplayRegistry.registerDeathReasonFormatter(ARSONIST_IGNITED_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistIgnitedDeath);
+        ReplayRegistry.registerDeathReasonFormatter(ARSONIST_FAILED_IGNITE_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistFailedIgniteDeath);
     }
 }

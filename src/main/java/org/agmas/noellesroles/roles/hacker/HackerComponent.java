@@ -178,6 +178,7 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
                     ModItems.SILENCED_REVOLVER,
                     ModItems.SILENT_GRENADE,
                     ModItems.TIMED_BOMB,
+                    ModItems.LIGHTER,
                     ModItems.BLOWGUN,
                     ModItems.POISON_INJECTOR,
                     ModItems.KNOCKOUT_DRUG,
@@ -199,9 +200,6 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
             }
             if (FabricLoader.getInstance().isModLoaded("starexpress")) {
                 clearCooldowns(serverPlayer, Registries.ITEM.get(Identifier.of("starexpress", "tape")));
-            }
-            if (FabricLoader.getInstance().isModLoaded("stupid_express")) {
-                clearCooldowns(serverPlayer, Registries.ITEM.get(Identifier.of("stupid_express", "lighter")));
             }
         }
         return true;

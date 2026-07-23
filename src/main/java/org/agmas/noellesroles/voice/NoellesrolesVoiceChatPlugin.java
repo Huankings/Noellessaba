@@ -21,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerCommunicationHelper;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
@@ -257,6 +258,14 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
     }
 
     private boolean shouldBlockVoiceBetween(ServerPlayerEntity sender, ServerPlayerEntity receiver) {
+        /*
+         * 召集者召集后的限时伪装会造成“活人彼此隔离”的混乱效果。
+         * 这里走同一个语音过滤入口，不新增客户端/服务端 mixin，避免和灵术师、接线员的重定向语音互相打架。
+         */
+        if (ConvenerCommunicationHelper.shouldBlockVoiceBetween(sender, receiver)) {
+            return true;
+        }
+
         if (SpiritualistPlayerComponent.KEY.get(receiver).isProjecting()) {
             return true;
         }

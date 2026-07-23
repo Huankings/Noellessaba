@@ -3,7 +3,11 @@ package org.agmas.noellesroles.client.appearance;
 import org.agmas.noellesroles.client.appearance.killer_sided.ExecutionerCohortHudHandler;
 import org.agmas.noellesroles.client.appearance.killer_sided.HackerCohortHudHandler;
 import org.agmas.noellesroles.client.appearance.killer_sided.KillerSidedNeutralTargetHudHandler;
+import org.agmas.noellesroles.client.appearance.roles.amnesiac.AmnesiacBodyHudHandler;
+import org.agmas.noellesroles.client.appearance.roles.arsonist.ArsonistTargetHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.controller.ControllerAppearanceHandler;
+import org.agmas.noellesroles.client.appearance.roles.convener.ConvenerAppearanceHandler;
+import org.agmas.noellesroles.client.appearance.roles.convener.ConvenerBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerBodyExamineHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerBodyHudHandler;
@@ -30,6 +34,7 @@ public final class NoellesAppearanceHandlers {
     public static void register() {
         SpiritualistAppearanceHandler.register();
         InsaneObserverAppearanceHandler.register();
+        ConvenerAppearanceHandler.register();
         MorphlingAppearanceHandler.register();
         ControllerAppearanceHandler.register();
         CoronerAppearanceHandler.register();
@@ -44,5 +49,8 @@ public final class NoellesAppearanceHandlers {
         PhysicianBodyHudHandler.register();
         NecromancerBodyHudHandler.register();
         MuzzlerSilencedTipHudHandler.register();
+        AmnesiacBodyHudHandler.register();
+        ArsonistTargetHudHandler.register();
+        ConvenerBodyHudHandler.register();
     }
 }

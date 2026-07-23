@@ -173,8 +173,8 @@ public class NoellesRolesItemToolTip {
             ItemCooldownManager itemCooldown = MinecraftClient.getInstance().player.getItemCooldownManager();
             if (itemCooldown != null && itemCooldown.isCoolingDown(item)) {
                 /*
-                 * 调试身份不受猎刀冷却影响，tooltip 也不要继续显示冷却倒计时，
-                 * 否则界面会和实际“可继续使用”的行为互相矛盾。
+                 * 旁观/创造/非存活玩家不应该被这些迁移物品的冷却表现限制。
+                 * 这里隐藏 tooltip 倒计时，保持界面和服务端“调试身份不受冷却影响”的行为一致。
                  */
                 if (isIgnoredForSpectatorOrCreative(item) && GameFunctions.isPlayerSpectatingOrCreative(MinecraftClient.getInstance().player)) {
                     return;
@@ -205,6 +205,8 @@ public class NoellesRolesItemToolTip {
         return item == ModItems.HUNTING_KNIFE
                 || item == ModItems.BLOWGUN
                 || item == ModItems.POISON_INJECTOR
-                || item == ModItems.KNOCKOUT_DRUG;
+                || item == ModItems.KNOCKOUT_DRUG
+                || item == ModItems.JERRY_CAN
+                || item == ModItems.LIGHTER;
     }
 }

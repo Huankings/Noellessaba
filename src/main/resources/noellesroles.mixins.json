@@ -84,7 +84,9 @@
     "roles.drugmaker.DrugmakerGiveCoinsMixin",
     "roles.kidnapper.KidnapperMoneyIncreaseMixin",
     "roles.robot.RobotNoPoisonMixin",
-    "roles.robot.RobotBedPoisonMixin"
+    "roles.robot.RobotBedPoisonMixin",
+    "roles.convener.ItemCooldownManagerAccessor",
+    "roles.convener.ItemCooldownEntryAccessor"
 
   ],
   "injectors": {

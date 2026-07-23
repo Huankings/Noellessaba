@@ -28,6 +28,7 @@ public final class PagedPlayerScreenState {
     public static final String GUESSER_PAGE_KEY = "guesser";
     public static final String CONTROLLER_PAGE_KEY = "controller";
     public static final String CORPSEMAKER_PAGE_KEY = "corpsemaker";
+    public static final String CONVENER_PAGE_KEY = "convener";
 
     /**
      * 按界面 key 保存对应页码。

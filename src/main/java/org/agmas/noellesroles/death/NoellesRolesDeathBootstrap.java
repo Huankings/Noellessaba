@@ -4,6 +4,7 @@ import dev.doctor4t.wathe.api.event.AllowPlayerDeath;
 import org.agmas.noellesroles.roles.angel.AngelDeathProtectionHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderDeathProtectionHandler;
 import org.agmas.noellesroles.roles.controller.ControllerDeathProtectionHandler;
+import org.agmas.noellesroles.roles.convener.ConvenerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.cook.CookDeathProtectionHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerBackfireDeathHandler;
@@ -71,6 +72,13 @@ public final class NoellesRolesDeathBootstrap {
                 return false;
             }
             if (!SpiritualistDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
+                return false;
+            }
+            /*
+             * 召集者的巫毒免疫和反伤护盾需要在“强制放行”之前判断。
+             * 否则巫毒这类扩展死因会直接穿过护盾链，导致 StupidExpress 原本的独立防护语义丢失。
+             */
+            if (!ConvenerDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
                 return false;
             }
 

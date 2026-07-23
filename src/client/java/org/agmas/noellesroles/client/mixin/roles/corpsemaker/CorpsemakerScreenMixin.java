@@ -124,9 +124,8 @@ public abstract class CorpsemakerScreenMixin extends LimitedHandledScreen<Player
         if (FabricLoader.getInstance().isModLoaded("starexpress")) {
             deathReasons.add(Registries.ITEM.get(Identifier.of("starexpress", "tape")));
         }
-        if (FabricLoader.getInstance().isModLoaded("stupid_express")) {
-            deathReasons.add(Registries.ITEM.get(Identifier.of("stupid_express", "lighter")));
-        }
+        // 打火机已经迁移到 NoellesRoles，本界面直接使用本模组自己的物品即可。
+        deathReasons.add(ModItems.LIGHTER);
         x = this.width / 2 - (deathReasons.size()) * apart / 2 + 9;
         for (int i = 0; i < deathReasons.size(); ++i) {
             CorpsemakerDeathReasonWidget widget = new CorpsemakerDeathReasonWidget(
