@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.waiter;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -14,7 +16,6 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterServiceItems;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class WaiterCrosshairMixin {
         if (!client.options.getPerspective().isFirstPerson()
                 || !WaiterServiceItems.isServiceStack(player.getMainHandStack())
                 || !GameFunctions.isPlayerAliveAndSurvival(player)
-                || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.WAITER)) {
+                || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.WAITER)) {
             return;
         }
 

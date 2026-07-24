@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
@@ -11,7 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
@@ -41,7 +42,7 @@ public abstract class SpiritualistHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.SPIRITUALIST)
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.SPIRITUALIST)
                 || !GameFunctions.isPlayerAliveAndSurvival(client.player)) {
             return;
         }

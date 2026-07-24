@@ -1,11 +1,13 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 召集者完成任务获得反伤护盾的任务 API 接入。
@@ -26,7 +28,7 @@ public final class ConvenerTaskShieldHandler {
             if (!ConvenerConstants.COUNTER_SHIELD_ENABLED
                     || !context.gameWorld().isRunning()
                     || !GameFunctions.isPlayerAliveAndSurvival(context.player())
-                    || context.role() != Noellesroles.CONVENER) {
+                    || context.role() != NoellesRoleRegistry.CONVENER) {
                 return;
             }
 
@@ -42,7 +44,7 @@ public final class ConvenerTaskShieldHandler {
                 extra.putInt("current_layers", convener.getCounterShieldLayers());
                 GameRecordManager.recordGlobalEvent(
                         context.player().getServerWorld(),
-                        Noellesroles.CONVENER_COUNTER_SHIELD_GAINED_EVENT,
+                        NoellesEventIds.CONVENER_COUNTER_SHIELD_GAINED_EVENT,
                         context.player(),
                         extra
                 );

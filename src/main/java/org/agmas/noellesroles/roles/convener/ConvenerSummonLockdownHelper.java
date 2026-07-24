@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.index.WatheItems;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.ItemCooldownManager;
@@ -9,7 +11,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownEntryAccessor;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownManagerAccessor;
 
@@ -204,6 +205,6 @@ public final class ConvenerSummonLockdownHelper {
         if (!REPORTED_REFLECTION_FAILURES.add(componentClassName)) {
             return;
         }
-        Noellesroles.LOGGER.warn("召集者跨模组技能冷却桥接失败，已跳过组件 {}。", componentClassName, exception);
+        NoellesRolesCore.LOGGER.warn("召集者跨模组技能冷却桥接失败，已跳过组件 {}。", componentClassName, exception);
     }
 }

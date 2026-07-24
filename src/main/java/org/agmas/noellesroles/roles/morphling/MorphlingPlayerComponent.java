@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.morphling;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -9,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -20,7 +22,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 import java.util.UUID;
 
 public class MorphlingPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
-    public static final ComponentKey<MorphlingPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "morphling"), MorphlingPlayerComponent.class);
+    public static final ComponentKey<MorphlingPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "morphling"), MorphlingPlayerComponent.class);
     private final PlayerEntity player;
     public UUID disguise;
     public int morphTicks = 0;
@@ -92,7 +94,7 @@ public class MorphlingPlayerComponent implements AutoSyncedComponent, ServerTick
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             GameRecordManager.event(GameRecordTypes.GLOBAL_EVENT)
                     .actor(serverPlayer)
-                    .put("event", Noellesroles.MORPHLING_MORPH_STARTED_EVENT.toString())
+                    .put("event", NoellesEventIds.MORPHLING_MORPH_STARTED_EVENT.toString())
                     .putUuid("target_player", id)
                     .record();
         }
@@ -114,7 +116,7 @@ public class MorphlingPlayerComponent implements AutoSyncedComponent, ServerTick
         if (recordReplay && this.morphActive && this.player instanceof ServerPlayerEntity serverPlayer) {
             GameRecordManager.recordGlobalEvent(
                     serverPlayer.getServerWorld(),
-                    Noellesroles.MORPHLING_MORPH_ENDED_EVENT,
+                    NoellesEventIds.MORPHLING_MORPH_ENDED_EVENT,
                     serverPlayer,
                     null
             );

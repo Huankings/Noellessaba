@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -15,7 +18,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +51,7 @@ public final class AngelAbility {
      */
     public static void handle(ServerPlayerEntity player, int clientTargetId) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.ANGEL)
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)
                 || !gameWorld.isRunning()
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
@@ -101,7 +103,7 @@ public final class AngelAbility {
         if (target.getUuid().equals(previousGuard)) {
             player.sendMessage(
                     Text.translatable("message.noellesroles.angel.already_guarding")
-                            .withColor(Noellesroles.ANGEL.color()),
+                            .withColor(NoellesRoleRegistry.ANGEL.color()),
                     true
             );
             return;
@@ -112,7 +114,7 @@ public final class AngelAbility {
 
         player.sendMessage(
                 Text.translatable("message.noellesroles.angel.guard_selected", target.getDisplayName())
-                        .withColor(Noellesroles.ANGEL.color()),
+                        .withColor(NoellesRoleRegistry.ANGEL.color()),
                 true
         );
 
@@ -121,7 +123,7 @@ public final class AngelAbility {
         if (previousGuard != null) {
             extra.putUuid("previous_target", previousGuard);
         }
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.ANGEL_GUARD_SELECTED_EVENT, player, extra);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.ANGEL_GUARD_SELECTED_EVENT, player, extra);
     }
 
     private static void handleSoothe(ServerPlayerEntity player, AbilityPlayerComponent ability) {
@@ -142,14 +144,14 @@ public final class AngelAbility {
             AngelPlayerComponent.KEY.get(other).applySoothe(AngelConstants.SOOTHE_PROTECTION_TICKS);
             other.sendMessage(
                     Text.translatable("message.noellesroles.angel.soothed")
-                            .withColor(Noellesroles.ANGEL.color()),
+                            .withColor(NoellesRoleRegistry.ANGEL.color()),
                     true
             );
             soothedPlayers.add(other);
 
             NbtCompound soothedExtra = new NbtCompound();
             soothedExtra.putUuid("target_player", other.getUuid());
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.ANGEL_SOOTHED_EVENT, player, soothedExtra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.ANGEL_SOOTHED_EVENT, player, soothedExtra);
         }
 
         Vec3d center = player.getPos().add(0, 1.0, 0);
@@ -177,7 +179,7 @@ public final class AngelAbility {
                 1.1f
         );
 
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.ANGEL_SOOTHE_CAST_EVENT, player, null);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.ANGEL_SOOTHE_CAST_EVENT, player, null);
     }
 
     /**

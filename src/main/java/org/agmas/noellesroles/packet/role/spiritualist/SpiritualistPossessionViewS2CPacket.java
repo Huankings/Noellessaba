@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.packet.role.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public record SpiritualistPossessionViewS2CPacket(
         boolean onGround
 ) implements CustomPayload {
     public static final Identifier POSSESSION_VIEW_PAYLOAD_ID =
-            Identifier.of(Noellesroles.MOD_ID, "spiritualist_possession_view");
+            Identifier.of(NoellesRolesCore.MOD_ID, "spiritualist_possession_view");
     public static final Id<SpiritualistPossessionViewS2CPacket> ID = new Id<>(POSSESSION_VIEW_PAYLOAD_ID);
     public static final PacketCodec<RegistryByteBuf, SpiritualistPossessionViewS2CPacket> CODEC =
             PacketCodec.of(SpiritualistPossessionViewS2CPacket::write, SpiritualistPossessionViewS2CPacket::read);

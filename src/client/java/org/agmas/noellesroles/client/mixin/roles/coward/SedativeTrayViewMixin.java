@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.client.mixin.roles.coward;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.block_entity.BeveragePlateBlockEntity;
 import net.minecraft.block.BlockState;
@@ -8,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +30,7 @@ public abstract class SedativeTrayViewMixin {
         if (!(blockEntity instanceof BeveragePlateBlockEntity tray)) {
             return;
         }
-        if (!Noellesroles.SEDATIVE_TRAY_EFFECT.toString().equals(tray.getTrayEffect())) {
+        if (!NoellesEventIds.SEDATIVE_TRAY_EFFECT.toString().equals(tray.getTrayEffect())) {
             return;
         }
 
@@ -38,7 +40,7 @@ public abstract class SedativeTrayViewMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.COWARD)) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.COWARD)) {
             return;
         }
         if (Math.floorMod(pos.asLong() + world.getTime(), CowardConstants.SEDATIVE_TRAY_PARTICLE_INTERVAL_TICKS) != 0) {

@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.mimic;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 模仿者误杀无辜者后的反噬自杀处理器。
@@ -16,7 +18,7 @@ public final class MimicBackfireDeathHandler {
     /**
      * 与旧实现保持一致的“愧疚自杀”死因。
      */
-    private static final Identifier BACKFIRE_DEATH_REASON = Identifier.of(Noellesroles.MOD_ID, "modded_backfire");
+    private static final Identifier BACKFIRE_DEATH_REASON = Identifier.of(NoellesRolesCore.MOD_ID, "modded_backfire");
 
     private MimicBackfireDeathHandler() {
     }
@@ -34,7 +36,7 @@ public final class MimicBackfireDeathHandler {
         }
 
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(playerEntity.getWorld());
-        if (!gameWorldComponent.isRole(killer, Noellesroles.MIMIC) || !gameWorldComponent.isInnocent(playerEntity)) {
+        if (!gameWorldComponent.isRole(killer, NoellesRoleRegistry.MIMIC) || !gameWorldComponent.isInnocent(playerEntity)) {
             return true;
         }
 

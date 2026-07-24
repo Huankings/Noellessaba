@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -8,7 +10,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -29,7 +30,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
 
     public static final ComponentKey<RemembererPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "rememberer"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "rememberer"),
             RemembererPlayerComponent.class
     );
 

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -14,7 +17,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TapeItem extends Item {
     private static final SoundEvent TAPE_APPLY_SOUND =
-            SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "item.tape.apply"));
+            SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "item.tape.apply"));
 
     public TapeItem(Settings settings) {
         super(settings);
@@ -45,7 +47,7 @@ public class TapeItem extends Item {
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(user.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(user, Noellesroles.MUZZLER)
+                || !gameWorld.isRole(user, NoellesRoleRegistry.MUZZLER)
                 || !GameFunctions.isPlayerAliveAndSurvival(user)
                 || !GameFunctions.isPlayerAliveAndSurvival(victim)
                 || user.getItemCooldownManager().isCoolingDown(this)) {

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -16,7 +19,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 追忆者右键摸取回忆的服务端入口。
@@ -59,14 +61,14 @@ public final class RemembererInteractionHandler {
 
             GameRecordManager.recordGlobalEvent(
                     rememberer.getServerWorld(),
-                    Noellesroles.REMEMBERER_RECALL_EVENT,
+                    NoellesEventIds.REMEMBERER_RECALL_EVENT,
                     rememberer,
                     RemembererReplayBookBuilder.createRecallReplayExtra(target)
             );
 
             rememberer.sendMessage(
                     Text.translatable("message.noellesroles.rememberer.recalled", target.getDisplayName())
-                            .withColor(Noellesroles.REMEMBERER.color()),
+                            .withColor(NoellesRoleRegistry.REMEMBERER.color()),
                     true
             );
             return ActionResult.CONSUME;
@@ -92,7 +94,7 @@ public final class RemembererInteractionHandler {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(rememberer.getWorld());
-        if (!gameWorld.isRole(rememberer, Noellesroles.REMEMBERER)) {
+        if (!gameWorld.isRole(rememberer, NoellesRoleRegistry.REMEMBERER)) {
             return false;
         }
         if (!GameFunctions.isPlayerAliveAndSurvival(rememberer) || !GameFunctions.isPlayerAliveAndSurvival(target)) {

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.muzzler;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,7 +10,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -25,7 +27,7 @@ import java.util.UUID;
  */
 public class SilencePlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<SilencePlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "silence"), SilencePlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "silence"), SilencePlayerComponent.class);
 
     private final PlayerEntity player;
     private boolean silenced = false;
@@ -71,7 +73,7 @@ public class SilencePlayerComponent implements AutoSyncedComponent, ServerTickin
                     serverVictim,
                     true,
                     killer,
-                    Noellesroles.SILENCED_OUTSIDE_DEATH_REASON,
+                    NoellesDeathReasons.SILENCED_OUTSIDE_DEATH_REASON,
                     extraDeathData
             );
         }

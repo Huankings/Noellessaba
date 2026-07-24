@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +32,7 @@ public abstract class StarstruckHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.STARSTRUCK)) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.STARSTRUCK)) {
             return;
         }
 
@@ -46,7 +47,7 @@ public abstract class StarstruckHudMixin {
                 line,
                 context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                 drawY,
-                Noellesroles.STARSTRUCK.color()
+                NoellesRoleRegistry.STARSTRUCK.color()
         );
     }
 }

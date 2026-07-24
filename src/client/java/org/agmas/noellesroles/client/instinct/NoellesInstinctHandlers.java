@@ -1,7 +1,8 @@
 package org.agmas.noellesroles.client.instinct;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.killer.KillerNeutralInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.angel.AngelInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.amnesiac.AmnesiacInstinctHandler;
@@ -54,6 +55,6 @@ public final class NoellesInstinctHandlers {
     }
 
     public static Identifier id(String path) {
-        return Identifier.of(Noellesroles.MOD_ID, "instinct/" + path);
+        return Identifier.of(NoellesRolesCore.MOD_ID, "instinct/" + path);
     }
 }

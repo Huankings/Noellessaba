@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.robber;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.index.WatheItems;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 强盗职业分配处理器。
@@ -21,7 +22,7 @@ public final class RobberRoleAssignedHandler {
      * 因此这里仍然先 reset，再重新写入新身份应该拥有的冷却和物品。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.ROBBER)) {
+        if (!role.equals(NoellesRoleRegistry.ROBBER)) {
             return;
         }
 

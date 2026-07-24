@@ -1,5 +1,10 @@
 package org.agmas.noellesroles.roles.bomber;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -22,7 +27,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -45,7 +49,7 @@ import java.util.UUID;
 public class BomberPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
 
     public static final ComponentKey<BomberPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "bomber"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "bomber"),
             BomberPlayerComponent.class
     );
 
@@ -81,8 +85,8 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
     private static final Identifier MENTAL_BREAKDOWN_REASON = Identifier.of("wathe", "mental_breakdown");
     private static final Identifier FELL_OUT_OF_TRAIN_REASON = Identifier.of("wathe", "fell_out_of_train");
 
-    private static final SoundEvent BOMB_BEEP_SOUND = SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "item.bomb.beep"));
-    private static final SoundEvent BOMB_EXPLODE_SOUND = SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "item.bomb.explode"));
+    private static final SoundEvent BOMB_BEEP_SOUND = SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "item.bomb.beep"));
+    private static final SoundEvent BOMB_EXPLODE_SOUND = SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "item.bomb.explode"));
 
     private final PlayerEntity player;
 
@@ -130,7 +134,7 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
         // 只把“谁身上有炸弹、炸弹是否已经开始响”同步给炸弹客本人，
         // 这样客户端才能在本能透视里把真正正在持有活动炸弹的玩家高亮出来。
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        return gameWorld.isRole(player, Noellesroles.BOMBER);
+        return gameWorld.isRole(player, NoellesRoleRegistry.BOMBER);
     }
 
     @Override
@@ -294,7 +298,7 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("victim", serverPlayer.getUuid());
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.TIMED_BOMB_ACTIVATED_EVENT, null, extra);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.TIMED_BOMB_ACTIVATED_EVENT, null, extra);
         }
         this.sync();
     }
@@ -355,7 +359,7 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
 
         PlayerEntity bomber = this.bomberUuid == null ? null : this.player.getWorld().getPlayerByUuid(this.bomberUuid);
         if (GameFunctions.isPlayerAliveAndSurvival(this.player)) {
-            GameFunctions.killPlayer(this.player, true, bomber, Noellesroles.DEATH_REASON_BOMB);
+            GameFunctions.killPlayer(this.player, true, bomber, NoellesDeathReasons.DEATH_REASON_BOMB);
         } else {
             removeBombFromInventory(this.player);
             clearBombState();
@@ -381,7 +385,7 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
             PlayerEntity bomber = victim.getWorld().getPlayerByUuid(component.bomberUuid);
             if (bomber instanceof ServerPlayerEntity serverBomber
                     && GameFunctions.isPlayerAliveAndSurvival(serverBomber)
-                    && GameWorldComponent.KEY.get(serverBomber.getWorld()).isRole(serverBomber, Noellesroles.BOMBER)) {
+                    && GameWorldComponent.KEY.get(serverBomber.getWorld()).isRole(serverBomber, NoellesRoleRegistry.BOMBER)) {
                 PlayerShopComponent.KEY.get(serverBomber).addToBalance(reward);
             }
         }
@@ -391,7 +395,7 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
     }
 
     private static int getRewardForDeathReason(Identifier deathReason) {
-        if (Noellesroles.DEATH_REASON_BOMB.equals(deathReason)) {
+        if (NoellesDeathReasons.DEATH_REASON_BOMB.equals(deathReason)) {
             return NORMAL_BOMB_REWARD;
         }
         // 这里改成直接写死 Identifier，避免某些开发环境里对 DeathReasons.MENTAL_BREAKDOWN 解析异常

@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.mixin.roles.coward;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.util.GunShootPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +29,7 @@ public abstract class CowardRevolverCooldownMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        boolean coward = gameWorld.isRole(player, Noellesroles.COWARD);
+        boolean coward = gameWorld.isRole(player, NoellesRoleRegistry.COWARD);
         boolean sedative = SedativePlayerComponent.KEY.get(player).isActive();
         if (!coward && !sedative) {
             return;

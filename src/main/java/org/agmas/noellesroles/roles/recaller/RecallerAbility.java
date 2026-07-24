@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.recaller;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 public final class RecallerAbility {
 
@@ -18,7 +20,7 @@ public final class RecallerAbility {
      */
     public static void handle(ServerPlayerEntity player) {
         var gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.RECALLER)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.RECALLER)) return;
 
         var ability = AbilityPlayerComponent.KEY.get(player);
         if (ability.cooldown > 0) return;
@@ -34,7 +36,7 @@ public final class RecallerAbility {
             extra.putInt("x", recallerComp.getSavedBlockX());
             extra.putInt("y", recallerComp.getSavedBlockY());
             extra.putInt("z", recallerComp.getSavedBlockZ());
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.RECALLER_POSITION_SAVED_EVENT, player, extra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.RECALLER_POSITION_SAVED_EVENT, player, extra);
             ability.sync();
         } else {
             // 第二次使用：传送回记录点，需要花费固定金币。
@@ -49,7 +51,7 @@ public final class RecallerAbility {
                 shop.sync();
                 ability.cooldown = RecallerConstants.TELEPORT_COOLDOWN_TICKS;
                 recallerComp.teleport();
-                GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.RECALLER_TELEPORTED_EVENT, player, extra);
+                GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.RECALLER_TELEPORTED_EVENT, player, extra);
                 ability.sync();
             }
         }

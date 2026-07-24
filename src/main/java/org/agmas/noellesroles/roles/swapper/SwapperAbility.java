@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.swapper;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -9,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.swapper.SwapperC2SPacket;
 
 import java.util.HashMap;
@@ -52,7 +54,7 @@ public final class SwapperAbility {
         var ability = AbilityPlayerComponent.KEY.get(player);
 
         // 检查角色
-        if (!gameWorld.isRole(player, Noellesroles.SWAPPER)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.SWAPPER)) return;
 
         // 服务端也要校验冷却，不能只依赖客户端按钮限制，否则恶意发包可以绕过冷却。
         if (ability.cooldown > 0) return;
@@ -74,7 +76,7 @@ public final class SwapperAbility {
         NbtCompound extra = new NbtCompound();
         extra.putUuid("player_one", player1.getUuid());
         extra.putUuid("player_two", player2.getUuid());
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.SWAPPER_SWAP_SELECTED_EVENT, player, extra);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.SWAPPER_SWAP_SELECTED_EVENT, player, extra);
 
         // 技能在“发动”的瞬间就进入冷却，避免玩家在延迟窗口内重复使用。
         ability.setCooldown(GameConstants.getInTicks(1, 0)); // 1分钟
@@ -133,7 +135,7 @@ public final class SwapperAbility {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("player_one", player1.getUuid());
             extra.putUuid("player_two", player2.getUuid());
-            GameRecordManager.recordGlobalEvent(swapper.getServerWorld(), Noellesroles.SWAPPER_SWAP_EXECUTED_EVENT, swapper, extra);
+            GameRecordManager.recordGlobalEvent(swapper.getServerWorld(), NoellesEventIds.SWAPPER_SWAP_EXECUTED_EVENT, swapper, extra);
         }
     }
 

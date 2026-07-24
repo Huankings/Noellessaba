@@ -1,16 +1,17 @@
 package org.agmas.noellesroles.packet.role.brainwasher;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.UUID;
 
 public record BrainwasherC2SPacket(UUID target) implements CustomPayload {
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "brainwasher");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "brainwasher");
     public static final Id<BrainwasherC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, BrainwasherC2SPacket> CODEC = PacketCodec.of(
             BrainwasherC2SPacket::write,

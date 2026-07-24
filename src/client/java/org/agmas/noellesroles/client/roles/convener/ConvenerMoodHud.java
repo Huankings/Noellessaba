@@ -1,22 +1,24 @@
 package org.agmas.noellesroles.client.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.mood.MoodHudApi;
 import dev.doctor4t.wathe.api.client.mood.MoodHudContext;
 import dev.doctor4t.wathe.api.client.mood.MoodHudStyle;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 召集者心情 HUD 样式。
  */
 public final class ConvenerMoodHud {
-    private static final Identifier CONVENER_MOOD = Identifier.of(Noellesroles.MOD_ID, "hud/mood_convener");
+    private static final Identifier CONVENER_MOOD = Identifier.of(NoellesRolesCore.MOD_ID, "hud/mood_convener");
 
     private ConvenerMoodHud() {
     }
 
     public static void register() {
-        MoodHudApi.registerRoleStyle(Noellesroles.CONVENER, MoodHudStyle
+        MoodHudApi.registerRoleStyle(NoellesRoleRegistry.CONVENER, MoodHudStyle
                 .builder(CONVENER_MOOD)
                 .bar(ConvenerMoodHud::renderGradientFlowBar)
                 .build());

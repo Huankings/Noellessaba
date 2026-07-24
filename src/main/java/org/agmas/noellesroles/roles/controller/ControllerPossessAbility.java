@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.controller.ControllerPossessC2SPacket;
 
 import java.util.UUID;
@@ -27,7 +28,7 @@ public final class ControllerPossessAbility {
         var gameWorld = GameWorldComponent.KEY.get(world);
 
         // 检查角色
-        if (!gameWorld.isRole(player, Noellesroles.CONTROLLER)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.CONTROLLER)) return;
 
         UUID targetUuid = payload.target();
         PlayerEntity target = world.getPlayerByUuid(targetUuid);

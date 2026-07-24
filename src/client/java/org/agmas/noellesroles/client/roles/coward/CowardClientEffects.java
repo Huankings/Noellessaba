@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.roles.coward;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -15,7 +17,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.coward.CowardConstants;
 import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
@@ -102,7 +103,7 @@ public final class CowardClientEffects {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(clientPlayer.getWorld());
-        return gameWorld.isRole(clientPlayer, Noellesroles.COWARD)
+        return gameWorld.isRole(clientPlayer, NoellesRoleRegistry.COWARD)
                 && gameWorld.isRunning()
                 && GameFunctions.isPlayerAliveAndSurvival(clientPlayer)
                 && !isSuppressed(clientPlayer);
@@ -193,7 +194,7 @@ public final class CowardClientEffects {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(clientPlayer.getWorld());
-        return gameWorld.isRole(clientPlayer, Noellesroles.COWARD)
+        return gameWorld.isRole(clientPlayer, NoellesRoleRegistry.COWARD)
                 && gameWorld.isRunning()
                 && GameFunctions.isPlayerAliveAndSurvival(clientPlayer)
                 && CowardPlayerComponent.KEY.get(clientPlayer).isSenseUnlocked()

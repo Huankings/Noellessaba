@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.mixin.roles.coroner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.coroner.CoronerPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +27,7 @@ public abstract class CoronerExamineRewardMixin {
             GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(player.getWorld());
 
             // 检查是否是验尸官
-            if (gameWorldComponent.isRole(player, Noellesroles.CORONER)) {
+            if (gameWorldComponent.isRole(player, NoellesRoleRegistry.CORONER)) {
                 // 查找玩家周围1格内的尸体
                 player.getWorld().getEntitiesByClass(
                         PlayerBodyEntity.class,

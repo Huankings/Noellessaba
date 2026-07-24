@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -19,7 +23,6 @@ import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -37,7 +40,7 @@ import java.util.Collections;
  */
 public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<DreamerKillerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "dreamer_killer"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "dreamer_killer"),
             DreamerKillerComponent.class
     );
 
@@ -101,7 +104,7 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         NbtCompound extra = new NbtCompound();
         extra.putInt("counts", this.dreamerCounts);
         extra.putInt("required", this.dreamerRequired);
-        GameRecordManager.recordGlobalEvent(dreamer.getServerWorld(), Noellesroles.DREAMER_COUNTS_EVENT, dreamer, extra);
+        GameRecordManager.recordGlobalEvent(dreamer.getServerWorld(), NoellesEventIds.DREAMER_COUNTS_EVENT, dreamer, extra);
     }
 
     private void triggerBecomeKiller() {
@@ -110,7 +113,7 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(serverPlayer.getWorld());
-        if (!gameWorld.isRole(serverPlayer, Noellesroles.DREAMER) || !GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
+        if (!gameWorld.isRole(serverPlayer, NoellesRoleRegistry.DREAMER) || !GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
             return;
         }
 

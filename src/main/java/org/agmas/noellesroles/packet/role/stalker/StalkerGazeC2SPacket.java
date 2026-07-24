@@ -1,13 +1,14 @@
 package org.agmas.noellesroles.packet.role.stalker;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 public record StalkerGazeC2SPacket(boolean gazing) implements CustomPayload {
-    public static final Identifier IDENTIFIER = Identifier.of(Noellesroles.MOD_ID, "stalker_gaze");
+    public static final Identifier IDENTIFIER = Identifier.of(NoellesRolesCore.MOD_ID, "stalker_gaze");
     public static final Id<StalkerGazeC2SPacket> ID = new Id<>(IDENTIFIER);
     public static final PacketCodec<RegistryByteBuf, StalkerGazeC2SPacket> CODEC = new PacketCodec<>() {
         @Override

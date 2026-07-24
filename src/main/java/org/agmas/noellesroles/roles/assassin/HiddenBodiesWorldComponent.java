@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.assassin;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -26,7 +27,7 @@ import java.util.UUID;
 public class HiddenBodiesWorldComponent implements AutoSyncedComponent {
 
     public static final ComponentKey<HiddenBodiesWorldComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "hidden_bodies"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "hidden_bodies"),
             HiddenBodiesWorldComponent.class
     );
 

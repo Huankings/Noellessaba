@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.client.instinct.roles.physician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 
@@ -27,7 +28,7 @@ public final class PhysicianInstinctHandler {
 
             boolean abnormal = PlayerPoisonComponent.KEY.get(targetPlayer).poisonTicks > 0
                     || DelusionPlayerComponent.KEY.get(targetPlayer).isActive();
-            if (GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.PHYSICIAN)
+            if (GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.PHYSICIAN)
                     && WatheClient.isPlayerAliveAndInSurvival()
                     && abnormal) {
                 return InstinctApi.HighlightResult.color(Color.RED.getRGB());

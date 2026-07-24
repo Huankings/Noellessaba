@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.client.appearance.killer_sided;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 
 /**
@@ -25,7 +26,7 @@ public final class ExecutionerCohortHudHandler {
                      * 这里只有 Executioner 返回 true。
                      * Mimic、Jester、Vulture 等如果也放到双向状态里，它们本人就能反查谁是杀手。
                      */
-                    return gameWorld.isRole(subject, Noellesroles.EXECUTIONER) ? true : null;
+                    return gameWorld.isRole(subject, NoellesRoleRegistry.EXECUTIONER) ? true : null;
                 }
         );
     }

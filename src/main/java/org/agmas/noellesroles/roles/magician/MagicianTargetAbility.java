@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.magician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.mojang.authlib.GameProfile;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +23,7 @@ public final class MagicianTargetAbility {
 
     public static void handle(MorphC2SPacket payload, ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.MAGICIAN)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.MAGICIAN)) {
             return;
         }
 

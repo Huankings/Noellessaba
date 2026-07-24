@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.recaller;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.client.MinecraftClient;
@@ -9,7 +11,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.recaller.RecallerConstants;
 import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
@@ -29,7 +30,7 @@ public abstract class RecallerHudMixin {
         AbilityPlayerComponent abilityPlayerComponent = (AbilityPlayerComponent) AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
         RecallerPlayerComponent recallerPlayerComponent = RecallerPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
         PlayerShopComponent playerShopComponent = PlayerShopComponent.KEY.get(MinecraftClient.getInstance().player);
-        if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.RECALLER)) {
+        if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.RECALLER)) {
             int drawY = context.getScaledWindowHeight();
 
 
@@ -47,7 +48,7 @@ public abstract class RecallerHudMixin {
             }
 
             drawY -= getTextRenderer().getWrappedLinesHeight(line, 999999);
-            context.drawTextWithShadow(getTextRenderer(), line, context.getScaledWindowWidth() - getTextRenderer().getWidth(line), drawY, Noellesroles.RECALLER.color());
+            context.drawTextWithShadow(getTextRenderer(), line, context.getScaledWindowWidth() - getTextRenderer().getWidth(line), drawY, NoellesRoleRegistry.RECALLER.color());
         }
     }
 }

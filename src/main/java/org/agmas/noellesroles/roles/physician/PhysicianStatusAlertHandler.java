@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.physician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.api.event.DelusionEvents;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,10 +47,10 @@ public final class PhysicianStatusAlertHandler {
          * 机器人已经从 kinssaba 迁入 NoellesRoles，本地医生兼容也跟着改为直接判断本地角色。
          * 这样后续删除 kinssaba 里的 robot 后，医生仍能正确忽略机器人的毒/幻觉免疫状态。
          */
-        if (gameWorld.isRole(target, Noellesroles.ROBOT)) {
+        if (gameWorld.isRole(target, NoellesRoleRegistry.ROBOT)) {
             return;
         }
-        if (skipBartenderPoison && applierUuid != null && gameWorld.isRole(applierUuid, Noellesroles.BARTENDER)) {
+        if (skipBartenderPoison && applierUuid != null && gameWorld.isRole(applierUuid, NoellesRoleRegistry.BARTENDER)) {
             return;
         }
 
@@ -57,7 +58,7 @@ public final class PhysicianStatusAlertHandler {
             if (!GameFunctions.isPlayerAliveAndSurvival(possiblePhysician)) {
                 continue;
             }
-            if (gameWorld.isRole(possiblePhysician, Noellesroles.PHYSICIAN)) {
+            if (gameWorld.isRole(possiblePhysician, NoellesRoleRegistry.PHYSICIAN)) {
                 possiblePhysician.sendMessage(Text.translatable("tip.noellesroles.physician.poisoned").withColor(Color.RED.getRGB()), true);
             }
         }

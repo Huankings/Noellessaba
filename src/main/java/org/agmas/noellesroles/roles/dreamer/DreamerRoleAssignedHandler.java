@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 梦者职业分配初始化。
@@ -14,7 +15,7 @@ public final class DreamerRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.DREAMER)) {
+        if (!role.equals(NoellesRoleRegistry.DREAMER)) {
             return;
         }
 

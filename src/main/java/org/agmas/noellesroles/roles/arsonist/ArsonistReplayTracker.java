@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.arsonist;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,7 +47,7 @@ public final class ArsonistReplayTracker {
 
                 GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
                 if (!gameWorld.isRunning()
-                        || !gameWorld.isRole(player, Noellesroles.ARSONIST)
+                        || !gameWorld.isRole(player, NoellesRoleRegistry.ARSONIST)
                         || !GameFunctions.isPlayerAliveAndSurvival(player)) {
                     iterator.remove();
                     continue;
@@ -55,7 +57,7 @@ public final class ArsonistReplayTracker {
                     continue;
                 }
 
-                GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.ARSONIST_LIGHTER_COOLDOWN_FINISHED_EVENT, player, null);
+                GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.ARSONIST_LIGHTER_COOLDOWN_FINISHED_EVENT, player, null);
                 iterator.remove();
             }
         });

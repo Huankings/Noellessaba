@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -8,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,11 +29,11 @@ public final class ConvenerDeathProtectionHandler {
 
     public static boolean allowDeath(PlayerEntity victim, PlayerEntity killer, Identifier deathReason) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(victim.getWorld());
-        if (!gameWorld.isRole(victim, Noellesroles.CONVENER)) {
+        if (!gameWorld.isRole(victim, NoellesRoleRegistry.CONVENER)) {
             return true;
         }
 
-        if (Noellesroles.VOODOO_MAGIC_DEATH_REASON.equals(deathReason)) {
+        if (NoellesDeathReasons.VOODOO_MAGIC_DEATH_REASON.equals(deathReason)) {
             recordVoodooImmunity(victim, killer);
             return false;
         }
@@ -52,12 +55,12 @@ public final class ConvenerDeathProtectionHandler {
 
         NbtCompound extra = new NbtCompound();
         extra.putUuid("voodoo_player", voodooCasterUuid);
-        GameRecordManager.recordGlobalEvent(convener.getServerWorld(), Noellesroles.CONVENER_VOODOO_IMMUNITY_EVENT, convener, extra);
+        GameRecordManager.recordGlobalEvent(convener.getServerWorld(), NoellesEventIds.CONVENER_VOODOO_IMMUNITY_EVENT, convener, extra);
     }
 
     private static boolean handleCounterShield(PlayerEntity victim, PlayerEntity killer, Identifier deathReason) {
         if (!ConvenerConstants.COUNTER_SHIELD_ENABLED
-                || Noellesroles.CONVENER_COUNTER_KILL_DEATH_REASON.equals(deathReason)) {
+                || NoellesDeathReasons.CONVENER_COUNTER_KILL_DEATH_REASON.equals(deathReason)) {
             return true;
         }
 
@@ -76,7 +79,7 @@ public final class ConvenerDeathProtectionHandler {
                 GameRecordManager.recordShieldBlocked(
                         serverConvener,
                         killer instanceof ServerPlayerEntity serverKiller ? serverKiller : null,
-                        Noellesroles.CONVENER_COUNTER_SHIELD_SOURCE,
+                        NoellesEventIds.CONVENER_COUNTER_SHIELD_SOURCE,
                         GameFunctions.resolveDamageItemForBlockedDeath(killer, deathReason),
                         buildBlockedExtra(deathReason)
                 );
@@ -97,7 +100,7 @@ public final class ConvenerDeathProtectionHandler {
         }
 
         try {
-            GameFunctions.killPlayer(killer, true, convener, Noellesroles.CONVENER_COUNTER_KILL_DEATH_REASON);
+            GameFunctions.killPlayer(killer, true, convener, NoellesDeathReasons.CONVENER_COUNTER_KILL_DEATH_REASON);
             if (GameFunctions.isPlayerAliveAndSurvival(killer)) {
                 PlayerMoodComponent.KEY.get(killer).setMood(0f);
             }

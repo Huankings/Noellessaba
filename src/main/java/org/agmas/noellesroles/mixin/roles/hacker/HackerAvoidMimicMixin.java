@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.mixin.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.agmas.harpymodloader.modded_murder.ModdedMurderGameMode;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,7 +76,7 @@ public class HackerAvoidMimicMixin {
 
     @Unique
     private static boolean conflicts(Role role1, Role role2) {
-        return (role1 == Noellesroles.HACKER && role2 == Noellesroles.MIMIC)
-                || (role1 == Noellesroles.MIMIC && role2 == Noellesroles.HACKER);
+        return (role1 == NoellesRoleRegistry.HACKER && role2 == NoellesRoleRegistry.MIMIC)
+                || (role1 == NoellesRoleRegistry.MIMIC && role2 == NoellesRoleRegistry.HACKER);
     }
 }

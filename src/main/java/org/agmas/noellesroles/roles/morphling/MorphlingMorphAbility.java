@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.morphling;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 
 public final class MorphlingMorphAbility {
@@ -19,7 +20,7 @@ public final class MorphlingMorphAbility {
         var gameWorld = GameWorldComponent.KEY.get(world);
 
         // 检查角色
-        if (!gameWorld.isRole(player, Noellesroles.MORPHLING)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.MORPHLING)) return;
 
         // 忽略卸除伪装请求（变形怪无此功能）
         if (payload.player().equals(player.getUuid())) return;

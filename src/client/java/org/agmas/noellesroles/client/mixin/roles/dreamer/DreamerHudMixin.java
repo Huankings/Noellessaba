@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import net.minecraft.client.MinecraftClient;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.dreamer.DreamerKillerComponent;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +31,7 @@ public abstract class DreamerHudMixin {
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
         DreamerKillerComponent dreamer = DreamerKillerComponent.KEY.get(MinecraftClient.getInstance().player);
-        if (!gameWorld.isRole(MinecraftClient.getInstance().player, Noellesroles.DREAMER)
+        if (!gameWorld.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.DREAMER)
                 || !WatheClient.isPlayerAliveAndInSurvival()
                 || dreamer.hasBecomeKiller()) {
             return;
@@ -39,6 +40,6 @@ public abstract class DreamerHudMixin {
         int drawY = context.getScaledWindowHeight();
         Text line = Text.translatable("tip.noellesroles.dreamer.counts", dreamer.dreamerCounts, dreamer.dreamerRequired);
         drawY -= getTextRenderer().getWrappedLinesHeight(line, 999999);
-        context.drawTextWithShadow(getTextRenderer(), line, context.getScaledWindowWidth() - getTextRenderer().getWidth(line), drawY, Noellesroles.DREAMER.color());
+        context.drawTextWithShadow(getTextRenderer(), line, context.getScaledWindowWidth() - getTextRenderer().getWidth(line), drawY, NoellesRoleRegistry.DREAMER.color());
     }
 }

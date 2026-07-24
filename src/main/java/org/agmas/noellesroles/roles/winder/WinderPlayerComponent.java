@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.winder;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -11,7 +15,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -31,7 +34,7 @@ import java.util.UUID;
  */
 public class WinderPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<WinderPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "winder"), WinderPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "winder"), WinderPlayerComponent.class);
 
     private final PlayerEntity player;
 
@@ -89,7 +92,7 @@ public class WinderPlayerComponent implements AutoSyncedComponent, ServerTicking
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("target_player", this.activeTarget);
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.WINDER_FLOAT_STARTED_EVENT, serverPlayer, extra);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.WINDER_FLOAT_STARTED_EVENT, serverPlayer, extra);
         }
         this.sync();
     }
@@ -119,7 +122,7 @@ public class WinderPlayerComponent implements AutoSyncedComponent, ServerTicking
             extra.putUuid("target_player", targetUuid);
             GameRecordManager.recordGlobalEvent(
                     serverPlayer.getServerWorld(),
-                    stoppedEarly ? Noellesroles.WINDER_FLOAT_STOPPED_EARLY_EVENT : Noellesroles.WINDER_FLOAT_ENDED_EVENT,
+                    stoppedEarly ? NoellesEventIds.WINDER_FLOAT_STOPPED_EARLY_EVENT : NoellesEventIds.WINDER_FLOAT_ENDED_EVENT,
                     stoppedEarly ? serverPlayer : null,
                     extra
             );
@@ -149,7 +152,7 @@ public class WinderPlayerComponent implements AutoSyncedComponent, ServerTicking
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(this.player, Noellesroles.WINDER)
+                || !gameWorld.isRole(this.player, NoellesRoleRegistry.WINDER)
                 || !GameFunctions.isPlayerAliveAndSurvival(this.player)) {
             // 风灵师本人一旦死亡、掉局或对局结束，就直接停掉本次效果，不再结算冷却。
             this.reset();

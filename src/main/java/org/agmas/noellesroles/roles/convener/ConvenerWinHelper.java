@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.win.CustomVictory;
 import dev.doctor4t.wathe.api.win.VictoryApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -8,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,7 @@ public final class ConvenerWinHelper {
 
     public static @Nullable ServerPlayerEntity getLivingConvener(@NotNull ServerWorld world, @NotNull GameWorldComponent gameWorld) {
         for (ServerPlayerEntity player : world.getPlayers(GameFunctions::isPlayerAliveAndSurvival)) {
-            if (gameWorld.isRole(player, Noellesroles.CONVENER)) {
+            if (gameWorld.isRole(player, NoellesRoleRegistry.CONVENER)) {
                 return player;
             }
         }
@@ -58,7 +59,7 @@ public final class ConvenerWinHelper {
     public static void declareConvenerWin(@NotNull ServerWorld world, @NotNull ServerPlayerEntity winner) {
         VictoryApi.endGameWithCustomVictory(
                 world,
-                CustomVictory.of(Noellesroles.CONVENER.identifier(), Noellesroles.CONVENER.color(), List.of((PlayerEntity) winner))
+                CustomVictory.of(NoellesRoleRegistry.CONVENER.identifier(), NoellesRoleRegistry.CONVENER.color(), List.of((PlayerEntity) winner))
         );
     }
 }

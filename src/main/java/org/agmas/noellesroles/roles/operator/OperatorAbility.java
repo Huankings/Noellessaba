@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.operator;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -10,7 +13,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.operator.OperatorC2SPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +31,7 @@ public final class OperatorAbility {
 
     public static void handle(OperatorC2SPacket payload, ServerPlayerEntity operator) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(operator.getWorld());
-        if (!gameWorld.isRole(operator, Noellesroles.OPERATOR)
+        if (!gameWorld.isRole(operator, NoellesRoleRegistry.OPERATOR)
                 || !gameWorld.isRunning()
                 || !GameFunctions.isPlayerAliveAndSurvival(operator)) {
             return;
@@ -67,7 +69,7 @@ public final class OperatorAbility {
 
             operator.sendMessage(
                     Text.translatable("message.noellesroles.operator.connection_selected", first.getDisplayName(), second.getDisplayName())
-                            .withColor(Noellesroles.OPERATOR.color()),
+                            .withColor(NoellesRoleRegistry.OPERATOR.color()),
                     true
             );
             operator.playSoundToPlayer(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 1.0f);
@@ -77,7 +79,7 @@ public final class OperatorAbility {
             extra.putUuid("player_two", second.getUuid());
             extra.putString("player_one_name", first.getGameProfile().getName());
             extra.putString("player_two_name", second.getGameProfile().getName());
-            GameRecordManager.recordGlobalEvent(operator.getServerWorld(), Noellesroles.OPERATOR_CONNECTION_STARTED_EVENT, operator, extra);
+            GameRecordManager.recordGlobalEvent(operator.getServerWorld(), NoellesEventIds.OPERATOR_CONNECTION_STARTED_EVENT, operator, extra);
             return;
         }
 
@@ -90,7 +92,7 @@ public final class OperatorAbility {
         if (!firstAlive && !secondAlive) {
             operator.sendMessage(
                     Text.translatable("message.noellesroles.operator.connection_failed_both_dead")
-                            .withColor(Noellesroles.OPERATOR.color()),
+                            .withColor(NoellesRoleRegistry.OPERATOR.color()),
                     true
             );
 
@@ -99,14 +101,14 @@ public final class OperatorAbility {
             extra.putUuid("player_two", secondUuid);
             extra.putString("player_one_name", firstName);
             extra.putString("player_two_name", secondName);
-            GameRecordManager.recordGlobalEvent(operator.getServerWorld(), Noellesroles.OPERATOR_CONNECTION_FAILED_BOTH_DEAD_EVENT, operator, extra);
+            GameRecordManager.recordGlobalEvent(operator.getServerWorld(), NoellesEventIds.OPERATOR_CONNECTION_FAILED_BOTH_DEAD_EVENT, operator, extra);
             return;
         }
 
         String deadName = !firstAlive ? firstName : secondName;
         operator.sendMessage(
                 Text.translatable("message.noellesroles.operator.connection_failed_one_dead")
-                        .withColor(Noellesroles.OPERATOR.color()),
+                        .withColor(NoellesRoleRegistry.OPERATOR.color()),
                 true
         );
 
@@ -121,7 +123,7 @@ public final class OperatorAbility {
         } else {
             extra.putUuid("dead_player", secondUuid);
         }
-        GameRecordManager.recordGlobalEvent(operator.getServerWorld(), Noellesroles.OPERATOR_CONNECTION_FAILED_ONE_DEAD_EVENT, operator, extra);
+        GameRecordManager.recordGlobalEvent(operator.getServerWorld(), NoellesEventIds.OPERATOR_CONNECTION_FAILED_ONE_DEAD_EVENT, operator, extra);
     }
 
     private static void handleBroadcast(
@@ -136,7 +138,7 @@ public final class OperatorAbility {
 
             operator.sendMessage(
                     Text.translatable("message.noellesroles.operator.broadcast_selected", target.getDisplayName())
-                            .withColor(Noellesroles.OPERATOR.color()),
+                            .withColor(NoellesRoleRegistry.OPERATOR.color()),
                     true
             );
             operator.playSoundToPlayer(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 1.0f);
@@ -144,14 +146,14 @@ public final class OperatorAbility {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("target_player", target.getUuid());
             extra.putString("target_player_name", target.getGameProfile().getName());
-            GameRecordManager.recordGlobalEvent(operator.getServerWorld(), Noellesroles.OPERATOR_BROADCAST_STARTED_EVENT, operator, extra);
+            GameRecordManager.recordGlobalEvent(operator.getServerWorld(), NoellesEventIds.OPERATOR_BROADCAST_STARTED_EVENT, operator, extra);
             return;
         }
 
         ability.setCooldown(OperatorConstants.BROADCAST_FAILURE_COOLDOWN_TICKS);
         operator.sendMessage(
                 Text.translatable("message.noellesroles.operator.broadcast_failed_dead")
-                        .withColor(Noellesroles.OPERATOR.color()),
+                        .withColor(NoellesRoleRegistry.OPERATOR.color()),
                 true
         );
         operator.playSoundToPlayer(SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1.0f, 1.0f);
@@ -166,7 +168,7 @@ public final class OperatorAbility {
             extra.putUuid("dead_player", targetUuid);
             extra.putString("dead_player_name", resolveName(null, targetUuid));
         }
-        GameRecordManager.recordGlobalEvent(operator.getServerWorld(), Noellesroles.OPERATOR_BROADCAST_FAILED_EVENT, operator, extra);
+        GameRecordManager.recordGlobalEvent(operator.getServerWorld(), NoellesEventIds.OPERATOR_BROADCAST_FAILED_EVENT, operator, extra);
     }
 
     private static @NotNull String resolveName(@Nullable ServerPlayerEntity player, @NotNull java.util.UUID uuid) {

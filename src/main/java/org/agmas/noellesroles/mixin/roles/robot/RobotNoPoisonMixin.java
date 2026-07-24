@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.mixin.roles.robot;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -8,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -28,7 +30,7 @@ public abstract class RobotNoPoisonMixin {
     private void noellesroles$cancelRobotPoison(int ticks, @Nullable UUID poisoner, Identifier source, @Nullable NbtCompound extra, @NotNull CallbackInfo ci) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
         boolean realPoison = GameConstants.DeathReasons.POISON.equals(source) || GameConstants.DeathReasons.BED_POISON.equals(source);
-        if (!gameWorld.isRole(this.player, Noellesroles.ROBOT) || !realPoison) {
+        if (!gameWorld.isRole(this.player, NoellesRoleRegistry.ROBOT) || !realPoison) {
             return;
         }
 
@@ -41,7 +43,7 @@ public abstract class RobotNoPoisonMixin {
             if (poisoner != null) {
                 replayData.putUuid("poisoner", poisoner);
             }
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.ROBOT_POISON_IMMUNE_EVENT, serverPlayer, replayData);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.ROBOT_POISON_IMMUNE_EVENT, serverPlayer, replayData);
         }
         ci.cancel();
     }

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.detective;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -10,7 +12,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.roles.detective.DetectiveConstants;
@@ -30,7 +31,7 @@ public final class DetectiveTargetHudHandler {
                 context -> {
                     ClientPlayerEntity player = context.player();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                    if (!gameWorld.isRole(player, Noellesroles.DETECTIVE)
+                    if (!gameWorld.isRole(player, NoellesRoleRegistry.DETECTIVE)
                             || !GameFunctions.isPlayerAliveAndSurvival(player)) {
                         return;
                     }
@@ -55,8 +56,8 @@ public final class DetectiveTargetHudHandler {
                     Text targetInfo = Text.translatable(
                             "hud.noellesroles.detective.target",
                             NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
-                    ).withColor(Noellesroles.DETECTIVE.color());
-                    drawCentered(context.renderer(), context.drawContext(), targetInfo, 32, Noellesroles.DETECTIVE.color());
+                    ).withColor(NoellesRoleRegistry.DETECTIVE.color());
+                    drawCentered(context.renderer(), context.drawContext(), targetInfo, 32, NoellesRoleRegistry.DETECTIVE.color());
                 }
         );
     }

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.packet.role.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 灵术师附身期间的客户端控制同步包。
@@ -25,7 +26,7 @@ public record SpiritualistPossessionControlC2SPacket(
         boolean using,
         boolean attacking
 ) implements CustomPayload {
-    public static final Identifier POSSESSION_CONTROL_PAYLOAD_ID = Identifier.of(Noellesroles.MOD_ID, "spiritualist_possession_control");
+    public static final Identifier POSSESSION_CONTROL_PAYLOAD_ID = Identifier.of(NoellesRolesCore.MOD_ID, "spiritualist_possession_control");
     public static final Id<SpiritualistPossessionControlC2SPacket> ID = new Id<>(POSSESSION_CONTROL_PAYLOAD_ID);
     public static final PacketCodec<RegistryByteBuf, SpiritualistPossessionControlC2SPacket> CODEC =
             PacketCodec.of(SpiritualistPossessionControlC2SPacket::write, SpiritualistPossessionControlC2SPacket::read);

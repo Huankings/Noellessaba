@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.mixin.roles.prophet;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +29,7 @@ public abstract class ProphetDeathCleanupMixin {
             return;
         }
 
-        if (dev.doctor4t.wathe.cca.GameWorldComponent.KEY.get(victim.getWorld()).isRole(victim, Noellesroles.PROPHET)) {
+        if (dev.doctor4t.wathe.cca.GameWorldComponent.KEY.get(victim.getWorld()).isRole(victim, NoellesRoleRegistry.PROPHET)) {
             ProphetPlayerComponent.KEY.get(victim).clearMarkOnly();
         }
     }

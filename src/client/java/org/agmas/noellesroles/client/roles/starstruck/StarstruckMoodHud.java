@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.client.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.mood.MoodHudApi;
 import dev.doctor4t.wathe.api.client.mood.MoodHudContext;
 import dev.doctor4t.wathe.api.client.mood.MoodHudStyle;
@@ -7,7 +10,6 @@ import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
 
 import java.util.List;
@@ -29,7 +31,7 @@ public final class StarstruckMoodHud {
     }
 
     public static void register() {
-        MoodHudApi.registerRoleStyle(Noellesroles.STARSTRUCK, MoodHudStyle
+        MoodHudApi.registerRoleStyle(NoellesRoleRegistry.STARSTRUCK, MoodHudStyle
                 .builder(StarstruckMoodHud::getMoodSprite)
                 .arrows()
                 .overlays(StarstruckMoodHud::getOverlays)
@@ -38,7 +40,7 @@ public final class StarstruckMoodHud {
     }
 
     private static Identifier id(String path) {
-        return Identifier.of(Noellesroles.MOD_ID, "hud/starstruck/" + path);
+        return Identifier.of(NoellesRolesCore.MOD_ID, "hud/starstruck/" + path);
     }
 
     private static Identifier getMoodSprite(MoodHudContext context) {

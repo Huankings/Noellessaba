@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.necromancer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.agmas.harpymodloader.Harpymodloader;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 死灵法师和扒手的动态生成上限。
@@ -36,8 +37,8 @@ public final class NecromancerRoleLimitHandler {
              * StupidExpress 原逻辑只有在杀手位多于 1 个时才允许刷出这两个特殊杀手。
              * 继续保留这个限制，避免小局里唯一杀手被替换成更偏辅助/经济的职业。
              */
-            Harpymodloader.setRoleMaximum(Noellesroles.NECROMANCER, maximum);
-            Harpymodloader.setRoleMaximum(Noellesroles.AVARICIOUS, maximum);
+            Harpymodloader.setRoleMaximum(NoellesRoleRegistry.NECROMANCER, maximum);
+            Harpymodloader.setRoleMaximum(NoellesRoleRegistry.AVARICIOUS, maximum);
         });
     }
 }

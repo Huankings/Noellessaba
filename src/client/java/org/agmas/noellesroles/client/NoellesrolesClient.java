@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.client;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import com.google.common.collect.Maps;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
@@ -29,7 +32,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.particle.StarstruckSparkleParticle;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceHandlers;
@@ -91,7 +93,7 @@ public class NoellesrolesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + Noellesroles.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
+        abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + NoellesRolesCore.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
         NoellesHeldItemVisibilityHandlers.register();
@@ -129,7 +131,7 @@ public class NoellesrolesClient implements ClientModInitializer {
                     MinecraftClient mc = MinecraftClient.getInstance();
                     if (mc.player != null) {
                         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(mc.player.getWorld());
-                        if (gameWorld.isRole(mc.player, Noellesroles.STALKER)) {
+                        if (gameWorld.isRole(mc.player, NoellesRoleRegistry.STALKER)) {
                             StalkerPlayerComponent comp = StalkerPlayerComponent.KEY.get(mc.player);
                             if (comp.phase < 3) {
                                 ClientPlayNetworking.send(new StalkerGazeC2SPacket(true));
@@ -145,7 +147,7 @@ public class NoellesrolesClient implements ClientModInitializer {
                     MinecraftClient mc = MinecraftClient.getInstance();
                     if (mc.player != null) {
                         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(mc.player.getWorld());
-                        if (gameWorld.isRole(mc.player, Noellesroles.STALKER)) {
+                        if (gameWorld.isRole(mc.player, NoellesRoleRegistry.STALKER)) {
                             StalkerPlayerComponent comp = StalkerPlayerComponent.KEY.get(mc.player);
                             if (comp.phase < 3) {
                                 ClientPlayNetworking.send(new StalkerGazeC2SPacket(false));
@@ -162,7 +164,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             MinecraftClient mc = MinecraftClient.getInstance();
             if (mc.player != null) {
                 GameWorldComponent gameWorld = GameWorldComponent.KEY.get(mc.player.getWorld());
-                if (gameWorld.isRole(mc.player, Noellesroles.STALKER)) {
+                if (gameWorld.isRole(mc.player, NoellesRoleRegistry.STALKER)) {
                     StalkerPlayerComponent comp = StalkerPlayerComponent.KEY.get(mc.player);
                     if (comp.phase == 3) {
                         boolean isUsingKnife = mc.player.isUsingItem() && mc.player.getActiveItem().isOf(WatheItems.KNIFE);
@@ -214,7 +216,7 @@ public class NoellesrolesClient implements ClientModInitializer {
                 client.execute(() -> {
                     if (MinecraftClient.getInstance().player == null) return;
                     GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
-                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.VULTURE)) {
+                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.VULTURE)) {
                         if (targetBody == null) return;
                         ClientPlayNetworking.send(new VultureEatC2SPacket(targetBody.getUuid()));
                         return;
@@ -227,12 +229,12 @@ public class NoellesrolesClient implements ClientModInitializer {
                      * 就不会因为目标横向移动而把原本应当触发的对人技能误判成另一种模式。
                      */
                     int targetId = -1;
-                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.ANGEL)) {
+                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.ANGEL)) {
                         PlayerEntity angelTarget = AngelAbility.getGenericGuardTarget(MinecraftClient.getInstance().player);
                         if (angelTarget != null) {
                             targetId = angelTarget.getId();
                         }
-                    } else if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.SPIRITUALIST)) {
+                    } else if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.SPIRITUALIST)) {
                         PlayerEntity spiritualistTarget = SpiritualistTargeting.getPossessionTarget(MinecraftClient.getInstance().player);
                         if (spiritualistTarget != null) {
                             targetId = spiritualistTarget.getId();

@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.mixin.roles.stalker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +24,7 @@ public class StalkerLeftClickKillMixin {
         if (!GameFunctions.isPlayerAliveAndSurvival(attacker) || !GameFunctions.isPlayerAliveAndSurvival(victim)) return;
 
         var gameWorld = dev.doctor4t.wathe.cca.GameWorldComponent.KEY.get(attacker.getWorld());
-        if (!gameWorld.isRole(attacker, Noellesroles.STALKER)) return;
+        if (!gameWorld.isRole(attacker, NoellesRoleRegistry.STALKER)) return;
 
         StalkerPlayerComponent comp = StalkerPlayerComponent.KEY.get(attacker);
         if (!comp.isActiveStalker() || comp.phase < 2) return;

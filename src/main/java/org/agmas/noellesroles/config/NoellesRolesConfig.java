@@ -1,20 +1,21 @@
 package org.agmas.noellesroles.config;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.List;
 
 public class NoellesRolesConfig {
     public static ConfigClassHandler<NoellesRolesConfig> HANDLER = ConfigClassHandler.createBuilder(NoellesRolesConfig.class)
-            .id(Identifier.of(Noellesroles.MOD_ID, "config"))
+            .id(Identifier.of(NoellesRolesCore.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
-                    .setPath(FabricLoader.getInstance().getConfigDir().resolve( Noellesroles.MOD_ID + ".json5"))
+                    .setPath(FabricLoader.getInstance().getConfigDir().resolve( NoellesRolesCore.MOD_ID + ".json5"))
                     .setJson5(true)
                     .build())
             .build();

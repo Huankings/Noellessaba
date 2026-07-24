@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.roles.convener.ConvenerDisguiseResolver;
 import org.agmas.noellesroles.roles.convener.ConvenerConstants;
 import org.agmas.noellesroles.roles.convener.ConvenerDisguiseComponent;
@@ -38,7 +39,7 @@ public abstract class ConvenerHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.CONVENER)) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.CONVENER)) {
             return;
         }
 
@@ -72,7 +73,7 @@ public abstract class ConvenerHudMixin {
                     line,
                     context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                     drawY,
-                    Noellesroles.CONVENER.color()
+                    NoellesRoleRegistry.CONVENER.color()
             );
         }
     }

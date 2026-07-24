@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.inventory;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonApi;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
@@ -20,7 +22,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,7 @@ public final class NoellesInventoryButtonSupport {
     }
 
     public static Identifier id(String path) {
-        return Identifier.of(Noellesroles.MOD_ID, path);
+        return Identifier.of(NoellesRolesCore.MOD_ID, path);
     }
 
     public static boolean isRole(@NotNull ClientPlayerEntity player, @NotNull Role role) {

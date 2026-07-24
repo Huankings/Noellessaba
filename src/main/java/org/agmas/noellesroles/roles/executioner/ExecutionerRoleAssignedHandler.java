@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.executioner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 仇杀客职业分配处理器。
@@ -20,7 +21,7 @@ public final class ExecutionerRoleAssignedHandler {
      * 这里仍然保留最后这次显式 {@code sync()}，确保与旧行为完全一致。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.EXECUTIONER)) {
+        if (!role.equals(NoellesRoleRegistry.EXECUTIONER)) {
             return;
         }
 

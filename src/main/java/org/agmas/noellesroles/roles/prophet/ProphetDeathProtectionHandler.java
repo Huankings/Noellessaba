@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.prophet;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
@@ -7,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.UUID;
 
@@ -28,7 +30,7 @@ public final class ProphetDeathProtectionHandler {
      * <p>3. 只有两者都满足时，才记一条全局回放并阻止死亡。</p>
      */
     public static boolean allowDeath(PlayerEntity playerEntity, PlayerEntity killer, Identifier deathReason) {
-        if (!Noellesroles.VOODOO_MAGIC_DEATH_REASON.equals(deathReason)) {
+        if (!NoellesDeathReasons.VOODOO_MAGIC_DEATH_REASON.equals(deathReason)) {
             return true;
         }
 
@@ -52,7 +54,7 @@ public final class ProphetDeathProtectionHandler {
             GameRecordManager.event(GameRecordTypes.GLOBAL_EVENT)
                     .world(protectedPlayer.getServerWorld())
                     .actor(protectedPlayer)
-                    .put("event", Noellesroles.PROPHET_VOODOO_IMMUNITY_EVENT.toString())
+                    .put("event", NoellesEventIds.PROPHET_VOODOO_IMMUNITY_EVENT.toString())
                     .put("death_reason_id", deathReason.toString())
                     .putUuid("prophet_player", prophetUuid != null ? prophetUuid : protectedPlayer.getUuid())
                     .putUuid("voodoo_player", voodooCasterUuid != null ? voodooCasterUuid : protectedPlayer.getUuid())

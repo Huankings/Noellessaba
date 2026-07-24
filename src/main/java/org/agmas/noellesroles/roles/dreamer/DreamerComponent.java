@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -14,7 +17,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -32,7 +34,7 @@ import java.util.UUID;
  */
 public class DreamerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<DreamerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "dreamer"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "dreamer"),
             DreamerComponent.class
     );
 
@@ -79,7 +81,7 @@ public class DreamerComponent implements AutoSyncedComponent, ServerTickingCompo
          * 这里同步清掉组件，避免目标后续死亡时被传送到无效玩家位置。
          */
         if (GameFunctions.isPlayerAliveAndSurvival(this.player)) {
-            this.player.sendMessage(Text.translatable("tip.noellesroles.dreamer.disconnect").withColor(Noellesroles.DREAMER.color()), true);
+            this.player.sendMessage(Text.translatable("tip.noellesroles.dreamer.disconnect").withColor(NoellesRoleRegistry.DREAMER.color()), true);
             this.player.playSoundToPlayer(SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1.0f, 1.0f);
         }
         reset();
@@ -99,7 +101,7 @@ public class DreamerComponent implements AutoSyncedComponent, ServerTickingCompo
             return;
         }
 
-        if (gameWorld.isRole(serverDreamer, Noellesroles.DREAMER)) {
+        if (gameWorld.isRole(serverDreamer, NoellesRoleRegistry.DREAMER)) {
             DreamerKillerComponent dreamerProgress = DreamerKillerComponent.KEY.get(serverDreamer);
             if (!dreamerProgress.hasBecomeKiller()) {
                 dreamerProgress.addDreamerCount(serverDreamer);

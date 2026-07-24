@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -22,7 +23,7 @@ import java.util.UUID;
  */
 public class ConvenerPlayerComponent implements AutoSyncedComponent {
     public static final ComponentKey<ConvenerPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "convener_player"), ConvenerPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "convener_player"), ConvenerPlayerComponent.class);
 
     private final PlayerEntity player;
     private final Set<UUID> unlockedDisguises = new LinkedHashSet<>();

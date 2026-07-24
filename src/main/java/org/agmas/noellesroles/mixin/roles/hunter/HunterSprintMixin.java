@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.roles.hunter;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -10,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +31,7 @@ public abstract class HunterSprintMixin extends LivingEntity {
     private float noellesroles$setHunterSprintSpeed(float original) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.HUNTER) || !player.isUsingItem() || !player.isSprinting()) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.HUNTER) || !player.isUsingItem() || !player.isSprinting()) {
             return original;
         }
 

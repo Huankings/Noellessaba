@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -17,7 +18,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  */
 public class ConvenerMomentumComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<ConvenerMomentumComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "convener_momentum"), ConvenerMomentumComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "convener_momentum"), ConvenerMomentumComponent.class);
 
     private final PlayerEntity player;
     private int ticks;

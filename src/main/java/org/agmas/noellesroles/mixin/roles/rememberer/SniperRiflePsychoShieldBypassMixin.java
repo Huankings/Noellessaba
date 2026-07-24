@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.mixin.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -33,7 +34,7 @@ public abstract class SniperRiflePsychoShieldBypassMixin {
             PlayerEntity killer,
             Identifier deathReason
     ) {
-        if (Noellesroles.DEATH_REASON_SNIPER_RIFLE.equals(deathReason)) {
+        if (NoellesDeathReasons.DEATH_REASON_SNIPER_RIFLE.equals(deathReason)) {
             return 0;
         }
         return original;

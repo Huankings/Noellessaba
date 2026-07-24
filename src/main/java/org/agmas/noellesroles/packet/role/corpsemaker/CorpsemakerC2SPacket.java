@@ -1,16 +1,17 @@
 package org.agmas.noellesroles.packet.role.corpsemaker;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.UUID;
 
 public record CorpsemakerC2SPacket(UUID target, String deathReason, String roleIdentifier) implements CustomPayload {
-    public static final Identifier CORPSEMAKER_PAYLOAD_ID = Identifier.of(Noellesroles.MOD_ID, "corpsemaker");
+    public static final Identifier CORPSEMAKER_PAYLOAD_ID = Identifier.of(NoellesRolesCore.MOD_ID, "corpsemaker");
     public static final CustomPayload.Id<CorpsemakerC2SPacket> ID = new CustomPayload.Id<>(CORPSEMAKER_PAYLOAD_ID);
     public static final PacketCodec<RegistryByteBuf, CorpsemakerC2SPacket> CODEC;
 

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -23,7 +24,7 @@ import java.util.UUID;
  */
 public class ConvenerDisguiseComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<ConvenerDisguiseComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "convener_disguise"), ConvenerDisguiseComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "convener_disguise"), ConvenerDisguiseComponent.class);
 
     private final PlayerEntity player;
     @Nullable

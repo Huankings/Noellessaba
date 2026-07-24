@@ -1,11 +1,13 @@
 package org.agmas.noellesroles.modifiers.chameleon;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -13,7 +15,7 @@ import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 public class ChameleonPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
-    public static final ComponentKey<ChameleonPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "chameleon"), ChameleonPlayerComponent.class);
+    public static final ComponentKey<ChameleonPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "chameleon"), ChameleonPlayerComponent.class);
     private final PlayerEntity player;
     public int hidingTicks;
 
@@ -42,7 +44,7 @@ public class ChameleonPlayerComponent implements AutoSyncedComponent, ServerTick
     @Override
     public void serverTick() {
         WorldModifierComponent worldModifierComponent = WorldModifierComponent.KEY.get(player.getWorld());
-        if (worldModifierComponent.isRole(player,Noellesroles.CHAMELEON)) {
+        if (worldModifierComponent.isRole(player,NoellesModifierRegistry.CHAMELEON)) {
             if (player.getMovement().getX() != 0 || player.getMovement().getZ() != 0)  hidingTicks = 0;
             hidingTicks++;
         } else {

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
 
@@ -20,7 +21,7 @@ public final class StarstruckInstinctHandler {
         InstinctApi.registerAvailability(NoellesInstinctHandlers.id("starstruck"), InstinctApi.DEFAULT_PRIORITY, viewer -> {
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
             if (GameFunctions.isPlayerAliveAndSurvival(viewer)
-                    && gameWorld.isRole(viewer, Noellesroles.STARSTRUCK)
+                    && gameWorld.isRole(viewer, NoellesRoleRegistry.STARSTRUCK)
                     && StarstruckPlayerComponent.KEY.get(viewer).ticks > 0) {
                 /*
                  * 这里仅给星界使者本人开启本能资格。
@@ -38,10 +39,10 @@ public final class StarstruckInstinctHandler {
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
             if (GameFunctions.isPlayerAliveAndSurvival(viewer)
-                    && gameWorld.isRole(viewer, Noellesroles.STARSTRUCK)
+                    && gameWorld.isRole(viewer, NoellesRoleRegistry.STARSTRUCK)
                     && StarstruckPlayerComponent.KEY.get(viewer).ticks > 0
                     && WatheClient.isInstinctEnabled()) {
-                return InstinctApi.HighlightResult.color(Noellesroles.STARSTRUCK.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.STARSTRUCK.color());
             }
             return InstinctApi.HighlightResult.pass();
         });

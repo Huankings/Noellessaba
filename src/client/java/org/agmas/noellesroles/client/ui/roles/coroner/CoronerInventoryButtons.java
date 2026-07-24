@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.ui.roles.coroner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonExtension;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonLayout;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtonSupport;
 import org.agmas.noellesroles.roles.coroner.CoronerPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public final class CoronerInventoryButtons {
     }
 
     private static @Nullable InventoryButtonExtension create(@NotNull InventoryButtonContext context) {
-        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.CORONER) ? new Extension() : null;
+        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), NoellesRoleRegistry.CORONER) ? new Extension() : null;
     }
 
     private static final class Extension extends NoellesInventoryButtonSupport.PagedExtension<CoronerPlayerWidget> {

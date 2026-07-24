@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.roles.drugmaker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -9,7 +11,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,19 +41,19 @@ public abstract class DrugmakerGiveCoinsMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
-        if (gameWorld.isRole(this.player, Noellesroles.ROBOT) || !(this.player instanceof ServerPlayerEntity serverTarget)) {
+        if (gameWorld.isRole(this.player, NoellesRoleRegistry.ROBOT) || !(this.player instanceof ServerPlayerEntity serverTarget)) {
             return;
         }
         /*
          * 幻觉试剂使用固定 marker 伪装 poisoner，酒保的鸡尾酒毒也不是制毒师的经济来源。
          * 迁入 NoellesRoles 后可以直接判断 BARTENDER，不再走 kinssaba 的反射兼容。
          */
-        if (poisoner != null && (poisoner.equals(DELUSION_MARKER) || gameWorld.isRole(poisoner, Noellesroles.BARTENDER))) {
+        if (poisoner != null && (poisoner.equals(DELUSION_MARKER) || gameWorld.isRole(poisoner, NoellesRoleRegistry.BARTENDER))) {
             return;
         }
 
         for (ServerPlayerEntity serverPlayer : serverTarget.getServer().getPlayerManager().getPlayerList()) {
-            if (gameWorld.isRole(serverPlayer, Noellesroles.DRUGMAKER) && GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
+            if (gameWorld.isRole(serverPlayer, NoellesRoleRegistry.DRUGMAKER) && GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
                 PlayerShopComponent shop = PlayerShopComponent.KEY.get(serverPlayer);
                 serverPlayer.sendMessage(
                         Text.translatable("tip.noellesroles.drugmaker.poisoned").withColor(DrugmakerConstants.ROLE_COLOR),

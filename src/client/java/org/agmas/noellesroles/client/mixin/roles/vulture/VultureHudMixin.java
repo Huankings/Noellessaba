@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.vulture;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.vulture.VulturePlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +25,7 @@ public abstract class VultureHudMixin {
     public void phantomHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
         AbilityPlayerComponent abilityPlayerComponent = (AbilityPlayerComponent) AbilityPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
-        if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.VULTURE)) {
+        if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.VULTURE)) {
             VulturePlayerComponent vulturePlayerComponent = VulturePlayerComponent.KEY.get(MinecraftClient.getInstance().player);
             int drawY = context.getScaledWindowHeight();
 
@@ -35,7 +36,7 @@ public abstract class VultureHudMixin {
             }
 
             drawY -= getTextRenderer().getWrappedLinesHeight(line, 999999);
-            context.drawTextWithShadow(getTextRenderer(), line, context.getScaledWindowWidth() - getTextRenderer().getWidth(line), drawY, Noellesroles.VULTURE.color());
+            context.drawTextWithShadow(getTextRenderer(), line, context.getScaledWindowWidth() - getTextRenderer().getWidth(line), drawY, NoellesRoleRegistry.VULTURE.color());
         }
     }
 }

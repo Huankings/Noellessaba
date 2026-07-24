@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.modifiers.guesser;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -16,7 +20,6 @@ import net.minecraft.sound.SoundEvents;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.packet.modifiers.GuessC2SPacket;
 
@@ -37,7 +40,7 @@ public final class GuesserAbility {
         var worldModifier = WorldModifierComponent.KEY.get(world);
 
         // 检查是否是猜测者
-        if (!worldModifier.isRole(player, Noellesroles.GUESSER)) return;
+        if (!worldModifier.isRole(player, NoellesModifierRegistry.GUESSER)) return;
 
         var ability = AbilityPlayerComponent.KEY.get(player);
         if (ability.cooldown > 0) return;
@@ -82,7 +85,7 @@ public final class GuesserAbility {
              */
             declaredExtra.putString("guessed_role_fallback", guess);
         }
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.GUESSER_DECLARED_EVENT, player, declaredExtra);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.GUESSER_DECLARED_EVENT, player, declaredExtra);
 
         if (!wrong) {
             // 比较猜测的角色路径（忽略大小写）
@@ -100,14 +103,14 @@ public final class GuesserAbility {
             player.playSoundToPlayer(SoundEvents.ENTITY_PIG_DEATH, SoundCategory.MASTER, 1, 1);
             NbtCompound correctExtra = new NbtCompound();
             correctExtra.putUuid("target_player", target.getUuid());
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.GUESSER_CORRECT_EVENT, player, correctExtra);
-            GameFunctions.killPlayer(target, true, player, Noellesroles.VOODOO_MAGIC_DEATH_REASON);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.GUESSER_CORRECT_EVENT, player, correctExtra);
+            GameFunctions.killPlayer(target, true, player, NoellesDeathReasons.VOODOO_MAGIC_DEATH_REASON);
         } else {
             // 猜测错误
             player.playSoundToPlayer(SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.MASTER, 1, 1);
             NbtCompound wrongExtra = new NbtCompound();
             wrongExtra.putUuid("target_player", target.getUuid());
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.GUESSER_WRONG_EVENT, player, wrongExtra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.GUESSER_WRONG_EVENT, player, wrongExtra);
 
             String punishment = NoellesRolesConfig.HANDLER.instance().guesserDiesAfterIncorrectGuess;
             if ("death".equalsIgnoreCase(punishment)) {
@@ -118,7 +121,7 @@ public final class GuesserAbility {
                  */
                 NbtCompound replayDeathData = new NbtCompound();
                 replayDeathData.putUuid("replay_actor", player.getUuid());
-                GameFunctions.killPlayer(player, true, null, Noellesroles.VOODOO_MAGIC_DEATH_REASON, replayDeathData);
+                GameFunctions.killPlayer(player, true, null, NoellesDeathReasons.VOODOO_MAGIC_DEATH_REASON, replayDeathData);
             } else if ("explode".equalsIgnoreCase(punishment)) {
                 // 爆炸效果
                 world.playSound(null, player.getBlockPos(), WatheSounds.ITEM_GRENADE_EXPLODE, SoundCategory.PLAYERS, 5.0F, 1.0F + player.getRandom().nextFloat() * 0.1F - 0.05F);
@@ -128,11 +131,11 @@ public final class GuesserAbility {
                 // 爆炸范围内其他玩家也可能死亡
                 for (ServerPlayerEntity nearby : world.getPlayers(serverPlayer -> serverPlayer.getBoundingBox().expand(2.0F).intersects(player.getBoundingBox()) && GameFunctions.isPlayerAliveAndSurvival(serverPlayer))) {
                     if (!nearby.equals(player)) {
-                        GameFunctions.killPlayer(nearby, true, player, Noellesroles.GUESS_EXPLODE_NEARBY_DEATH_REASON);
+                        GameFunctions.killPlayer(nearby, true, player, NoellesDeathReasons.GUESS_EXPLODE_NEARBY_DEATH_REASON);
                     }
                 }
                 // 自己死亡
-                GameFunctions.killPlayer(player, true, null, Noellesroles.GUESS_EXPLODE_DEATH_REASON);
+                GameFunctions.killPlayer(player, true, null, NoellesDeathReasons.GUESS_EXPLODE_DEATH_REASON);
             }
         }
 

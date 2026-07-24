@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.Entity;
@@ -14,7 +16,6 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.item.CrystalBallMarkC2SPacket;
 import org.agmas.noellesroles.roles.prophet.ProphetConstants;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +60,7 @@ public class CrystalBallItem extends Item {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.PROPHET)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.PROPHET)) {
             return;
         }
 

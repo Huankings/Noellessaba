@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.stalker;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -19,7 +23,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -30,7 +33,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 import java.util.*;
 
 public class StalkerPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
-    public static final ComponentKey<StalkerPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "stalker"), StalkerPlayerComponent.class);
+    public static final ComponentKey<StalkerPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "stalker"), StalkerPlayerComponent.class);
 
     // ==================== 常量定义（可配置） ====================
     /** 一阶段进阶所需能量基数（每人×15） */
@@ -271,7 +274,7 @@ public class StalkerPlayerComponent implements AutoSyncedComponent, ServerTickin
 
     public boolean isActiveStalker() {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        return gameWorld.isRole(player, Noellesroles.STALKER) && isStalkerMarked && phase > 0;
+        return gameWorld.isRole(player, NoellesRoleRegistry.STALKER) && isStalkerMarked && phase > 0;
     }
 
     private int getPlayerCount() {
@@ -298,7 +301,7 @@ public class StalkerPlayerComponent implements AutoSyncedComponent, ServerTickin
         this.energy = 0;
         this.immunityUsed = true; // 进入二阶段盾牌消失
         if (player instanceof ServerPlayerEntity serverPlayer) {
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.STALKER_PHASE_ADVANCE_1_TO_2_EVENT, serverPlayer, null);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.STALKER_PHASE_ADVANCE_1_TO_2_EVENT, serverPlayer, null);
             // 给予刀
             serverPlayer.getInventory().offerOrDrop(WatheItems.KNIFE.getDefaultStack());
             // 发送消息
@@ -314,7 +317,7 @@ public class StalkerPlayerComponent implements AutoSyncedComponent, ServerTickin
         this.phase3Timer = PHASE3_DURATION_SECONDS * 20;
         this.dashModeActive = true;
         if (player instanceof ServerPlayerEntity serverPlayer) {
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.STALKER_PHASE_ADVANCE_2_TO_3_EVENT, serverPlayer, null);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.STALKER_PHASE_ADVANCE_2_TO_3_EVENT, serverPlayer, null);
             serverPlayer.sendMessage(Text.translatable("message.noellesroles.stalker.phase3_advance").formatted(Formatting.DARK_RED, Formatting.BOLD), false);
             player.getWorld().playSound(null, player.getBlockPos(), WatheSounds.ITEM_PSYCHO_ARMOUR, SoundCategory.PLAYERS, 1.0F, 0.5F); // 更换为合适音效
         }
@@ -330,7 +333,7 @@ public class StalkerPlayerComponent implements AutoSyncedComponent, ServerTickin
         this.chargeTime = 0;
         this.isDashing = false;
         if (player instanceof ServerPlayerEntity serverPlayer) {
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.STALKER_PHASE_REGRESS_3_TO_2_EVENT, serverPlayer, null);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.STALKER_PHASE_REGRESS_3_TO_2_EVENT, serverPlayer, null);
             serverPlayer.sendMessage(Text.translatable("message.noellesroles.stalker.phase_regress").formatted(Formatting.YELLOW), true);
         }
         sync();

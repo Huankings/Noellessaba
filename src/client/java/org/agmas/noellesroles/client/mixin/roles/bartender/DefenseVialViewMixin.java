@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.bartender;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.api.event.CanSeePoison;
 import dev.doctor4t.wathe.block_entity.BeveragePlateBlockEntity;
 import net.minecraft.block.BlockState;
@@ -8,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,7 +22,7 @@ public class DefenseVialViewMixin {
         if (!(blockEntity instanceof BeveragePlateBlockEntity tray)) {
             return;
         }
-        if (!Noellesroles.DEFENSE_TRAY_EFFECT.toString().equals(tray.getTrayEffect())) {
+        if (!NoellesEventIds.DEFENSE_TRAY_EFFECT.toString().equals(tray.getTrayEffect())) {
             return;
         }
         if (!CanSeePoison.EVENT.invoker().visible(MinecraftClient.getInstance().player)) {

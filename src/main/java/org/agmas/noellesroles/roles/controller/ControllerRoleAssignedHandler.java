@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 附体师职业分配处理器。
@@ -20,7 +21,7 @@ public final class ControllerRoleAssignedHandler {
      * 以免影响其它依赖这一时机的代码路径。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.CONTROLLER)) {
+        if (!role.equals(NoellesRoleRegistry.CONTROLLER)) {
             return;
         }
 

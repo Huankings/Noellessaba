@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.robot;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import net.minecraft.client.MinecraftClient;
@@ -9,7 +11,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.robot.RobotConstants;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,7 @@ public abstract class RobotHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.ROBOT) || !WatheClient.isPlayerAliveAndInSurvival()) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.ROBOT) || !WatheClient.isPlayerAliveAndInSurvival()) {
             return;
         }
 

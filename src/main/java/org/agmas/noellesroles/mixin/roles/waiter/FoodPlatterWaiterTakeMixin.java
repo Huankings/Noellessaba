@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.roles.waiter;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.tray.TrayEffectHandler;
 import dev.doctor4t.wathe.api.tray.TrayEffectRegistry;
 import dev.doctor4t.wathe.block.FoodPlatterBlock;
@@ -22,7 +24,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,7 +61,7 @@ public abstract class FoodPlatterWaiterTakeMixin {
                 || !(player instanceof ServerPlayerEntity serverPlayer)
                 || !serverPlayer.getStackInHand(Hand.MAIN_HAND).isEmpty()
                 || !(world.getBlockEntity(pos) instanceof BeveragePlateBlockEntity plate)
-                || !GameWorldComponent.KEY.get(world).isRole(serverPlayer, Noellesroles.WAITER)) {
+                || !GameWorldComponent.KEY.get(world).isRole(serverPlayer, NoellesRoleRegistry.WAITER)) {
             return;
         }
 

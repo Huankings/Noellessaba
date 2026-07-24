@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.vulture;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -22,7 +25,6 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 
@@ -47,7 +49,7 @@ public final class VultureAbility {
         var ability = AbilityPlayerComponent.KEY.get(player);
 
         // 检查角色和状态
-        if (!gameWorld.isRole(player, Noellesroles.VULTURE) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.VULTURE) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
         if (ability.cooldown > 0) return;
@@ -77,12 +79,12 @@ public final class VultureAbility {
         vultureComp.sync();
         NbtCompound eatenExtra = new NbtCompound();
         eatenExtra.putUuid("victim", body.getPlayerUuid());
-        GameRecordManager.recordGlobalEvent(world, Noellesroles.VULTURE_PROGRESS_EVENT, player, eatenExtra);
+        GameRecordManager.recordGlobalEvent(world, NoellesEventIds.VULTURE_PROGRESS_EVENT, player, eatenExtra);
 
         NbtCompound progressExtra = new NbtCompound();
         progressExtra.putInt("bodies_eaten", vultureComp.bodiesEaten);
         progressExtra.putInt("bodies_required", vultureComp.bodiesRequired);
-        GameRecordManager.recordGlobalEvent(world, Noellesroles.VULTURE_PROGRESS_EVENT, player, progressExtra);
+        GameRecordManager.recordGlobalEvent(world, NoellesEventIds.VULTURE_PROGRESS_EVENT, player, progressExtra);
 
         // 播放声音和效果
         world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.MASTER, 1.0F, 0.5F);

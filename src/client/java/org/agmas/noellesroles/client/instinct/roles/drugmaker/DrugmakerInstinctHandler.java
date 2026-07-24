@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.client.instinct.roles.drugmaker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 
@@ -31,7 +32,7 @@ public final class DrugmakerInstinctHandler {
                     }
 
                     PlayerPoisonComponent targetPoison = PlayerPoisonComponent.KEY.get(targetPlayer);
-                    if (GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.DRUGMAKER)
+                    if (GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.DRUGMAKER)
                             && WatheClient.isPlayerAliveAndInSurvival()
                             && !WatheClient.isInstinctEnabled()
                             && targetPoison.poisonTicks > 0

@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -29,7 +33,6 @@ import net.minecraft.util.hit.HitResult;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
@@ -52,7 +55,7 @@ import java.util.List;
  */
 public class HackerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<HackerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "hacker"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "hacker"),
             HackerComponent.class
     );
 
@@ -82,7 +85,7 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
         }
 
         for (ServerPlayerEntity hacker : this.player.getServer().getPlayerManager().getPlayerList()) {
-            if (!gameWorld.isRole(hacker, Noellesroles.HACKER) || !GameFunctions.isPlayerAliveAndSurvival(hacker)) {
+            if (!gameWorld.isRole(hacker, NoellesRoleRegistry.HACKER) || !GameFunctions.isPlayerAliveAndSurvival(hacker)) {
                 continue;
             }
             if (isHackerLookingAtTarget(hacker)) {
@@ -126,7 +129,7 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
             if (gameWorld.getRole(recipient) == null || !GameFunctions.isPlayerAliveAndSurvival(recipient)) {
                 continue;
             }
-            if (!gameWorld.canUseKillerFeatures(recipient) && !gameWorld.isRole(recipient, Noellesroles.HACKER)) {
+            if (!gameWorld.canUseKillerFeatures(recipient) && !gameWorld.isRole(recipient, NoellesRoleRegistry.HACKER)) {
                 continue;
             }
 
@@ -135,7 +138,7 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
         }
 
         if (hacker instanceof ServerPlayerEntity hackerPlayer && this.player instanceof ServerPlayerEntity targetPlayer) {
-            GameRecordManager.recordSkillUse(hackerPlayer, Noellesroles.HACKER_REVEAL_EVENT, targetPlayer, null);
+            GameRecordManager.recordSkillUse(hackerPlayer, NoellesEventIds.HACKER_REVEAL_EVENT, targetPlayer, null);
         }
     }
 

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.util.WatheItemTooltips;
 import dev.doctor4t.wathe.compat.TrainVoicePlugin;
@@ -15,7 +18,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -33,7 +35,7 @@ import java.util.List;
  */
 public class HackerPhoneComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<HackerPhoneComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "hacker_phone"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "hacker_phone"),
             HackerPhoneComponent.class
     );
 
@@ -53,7 +55,7 @@ public class HackerPhoneComponent implements AutoSyncedComponent, ServerTickingC
 
     private void quitKillerGroupIfInvalid() {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
-        if (gameWorld.canUseKillerFeatures(this.player) || gameWorld.isRole(this.player, Noellesroles.HACKER)) {
+        if (gameWorld.canUseKillerFeatures(this.player) || gameWorld.isRole(this.player, NoellesRoleRegistry.HACKER)) {
             return;
         }
 

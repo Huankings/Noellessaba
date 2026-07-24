@@ -1,23 +1,25 @@
 package org.agmas.noellesroles.client.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.mood.MoodHudApi;
 import dev.doctor4t.wathe.api.client.mood.MoodHudContext;
 import dev.doctor4t.wathe.api.client.mood.MoodHudStyle;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 梦者心情 HUD。
  */
 public final class DreamerMoodHud {
-    private static final Identifier DREAMER_MOOD = Identifier.of(Noellesroles.MOD_ID, "hud/mood_dreamer");
+    private static final Identifier DREAMER_MOOD = Identifier.of(NoellesRolesCore.MOD_ID, "hud/mood_dreamer");
 
     private DreamerMoodHud() {
     }
 
     public static void register() {
-        MoodHudApi.registerRoleStyle(Noellesroles.DREAMER, MoodHudStyle
+        MoodHudApi.registerRoleStyle(NoellesRoleRegistry.DREAMER, MoodHudStyle
                 .builder(DREAMER_MOOD)
                 .bar(DreamerMoodHud::renderRainbowBar)
                 .build());

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -7,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.convener.ConvenerConstants;
 import org.agmas.noellesroles.roles.convener.ConvenerMomentumComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +27,7 @@ public abstract class ConvenerMovementSpeedMixin extends LivingEntity {
     private float noellesroles$boostConvenerSpeed(float original) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (!GameFunctions.isPlayerAliveAndSurvival(player)
-                || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.CONVENER)
+                || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.CONVENER)
                 || ConvenerMomentumComponent.KEY.get(player).getTicks() <= 0) {
             return original;
         }

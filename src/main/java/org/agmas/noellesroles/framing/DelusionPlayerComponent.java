@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.framing;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.api.event.DelusionEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +32,7 @@ import java.util.UUID;
  * 3. 仍然保留“心跳声 + 视角脉冲 + 开始 / 结束回放事件”的假中毒表现。</p>
  */
 public class DelusionPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
-    public static final ComponentKey<DelusionPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "delusion"), DelusionPlayerComponent.class);
+    public static final ComponentKey<DelusionPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "delusion"), DelusionPlayerComponent.class);
     private final PlayerEntity player;
     public int delusionTicks = -1;
     private int initialDelusionTicks = 0;
@@ -77,7 +79,7 @@ public class DelusionPlayerComponent implements AutoSyncedComponent, ServerTicki
             if (applierUuid != null) {
                 extra.putUuid("applier", applierUuid);
             }
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.DELUSION_STARTED_EVENT, null, extra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.DELUSION_STARTED_EVENT, null, extra);
             DelusionEvents.STARTED.invoker().onStarted(player, applierUuid);
         }
     }
@@ -131,7 +133,7 @@ public class DelusionPlayerComponent implements AutoSyncedComponent, ServerTicki
                     if (this.applierUuid != null) {
                         extra.putUuid("applier", this.applierUuid);
                     }
-                    GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.DELUSION_ENDED_EVENT, null, extra);
+                    GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.DELUSION_ENDED_EVENT, null, extra);
                     DelusionEvents.ENDED.invoker().onEnded(serverPlayer);
                 }
                 this.reset();

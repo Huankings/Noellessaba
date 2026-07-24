@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.brainwasher;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -12,7 +14,6 @@ import net.minecraft.text.Text;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.brainwasher.BrainwasherC2SPacket;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public final class BrainwasherAbility {
      */
     public static void handle(BrainwasherC2SPacket payload, ServerPlayerEntity player) {
         var gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.BRAINWASHER)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.BRAINWASHER)) return;
 
         var ability = AbilityPlayerComponent.KEY.get(player);
         if (ability.cooldown > 0) return; // 冷却中
@@ -46,7 +47,7 @@ public final class BrainwasherAbility {
         List<Role> availableKillerRoles = new ArrayList<>(WatheRoles.ROLES);
         availableKillerRoles.removeIf(role ->
                 !role.canUseKiller() || // 不是杀手（包括中立杀手？canUseKiller 通常杀手为 true）
-                        role.equals(Noellesroles.BRAINWASHER) || // 排除洗脑师自身
+                        role.equals(NoellesRoleRegistry.BRAINWASHER) || // 排除洗脑师自身
                         Harpymodloader.VANNILA_ROLES.contains(role) || // 排除原版杀手（优先使用自定义）
                         HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().getPath())
         );

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.executioner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
 
@@ -20,7 +21,7 @@ public final class ExecutionerInstinctHandler {
             if (!(target instanceof PlayerEntity targetPlayer)
                     || !GameFunctions.isPlayerAliveAndSurvival(viewer)
                     || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
-                    || !GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.EXECUTIONER)) {
+                    || !GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.EXECUTIONER)) {
                 return InstinctApi.HighlightResult.pass();
             }
 
@@ -39,14 +40,14 @@ public final class ExecutionerInstinctHandler {
         InstinctApi.registerHighlight(NoellesInstinctHandlers.id("executioner_instinct_color"), InstinctApi.DEFAULT_PRIORITY, (viewer, target) -> {
             if (target instanceof PlayerEntity targetPlayer
                     && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
-                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.EXECUTIONER)
+                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.EXECUTIONER)
                     && WatheClient.isPlayerAliveAndInSurvival()
                     && WatheClient.isInstinctEnabled()) {
                 /*
                  * 处刑人主动本能颜色仍依赖 WatheClient.isInstinctEnabled()。
                  * 这保证它会被 Convener 变形压制等 availability DISABLE 规则统一关掉。
                  */
-                return InstinctApi.HighlightResult.color(Noellesroles.EXECUTIONER.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.EXECUTIONER.color());
             }
             return InstinctApi.HighlightResult.pass();
         });

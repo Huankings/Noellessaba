@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.operator;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.network.message.MessageType;
@@ -7,7 +9,6 @@ import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,7 +104,7 @@ public final class OperatorCommunicationManager {
             @NotNull String rawContent
     ) {
         MutableText message = Text.translatable("message.noellesroles.operator.chat_bridge", sender.getGameProfile().getName(), rawContent)
-                .withColor(Noellesroles.OPERATOR.color());
+                .withColor(NoellesRoleRegistry.OPERATOR.color());
         recipient.sendMessage(message, true);
     }
 

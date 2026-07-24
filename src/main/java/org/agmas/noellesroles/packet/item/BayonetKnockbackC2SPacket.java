@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.packet.item;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +11,6 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.BayonetKnockbackHandler;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record BayonetKnockbackC2SPacket(int target) implements CustomPayload {
 
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "bayonet_knockback");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "bayonet_knockback");
     public static final Id<BayonetKnockbackC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, BayonetKnockbackC2SPacket> CODEC = new PacketCodec<>() {
         @Override

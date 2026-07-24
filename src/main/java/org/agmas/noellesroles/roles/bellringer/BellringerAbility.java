@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.bellringer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -10,7 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 敲钟人主动能力。
@@ -22,7 +24,7 @@ public final class BellringerAbility {
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(player, Noellesroles.BELLRINGER)
+                || !gameWorld.isRole(player, NoellesRoleRegistry.BELLRINGER)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
@@ -56,7 +58,7 @@ public final class BellringerAbility {
         NbtCompound extra = new NbtCompound();
         extra.putInt("seconds", BellringerConstants.REDUCE_SECONDS);
         extra.putInt("price", BellringerConstants.ABILITY_PRICE);
-        GameRecordManager.recordSkillUse(player, Noellesroles.BELLRINGER_REDUCE_TIME_EVENT, null, extra);
+        GameRecordManager.recordSkillUse(player, NoellesEventIds.BELLRINGER_REDUCE_TIME_EVENT, null, extra);
 
         ability.setCooldown(BellringerConstants.ABILITY_COOLDOWN_TICKS);
     }

@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 召集者召集后的通讯限制判定。
@@ -18,7 +19,7 @@ public final class ConvenerCommunicationHelper {
             return false;
         }
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (gameWorld.isRole(player, Noellesroles.CONVENER)) {
+        if (gameWorld.isRole(player, NoellesRoleRegistry.CONVENER)) {
             return false;
         }
         return ConvenerDisguiseComponent.KEY.get(player).getMorphTicks() > 0;
@@ -34,7 +35,7 @@ public final class ConvenerCommunicationHelper {
 
     public static boolean canReceiveRestrictedChat(ServerPlayerEntity recipient) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(recipient.getWorld());
-        if (gameWorld.isRole(recipient, Noellesroles.CONVENER)) {
+        if (gameWorld.isRole(recipient, NoellesRoleRegistry.CONVENER)) {
             return true;
         }
         if (!GameFunctions.isPlayerAliveAndSurvival(recipient)) {

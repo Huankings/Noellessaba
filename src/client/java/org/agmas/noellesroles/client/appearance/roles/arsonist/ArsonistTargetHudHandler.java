@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.arsonist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public final class ArsonistTargetHudHandler {
                     PlayerEntity target = context.targetPlayer();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
                     if (target == null
-                            || !gameWorld.isRole(player, Noellesroles.ARSONIST)
+                            || !gameWorld.isRole(player, NoellesRoleRegistry.ARSONIST)
                             || GameFunctions.isPlayerSpectatingOrCreative(player)) {
                         return;
                     }
@@ -38,7 +39,7 @@ public final class ArsonistTargetHudHandler {
                     Text text = Text.translatable(doused
                             ? "hud.noellesroles.arsonist.doused.true"
                             : "hud.noellesroles.arsonist.doused.false");
-                    drawCentered(context.renderer(), context.drawContext(), text, 32, doused ? Noellesroles.ARSONIST.color() : 0xAAAAAA);
+                    drawCentered(context.renderer(), context.drawContext(), text, 32, doused ? NoellesRoleRegistry.ARSONIST.color() : 0xAAAAAA);
                 }
         );
     }

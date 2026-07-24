@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.packet.role.operator;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
  * <p>2. 相同玩家：广播</p>
  */
 public record OperatorC2SPacket(UUID firstPlayer, UUID secondPlayer) implements CustomPayload {
-    public static final Identifier PAYLOAD_ID = Identifier.of(Noellesroles.MOD_ID, "operator");
+    public static final Identifier PAYLOAD_ID = Identifier.of(NoellesRolesCore.MOD_ID, "operator");
     public static final Id<OperatorC2SPacket> ID = new Id<>(PAYLOAD_ID);
     public static final PacketCodec<RegistryByteBuf, OperatorC2SPacket> CODEC =
             PacketCodec.of(OperatorC2SPacket::write, OperatorC2SPacket::read);

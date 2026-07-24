@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.bomber;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.block_entity.TrimmedBedBlockEntity;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.block.BlockState;
@@ -8,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,7 +32,7 @@ public abstract class TimedBombBedViewMixin {
          * 床里的定时炸弹现在已经改走 wathe 的统一 bed effect 字段，
          * 客户端粒子也直接读取真实同步下来的 effect id，避免再次依赖旧 mixin 状态位。
          */
-        if (!Noellesroles.TIMED_BOMB_BED_EMBEDDED_EVENT.toString().equals(bed.getBedEffect())) {
+        if (!NoellesEventIds.TIMED_BOMB_BED_EMBEDDED_EVENT.toString().equals(bed.getBedEffect())) {
             return;
         }
 

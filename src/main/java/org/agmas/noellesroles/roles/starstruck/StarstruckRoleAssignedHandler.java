@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 星界使者职业分配初始化。
@@ -13,7 +14,7 @@ public final class StarstruckRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (role != Noellesroles.STARSTRUCK) {
+        if (role != NoellesRoleRegistry.STARSTRUCK) {
             return;
         }
 

@@ -1,26 +1,28 @@
 package org.agmas.noellesroles.client.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.mood.MoodHudApi;
 import dev.doctor4t.wathe.api.client.mood.MoodHudContext;
 import dev.doctor4t.wathe.api.client.mood.MoodHudStyle;
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.rememberer.RemembererConstants;
 
 public final class RemembererMoodHud {
-    private static final Identifier REMEMBERER_ARROW_UP = Identifier.of(Noellesroles.MOD_ID, "hud/rememberer_arrow_up");
-    private static final Identifier REMEMBERER_ARROW_DOWN = Identifier.of(Noellesroles.MOD_ID, "hud/rememberer_arrow_down");
-    private static final Identifier REMEMBERER_MOOD_HAPPY = Identifier.of(Noellesroles.MOD_ID, "hud/rememberer_mood_happy");
-    private static final Identifier REMEMBERER_MOOD_MID = Identifier.of(Noellesroles.MOD_ID, "hud/rememberer_mood_mid");
-    private static final Identifier REMEMBERER_MOOD_DEPRESSIVE = Identifier.of(Noellesroles.MOD_ID, "hud/rememberer_mood_depressive");
+    private static final Identifier REMEMBERER_ARROW_UP = Identifier.of(NoellesRolesCore.MOD_ID, "hud/rememberer_arrow_up");
+    private static final Identifier REMEMBERER_ARROW_DOWN = Identifier.of(NoellesRolesCore.MOD_ID, "hud/rememberer_arrow_down");
+    private static final Identifier REMEMBERER_MOOD_HAPPY = Identifier.of(NoellesRolesCore.MOD_ID, "hud/rememberer_mood_happy");
+    private static final Identifier REMEMBERER_MOOD_MID = Identifier.of(NoellesRolesCore.MOD_ID, "hud/rememberer_mood_mid");
+    private static final Identifier REMEMBERER_MOOD_DEPRESSIVE = Identifier.of(NoellesRolesCore.MOD_ID, "hud/rememberer_mood_depressive");
 
     private RemembererMoodHud() {
     }
 
     public static void register() {
-        MoodHudApi.registerRoleStyle(Noellesroles.REMEMBERER, MoodHudStyle
+        MoodHudApi.registerRoleStyle(NoellesRoleRegistry.REMEMBERER, MoodHudStyle
                 .builder(RemembererMoodHud::getMoodSprite)
                 .arrows(REMEMBERER_ARROW_UP, REMEMBERER_ARROW_DOWN)
                 .bar(RemembererMoodHud::renderMoodBar)

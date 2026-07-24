@@ -1,0 +1,186 @@
+package org.agmas.noellesroles.bootstrap;
+
+import dev.doctor4t.wathe.record.replay.ReplayRegistry;
+import net.minecraft.item.Items;
+import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.record.NoellesRolesReplayFormatters;
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
+/**
+ * NoellesRoles 专属回放格式注册。
+ *
+ * <p>回放记录本体仍由 Wathe 负责，这里只负责把 noellesroles 的稳定 id 映射成文案。</p>
+ */
+public final class NoellesRolesReplayBootstrap {
+    private NoellesRolesReplayBootstrap() {
+    }
+
+    public static void register() {
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DEFENSE_VIAL), NoellesRolesReplayFormatters::formatDefenseVialUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DELUSION_VIAL), NoellesRolesReplayFormatters::formatDelusionVialUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SEDATIVE), NoellesRolesReplayFormatters::formatSedativeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TIMED_BOMB), NoellesRolesReplayFormatters::formatTimedBombUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.ROLE_MINE), NoellesRolesReplayFormatters::formatRoleMineUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TOOLBOX), NoellesRolesReplayFormatters::formatToolboxUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.CAPTURE_DEVICE), NoellesRolesReplayFormatters::formatCaptureDeviceUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.WIND_MARK), NoellesRolesReplayFormatters::formatWindMarkUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.CRYSTAL_BALL), NoellesRolesReplayFormatters::formatCrystalBallUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(Items.ENDER_PEARL), NoellesRolesReplayFormatters::formatRecallerEnderPearl);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.FAKE_GRENADE), NoellesRolesReplayFormatters::formatFakeGrenadeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SILENT_GRENADE), NoellesRolesReplayFormatters::formatSilentGrenadeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DREAM_IMPRINT), NoellesRolesReplayFormatters::formatDreamImprintUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TAPE), NoellesRolesReplayFormatters::formatTapeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.KNOCKOUT_DRUG), NoellesRolesReplayFormatters::formatKnockoutDrugUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.POISON_INJECTOR), NoellesRolesReplayFormatters::formatPoisonInjectorUse);
+        ReplayRegistry.registerItemUseFormatter(NoellesEventIds.SULFURIC_ACID_BARREL_USE_EVENT, NoellesRolesReplayFormatters::formatSulfuricAcidBarrelUse);
+        ReplayRegistry.registerItemUseFormatter(NoellesEventIds.MEDICAL_KIT_USE_EVENT, NoellesRolesReplayFormatters::formatMedicalKitUse);
+        ReplayRegistry.registerItemUseFormatter(NoellesEventIds.PILL_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPillUse);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PAN), NoellesRolesReplayFormatters::formatPanHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.HUNTING_KNIFE), NoellesRolesReplayFormatters::formatHuntingKnifeHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOWGUN), NoellesRolesReplayFormatters::formatBlowgunHit);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.BELLRINGER_REDUCE_TIME_EVENT, NoellesRolesReplayFormatters::formatBellringerReduceTime);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.DETECTIVE_CHECK_EVENT, NoellesRolesReplayFormatters::formatDetectiveCheck);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.STARSTRUCK_ABILITY_EVENT, NoellesRolesReplayFormatters::formatStarstruckAbility);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.CLEANER_CLEAR_ITEMS_EVENT, NoellesRolesReplayFormatters::formatCleanerClearItems);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.HUNTER_REFRESH_EVENT, NoellesRolesReplayFormatters::formatHunterRefresh);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.ROBOT_NIGHT_VISION_EVENT, NoellesRolesReplayFormatters::formatRobotNightVision);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.KIDNAPPER_RELEASE_EVENT, NoellesRolesReplayFormatters::formatKidnapperRelease);
+
+        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseVialUse);
+        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.DELUSION_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDelusionVialUse);
+        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.SEDATIVE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatSedativeUse);
+        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombTrayEmbedded);
+        ReplayRegistry.registerBedEffectPlacementFormatter(NoellesEventIds.TIMED_BOMB_BED_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombBedEmbedded);
+
+        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefensePlatterTake);
+        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.DELUSION_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDelusionPlatterTake);
+        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.SEDATIVE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatSedativePlatterTake);
+        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombTrayTake);
+
+        ReplayRegistry.registerTrayEffectConsumeFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseConsume);
+        ReplayRegistry.registerTrayEffectConsumeFormatter(NoellesEventIds.DELUSION_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDelusionConsume);
+        ReplayRegistry.registerTrayEffectConsumeFormatter(NoellesEventIds.SEDATIVE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatSedativeConsume);
+
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.ANGEL_GUARD_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatAngelGuardShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.SPIRITUALIST_ACTIVE_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatSpiritualistActiveShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.SPIRITUALIST_LINGERING_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatSpiritualistLingeringShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.DREAM_IMPRINT_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatDreamImprintShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.PILL_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPillShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.PAN_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPanShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.CONVENER_COUNTER_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatConvenerCounterShieldBlocked);
+
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DELUSION_STARTED_EVENT, NoellesRolesReplayFormatters::formatDelusionStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DELUSION_ENDED_EVENT, NoellesRolesReplayFormatters::formatDelusionEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.COWARD_DANGER_SENSED_EVENT, NoellesRolesReplayFormatters::formatCowardDangerSensed);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.COWARD_DANGER_LEFT_EVENT, NoellesRolesReplayFormatters::formatCowardDangerLeft);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SEDATIVE_STARTED_EVENT, NoellesRolesReplayFormatters::formatSedativeStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SEDATIVE_ENDED_EVENT, NoellesRolesReplayFormatters::formatSedativeEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMED_BOMB_ACTIVATED_EVENT, NoellesRolesReplayFormatters::formatTimedBombActivated);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombTrayEmbedded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMED_BOMB_BED_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombBedEmbedded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMED_BOMB_BED_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatTimedBombBedTriggered);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROLE_MINE_DETECTED_EVENT, NoellesRolesReplayFormatters::formatRoleMineDetected);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROLE_MINE_REPORT_EVENT, NoellesRolesReplayFormatters::formatRoleMineReport);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CAPTURE_DEVICE_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatCaptureDeviceTriggered);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CAPTURE_DEVICE_REPORT_EVENT, NoellesRolesReplayFormatters::formatCaptureDeviceReport);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CAPTURE_DEVICE_EXPIRED_EVENT, NoellesRolesReplayFormatters::formatCaptureDeviceExpired);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CAPTURE_DEVICE_RELEASED_EVENT, NoellesRolesReplayFormatters::formatCaptureDeviceReleased);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PAN_STUN_END_EVENT, NoellesRolesReplayFormatters::formatPanStunEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STARSTRUCK_ABILITY_END_EVENT, NoellesRolesReplayFormatters::formatStarstruckAbilityEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TAPE_REMOVED_EVENT, NoellesRolesReplayFormatters::formatTapeRemoved);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.POWER_RESTORED_EVENT, NoellesRolesReplayFormatters::formatPowerRestored);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JESTER_PSYCHO_STARTED_EVENT, NoellesRolesReplayFormatters::formatJesterPsychoStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.EXECUTIONER_TARGET_LOCKED_EVENT, NoellesRolesReplayFormatters::formatExecutionerTargetLocked);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.EXECUTIONER_TARGET_CHANGED_EVENT, NoellesRolesReplayFormatters::formatExecutionerTargetChanged);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VULTURE_PROGRESS_EVENT, NoellesRolesReplayFormatters::formatVultureProgress);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.RECALLER_POSITION_SAVED_EVENT, NoellesRolesReplayFormatters::formatRecallerPositionSaved);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.RECALLER_TELEPORTED_EVENT, NoellesRolesReplayFormatters::formatRecallerTeleported);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.RECALLER_ENDER_PEARL_THROWN_EVENT, NoellesRolesReplayFormatters::formatRecallerEnderPearl);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PHANTOM_INVISIBILITY_STARTED_EVENT, NoellesRolesReplayFormatters::formatPhantomInvisibilityStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PHANTOM_INVISIBILITY_ENDED_EVENT, NoellesRolesReplayFormatters::formatPhantomInvisibilityEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PROPHET_MARKED_EVENT, NoellesRolesReplayFormatters::formatProphetMarked);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PROPHET_REMARKED_EVENT, NoellesRolesReplayFormatters::formatProphetRemarked);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PROPHET_REVEALED_EVENT, NoellesRolesReplayFormatters::formatProphetRevealed);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PROPHET_VOODOO_IMMUNITY_EVENT, NoellesRolesReplayFormatters::formatProphetVoodooImmunity);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_WIND_MARK_APPLIED_EVENT, NoellesRolesReplayFormatters::formatWinderWindMarkApplied);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_WIND_CHARGE_USED_EVENT, NoellesRolesReplayFormatters::formatWinderWindChargeUsed);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_WIND_MARK_EXPIRED_EVENT, NoellesRolesReplayFormatters::formatWinderWindMarkExpired);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_WIND_MARK_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatWinderWindMarkTriggered);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_FLOAT_STARTED_EVENT, NoellesRolesReplayFormatters::formatWinderFloatStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_FLOAT_ENDED_EVENT, NoellesRolesReplayFormatters::formatWinderFloatEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WINDER_FLOAT_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatWinderFloatStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.AMNESIAC_ROLE_STOLEN_EVENT, NoellesRolesReplayFormatters::formatAmnesiacRoleStolen);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ARSONIST_DOUSED_EVENT, NoellesRolesReplayFormatters::formatArsonistDoused);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ARSONIST_LIGHTER_COOLDOWN_STARTED_EVENT, NoellesRolesReplayFormatters::formatArsonistLighterCooldownStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ARSONIST_LIGHTER_COOLDOWN_FINISHED_EVENT, NoellesRolesReplayFormatters::formatArsonistLighterCooldownFinished);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONVENER_SUMMON_EVENT, NoellesRolesReplayFormatters::formatConvenerSummon);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONVENER_COUNTER_SHIELD_GAINED_EVENT, NoellesRolesReplayFormatters::formatConvenerCounterShieldGained);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONVENER_VOODOO_IMMUNITY_EVENT, NoellesRolesReplayFormatters::formatConvenerVoodooImmunity);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_ADVANCE_1_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance12);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_ADVANCE_2_TO_3_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance23);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_REGRESS_3_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseRegress32);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.NOISEMAKER_GLOW_STARTED_EVENT, NoellesRolesReplayFormatters::formatNoisemakerGlowStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.NOISEMAKER_GLOW_ENDED_EVENT, NoellesRolesReplayFormatters::formatNoisemakerGlowEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPHLING_MORPH_STARTED_EVENT, NoellesRolesReplayFormatters::formatMorphlingMorphStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPHLING_MORPH_ENDED_EVENT, NoellesRolesReplayFormatters::formatMorphlingMorphEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SWAPPER_SWAP_SELECTED_EVENT, NoellesRolesReplayFormatters::formatSwapperSwapSelected);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SWAPPER_SWAP_EXECUTED_EVENT, NoellesRolesReplayFormatters::formatSwapperSwapExecuted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT, NoellesRolesReplayFormatters::formatCorpsemakerForgedBody);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VOODOO_BOUND_EVENT, NoellesRolesReplayFormatters::formatVoodooBound);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.GUESSER_DECLARED_EVENT, NoellesRolesReplayFormatters::formatGuesserDeclared);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.GUESSER_CORRECT_EVENT, NoellesRolesReplayFormatters::formatGuesserCorrect);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.GUESSER_WRONG_EVENT, NoellesRolesReplayFormatters::formatGuesserWrong);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONTROLLER_POSSESS_STARTED_EVENT, NoellesRolesReplayFormatters::formatControllerPossessStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONTROLLER_POSSESS_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatControllerPossessStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONTROLLER_POSSESS_ENDED_EVENT, NoellesRolesReplayFormatters::formatControllerPossessEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ANGEL_SOOTHE_CAST_EVENT, NoellesRolesReplayFormatters::formatAngelSootheCast);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ANGEL_SOOTHED_EVENT, NoellesRolesReplayFormatters::formatAngelSoothed);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ANGEL_GUARD_SELECTED_EVENT, NoellesRolesReplayFormatters::formatAngelGuardSelected);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SPIRITUALIST_PROJECTION_STARTED_EVENT, NoellesRolesReplayFormatters::formatSpiritualistProjectionStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SPIRITUALIST_PROJECTION_ENDED_EVENT, NoellesRolesReplayFormatters::formatSpiritualistProjectionEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SPIRITUALIST_POSSESSION_STARTED_EVENT, NoellesRolesReplayFormatters::formatSpiritualistPossessionStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SPIRITUALIST_POSSESSION_ENDED_EVENT, NoellesRolesReplayFormatters::formatSpiritualistPossessionEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_CONNECTION_FAILED_BOTH_DEAD_EVENT, NoellesRolesReplayFormatters::formatOperatorConnectionFailedBothDead);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_CONNECTION_FAILED_ONE_DEAD_EVENT, NoellesRolesReplayFormatters::formatOperatorConnectionFailedOneDead);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_CONNECTION_STARTED_EVENT, NoellesRolesReplayFormatters::formatOperatorConnectionStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_CONNECTION_ENDED_EVENT, NoellesRolesReplayFormatters::formatOperatorConnectionEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_CONNECTION_INTERRUPTED_EVENT, NoellesRolesReplayFormatters::formatOperatorConnectionInterrupted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_FAILED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastFailed);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_STARTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_ENDED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_INTERRUPTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastInterrupted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.REMEMBERER_RECALL_EVENT, NoellesRolesReplayFormatters::formatRemembererRecall);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.REMEMBERER_SNIPER_RELOADED_EVENT, NoellesRolesReplayFormatters::formatRemembererSniperReloaded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WAITER_SERVE_EVENT, NoellesRolesReplayFormatters::formatWaiterServe);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WAITER_SELF_USE_EVENT, NoellesRolesReplayFormatters::formatWaiterSelfUse);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DREAMER_COUNTS_EVENT, NoellesRolesReplayFormatters::formatDreamerCounts);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_RECORDING_STARTED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_RECORDING_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingFinished);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_RECORDING_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_PLAYBACK_STARTED_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_PLAYBACK_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackFinished);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackStoppedEarly);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_PLAYBACK_FORCED_END_EVENT, NoellesRolesReplayFormatters::formatMagicianPlaybackForcedEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.AVARICIOUS_STOLE_COINS_EVENT, NoellesRolesReplayFormatters::formatAvariciousStoleCoins);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.NECROMANCER_REVIVED_EVENT, NoellesRolesReplayFormatters::formatNecromancerRevived);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROBOT_NIGHT_VISION_END_EVENT, NoellesRolesReplayFormatters::formatRobotNightVisionEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROBOT_POISON_IMMUNE_EVENT, NoellesRolesReplayFormatters::formatRobotPoisonImmune);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROBOT_BED_POISON_IMMUNE_EVENT, NoellesRolesReplayFormatters::formatRobotBedPoisonImmune);
+
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SPIRITUALIST_SOUL_GUARD_DEATH_REASON, NoellesRolesReplayFormatters::formatSpiritualistSoulGuardDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_SNIPER_RIFLE, NoellesRolesReplayFormatters::formatSniperRifleDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SILENCED_OUTSIDE_DEATH_REASON, NoellesRolesReplayFormatters::formatSilencedOutsideDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SILENCED_TAPE_REMOVED_DEATH_REASON, NoellesRolesReplayFormatters::formatTapeRemovedLowMoodDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.CONVENER_COUNTER_KILL_DEATH_REASON, NoellesRolesReplayFormatters::formatConvenerCounterKillDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_IGNITED_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistIgnitedDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_FAILED_IGNITE_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistFailedIgniteDeath);
+    }
+}

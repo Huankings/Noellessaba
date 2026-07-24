@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.win.CustomVictory;
 import dev.doctor4t.wathe.api.win.VictoryApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public final class ConvenerVictoryRule {
     }
 
     public static void init() {
-        VictoryApi.registerRule(Identifier.of(Noellesroles.MOD_ID, "victory/convener"), VictoryApi.DEFAULT_PRIORITY, context -> {
+        VictoryApi.registerRule(Identifier.of(NoellesRolesCore.MOD_ID, "victory/convener"), VictoryApi.DEFAULT_PRIORITY, context -> {
             ServerPlayerEntity livingConvener = ConvenerWinHelper.getLivingConvener(context.world(), context.gameWorld());
             if (livingConvener == null) {
                 return VictoryApi.VictoryResult.pass();
@@ -26,7 +28,7 @@ public final class ConvenerVictoryRule {
 
             if (context.alivePlayers().size() == 1) {
                 return VictoryApi.VictoryResult.customWin(
-                        CustomVictory.of(Noellesroles.CONVENER.identifier(), Noellesroles.CONVENER.color(), List.of((PlayerEntity) livingConvener))
+                        CustomVictory.of(NoellesRoleRegistry.CONVENER.identifier(), NoellesRoleRegistry.CONVENER.color(), List.of((PlayerEntity) livingConvener))
                 );
             }
 

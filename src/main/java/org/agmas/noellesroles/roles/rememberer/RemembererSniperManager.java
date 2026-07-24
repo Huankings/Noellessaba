@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -11,7 +13,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.NoellesRolesEntities;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.agmas.noellesroles.roles.magician.MagicianReplayActorContext;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
@@ -221,7 +222,7 @@ public final class RemembererSniperManager {
                             candidate,
                             true,
                             killCreditOwner,
-                            Noellesroles.DEATH_REASON_SNIPER_RIFLE,
+                            NoellesDeathReasons.DEATH_REASON_SNIPER_RIFLE,
                             deathData
                     );
                 }
@@ -247,7 +248,7 @@ public final class RemembererSniperManager {
                 MagicianServerHooks.stopPlaybackByWeaponTarget(
                         playbackEntity,
                         shooter,
-                        Noellesroles.DEATH_REASON_SNIPER_RIFLE,
+                        NoellesDeathReasons.DEATH_REASON_SNIPER_RIFLE,
                         this.replayStack.getName().getString()
                 );
             }

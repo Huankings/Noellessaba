@@ -35,9 +35,24 @@
 
 新增职业优先用显式阵营注册，不要只依赖 `isInnocent/canUseKiller` 推断。Harpy 的扩展分配按 `role.getFaction()` 划分平民、义警、杀手、中立池；`Harpymodloader.setRoleMaximum(role/id, max)` 控制最大生成数。
 
-### NoellesRoles 入口
+### NoellesRoles 入口与注册拆分
 
-- `src/main/java/org/agmas/noellesroles/Noellesroles.java`
+- `src/main/java/org/agmas/noellesroles/Noellesroles.java`：Fabric 主入口，只调用 `NoellesRolesBootstrap.init()`；不要再把职业、事件、packet、经济、回放等注册塞回这里。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesBootstrap.java`：总启动编排器，负责维护初始化顺序。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesRolesCore.java`：`MOD_ID`、日志器和 `Identifier` 工具方法。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesRoleIds.java`：职业和词条的稳定 id。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesRoleRegistry.java`：Wathe `Role` 实例和显式阵营注册。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesModifierRegistry.java`：Harpy 词条注册。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesRoleGroups.java`：跨系统共享角色分组，例如 `KILLER_SIDED_NEUTRALS`；它不再从 `Noellesroles.X` 导出。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesDeathReasons.java`：专属死亡原因 id。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesEventIds.java`：回放事件、托盘/床效果和护盾来源 id。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesFramingShopEntries.java`：伪装商店共享条目。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPayloadTypes.java`：payload codec 注册。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPacketReceivers.java`：服务端 packet receiver 注册和能力分发。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`：事件监听、server tick、回合清理、Harpy 禁用职业配置同步。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`：Harpy 静态角色上限初始化；人数相关动态上限在 `NoellesRolesEventBootstrap`。
 - `src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
 - `src/main/java/org/agmas/noellesroles/ModItems.java`
 - `src/main/java/org/agmas/noellesroles/NoellesRolesShops.java`
@@ -96,7 +111,20 @@
 
 新增职业通常需要检查这些位置：
 
-- `Noellesroles.java`：`Identifier`、`Role` 注册、事件 id、死亡原因 id、`onInitialize` 初始化、payload codec、`registerPackets`、`registerEvents`、`registerEconomyApi`、`registerReplayFormatters`。
+- `Noellesroles.java`：只作为 Fabric 主入口，通常不改；除非新增的是全局启动编排入口，否则不要把注册逻辑写回这里。
+- `NoellesRoleIds.java`：新增职业 / 词条的稳定 `Identifier`。
+- `NoellesRoleRegistry.java`：新增 `Role` 实例，并用 `WatheRoles.registerCivilianRole/registerVigilanteRole/registerKillerRole/registerNeutralRole` 显式登记阵营。
+- `NoellesModifierRegistry.java`：新增或调整 Harpy 词条。
+- `NoellesRoleGroups.java`：新增跨系统共享角色集合，例如杀手侧中立、本能/HUD 分组等。
+- `NoellesDeathReasons.java`：新增死亡原因 id。
+- `NoellesEventIds.java`：新增回放事件、托盘/床效果、护盾来源等稳定事件 id。
+- `NoellesRolesBootstrap.java`：新增全局初始化器时，在这里按顺序调用。
+- `NoellesRolesPayloadTypes.java`：新增自定义 payload codec。
+- `NoellesRolesPacketReceivers.java`：新增服务端 packet receiver 或能力分发分支。
+- `NoellesRolesEventBootstrap.java`：新增事件监听、server tick、回合结束清理、人数动态角色上限、Harpy 禁用列表同步。
+- `NoellesRolesEconomyBootstrap.java`：新增金币 HUD、任务收入、被动收入或经济词条规则。
+- `NoellesRolesReplayBootstrap.java`：新增回放 formatter 注册。
+- `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
 - `NoellesRolesRoleAssignedBootstrap.java`：职业分配后发初始物品、重置状态、设置开局冷却。
@@ -116,9 +144,12 @@
 推荐格式：
 
 ```java
-public static Identifier SOME_ROLE_ID = Identifier.of(MOD_ID, "some_role");
-public static Role SOME_ROLE = WatheRoles.registerCivilianRole(new Role(
-        SOME_ROLE_ID,
+// NoellesRoleIds.java
+public static final Identifier SOME_ROLE_ID = NoellesRolesCore.id("some_role");
+
+// NoellesRoleRegistry.java
+public static final Role SOME_ROLE = WatheRoles.registerCivilianRole(new Role(
+        NoellesRoleIds.SOME_ROLE_ID,
         SomeRoleConstants.ROLE_COLOR,
         true,
         false,
@@ -127,6 +158,8 @@ public static Role SOME_ROLE = WatheRoles.registerCivilianRole(new Role(
         false
 ));
 ```
+
+不要再把 `Identifier`、`Role` 或兼容导出字段加回 `Noellesroles.java`。其他扩展需要反射 NoellesRoles 职业时，应读取 `org.agmas.noellesroles.registry.NoellesRoleRegistry`；需要读取 `KILLER_SIDED_NEUTRALS` 时，应读取 `org.agmas.noellesroles.registry.NoellesRoleGroups`。
 
 常见阵营语义：
 

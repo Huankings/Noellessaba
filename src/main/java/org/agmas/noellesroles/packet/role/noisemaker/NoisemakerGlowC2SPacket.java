@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.packet.role.noisemaker;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -10,7 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerConstants;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerGlowTargetComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
@@ -21,7 +23,7 @@ import net.minecraft.nbt.NbtCompound;
 import java.util.UUID;
 
 public record NoisemakerGlowC2SPacket(UUID target) implements CustomPayload {
-    public static final Identifier NOISEMAKER_GLOW_ID = Identifier.of(Noellesroles.MOD_ID, "noisemaker_glow");
+    public static final Identifier NOISEMAKER_GLOW_ID = Identifier.of(NoellesRolesCore.MOD_ID, "noisemaker_glow");
     public static final CustomPayload.Id<NoisemakerGlowC2SPacket> ID = new CustomPayload.Id<>(NOISEMAKER_GLOW_ID);
     public static final PacketCodec<RegistryByteBuf, NoisemakerGlowC2SPacket> CODEC;
 
@@ -80,7 +82,7 @@ public record NoisemakerGlowC2SPacket(UUID target) implements CustomPayload {
                             extra.putUuid("target_player", target.getUuid());
                             GameRecordManager.recordGlobalEvent(
                                     player.getServerWorld(),
-                                    Noellesroles.NOISEMAKER_GLOW_STARTED_EVENT,
+                                    NoellesEventIds.NOISEMAKER_GLOW_STARTED_EVENT,
                                     player,
                                     extra
                             );

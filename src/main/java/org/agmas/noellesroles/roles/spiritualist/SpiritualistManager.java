@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheGameModes;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -48,7 +51,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.mixin.roles.spiritualist.PlayerEntityPoseInvoker;
 import org.agmas.noellesroles.roles.assassin.BayonetKnockbackHandler;
@@ -140,7 +142,7 @@ public final class SpiritualistManager {
         component.startProjection();
         GameRecordManager.recordGlobalEvent(
                 spiritualist.getServerWorld(),
-                org.agmas.noellesroles.Noellesroles.SPIRITUALIST_PROJECTION_STARTED_EVENT,
+                NoellesEventIds.SPIRITUALIST_PROJECTION_STARTED_EVENT,
                 spiritualist,
                 null
         );
@@ -155,7 +157,7 @@ public final class SpiritualistManager {
         component.finishProjection(applyCooldown);
         GameRecordManager.recordGlobalEvent(
                 spiritualist.getServerWorld(),
-                org.agmas.noellesroles.Noellesroles.SPIRITUALIST_PROJECTION_ENDED_EVENT,
+                NoellesEventIds.SPIRITUALIST_PROJECTION_ENDED_EVENT,
                 spiritualist,
                 null
         );
@@ -186,7 +188,7 @@ public final class SpiritualistManager {
         extra.putUuid("target_player", target.getUuid());
         GameRecordManager.recordGlobalEvent(
                 spiritualist.getServerWorld(),
-                org.agmas.noellesroles.Noellesroles.SPIRITUALIST_POSSESSION_STARTED_EVENT,
+                NoellesEventIds.SPIRITUALIST_POSSESSION_STARTED_EVENT,
                 spiritualist,
                 extra
         );
@@ -234,7 +236,7 @@ public final class SpiritualistManager {
             extra.putUuid("target_player", host.getUuid());
             GameRecordManager.recordGlobalEvent(
                     spiritualist.getServerWorld(),
-                    org.agmas.noellesroles.Noellesroles.SPIRITUALIST_POSSESSION_ENDED_EVENT,
+                    NoellesEventIds.SPIRITUALIST_POSSESSION_ENDED_EVENT,
                     spiritualist,
                     extra
             );
@@ -1006,7 +1008,7 @@ public final class SpiritualistManager {
         ItemStack replayStack = heldStack.copy();
         replayStack.setCount(1);
 
-        if (gameWorld.isRole(target, Noellesroles.ROBOT)) {
+        if (gameWorld.isRole(target, NoellesRoleRegistry.ROBOT)) {
             if (target instanceof ServerPlayerEntity serverTarget) {
                 NbtCompound extra = new NbtCompound();
                 extra.putBoolean("robot_failed", true);
@@ -1155,7 +1157,7 @@ public final class SpiritualistManager {
             return;
         }
 
-        StunnedPlayerComponent.KEY.get(target).stun(CookConstants.PAN_STUN_TICKS, Noellesroles.PAN_STUN_END_EVENT);
+        StunnedPlayerComponent.KEY.get(target).stun(CookConstants.PAN_STUN_TICKS, NoellesEventIds.PAN_STUN_END_EVENT);
         if (target instanceof ServerPlayerEntity serverTarget) {
             GameRecordManager.recordItemHit(host, releasedStack, serverTarget, null);
         }
@@ -1315,7 +1317,7 @@ public final class SpiritualistManager {
     private static int getAdjustedRevolverCooldown(@NotNull ServerPlayerEntity host) {
         int cooldown = GameConstants.getRevolverCooldown(host);
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(host.getWorld());
-        boolean coward = gameWorld.isRole(host, Noellesroles.COWARD);
+        boolean coward = gameWorld.isRole(host, NoellesRoleRegistry.COWARD);
         boolean sedative = SedativePlayerComponent.KEY.get(host).isActive();
         if (!coward && !sedative) {
             return cooldown;
@@ -1335,7 +1337,7 @@ public final class SpiritualistManager {
             @NotNull GameWorldComponent gameWorld,
             @NotNull PlayerEntity target
     ) {
-        for (UUID uuid : gameWorld.getAllWithRole(Noellesroles.EXECUTIONER)) {
+        for (UUID uuid : gameWorld.getAllWithRole(NoellesRoleRegistry.EXECUTIONER)) {
             PlayerEntity executioner = target.getWorld().getPlayerByUuid(uuid);
             if (executioner == null) {
                 continue;
@@ -1347,7 +1349,7 @@ public final class SpiritualistManager {
             }
         }
 
-        if (gameWorld.isRole(target, Noellesroles.VOODOO) && NoellesRolesConfig.HANDLER.instance().voodooShotLikeEvil) {
+        if (gameWorld.isRole(target, NoellesRoleRegistry.VOODOO) && NoellesRolesConfig.HANDLER.instance().voodooShotLikeEvil) {
             return false;
         }
 

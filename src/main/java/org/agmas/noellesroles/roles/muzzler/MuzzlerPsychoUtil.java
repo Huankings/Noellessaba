@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.muzzler;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 静语者疯魔音效屏蔽的共用判定。
@@ -22,7 +23,7 @@ public final class MuzzlerPsychoUtil {
         }
 
         GameWorldComponent game = GameWorldComponent.KEY.get(player.getWorld());
-        return game.isRole(player, Noellesroles.MUZZLER)
+        return game.isRole(player, NoellesRoleRegistry.MUZZLER)
                 && PlayerPsychoComponent.KEY.get(player).getPsychoTicks() > 0;
     }
 
@@ -36,7 +37,7 @@ public final class MuzzlerPsychoUtil {
             if (PlayerPsychoComponent.KEY.get(player).getPsychoTicks() <= 0) {
                 continue;
             }
-            if (!game.isRole(player, Noellesroles.MUZZLER)) {
+            if (!game.isRole(player, NoellesRoleRegistry.MUZZLER)) {
                 return true;
             }
         }

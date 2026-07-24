@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.drugmaker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 制毒师职业分配初始化。
@@ -13,7 +14,7 @@ public final class DrugmakerRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (role != Noellesroles.DRUGMAKER) {
+        if (role != NoellesRoleRegistry.DRUGMAKER) {
             return;
         }
 

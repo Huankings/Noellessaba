@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.record.GameRecordEvent;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
@@ -17,7 +19,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,33 +45,33 @@ public final class RemembererReplayBookBuilder {
      * 后续如果补事件时不小心重复添加，LinkedHashSet 会自动去重并保留书写顺序，避免运行中的服务器因为重复名单崩掉。
      */
     private static final Set<Identifier> PASSIVE_GLOBAL_EVENTS = new LinkedHashSet<>(List.of(
-            Noellesroles.DELUSION_STARTED_EVENT,
-            Noellesroles.DELUSION_ENDED_EVENT,
-            Noellesroles.COWARD_DANGER_SENSED_EVENT,
-            Noellesroles.COWARD_DANGER_LEFT_EVENT,
-            Noellesroles.SEDATIVE_STARTED_EVENT,
-            Noellesroles.SEDATIVE_ENDED_EVENT,
-            Noellesroles.TIMED_BOMB_ACTIVATED_EVENT,
-            Noellesroles.ROLE_MINE_DETECTED_EVENT,
-            Noellesroles.ROLE_MINE_REPORT_EVENT,
-            Noellesroles.CAPTURE_DEVICE_TRIGGERED_EVENT,
-            Noellesroles.CAPTURE_DEVICE_REPORT_EVENT,
-            Noellesroles.CAPTURE_DEVICE_EXPIRED_EVENT,
-            Noellesroles.CAPTURE_DEVICE_RELEASED_EVENT,
-            Noellesroles.JESTER_PSYCHO_STARTED_EVENT,
-            Noellesroles.PROPHET_VOODOO_IMMUNITY_EVENT,
-            Noellesroles.WINDER_WIND_MARK_EXPIRED_EVENT,
-            Noellesroles.WINDER_WIND_MARK_TRIGGERED_EVENT,
-            Noellesroles.WINDER_FLOAT_ENDED_EVENT,
-            Noellesroles.NOISEMAKER_GLOW_ENDED_EVENT,
-            Noellesroles.MORPHLING_MORPH_ENDED_EVENT,
-            Noellesroles.OPERATOR_CONNECTION_ENDED_EVENT,
-            Noellesroles.OPERATOR_CONNECTION_INTERRUPTED_EVENT,
-            Noellesroles.OPERATOR_BROADCAST_ENDED_EVENT,
-            Noellesroles.OPERATOR_BROADCAST_INTERRUPTED_EVENT,
-            Noellesroles.CONTROLLER_POSSESS_ENDED_EVENT,
-            Noellesroles.SPIRITUALIST_PROJECTION_ENDED_EVENT,
-            Noellesroles.SPIRITUALIST_POSSESSION_ENDED_EVENT
+            NoellesEventIds.DELUSION_STARTED_EVENT,
+            NoellesEventIds.DELUSION_ENDED_EVENT,
+            NoellesEventIds.COWARD_DANGER_SENSED_EVENT,
+            NoellesEventIds.COWARD_DANGER_LEFT_EVENT,
+            NoellesEventIds.SEDATIVE_STARTED_EVENT,
+            NoellesEventIds.SEDATIVE_ENDED_EVENT,
+            NoellesEventIds.TIMED_BOMB_ACTIVATED_EVENT,
+            NoellesEventIds.ROLE_MINE_DETECTED_EVENT,
+            NoellesEventIds.ROLE_MINE_REPORT_EVENT,
+            NoellesEventIds.CAPTURE_DEVICE_TRIGGERED_EVENT,
+            NoellesEventIds.CAPTURE_DEVICE_REPORT_EVENT,
+            NoellesEventIds.CAPTURE_DEVICE_EXPIRED_EVENT,
+            NoellesEventIds.CAPTURE_DEVICE_RELEASED_EVENT,
+            NoellesEventIds.JESTER_PSYCHO_STARTED_EVENT,
+            NoellesEventIds.PROPHET_VOODOO_IMMUNITY_EVENT,
+            NoellesEventIds.WINDER_WIND_MARK_EXPIRED_EVENT,
+            NoellesEventIds.WINDER_WIND_MARK_TRIGGERED_EVENT,
+            NoellesEventIds.WINDER_FLOAT_ENDED_EVENT,
+            NoellesEventIds.NOISEMAKER_GLOW_ENDED_EVENT,
+            NoellesEventIds.MORPHLING_MORPH_ENDED_EVENT,
+            NoellesEventIds.OPERATOR_CONNECTION_ENDED_EVENT,
+            NoellesEventIds.OPERATOR_CONNECTION_INTERRUPTED_EVENT,
+            NoellesEventIds.OPERATOR_BROADCAST_ENDED_EVENT,
+            NoellesEventIds.OPERATOR_BROADCAST_INTERRUPTED_EVENT,
+            NoellesEventIds.CONTROLLER_POSSESS_ENDED_EVENT,
+            NoellesEventIds.SPIRITUALIST_PROJECTION_ENDED_EVENT,
+            NoellesEventIds.SPIRITUALIST_POSSESSION_ENDED_EVENT
     ));
 
     private RemembererReplayBookBuilder() {

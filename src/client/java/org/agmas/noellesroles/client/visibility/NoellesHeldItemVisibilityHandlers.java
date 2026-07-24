@@ -1,10 +1,12 @@
 package org.agmas.noellesroles.client.visibility;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.invisibility.HeldItemInvisibilityApi;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 
 import java.util.List;
@@ -24,11 +26,11 @@ public final class NoellesHeldItemVisibilityHandlers {
          * 主动隐藏规则：玩家必须是对应职业，并且手里正拿着对应物品，其他局内存活玩家才看不见。
          * Wathe 会自动处理主手/副手、手臂姿势、本地 F5 自视角，以及低心情幻觉覆盖。
          */
-        HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.BARTENDER, ModItems.DEFENSE_VIAL);
-        HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.ENGINEER, ModItems.CAPTURE_DEVICE);
-        HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.PHYSICIAN, ModItems.PILL);
-        HeldItemInvisibilityApi.registerHiddenItem(Noellesroles.MUZZLER, ModItems.TAPE);
-        HeldItemInvisibilityApi.registerHiddenItems(Noellesroles.TRAPPER, List.of(
+        HeldItemInvisibilityApi.registerHiddenItem(NoellesRoleRegistry.BARTENDER, ModItems.DEFENSE_VIAL);
+        HeldItemInvisibilityApi.registerHiddenItem(NoellesRoleRegistry.ENGINEER, ModItems.CAPTURE_DEVICE);
+        HeldItemInvisibilityApi.registerHiddenItem(NoellesRoleRegistry.PHYSICIAN, ModItems.PILL);
+        HeldItemInvisibilityApi.registerHiddenItem(NoellesRoleRegistry.MUZZLER, ModItems.TAPE);
+        HeldItemInvisibilityApi.registerHiddenItems(NoellesRoleRegistry.TRAPPER, List.of(
                 Items.PAPER,
                 ModItems.ROLE_MINE
         ));
@@ -38,7 +40,7 @@ public final class NoellesHeldItemVisibilityHandlers {
          * 这里不检查物品类型，直接读取 controlled 玩家自己的 CCA 状态。
          */
         HeldItemInvisibilityApi.registerRule(
-                Identifier.of(Noellesroles.MOD_ID, "controlled_player_held_item_invisibility"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "controlled_player_held_item_invisibility"),
                 HeldItemInvisibilityApi.DEFAULT_PRIORITY,
                 context -> ControlledPlayerComponent.KEY.get(context.holder()).isControlled
         );

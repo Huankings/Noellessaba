@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.ui.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonExtension;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonLayout;
@@ -10,7 +12,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtonSupport;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public final class ControllerInventoryButtons {
     }
 
     private static @Nullable InventoryButtonExtension create(@NotNull InventoryButtonContext context) {
-        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.CONTROLLER) ? new Extension() : null;
+        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), NoellesRoleRegistry.CONTROLLER) ? new Extension() : null;
     }
 
     private static final class Extension extends NoellesInventoryButtonSupport.PagedExtension<ControllerWidget> {

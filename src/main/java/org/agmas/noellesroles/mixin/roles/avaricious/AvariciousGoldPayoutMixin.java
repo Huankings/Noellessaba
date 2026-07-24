@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.mixin.roles.avaricious;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -11,7 +14,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
 import org.agmas.noellesroles.roles.avaricious.AvariciousPayoutComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,7 +48,7 @@ public class AvariciousGoldPayoutMixin {
         }
 
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-            if (!gameWorldComponent.isRole(player, Noellesroles.AVARICIOUS)) {
+            if (!gameWorldComponent.isRole(player, NoellesRoleRegistry.AVARICIOUS)) {
                 continue;
             }
 
@@ -74,7 +76,7 @@ public class AvariciousGoldPayoutMixin {
 
             NbtCompound extra = new NbtCompound();
             extra.putInt("amount", stolenAmount);
-            GameRecordManager.recordGlobalEvent(serverWorld, Noellesroles.AVARICIOUS_STOLE_COINS_EVENT, player, extra);
+            GameRecordManager.recordGlobalEvent(serverWorld, NoellesEventIds.AVARICIOUS_STOLE_COINS_EVENT, player, extra);
         }
     }
 }

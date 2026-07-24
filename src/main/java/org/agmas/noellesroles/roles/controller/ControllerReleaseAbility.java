@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.controller.ControllerReleaseC2SPacket;
 
 public final class ControllerReleaseAbility {
@@ -21,7 +22,7 @@ public final class ControllerReleaseAbility {
         var gameWorld = GameWorldComponent.KEY.get(world);
 
         // 检查角色
-        if (!gameWorld.isRole(player, Noellesroles.CONTROLLER)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.CONTROLLER)) return;
 
         ControllerPlayerComponent controllerComp = ControllerPlayerComponent.KEY.get(player);
         if (controllerComp.controlledTarget != null && controllerComp.possessTicks > 0) {

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -14,7 +17,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +43,7 @@ public class DreamImprintItem extends Item {
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(player, Noellesroles.DREAMER)
+                || !gameWorld.isRole(player, NoellesRoleRegistry.DREAMER)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)
                 || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)) {
             return ActionResult.CONSUME;
@@ -57,12 +59,12 @@ public class DreamImprintItem extends Item {
         targetDream.imprintDreamer(player);
 
         if (player instanceof ServerPlayerEntity serverPlayer && targetPlayer instanceof ServerPlayerEntity serverTarget) {
-            GameRecordManager.recordItemUse(serverPlayer, Noellesroles.DREAM_IMPRINT_SHIELD_SOURCE, serverTarget, null);
+            GameRecordManager.recordItemUse(serverPlayer, NoellesEventIds.DREAM_IMPRINT_SHIELD_SOURCE, serverTarget, null);
         }
 
-        player.sendMessage(Text.translatable("tip.noellesroles.dreamer.imprint", targetPlayer.getName().getString()).withColor(Noellesroles.DREAMER.color()), true);
+        player.sendMessage(Text.translatable("tip.noellesroles.dreamer.imprint", targetPlayer.getName().getString()).withColor(NoellesRoleRegistry.DREAMER.color()), true);
         player.playSoundToPlayer(SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0f, 1.0f);
-        targetPlayer.sendMessage(Text.translatable("tip.noellesroles.dreamer.imprint", player.getName().getString()).withColor(Noellesroles.DREAMER.color()), true);
+        targetPlayer.sendMessage(Text.translatable("tip.noellesroles.dreamer.imprint", player.getName().getString()).withColor(NoellesRoleRegistry.DREAMER.color()), true);
         targetPlayer.playSoundToPlayer(SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0f, 1.0f);
         return ActionResult.SUCCESS;
     }

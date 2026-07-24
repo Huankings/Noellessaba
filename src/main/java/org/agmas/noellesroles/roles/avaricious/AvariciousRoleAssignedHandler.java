@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.avaricious;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 扒手职业分配初始化。
@@ -13,7 +14,7 @@ public final class AvariciousRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (role != Noellesroles.AVARICIOUS) {
+        if (role != NoellesRoleRegistry.AVARICIOUS) {
             return;
         }
 

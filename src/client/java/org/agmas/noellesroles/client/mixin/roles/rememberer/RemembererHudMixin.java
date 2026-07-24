@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -7,7 +9,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,7 +45,7 @@ public abstract class RemembererHudMixin {
                 line,
                 context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                 drawY,
-                Noellesroles.REMEMBERER.color()
+                NoellesRoleRegistry.REMEMBERER.color()
         );
     }
 }

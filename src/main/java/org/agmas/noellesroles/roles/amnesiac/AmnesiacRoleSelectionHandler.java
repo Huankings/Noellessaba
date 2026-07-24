@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.amnesiac;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -16,7 +19,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 失忆患者与尸体交互后继承尸体原主身份。
@@ -42,7 +44,7 @@ public final class AmnesiacRoleSelectionHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
-            if (!gameWorld.isRole(player, Noellesroles.AMNESIAC)) {
+            if (!gameWorld.isRole(player, NoellesRoleRegistry.AMNESIAC)) {
                 return ActionResult.PASS;
             }
             if (!(entity instanceof PlayerBodyEntity body)) {
@@ -64,7 +66,7 @@ public final class AmnesiacRoleSelectionHandler {
 
             NbtCompound extra = new NbtCompound();
             extra.putUuid("corpse_owner", body.getPlayerUuid());
-            GameRecordManager.recordGlobalEvent(amnesiac.getServerWorld(), Noellesroles.AMNESIAC_ROLE_STOLEN_EVENT, amnesiac, extra);
+            GameRecordManager.recordGlobalEvent(amnesiac.getServerWorld(), NoellesEventIds.AMNESIAC_ROLE_STOLEN_EVENT, amnesiac, extra);
 
             if (inheritedRole.equals(WatheRoles.VIGILANTE)) {
                 amnesiac.giveItemStack(WatheItems.REVOLVER.getDefaultStack());

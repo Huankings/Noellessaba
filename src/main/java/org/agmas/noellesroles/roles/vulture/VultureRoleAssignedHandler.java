@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.vulture;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 秃鹫职业分配处理器。
@@ -21,7 +22,7 @@ public final class VultureRoleAssignedHandler {
      * 本次迁移只搬运结构，不修改任何平衡数值或计算方式。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.VULTURE)) {
+        if (!role.equals(NoellesRoleRegistry.VULTURE)) {
             return;
         }
 

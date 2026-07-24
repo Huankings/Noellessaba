@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 灵术师的保命 / 附身善后处理器。
@@ -54,7 +56,7 @@ public final class SpiritualistDeathProtectionHandler {
                 GameRecordManager.recordShieldBlocked(
                         victim,
                         killer instanceof ServerPlayerEntity killerPlayer ? killerPlayer : null,
-                        Noellesroles.SPIRITUALIST_ACTIVE_SHIELD_SOURCE,
+                        NoellesEventIds.SPIRITUALIST_ACTIVE_SHIELD_SOURCE,
                         GameFunctions.getReplayItemId(blockedReplayData),
                         blockedReplayData
                 );
@@ -68,7 +70,7 @@ public final class SpiritualistDeathProtectionHandler {
                         controller,
                         true,
                         null,
-                        Noellesroles.SPIRITUALIST_SOUL_GUARD_DEATH_REASON,
+                        NoellesDeathReasons.SPIRITUALIST_SOUL_GUARD_DEATH_REASON,
                         deathExtra
                 );
                 return false;
@@ -87,7 +89,7 @@ public final class SpiritualistDeathProtectionHandler {
                     GameRecordManager.recordShieldBlocked(
                             victim,
                             killer instanceof ServerPlayerEntity killerPlayer ? killerPlayer : null,
-                            Noellesroles.SPIRITUALIST_LINGERING_SHIELD_SOURCE,
+                            NoellesEventIds.SPIRITUALIST_LINGERING_SHIELD_SOURCE,
                             GameFunctions.getReplayItemId(blockedReplayData),
                             blockedReplayData
                     );

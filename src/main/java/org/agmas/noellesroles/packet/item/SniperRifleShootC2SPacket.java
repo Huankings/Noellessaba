@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.packet.item;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheSounds;
 import dev.doctor4t.wathe.item.RevolverItem;
@@ -17,7 +19,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.rememberer.RemembererConstants;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record SniperRifleShootC2SPacket(double directionX, double directionY, double directionZ) implements CustomPayload {
 
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "sniper_rifle_shoot");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "sniper_rifle_shoot");
     public static final Id<SniperRifleShootC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, SniperRifleShootC2SPacket> CODEC = new PacketCodec<>() {
         @Override

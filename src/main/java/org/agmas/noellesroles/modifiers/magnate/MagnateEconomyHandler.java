@@ -1,9 +1,11 @@
 package org.agmas.noellesroles.modifiers.magnate;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.economy.EconomyApi;
 import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 public final class MagnateEconomyHandler {
     private static boolean initialized = false;
@@ -18,11 +20,11 @@ public final class MagnateEconomyHandler {
         initialized = true;
 
         EconomyApi.registerPassiveIncomeModifier(
-                Identifier.of(Noellesroles.MOD_ID, "magnate_double_passive_income"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "magnate_double_passive_income"),
                 EconomyApi.DEFAULT_PRIORITY,
                 (context, currentIncome) -> {
                     WorldModifierComponent modifier = WorldModifierComponent.KEY.get(context.world());
-                    if (!modifier.isModifier(context.player(), Noellesroles.MAGNATE)) {
+                    if (!modifier.isModifier(context.player(), NoellesModifierRegistry.MAGNATE)) {
                         return currentIncome;
                     }
 

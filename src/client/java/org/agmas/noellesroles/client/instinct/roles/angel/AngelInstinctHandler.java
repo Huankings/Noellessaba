@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 
@@ -18,7 +19,7 @@ public final class AngelInstinctHandler {
             if (!(target instanceof PlayerEntity targetPlayer) || GameFunctions.isPlayerSpectatingOrCreative(targetPlayer)) {
                 return InstinctApi.HighlightResult.pass();
             }
-            if (!GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.ANGEL)
+            if (!GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.ANGEL)
                     || !WatheClient.isPlayerAliveAndInSurvival()) {
                 return InstinctApi.HighlightResult.pass();
             }
@@ -29,7 +30,7 @@ public final class AngelInstinctHandler {
                  * 天使守护目标是职业选择信息，不属于“按本能键才开启”的本能链路。
                  * 所以它保持独立显示，避免被 Convener 的本能压制误关。
                  */
-                return InstinctApi.HighlightResult.color(Noellesroles.ANGEL.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.ANGEL.color());
             }
             return InstinctApi.HighlightResult.pass();
         });

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.items;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.ratatouille.util.TextUtils;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.util.WatheItemTooltips;
@@ -12,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
@@ -123,7 +124,7 @@ public class NoellesRolesItemToolTip {
 
         // 非炸弹客手里出现的定时炸弹，只可能是滴滴声阶段的传递冷却
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.BOMBER)) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.BOMBER)) {
             return BomberPlayerComponent.TRANSFER_COOLDOWN_TICKS;
         }
 

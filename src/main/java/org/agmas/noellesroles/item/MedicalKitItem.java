@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -16,7 +19,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianTaskmasterCompat;
@@ -77,11 +79,11 @@ public class MedicalKitItem extends Item {
         targetPlayer.getWorld().playSound(null, targetPlayer.getBlockPos(), SoundEvents.ENTITY_HORSE_ARMOR, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
         if (player instanceof ServerPlayerEntity serverPlayer && targetPlayer instanceof ServerPlayerEntity serverTarget) {
-            GameRecordManager.recordItemUse(serverPlayer, Noellesroles.MEDICAL_KIT_USE_EVENT, serverTarget, null);
+            GameRecordManager.recordItemUse(serverPlayer, NoellesEventIds.MEDICAL_KIT_USE_EVENT, serverTarget, null);
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (gameWorld.isRole(player, Noellesroles.PHYSICIAN)) {
+        if (gameWorld.isRole(player, NoellesRoleRegistry.PHYSICIAN)) {
             PlayerShopComponent shop = PlayerShopComponent.KEY.get(player);
             int reward = PhysicianTaskmasterCompat.hasTaskmaster(player)
                     ? PhysicianConstants.MEDICAL_KIT_TASKMASTER_REWARD

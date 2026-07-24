@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.phantom;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -9,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -29,7 +31,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  */
 public class PhantomPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<PhantomPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "phantom_state"), PhantomPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "phantom_state"), PhantomPlayerComponent.class);
 
     private final PlayerEntity player;
     private boolean invisibilityActive = false;
@@ -100,7 +102,7 @@ public class PhantomPlayerComponent implements AutoSyncedComponent, ServerTickin
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             GameRecordManager.recordGlobalEvent(
                     serverPlayer.getServerWorld(),
-                    Noellesroles.PHANTOM_INVISIBILITY_ENDED_EVENT,
+                    NoellesEventIds.PHANTOM_INVISIBILITY_ENDED_EVENT,
                     serverPlayer,
                     null
             );

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.bartender;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
@@ -25,7 +26,7 @@ public final class BartenderInstinctHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
-            if (!gameWorld.isRole(viewer, Noellesroles.BARTENDER)) {
+            if (!gameWorld.isRole(viewer, NoellesRoleRegistry.BARTENDER)) {
                 return InstinctApi.HighlightResult.pass();
             }
 

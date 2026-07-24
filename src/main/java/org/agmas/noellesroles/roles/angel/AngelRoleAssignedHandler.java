@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 
 /**
@@ -23,7 +24,7 @@ public final class AngelRoleAssignedHandler {
      * <p>3. 不再在这里动态注入欢迎公告，避免与现有公告链路互相覆盖。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.ANGEL)) {
+        if (!role.equals(NoellesRoleRegistry.ANGEL)) {
             return;
         }
 

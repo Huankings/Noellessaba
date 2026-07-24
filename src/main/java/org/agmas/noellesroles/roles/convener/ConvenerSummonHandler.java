@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
@@ -13,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +45,7 @@ public final class ConvenerSummonHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
-            if (!gameWorld.isRole(player, Noellesroles.CONVENER)) {
+            if (!gameWorld.isRole(player, NoellesRoleRegistry.CONVENER)) {
                 return ActionResult.PASS;
             }
             if (!(entity instanceof PlayerBodyEntity body)) {
@@ -100,7 +102,7 @@ public final class ConvenerSummonHandler {
             extra.putUuid("corpse_owner", disguiseTarget);
             extra.putInt("summon_count", convenerComponent.getSummonCount());
             extra.putInt("required_summons", convenerComponent.getRequiredSummons());
-            GameRecordManager.recordGlobalEvent(serverWorld, Noellesroles.CONVENER_SUMMON_EVENT, convener, extra);
+            GameRecordManager.recordGlobalEvent(serverWorld, NoellesEventIds.CONVENER_SUMMON_EVENT, convener, extra);
 
             GameTimeComponent.KEY.get(serverWorld).addTime(ConvenerConstants.SUMMON_TIME_BONUS_TICKS);
             ability.setCooldown(ConvenerConstants.SUMMON_COOLDOWN_TICKS);
@@ -114,7 +116,7 @@ public final class ConvenerSummonHandler {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                if (gameWorld.isRole(player, Noellesroles.CONVENER)) {
+                if (gameWorld.isRole(player, NoellesRoleRegistry.CONVENER)) {
                     ConvenerWinHelper.refreshRequiredSummons(player);
                 }
             }

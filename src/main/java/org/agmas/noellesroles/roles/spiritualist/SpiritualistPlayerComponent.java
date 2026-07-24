@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.HungerManager;
@@ -13,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -36,7 +38,7 @@ import java.util.UUID;
  */
 public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<SpiritualistPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "spiritualist_player"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "spiritualist_player"),
             SpiritualistPlayerComponent.class
     );
 
@@ -533,7 +535,7 @@ public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerT
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(this.player, Noellesroles.SPIRITUALIST)
+                || !gameWorld.isRole(this.player, NoellesRoleRegistry.SPIRITUALIST)
                 || !this.player.isAlive()
                 || !GameFunctions.isPlayerAliveAndSurvival(this.player)) {
             this.reset();

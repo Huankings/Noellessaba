@@ -1,10 +1,12 @@
 package org.agmas.noellesroles.roles.arsonist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.win.CustomVictory;
 import dev.doctor4t.wathe.api.win.VictoryApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public final class ArsonistVictoryRule {
             }
 
             List<ServerPlayerEntity> arsonists = context.alivePlayers().stream()
-                    .filter(player -> context.gameWorld().isRole(player, Noellesroles.ARSONIST))
+                    .filter(player -> context.gameWorld().isRole(player, NoellesRoleRegistry.ARSONIST))
                     .toList();
             if (arsonists.isEmpty()) {
                 return VictoryApi.VictoryResult.pass();
@@ -30,7 +32,7 @@ public final class ArsonistVictoryRule {
 
             if (context.alivePlayers().size() == 1) {
                 return VictoryApi.VictoryResult.customWin(
-                        CustomVictory.of(Noellesroles.ARSONIST.identifier(), Noellesroles.ARSONIST.color(), List.copyOf(arsonists))
+                        CustomVictory.of(NoellesRoleRegistry.ARSONIST.identifier(), NoellesRoleRegistry.ARSONIST.color(), List.copyOf(arsonists))
                 );
             }
 
@@ -43,6 +45,6 @@ public final class ArsonistVictoryRule {
     }
 
     private static final class IdentifierHolder {
-        private static final net.minecraft.util.Identifier ID = net.minecraft.util.Identifier.of(Noellesroles.MOD_ID, "victory/arsonist");
+        private static final net.minecraft.util.Identifier ID = net.minecraft.util.Identifier.of(NoellesRolesCore.MOD_ID, "victory/arsonist");
     }
 }

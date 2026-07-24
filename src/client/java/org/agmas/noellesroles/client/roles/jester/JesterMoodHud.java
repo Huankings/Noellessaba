@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.client.roles.jester;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.mood.MoodHudApi;
 import dev.doctor4t.wathe.api.client.mood.MoodHudStyle;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 public final class JesterMoodHud {
-    private static final Identifier JESTER_MOOD = Identifier.of(Noellesroles.MOD_ID, "hud/mood_jester");
+    private static final Identifier JESTER_MOOD = Identifier.of(NoellesRolesCore.MOD_ID, "hud/mood_jester");
 
     private JesterMoodHud() {
     }
@@ -20,9 +22,9 @@ public final class JesterMoodHud {
          * hasMoodTasks 只表示服务端当前是否还有活跃任务；任务刚完成但 HUD 仍在淡出时它会立刻变 false，
          * 直接用它控制心情条会跳过 Wathe 的收尾动画，变成“任务一做完条就直接隐藏”。
          */
-        MoodHudApi.registerRoleStyle(Noellesroles.JESTER, MoodHudStyle
+        MoodHudApi.registerRoleStyle(NoellesRoleRegistry.JESTER, MoodHudStyle
                 .builder(JESTER_MOOD)
-                .barColor(Noellesroles.JESTER.color())
+                .barColor(NoellesRoleRegistry.JESTER.color())
                 .build());
     }
 }

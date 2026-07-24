@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.packet.item;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -16,7 +19,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +30,7 @@ import java.awt.Color;
  * <p>客户端只告诉服务端“准星命中了哪个实体 id”，服务端仍会重新校验目标、距离和机器人免疫。</p>
  */
 public record BlowgunC2SPacket(int target) implements CustomPayload {
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "blowgun");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "blowgun");
     public static final Id<BlowgunC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, BlowgunC2SPacket> CODEC = new PacketCodec<>() {
         @Override
@@ -62,7 +64,7 @@ public record BlowgunC2SPacket(int target) implements CustomPayload {
                     ? player.getMainHandStack()
                     : new ItemStack(ModItems.BLOWGUN);
 
-            if (gameWorld.isRole(target, Noellesroles.ROBOT)) {
+            if (gameWorld.isRole(target, NoellesRoleRegistry.ROBOT)) {
                 if (target instanceof ServerPlayerEntity serverTarget) {
                     NbtCompound extra = new NbtCompound();
                     extra.putBoolean("robot_failed", true);

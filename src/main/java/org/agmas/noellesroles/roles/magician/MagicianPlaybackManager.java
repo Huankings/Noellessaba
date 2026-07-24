@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.magician;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.mojang.authlib.GameProfile;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -18,7 +21,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.NoellesRolesEntities;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.jetbrains.annotations.NotNull;
@@ -98,7 +100,7 @@ public final class MagicianPlaybackManager {
         extra.putString("disguise_name", playback.disguiseName);
         GameRecordManager.recordGlobalEvent(
                 player.getServerWorld(),
-                Noellesroles.MAGICIAN_PLAYBACK_STARTED_EVENT,
+                NoellesEventIds.MAGICIAN_PLAYBACK_STARTED_EVENT,
                 player,
                 extra
         );
@@ -403,7 +405,7 @@ public final class MagicianPlaybackManager {
             extra.putString("weapon_name", hitInfo.weaponName());
             GameRecordManager.recordGlobalEvent(
                     magician.getServerWorld(),
-                    Noellesroles.MAGICIAN_PLAYBACK_FORCED_END_EVENT,
+                    NoellesEventIds.MAGICIAN_PLAYBACK_FORCED_END_EVENT,
                     magician,
                     extra
             );
@@ -413,8 +415,8 @@ public final class MagicianPlaybackManager {
         GameRecordManager.recordGlobalEvent(
                 magician.getServerWorld(),
                 stopReason == StopReason.MANUAL
-                        ? Noellesroles.MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT
-                        : Noellesroles.MAGICIAN_PLAYBACK_FINISHED_EVENT,
+                        ? NoellesEventIds.MAGICIAN_PLAYBACK_STOPPED_EARLY_EVENT
+                        : NoellesEventIds.MAGICIAN_PLAYBACK_FINISHED_EVENT,
                 magician,
                 null
         );
@@ -444,7 +446,7 @@ public final class MagicianPlaybackManager {
 
         BodyDeathReasonComponent deathComponent = BodyDeathReasonComponent.KEY.get(body);
         deathComponent.deathReason = hitInfo.deathReason();
-        deathComponent.playerRole = Noellesroles.MAGICIAN.identifier();
+        deathComponent.playerRole = NoellesRoleRegistry.MAGICIAN.identifier();
         deathComponent.sync();
     }
 

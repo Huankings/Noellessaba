@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.ui.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonExtension;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonLayout;
@@ -7,7 +9,6 @@ import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtonSupport;
 import org.agmas.noellesroles.client.roles.convener.ConvenerDisguiseResolver;
 import org.agmas.noellesroles.roles.convener.ConvenerDisguiseComponent;
@@ -31,7 +32,7 @@ public final class ConvenerInventoryButtons {
     }
 
     private static @Nullable InventoryButtonExtension create(@NotNull InventoryButtonContext context) {
-        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.CONVENER) ? new Extension() : null;
+        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), NoellesRoleRegistry.CONVENER) ? new Extension() : null;
     }
 
     private static final class Extension implements InventoryButtonExtension {
@@ -65,8 +66,8 @@ public final class ConvenerInventoryButtons {
             Text progressLine = Text.translatable("hud.noellesroles.convener.progress", convener.getSummonCount(), convener.getRequiredSummons());
             int centerX = context.width() / 2;
             int baseY = (context.height() - 32) / 2 + 40;
-            drawContext.drawTextWithShadow(context.textRenderer(), stateLine, centerX - context.textRenderer().getWidth(stateLine) / 2, baseY, Noellesroles.CONVENER.color());
-            drawContext.drawTextWithShadow(context.textRenderer(), progressLine, centerX - context.textRenderer().getWidth(progressLine) / 2, baseY + context.textRenderer().fontHeight + 2, Noellesroles.CONVENER.color());
+            drawContext.drawTextWithShadow(context.textRenderer(), stateLine, centerX - context.textRenderer().getWidth(stateLine) / 2, baseY, NoellesRoleRegistry.CONVENER.color());
+            drawContext.drawTextWithShadow(context.textRenderer(), progressLine, centerX - context.textRenderer().getWidth(progressLine) / 2, baseY + context.textRenderer().fontHeight + 2, NoellesRoleRegistry.CONVENER.color());
         }
 
         private void ensureWidgets(InventoryButtonContext context) {

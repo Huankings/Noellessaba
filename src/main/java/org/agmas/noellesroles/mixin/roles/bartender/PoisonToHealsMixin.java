@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.mixin.roles.bartender;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +24,7 @@ public abstract class PoisonToHealsMixin {
     @Inject(method = "setPoisonTicks", at = @At("HEAD"), cancellable = true)
     private void defenseVialApply(int ticks, UUID poisoner, CallbackInfo ci) {
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(player.getWorld());
-        if (gameWorldComponent.isRole(poisoner, Noellesroles.BARTENDER)) {
+        if (gameWorldComponent.isRole(poisoner, NoellesRoleRegistry.BARTENDER)) {
             if (player.getWorld().getPlayerByUuid(poisoner) == null) return;
             BartenderPlayerComponent bartenderPlayerComponent = BartenderPlayerComponent.KEY.get(player);
             bartenderPlayerComponent.giveArmor();

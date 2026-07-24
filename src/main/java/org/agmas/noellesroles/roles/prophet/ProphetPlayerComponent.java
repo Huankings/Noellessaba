@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.prophet;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class ProphetPlayerComponent implements AutoSyncedComponent {
 
     public static final ComponentKey<ProphetPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "prophet"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "prophet"),
             ProphetPlayerComponent.class
     );
 

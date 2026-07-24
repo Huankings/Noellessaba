@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -11,7 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 
 /**
@@ -68,7 +69,7 @@ public class TimedBombItem extends Item {
             }
 
             // 只有炸弹客本人，才能把未启动的定时炸弹放到其他玩家身上
-            if (gameWorld.isRole(user, Noellesroles.BOMBER)) {
+            if (gameWorld.isRole(user, NoellesRoleRegistry.BOMBER)) {
                 if (targetComponent.hasBomb()) {
                     return ActionResult.PASS;
                 }

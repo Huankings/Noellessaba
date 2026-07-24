@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.prophet;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 
 /**
@@ -19,7 +20,7 @@ public final class ProphetRoleAssignedHandler {
      * 清空上一局的标记 / 庇护状态，并显式同步一次通用能力冷却。
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.PROPHET)) {
+        if (!role.equals(NoellesRoleRegistry.PROPHET)) {
             return;
         }
 

@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.voodoo;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 
 public final class VoodooTargetAbility {
@@ -23,7 +25,7 @@ public final class VoodooTargetAbility {
         var gameWorld = GameWorldComponent.KEY.get(world);
 
         // 检查角色
-        if (!gameWorld.isRole(player, Noellesroles.VOODOO)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.VOODOO)) return;
 
         // 忽略卸除伪装请求（巫毒师无此功能）
         if (payload.player().equals(player.getUuid())) return;
@@ -41,7 +43,7 @@ public final class VoodooTargetAbility {
          */
         NbtCompound extra = new NbtCompound();
         extra.putUuid("target_player", payload.player());
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.VOODOO_BOUND_EVENT, player, extra);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.VOODOO_BOUND_EVENT, player, extra);
 
         // 设置冷却
         ability.cooldown = GameConstants.getInTicks(0, 30); // 30秒

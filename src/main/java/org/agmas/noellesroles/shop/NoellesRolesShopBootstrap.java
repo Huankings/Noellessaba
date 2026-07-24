@@ -1,10 +1,13 @@
 package org.agmas.noellesroles.shop;
 
+import org.agmas.noellesroles.registry.NoellesFramingShopEntries;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.shop.ShopApi;
 import dev.doctor4t.wathe.util.ShopEntry;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.NoellesRolesShops;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerShopHandler;
 import org.agmas.noellesroles.roles.assassin.AssassinShopHandler;
@@ -49,29 +52,29 @@ public final class NoellesRolesShopBootstrap {
 
     public static void init() {
         // 好人阵营静态商店。
-        registerStatic(Noellesroles.BARTENDER, BartenderShopHandler::getShopEntries);
-        registerStatic(Noellesroles.ENGINEER, EngineerShopHandler::getShopEntries);
-        registerStatic(Noellesroles.RECALLER, RecallerShopHandler::getShopEntries);
-        registerStatic(Noellesroles.PROPHET, ProphetShopHandler::getShopEntries);
-        registerStatic(Noellesroles.REMEMBERER, RemembererShopHandler::getShopEntries);
-        registerStatic(Noellesroles.TRAPPER, TrapperShopHandler::getShopEntries);
-        registerStatic(Noellesroles.WINDER, WinderShopHandler::getShopEntries);
-        registerStatic(Noellesroles.NOISEMAKER, NoisemakerShopHandler::getShopEntries);
-        registerStatic(Noellesroles.CORONER, CoronerShopHandler::getShopEntries);
-        registerStatic(Noellesroles.COWARD, CowardShopHandler::getShopEntries);
-        registerStatic(Noellesroles.COOK, CookShopHandler::getShopEntries);
-        registerStatic(Noellesroles.PHYSICIAN, PhysicianShopHandler::getShopEntries);
-        registerStatic(Noellesroles.WAITER, WaiterShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.BARTENDER, BartenderShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.ENGINEER, EngineerShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.RECALLER, RecallerShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.PROPHET, ProphetShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.REMEMBERER, RemembererShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.TRAPPER, TrapperShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.WINDER, WinderShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.NOISEMAKER, NoisemakerShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.CORONER, CoronerShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.COWARD, CowardShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.COOK, CookShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.PHYSICIAN, PhysicianShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.WAITER, WaiterShopHandler::getShopEntries);
 
         // 杀手阵营静态商店。
-        registerStatic(Noellesroles.BOMBER, BomberShopHandler::getShopEntries);
-        registerStatic(Noellesroles.ASSASSIN, AssassinShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.BOMBER, BomberShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.ASSASSIN, AssassinShopHandler::getShopEntries);
         /*
          * 附体师只修改默认杀手商店的少数条目，因此也走 ShopModifier。
          * 这样它会保留 Wathe 默认左轮、刀、手雷等商品和后续新增机制。
          */
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "controller_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "controller_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 ControllerShopHandler::modifyShop
         );
@@ -81,7 +84,7 @@ public final class NoellesRolesShopBootstrap {
          * 手雷加价和 FIRECRACKER/BLACKOUT 顺序做局部调整。
          */
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "robber_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "robber_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 RobberShopHandler::modifyShop
         );
@@ -90,7 +93,7 @@ public final class NoellesRolesShopBootstrap {
          * 这里也走 ShopModifier，保证其它默认杀手商品和 Wathe 的购买副作用全部保留。
          */
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "muzzler_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "muzzler_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 MuzzlerShopHandler::modifyShop
         );
@@ -99,7 +102,7 @@ public final class NoellesRolesShopBootstrap {
          * 删除毒物、插入猎刀、提高普通匕首价格。
          */
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "hunter_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "hunter_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 HunterShopHandler::modifyShop
         );
@@ -108,12 +111,12 @@ public final class NoellesRolesShopBootstrap {
          * 只插入/移除少数商品，不接管 Wathe 购买结算。
          */
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "drugmaker_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "drugmaker_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 DrugmakerShopHandler::modifyShop
         );
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "kidnapper_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "kidnapper_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 KidnapperShopHandler::modifyShop
         );
@@ -122,23 +125,23 @@ public final class NoellesRolesShopBootstrap {
          * 这里清空 ShopApi 已经解析出的默认杀手商品，避免只隐藏客户端界面却仍可服务端购买。
          */
         ShopApi.registerShopModifier(
-                Identifier.of(Noellesroles.MOD_ID, "necromancer_no_shop"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "necromancer_no_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 NecromancerShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。
         registerStatic(
-                () -> Noellesroles.FRAMING_ROLES_SHOP,
-                Noellesroles.MIMIC,
-                Noellesroles.EXECUTIONER,
-                Noellesroles.JESTER,
-                Noellesroles.DREAMER
+                () -> NoellesFramingShopEntries.FRAMING_ROLES_SHOP,
+                NoellesRoleRegistry.MIMIC,
+                NoellesRoleRegistry.EXECUTIONER,
+                NoellesRoleRegistry.JESTER,
+                NoellesRoleRegistry.DREAMER
         );
-        registerStatic(Noellesroles.HACKER, HackerShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.HACKER, HackerShopHandler::getShopEntries);
 
         // 杀手动态商店：按阶段状态实时变化。
-        ShopApi.registerRoleShop(Noellesroles.STALKER, provider(StalkerShopHandler::getShopEntries));
+        ShopApi.registerRoleShop(NoellesRoleRegistry.STALKER, provider(StalkerShopHandler::getShopEntries));
         // 好人动态商店：按阶段状态实时变化。
         
     }

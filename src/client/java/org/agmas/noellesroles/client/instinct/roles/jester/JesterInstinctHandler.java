@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.jester;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 
 import java.awt.Color;
@@ -18,7 +19,7 @@ public final class JesterInstinctHandler {
         InstinctApi.registerAvailability(NoellesInstinctHandlers.id("jester_availability"), InstinctApi.DEFAULT_PRIORITY, viewer -> {
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
             if (GameFunctions.isPlayerAliveAndSurvival(viewer)
-                    && gameWorld.isRole(viewer, Noellesroles.JESTER)
+                    && gameWorld.isRole(viewer, NoellesRoleRegistry.JESTER)
                     && WatheClient.isInstinctInputActive()) {
                 /*
                  * 狂信者不是杀手，但它自己拥有一套本能键透视。
@@ -36,7 +37,7 @@ public final class JesterInstinctHandler {
             if (target instanceof PlayerEntity targetPlayer
                     && GameFunctions.isPlayerAliveAndSurvival(viewer)
                     && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
-                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.JESTER)
+                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.JESTER)
                     && WatheClient.isInstinctEnabled()) {
                 /*
                  * 狂信者自己的本能透视只依赖 WatheClient.isInstinctEnabled()。

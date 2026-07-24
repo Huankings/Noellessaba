@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.client.appearance.killer_sided;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 
 /**
@@ -21,7 +22,7 @@ public final class HackerCohortHudHandler {
                 RoleNameHudApi.DEFAULT_PRIORITY,
                 (viewer, subject, vanillaValue) -> {
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(subject.getWorld());
-                    return gameWorld.isRole(subject, Noellesroles.HACKER) ? true : null;
+                    return gameWorld.isRole(subject, NoellesRoleRegistry.HACKER) ? true : null;
                 }
         );
     }

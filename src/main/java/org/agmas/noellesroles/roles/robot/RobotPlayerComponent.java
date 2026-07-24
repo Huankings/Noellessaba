@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.robot;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -21,7 +23,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  */
 public class RobotPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<RobotPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            net.minecraft.util.Identifier.of(Noellesroles.MOD_ID, "robot"),
+            net.minecraft.util.Identifier.of(NoellesRolesCore.MOD_ID, "robot"),
             RobotPlayerComponent.class
     );
 
@@ -40,7 +42,7 @@ public class RobotPlayerComponent implements AutoSyncedComponent, ServerTickingC
 
         --this.nightVisionTicks;
         if (this.nightVisionTicks == 0 && this.player instanceof ServerPlayerEntity serverPlayer) {
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.ROBOT_NIGHT_VISION_END_EVENT, serverPlayer, null);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.ROBOT_NIGHT_VISION_END_EVENT, serverPlayer, null);
         }
         this.sync();
     }

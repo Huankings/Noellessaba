@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.packet.item;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheSounds;
@@ -14,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record HuntingKnifeC2SPacket(int target) implements CustomPayload {
 
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "hunting_knife");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "hunting_knife");
     public static final Id<HuntingKnifeC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, HuntingKnifeC2SPacket> CODEC = new PacketCodec<>() {
         @Override

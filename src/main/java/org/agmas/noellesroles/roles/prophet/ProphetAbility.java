@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.prophet;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -15,7 +18,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.item.CrystalBallItem;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public final class ProphetAbility {
 
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.PROPHET)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.PROPHET)) {
             return;
         }
         if (!GameFunctions.isPlayerAliveAndSurvival(player)) {
@@ -71,7 +73,7 @@ public final class ProphetAbility {
                 getProphetColoredPlayerName(selection.target),
                 getProphetColoredPlayerName(selection.target),
                 Harpymodloader.getRoleName(selection.role).copy().withColor(selection.role.color())
-        ).formatted(Formatting.RESET).withColor(Noellesroles.PROPHET.color());
+        ).formatted(Formatting.RESET).withColor(NoellesRoleRegistry.PROPHET.color());
 
         for (ServerPlayerEntity other : player.getServerWorld().getPlayers()) {
             if (!other.getUuid().equals(selection.target.getUuid())) {
@@ -88,12 +90,12 @@ public final class ProphetAbility {
         NbtCompound revealExtra = new NbtCompound();
         revealExtra.putUuid("target_player", selection.target.getUuid());
         revealExtra.putInt("cost", ProphetConstants.REVEAL_COST);
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.PROPHET_REVEALED_EVENT, player, revealExtra);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.PROPHET_REVEALED_EVENT, player, revealExtra);
 
         selection.target.sendMessage(
                 Text.translatable("message.noellesroles.prophet.revealed")
                         .formatted(Formatting.RESET)
-                        .withColor(Noellesroles.PROPHET.color()),
+                        .withColor(NoellesRoleRegistry.PROPHET.color()),
                 true
         );
 
@@ -108,7 +110,7 @@ public final class ProphetAbility {
      */
     public static void handleCrystalBallMark(ServerPlayerEntity player, int targetId, boolean offHand) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.PROPHET)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.PROPHET)) {
             return;
         }
         if (!GameFunctions.isPlayerAliveAndSurvival(player)) {
@@ -142,7 +144,7 @@ public final class ProphetAbility {
             player.sendMessage(
                     Text.translatable("message.noellesroles.prophet.already_marked", target.getDisplayName())
                             .formatted(Formatting.RESET)
-                            .withColor(Noellesroles.PROPHET.color()),
+                            .withColor(NoellesRoleRegistry.PROPHET.color()),
                     true
             );
             return;
@@ -154,23 +156,23 @@ public final class ProphetAbility {
             NbtCompound remarkExtra = new NbtCompound();
             remarkExtra.putUuid("old_target", previousMarked);
             remarkExtra.putUuid("new_target", target.getUuid());
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.PROPHET_REMARKED_EVENT, player, remarkExtra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.PROPHET_REMARKED_EVENT, player, remarkExtra);
             player.sendMessage(
                     Text.translatable(
                             "message.noellesroles.prophet.remarked",
                             getPlayerNameForMessage(player, previousMarked),
                             target.getDisplayName()
-                    ).formatted(Formatting.RESET).withColor(Noellesroles.PROPHET.color()),
+                    ).formatted(Formatting.RESET).withColor(NoellesRoleRegistry.PROPHET.color()),
                     true
             );
         } else {
             NbtCompound markExtra = new NbtCompound();
             markExtra.putUuid("target_player", target.getUuid());
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.PROPHET_MARKED_EVENT, player, markExtra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.PROPHET_MARKED_EVENT, player, markExtra);
             player.sendMessage(
                     Text.translatable("message.noellesroles.prophet.marked", target.getDisplayName())
                             .formatted(Formatting.RESET)
-                            .withColor(Noellesroles.PROPHET.color()),
+                            .withColor(NoellesRoleRegistry.PROPHET.color()),
                     true
             );
         }
@@ -237,7 +239,7 @@ public final class ProphetAbility {
     }
 
     private static MutableText getProphetColoredPlayerName(PlayerEntity player) {
-        return player.getDisplayName().copy().withColor(Noellesroles.PROPHET.color());
+        return player.getDisplayName().copy().withColor(NoellesRoleRegistry.PROPHET.color());
     }
 
     private static Text getPlayerNameForMessage(ServerPlayerEntity viewer, UUID playerUuid) {

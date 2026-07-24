@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -7,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.starstruck.StarstruckConstants;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +28,7 @@ public abstract class StarstruckMovementSpeedMixin extends LivingEntity {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (!StarstruckConstants.ABILITY_AFFECTS_MOVEMENT_SPEED
                 || !GameFunctions.isPlayerAliveAndSurvival(player)
-                || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.STARSTRUCK)
+                || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.STARSTRUCK)
                 || StarstruckPlayerComponent.KEY.get(player).ticks <= 0) {
             return original;
         }

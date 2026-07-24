@@ -1,5 +1,10 @@
 package org.agmas.noellesroles.roles.corpsemaker;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -20,7 +25,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
@@ -42,7 +46,7 @@ public final class CorpsemakerAbility {
         AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
 
         // 基础检查：必须是造尸怪且存活
-        if (!gameWorld.isRole(player, Noellesroles.CORPSEMAKER) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.CORPSEMAKER) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
         if (ability.cooldown > 0) return;
@@ -103,7 +107,7 @@ public final class CorpsemakerAbility {
         deathComp.sync();
 
         // 如果伪造的角色是大嗓门，让尸体发光60秒
-        if (matchedRole == Noellesroles.NOISEMAKER) {
+        if (matchedRole == NoellesRoleRegistry.NOISEMAKER) {
             body.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 20 * 60, 0));
         }
 
@@ -130,12 +134,12 @@ public final class CorpsemakerAbility {
         } else if ("wathe:bat_hit".equals(deathReason)) {
             // 棍棒音效 - 全局播放
             serverWorld.playSound(null, player.getBlockPos(), WatheSounds.ITEM_BAT_HIT, SoundCategory.PLAYERS, 1.0f, 1.0f);
-        } else if (Noellesroles.DEATH_REASON_THROWING_AXE.toString().equals(deathReason)) {
+        } else if (NoellesDeathReasons.DEATH_REASON_THROWING_AXE.toString().equals(deathReason)) {
             // 飞斧伪造死因补一层命中音效，方便尸体伪造时更贴近实际武器反馈。
             serverWorld.playSound(null, player.getBlockPos(), net.minecraft.sound.SoundEvents.ITEM_TRIDENT_HIT, SoundCategory.PLAYERS, 1.0f, 1.0f);
-        } else if (Noellesroles.DEATH_REASON_BOMB.toString().equals(deathReason)) {
+        } else if (NoellesDeathReasons.DEATH_REASON_BOMB.toString().equals(deathReason)) {
             // 定时炸弹伪造死因沿用炸弹客自己的爆炸音效与烟雾。
-            serverWorld.playSound(null, player.getBlockPos(), net.minecraft.sound.SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "item.bomb.explode")), SoundCategory.PLAYERS, 5.0f, 1.0f);
+            serverWorld.playSound(null, player.getBlockPos(), net.minecraft.sound.SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "item.bomb.explode")), SoundCategory.PLAYERS, 5.0f, 1.0f);
             serverWorld.spawnParticles(WatheParticles.BIG_EXPLOSION,
                     player.getX(), player.getY() + 0.1F, player.getZ(),
                     1, 0.0, 0.0, 0.0, 0.0);
@@ -153,7 +157,7 @@ public final class CorpsemakerAbility {
          */
         GameRecordManager.event(GameRecordTypes.GLOBAL_EVENT)
                 .actor(player)
-                .put("event", Noellesroles.CORPSEMAKER_FORGED_BODY_EVENT.toString())
+                .put("event", NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT.toString())
                 .putUuid("corpse_target", target.getUuid())
                 .put("death_reason_id", payload.deathReason())
                 .put("fake_role_id", matchedRole.identifier().toString())

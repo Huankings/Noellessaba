@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.amnesiac;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -8,7 +10,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,13 +27,13 @@ public final class AmnesiacBodyHudHandler {
                 context -> {
                     ClientPlayerEntity player = context.player();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                    if (!gameWorld.isRole(player, Noellesroles.AMNESIAC) || GameFunctions.isPlayerSpectatingOrCreative(player)) {
+                    if (!gameWorld.isRole(player, NoellesRoleRegistry.AMNESIAC) || GameFunctions.isPlayerSpectatingOrCreative(player)) {
                         return;
                     }
 
                     PlayerBodyEntity body = RoleNameHudApi.findLookedAtBody(player, RoleNameHudApi.defaultLookRange(player));
                     if (body != null) {
-                        drawCentered(context.renderer(), context.drawContext(), Text.translatable("hud.noellesroles.amnesiac.select_body"), 32, Noellesroles.AMNESIAC.color());
+                        drawCentered(context.renderer(), context.drawContext(), Text.translatable("hud.noellesroles.amnesiac.select_body"), 32, NoellesRoleRegistry.AMNESIAC.color());
                     }
                 }
         );

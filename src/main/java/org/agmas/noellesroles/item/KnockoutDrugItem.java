@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -15,7 +17,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +55,7 @@ public class KnockoutDrugItem extends Item {
 
         KidnapperComponent targetControlled = KidnapperComponent.KEY.get(targetPlayer);
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (gameWorld.isRole(targetPlayer, Noellesroles.ROBOT)) {
+        if (gameWorld.isRole(targetPlayer, NoellesRoleRegistry.ROBOT)) {
             recordRobotFailedUse(player, targetPlayer);
             player.sendMessage(Text.translatable("tip.noellesroles.kidnapper.daze_failed").withColor(Color.RED.getRGB()), true);
             player.playSoundToPlayer(SoundEvents.ENTITY_VILLAGER_AMBIENT, SoundCategory.PLAYERS, 1.0F, 1.0F);

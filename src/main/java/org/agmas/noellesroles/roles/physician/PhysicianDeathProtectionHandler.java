@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.physician;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 医师药丸护盾死亡保护。
@@ -29,7 +30,7 @@ public final class PhysicianDeathProtectionHandler {
             GameRecordManager.recordShieldBlocked(
                     victimPlayer,
                     killer instanceof ServerPlayerEntity killerPlayer ? killerPlayer : null,
-                    Noellesroles.PILL_SHIELD_SOURCE,
+                    NoellesEventIds.PILL_SHIELD_SOURCE,
                     GameFunctions.getReplayItemId(blockedReplayData),
                     blockedReplayData
             );

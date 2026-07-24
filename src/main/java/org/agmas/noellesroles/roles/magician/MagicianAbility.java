@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.magician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public final class MagicianAbility {
 
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.MAGICIAN)
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.MAGICIAN)
                 || !gameWorld.isRunning()
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;

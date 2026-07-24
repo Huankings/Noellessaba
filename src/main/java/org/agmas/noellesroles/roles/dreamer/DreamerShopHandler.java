@@ -1,7 +1,8 @@
 package org.agmas.noellesroles.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesFramingShopEntries;
+
 import dev.doctor4t.wathe.util.ShopEntry;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -17,6 +18,6 @@ public final class DreamerShopHandler {
     }
 
     public static @NotNull List<ShopEntry> getShopEntries() {
-        return Noellesroles.FRAMING_ROLES_SHOP;
+        return NoellesFramingShopEntries.FRAMING_ROLES_SHOP;
     }
 }

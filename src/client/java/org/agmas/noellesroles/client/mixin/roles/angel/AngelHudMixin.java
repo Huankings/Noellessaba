@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -9,7 +11,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
@@ -38,7 +39,7 @@ public abstract class AngelHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.ANGEL)) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.ANGEL)) {
             return;
         }
 
@@ -70,7 +71,7 @@ public abstract class AngelHudMixin {
                     line,
                     context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                     drawY,
-                    Noellesroles.ANGEL.color()
+                    NoellesRoleRegistry.ANGEL.color()
             );
         }
     }

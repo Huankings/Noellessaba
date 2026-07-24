@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -8,7 +10,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -33,7 +34,7 @@ import java.util.UUID;
  */
 public class AngelPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<AngelPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "angel"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "angel"),
             AngelPlayerComponent.class
     );
 

@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.magician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 魔术师职业分配处理器。
@@ -14,7 +15,7 @@ public final class MagicianRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.MAGICIAN)) {
+        if (!role.equals(NoellesRoleRegistry.MAGICIAN)) {
             return;
         }
 

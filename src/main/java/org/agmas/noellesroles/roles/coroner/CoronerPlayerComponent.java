@@ -1,6 +1,8 @@
 package org.agmas.noellesroles.roles.coroner;
 
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +12,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 public class CoronerPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
     public static final ComponentKey<CoronerPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "coroner_player"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "coroner_player"),
             CoronerPlayerComponent.class
     );
     public static final int MORPH_DURATION_TICKS = GameConstants.getInTicks(1, 0);  // 变形持续时间：1分钟

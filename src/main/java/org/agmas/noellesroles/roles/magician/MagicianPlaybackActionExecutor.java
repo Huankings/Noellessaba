@@ -28,7 +28,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.agmas.noellesroles.item.BayonetItem;
 import org.agmas.noellesroles.roles.assassin.BayonetKnockbackHandler;

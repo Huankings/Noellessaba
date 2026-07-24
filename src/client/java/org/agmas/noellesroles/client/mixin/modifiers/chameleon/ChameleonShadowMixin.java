@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.modifiers.chameleon;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -8,7 +10,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +23,7 @@ public abstract class ChameleonShadowMixin {
     public void phantomRatMixin(LivingEntity livingEntity, CallbackInfoReturnable<Float> cir) {
         if (livingEntity instanceof PlayerEntity) {
             WorldModifierComponent worldModifierComponent = WorldModifierComponent.KEY.get(livingEntity.getWorld());
-            if (worldModifierComponent.isRole(livingEntity.getUuid(), Noellesroles.CHAMELEON)) {
+            if (worldModifierComponent.isRole(livingEntity.getUuid(), NoellesModifierRegistry.CHAMELEON)) {
                 cir.setReturnValue(0f);
                 cir.cancel();
             }

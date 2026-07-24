@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.entities;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -21,7 +24,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.agmas.harpymodloader.Harpymodloader;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +51,7 @@ public class RoleMineEntity extends Entity {
                 if (ownerEntity instanceof net.minecraft.server.network.ServerPlayerEntity serverOwner) {
                     NbtCompound extra = new NbtCompound();
                     extra.putUuid("owner", owner);
-                    GameRecordManager.recordGlobalEvent(serverOwner.getServerWorld(), Noellesroles.ROLE_MINE_REPORT_EVENT, null, extra);
+                    GameRecordManager.recordGlobalEvent(serverOwner.getServerWorld(), NoellesEventIds.ROLE_MINE_REPORT_EVENT, null, extra);
                 }
                 ownerEntity.getInventory().remove((itemStack -> {
                     return itemStack.isOf(Items.PAPER);
@@ -82,13 +84,13 @@ public class RoleMineEntity extends Entity {
                     if (owner != null) {
                         extra.putUuid("owner", owner);
                     }
-                    GameRecordManager.recordGlobalEvent(serverWorld, Noellesroles.ROLE_MINE_DETECTED_EVENT, null, extra);
+                    GameRecordManager.recordGlobalEvent(serverWorld, NoellesEventIds.ROLE_MINE_DETECTED_EVENT, null, extra);
                 }
-                getWorld().playSound(this, getBlockPos(), SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "role_mine_beep")), SoundCategory.MASTER, 1f, 1f + (getRandom().nextBetween(-2, 2)/0.1f));
+                getWorld().playSound(this, getBlockPos(), SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "role_mine_beep")), SoundCategory.MASTER, 1f, 1f + (getRandom().nextBetween(-2, 2)/0.1f));
                 if (owner != null) {
                     PlayerEntity ownerEntity = getWorld().getPlayerByUuid(owner);
                     if (ownerEntity == null) continue;
-                    ownerEntity.playSoundToPlayer(SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "role_mine_beep")), SoundCategory.MASTER,1,1);
+                    ownerEntity.playSoundToPlayer(SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "role_mine_beep")), SoundCategory.MASTER,1,1);
                 }
             }
         }

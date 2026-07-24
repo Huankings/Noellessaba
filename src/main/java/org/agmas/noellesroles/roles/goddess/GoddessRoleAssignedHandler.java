@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.goddess;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 
 /**
@@ -21,7 +22,7 @@ public final class GoddessRoleAssignedHandler {
      * 这里仍要保留，因为它会额外触发同步，这属于旧语义的一部分。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.GODDESS)) {
+        if (!role.equals(NoellesRoleRegistry.GODDESS)) {
             return;
         }
 

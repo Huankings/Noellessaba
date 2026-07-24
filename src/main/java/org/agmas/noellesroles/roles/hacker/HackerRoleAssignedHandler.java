@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 黑客职业分配初始化。
@@ -18,7 +19,7 @@ public final class HackerRoleAssignedHandler {
     public static void onRoleAssigned(PlayerEntity player, Role role) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
 
-        if (role.equals(Noellesroles.HACKER)) {
+        if (role.equals(NoellesRoleRegistry.HACKER)) {
             HackerComponent.KEY.get(player).reset();
             HackerPhoneComponent.KEY.get(player).reset();
             givePhoneIfMissing(player);
@@ -33,7 +34,7 @@ public final class HackerRoleAssignedHandler {
          */
         if (role.canUseKiller()) {
             for (ServerPlayerEntity possibleHacker : player.getServer().getPlayerManager().getPlayerList()) {
-                if (gameWorld.isRole(possibleHacker, Noellesroles.HACKER) && GameFunctions.isPlayerAliveAndSurvival(possibleHacker)) {
+                if (gameWorld.isRole(possibleHacker, NoellesRoleRegistry.HACKER) && GameFunctions.isPlayerAliveAndSurvival(possibleHacker)) {
                     givePhoneIfMissing(player);
                     break;
                 }

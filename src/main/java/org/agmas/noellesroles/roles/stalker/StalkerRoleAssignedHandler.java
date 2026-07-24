@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.stalker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 潜行者职业分配处理器。
@@ -21,7 +22,7 @@ public final class StalkerRoleAssignedHandler {
      * 所以后续迁移时也要原样保留。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.STALKER)) {
+        if (!role.equals(NoellesRoleRegistry.STALKER)) {
             return;
         }
 

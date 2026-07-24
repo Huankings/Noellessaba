@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.muzzler;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 静语者职业分配初始化。
@@ -12,7 +13,7 @@ public final class MuzzlerRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (role != Noellesroles.MUZZLER) {
+        if (role != NoellesRoleRegistry.MUZZLER) {
             return;
         }
 

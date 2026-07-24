@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.mixin.roles.jester;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -8,7 +11,6 @@ import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,7 +23,7 @@ public abstract class JesterJestMixin {
     private static void jesterJest(PlayerEntity victim, boolean spawnBody, PlayerEntity killer, Identifier identifier, CallbackInfo ci) {
         if (killer != null) {
             GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(victim.getWorld());
-            if (gameWorldComponent.isRole(victim, Noellesroles.JESTER) && !gameWorldComponent.isRole(killer, Noellesroles.JESTER) && gameWorldComponent.isInnocent(killer)) {
+            if (gameWorldComponent.isRole(victim, NoellesRoleRegistry.JESTER) && !gameWorldComponent.isRole(killer, NoellesRoleRegistry.JESTER) && gameWorldComponent.isInnocent(killer)) {
                 PlayerPsychoComponent component = PlayerPsychoComponent.KEY.get(victim);
                 if (component.getPsychoTicks() <= 0) {
                     component.startPsycho();
@@ -30,7 +32,7 @@ public abstract class JesterJestMixin {
                     if (victim instanceof net.minecraft.server.network.ServerPlayerEntity serverVictim) {
                         NbtCompound extra = new NbtCompound();
                         extra.putUuid("victim", victim.getUuid());
-                        GameRecordManager.recordGlobalEvent(serverVictim.getServerWorld(), Noellesroles.JESTER_PSYCHO_STARTED_EVENT, null, extra);
+                        GameRecordManager.recordGlobalEvent(serverVictim.getServerWorld(), NoellesEventIds.JESTER_PSYCHO_STARTED_EVENT, null, extra);
                     }
                     ci.cancel();
                 }

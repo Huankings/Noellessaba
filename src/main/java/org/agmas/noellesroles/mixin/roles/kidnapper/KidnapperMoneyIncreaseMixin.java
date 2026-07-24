@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.mixin.roles.kidnapper;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,7 @@ public abstract class KidnapperMoneyIncreaseMixin {
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(victim.getWorld());
         KidnapperComponent controlled = KidnapperComponent.KEY.get(victim);
-        if (gameWorld.isRole(killer, Noellesroles.KIDNAPPER) && controlled.controlTicks > 0) {
+        if (gameWorld.isRole(killer, NoellesRoleRegistry.KIDNAPPER) && controlled.controlTicks > 0) {
             /*
              * 额外金币在 killPlayer 入口处发放，和 kinssaba 一致：
              * 只要杀死的是仍处于迷药控制中的目标，就算绑匪的“绑架击杀”奖励。

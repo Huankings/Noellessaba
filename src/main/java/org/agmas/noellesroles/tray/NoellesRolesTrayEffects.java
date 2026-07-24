@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.tray;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.api.tray.TrayEffectHandler;
 import dev.doctor4t.wathe.api.tray.TrayEffectRegistry;
 import dev.doctor4t.wathe.block_entity.BeveragePlateBlockEntity;
@@ -10,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
@@ -33,7 +34,7 @@ public final class NoellesRolesTrayEffects {
         TrayEffectRegistry.register(new TrayEffectHandler() {
             @Override
             public net.minecraft.util.Identifier effectId() {
-                return Noellesroles.DEFENSE_TRAY_EFFECT;
+                return NoellesEventIds.DEFENSE_TRAY_EFFECT;
             }
 
             @Override
@@ -51,7 +52,7 @@ public final class NoellesRolesTrayEffects {
                 /**
                  * 防御试剂保留旧设计：可以覆盖托盘当前的毒药状态，相当于“先解掉旧毒，再挂上护盾效果”。
                  */
-                TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, Noellesroles.DEFENSE_TRAY_EFFECT, true, true);
+                TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, NoellesEventIds.DEFENSE_TRAY_EFFECT, true, true);
             }
 
             @Override
@@ -63,7 +64,7 @@ public final class NoellesRolesTrayEffects {
         TrayEffectRegistry.register(new TrayEffectHandler() {
             @Override
             public net.minecraft.util.Identifier effectId() {
-                return Noellesroles.DELUSION_TRAY_EFFECT;
+                return NoellesEventIds.DELUSION_TRAY_EFFECT;
             }
 
             @Override
@@ -73,7 +74,7 @@ public final class NoellesRolesTrayEffects {
 
             @Override
             public void applyToTray(BeveragePlateBlockEntity plate, ServerPlayerEntity player, ItemStack heldStack, BlockPos pos) {
-                TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, Noellesroles.DELUSION_TRAY_EFFECT, false, false);
+                TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, NoellesEventIds.DELUSION_TRAY_EFFECT, false, false);
             }
 
             @Override
@@ -85,7 +86,7 @@ public final class NoellesRolesTrayEffects {
         TrayEffectRegistry.register(new TrayEffectHandler() {
             @Override
             public net.minecraft.util.Identifier effectId() {
-                return Noellesroles.SEDATIVE_TRAY_EFFECT;
+                return NoellesEventIds.SEDATIVE_TRAY_EFFECT;
             }
 
             @Override
@@ -95,7 +96,7 @@ public final class NoellesRolesTrayEffects {
 
             @Override
             public void applyToTray(BeveragePlateBlockEntity plate, ServerPlayerEntity player, ItemStack heldStack, BlockPos pos) {
-                TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, Noellesroles.SEDATIVE_TRAY_EFFECT, false, false);
+                TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, NoellesEventIds.SEDATIVE_TRAY_EFFECT, false, false);
             }
 
             @Override
@@ -107,7 +108,7 @@ public final class NoellesRolesTrayEffects {
         TrayEffectRegistry.register(new TrayEffectHandler() {
             @Override
             public net.minecraft.util.Identifier effectId() {
-                return Noellesroles.TIMED_BOMB_TRAY_EMBEDDED_EVENT;
+                return NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT;
             }
 
             @Override
@@ -133,7 +134,7 @@ public final class NoellesRolesTrayEffects {
                         heldStack,
                         plate,
                         pos,
-                        Noellesroles.TIMED_BOMB_TRAY_EMBEDDED_EVENT,
+                        NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT,
                         false,
                         false,
                         extra

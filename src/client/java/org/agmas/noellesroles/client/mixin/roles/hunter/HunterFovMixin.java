@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.hunter;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.index.WatheItems;
 import net.minecraft.client.MinecraftClient;
@@ -8,7 +10,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.UseAction;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
@@ -33,7 +34,7 @@ public class HunterFovMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.client.player.getWorld());
-        if (!gameWorld.isRole(this.client.player, Noellesroles.HUNTER)
+        if (!gameWorld.isRole(this.client.player, NoellesRoleRegistry.HUNTER)
                 || !this.client.player.isUsingItem()
                 || !this.client.player.isSprinting()) {
             return;

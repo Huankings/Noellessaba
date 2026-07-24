@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.robot;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -10,7 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,7 +25,7 @@ public final class RobotAbility {
     public static void handle(@NotNull PlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(player);
-        if (!gameWorld.isRole(player, Noellesroles.ROBOT)
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.ROBOT)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)
                 || ability.cooldown > 0) {
             return;
@@ -44,7 +46,7 @@ public final class RobotAbility {
         RobotPlayerComponent.KEY.get(player).startNightVision(RobotConstants.ABILITY_DURATION_TICKS);
         player.playSoundToPlayer(SoundEvents.ENTITY_IRON_GOLEM_HURT, SoundCategory.PLAYERS, 1.0F, 1.0F);
         if (player instanceof ServerPlayerEntity serverPlayer) {
-            GameRecordManager.recordSkillUse(serverPlayer, Noellesroles.ROBOT_NIGHT_VISION_EVENT, null, null);
+            GameRecordManager.recordSkillUse(serverPlayer, NoellesEventIds.ROBOT_NIGHT_VISION_EVENT, null, null);
         }
         ability.setCooldown(RobotConstants.ABILITY_COOLDOWN_TICKS);
     }

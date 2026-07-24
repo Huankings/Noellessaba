@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.magician;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import com.mojang.authlib.GameProfile;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -12,7 +16,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -37,7 +40,7 @@ import java.util.UUID;
  */
 public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<MagicianPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "magician"), MagicianPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "magician"), MagicianPlayerComponent.class);
 
     private final PlayerEntity player;
 
@@ -233,7 +236,7 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             GameRecordManager.recordGlobalEvent(
                     serverPlayer.getServerWorld(),
-                    Noellesroles.MAGICIAN_RECORDING_STARTED_EVENT,
+                    NoellesEventIds.MAGICIAN_RECORDING_STARTED_EVENT,
                     serverPlayer,
                     null
             );
@@ -265,7 +268,7 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
             MagicianPlaybackManager.cacheFinishedRecording(serverPlayer, this);
             GameRecordManager.recordGlobalEvent(
                     serverPlayer.getServerWorld(),
-                    stoppedEarly ? Noellesroles.MAGICIAN_RECORDING_STOPPED_EARLY_EVENT : Noellesroles.MAGICIAN_RECORDING_FINISHED_EVENT,
+                    stoppedEarly ? NoellesEventIds.MAGICIAN_RECORDING_STOPPED_EARLY_EVENT : NoellesEventIds.MAGICIAN_RECORDING_FINISHED_EVENT,
                     serverPlayer,
                     null
             );
@@ -413,7 +416,7 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
     @Override
     public void serverTick() {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
-        if (!gameWorld.isRole(this.player, Noellesroles.MAGICIAN)
+        if (!gameWorld.isRole(this.player, NoellesRoleRegistry.MAGICIAN)
                 || !gameWorld.isRunning()
                 || !GameFunctions.isPlayerAliveAndSurvival(this.player)) {
             if (this.isPlaying()) {

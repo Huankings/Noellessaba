@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.necromancer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -9,7 +11,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.roles.coroner.CoronerConstants;
 import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
@@ -32,7 +33,7 @@ public final class NecromancerBodyHudHandler {
                 context -> {
                     ClientPlayerEntity player = context.player();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                    if (!gameWorld.isRole(player, Noellesroles.NECROMANCER) || GameFunctions.isPlayerSpectatingOrCreative(player)) {
+                    if (!gameWorld.isRole(player, NoellesRoleRegistry.NECROMANCER) || GameFunctions.isPlayerSpectatingOrCreative(player)) {
                         return;
                     }
 
@@ -52,7 +53,7 @@ public final class NecromancerBodyHudHandler {
                         status = Text.translatable("hud.noellesroles.necromancer.cooldown", ability.cooldown / 20);
                     }
 
-                    drawCentered(context.renderer(), context.drawContext(), status, 32, Noellesroles.NECROMANCER.color());
+                    drawCentered(context.renderer(), context.drawContext(), status, 32, NoellesRoleRegistry.NECROMANCER.color());
                 }
         );
     }

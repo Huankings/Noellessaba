@@ -1,5 +1,10 @@
 package org.agmas.noellesroles.roles.coward;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -9,7 +14,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -24,7 +28,7 @@ import java.util.UUID;
  */
 public class SedativePlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<SedativePlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "sedative"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "sedative"),
             SedativePlayerComponent.class
     );
 
@@ -60,7 +64,7 @@ public class SedativePlayerComponent implements AutoSyncedComponent, ServerTicki
             if (applierUuid != null) {
                 deathData.putUuid("replay_actor", applierUuid);
             }
-            GameFunctions.killPlayer(player, true, null, Noellesroles.DEATH_REASON_SEDATIVE_OVERDOSE, deathData);
+            GameFunctions.killPlayer(player, true, null, NoellesDeathReasons.DEATH_REASON_SEDATIVE_OVERDOSE, deathData);
             return;
         }
 
@@ -70,10 +74,10 @@ public class SedativePlayerComponent implements AutoSyncedComponent, ServerTicki
         this.sync();
 
         player.sendMessage(
-                Text.translatable("message.noellesroles.coward.sedative_started").withColor(Noellesroles.COWARD.color()),
+                Text.translatable("message.noellesroles.coward.sedative_started").withColor(NoellesRoleRegistry.COWARD.color()),
                 true
         );
-        GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.SEDATIVE_STARTED_EVENT, player, null);
+        GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.SEDATIVE_STARTED_EVENT, player, null);
     }
 
     @Override
@@ -94,10 +98,10 @@ public class SedativePlayerComponent implements AutoSyncedComponent, ServerTicki
 
             if (this.sedativeTicks == 0) {
                 serverPlayer.sendMessage(
-                        Text.translatable("message.noellesroles.coward.sedative_ended").withColor(Noellesroles.COWARD.color()),
+                        Text.translatable("message.noellesroles.coward.sedative_ended").withColor(NoellesRoleRegistry.COWARD.color()),
                         true
                 );
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.SEDATIVE_ENDED_EVENT, serverPlayer, null);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.SEDATIVE_ENDED_EVENT, serverPlayer, null);
                 this.reset();
                 return;
             }

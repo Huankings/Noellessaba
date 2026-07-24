@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.avaricious;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
@@ -13,7 +15,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
 import org.agmas.noellesroles.roles.avaricious.AvariciousPayoutComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,7 +46,7 @@ public abstract class AvariciousHudMixin {
 
         ClientPlayerEntity player = client.player;
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.AVARICIOUS)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.AVARICIOUS)) {
             return;
         }
 
@@ -72,7 +73,7 @@ public abstract class AvariciousHudMixin {
         int timerLineY = payoutLineY - renderer.fontHeight - 2;
 
         context.drawTextWithShadow(renderer, timerLine, baseX - renderer.getWidth(timerLine), timerLineY, GOLD_TEXT_COLOR);
-        context.drawTextWithShadow(renderer, expectedPayoutLine, baseX - renderer.getWidth(expectedPayoutLine), payoutLineY, Noellesroles.AVARICIOUS.color());
+        context.drawTextWithShadow(renderer, expectedPayoutLine, baseX - renderer.getWidth(expectedPayoutLine), payoutLineY, NoellesRoleRegistry.AVARICIOUS.color());
     }
 
     private static int getSecondsUntilNextPayout(ClientPlayerEntity player) {

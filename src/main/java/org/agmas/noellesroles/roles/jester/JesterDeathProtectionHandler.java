@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.roles.jester;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 狂信者 psycho 无敌时间的死亡保护处理器。
@@ -24,7 +25,7 @@ public final class JesterDeathProtectionHandler {
      */
     public static boolean allowDeath(PlayerEntity playerEntity, PlayerEntity killer, Identifier deathReason) {
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(playerEntity.getWorld());
-        if (!gameWorldComponent.isRole(playerEntity, Noellesroles.JESTER)) {
+        if (!gameWorldComponent.isRole(playerEntity, NoellesRoleRegistry.JESTER)) {
             return true;
         }
 

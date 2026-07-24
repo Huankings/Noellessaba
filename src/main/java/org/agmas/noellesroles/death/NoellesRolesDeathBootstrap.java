@@ -19,7 +19,7 @@ import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
  * noellesroles 的死亡事件总引导器。
  *
  * <p>这个类的职责非常单一：</p>
- * <p>1. 只负责把原先写在 {@code Noellesroles.registerEvents()} 里的大段死亡监听拆开；</p>
+ * <p>1. 只负责把原先写在旧入口事件注册里的大段死亡监听拆开；</p>
  * <p>2. 严格保留原来的执行顺序与短路行为；</p>
  * <p>3. 让每个职业自己的死亡特判回到各自的包内维护。</p>
  *

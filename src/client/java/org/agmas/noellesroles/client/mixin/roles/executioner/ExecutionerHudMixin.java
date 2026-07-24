@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.executioner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
@@ -14,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import org.agmas.harpymodloader.client.HarpymodloaderClient;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +35,7 @@ public abstract class ExecutionerHudMixin {
     @Inject(method = "renderHud", at = @At("HEAD"))
     private static void executionerHudRenderer(TextRenderer renderer, ClientPlayerEntity player, DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
-        if (HarpymodloaderClient.hudRole == Noellesroles.EXECUTIONER && WatheClient.isPlayerSpectatingOrCreative()) {
+        if (HarpymodloaderClient.hudRole == NoellesRoleRegistry.EXECUTIONER && WatheClient.isPlayerSpectatingOrCreative()) {
             if (NoellesrolesClient.target == null) return;
             ExecutionerPlayerComponent executionerPlayerComponent = (ExecutionerPlayerComponent) ExecutionerPlayerComponent.KEY.get(NoellesrolesClient.target);
 
@@ -48,7 +49,7 @@ public abstract class ExecutionerHudMixin {
 
             context.getMatrices().pop();
         }
-        if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, Noellesroles.EXECUTIONER) && WatheClient.isPlayerAliveAndInSurvival()) {
+        if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.EXECUTIONER) && WatheClient.isPlayerAliveAndInSurvival()) {
             if (!gameWorldComponent.getRole(MinecraftClient.getInstance().player).canUseKiller()) {
                 ExecutionerPlayerComponent executionerPlayerComponent = (ExecutionerPlayerComponent) ExecutionerPlayerComponent.KEY.get(player);
 

@@ -1,9 +1,11 @@
 package org.agmas.noellesroles.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -21,8 +23,8 @@ public final class HackerTargeting {
         Role role = gameWorld.getRole(player);
         return role != null
                 && (gameWorld.canUseKillerFeatures(player)
-                || gameWorld.isRole(player, Noellesroles.HACKER)
-                || gameWorld.isRole(player, Noellesroles.MIMIC)
-                || Noellesroles.KILLER_SIDED_NEUTRALS.contains(role));
+                || gameWorld.isRole(player, NoellesRoleRegistry.HACKER)
+                || gameWorld.isRole(player, NoellesRoleRegistry.MIMIC)
+                || NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role));
     }
 }

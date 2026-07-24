@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.necromancer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -22,7 +25,6 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +53,7 @@ public final class NecromancerRevivalHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
-            if (!gameWorld.isRole(necromancer, Noellesroles.NECROMANCER)) {
+            if (!gameWorld.isRole(necromancer, NoellesRoleRegistry.NECROMANCER)) {
                 return ActionResult.PASS;
             }
             if (!(entity instanceof PlayerBodyEntity body)) {
@@ -101,7 +103,7 @@ public final class NecromancerRevivalHandler {
 
             NbtCompound extra = new NbtCompound();
             extra.putUuid("revived_player", revived.getUuid());
-            GameRecordManager.recordGlobalEvent(necromancer.getServerWorld(), Noellesroles.NECROMANCER_REVIVED_EVENT, necromancer, extra);
+            GameRecordManager.recordGlobalEvent(necromancer.getServerWorld(), NoellesEventIds.NECROMANCER_REVIVED_EVENT, necromancer, extra);
 
             return ActionResult.CONSUME;
         });
@@ -109,7 +111,7 @@ public final class NecromancerRevivalHandler {
 
     private static Role selectRevivedKillerRole() {
         var roles = new ArrayList<>(WatheRoles.ROLES);
-        roles.remove(Noellesroles.NECROMANCER);
+        roles.remove(NoellesRoleRegistry.NECROMANCER);
         roles.removeIf(role -> Harpymodloader.VANNILA_ROLES.contains(role)
                 || !role.canUseKiller()
                 || HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().toString()));

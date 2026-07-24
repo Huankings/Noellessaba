@@ -20,8 +20,23 @@
 
 ## 源码地图
 
-- 主入口：`src/main/java/org/agmas/noellesroles/Noellesroles.java`
+- Fabric 主入口：`src/main/java/org/agmas/noellesroles/Noellesroles.java`，现在只调用 `NoellesRolesBootstrap.init()`，不再承载职业、事件、packet、经济、回放等注册细节。
+- 总启动编排：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesBootstrap.java`
+- 模组基础标识：`src/main/java/org/agmas/noellesroles/registry/NoellesRolesCore.java`
+- 职业 / 词条 id：`src/main/java/org/agmas/noellesroles/registry/NoellesRoleIds.java`
+- 职业注册：`src/main/java/org/agmas/noellesroles/registry/NoellesRoleRegistry.java`
+- 词条注册：`src/main/java/org/agmas/noellesroles/registry/NoellesModifierRegistry.java`
+- 跨系统职业分组：`src/main/java/org/agmas/noellesroles/registry/NoellesRoleGroups.java`
+- 死亡原因 id：`src/main/java/org/agmas/noellesroles/registry/NoellesDeathReasons.java`
+- 回放 / 托盘 / 床 / 护盾来源事件 id：`src/main/java/org/agmas/noellesroles/registry/NoellesEventIds.java`
+- 伪装商店条目：`src/main/java/org/agmas/noellesroles/registry/NoellesFramingShopEntries.java`
 - 组件注册：`src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
+- payload codec 注册：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPayloadTypes.java`
+- 服务端 packet 接收：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPacketReceivers.java`
+- 事件 / tick / 回合清理引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`
+- 经济 / 任务收入引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`
+- 回放 formatter 注册引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`
+- Harpy 角色上限引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`
 - 职业分配总引导：`src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
 - 死亡保护总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
@@ -57,7 +72,7 @@
 
 注意：
 - `Faction.NEUTRAL` 是真正的中立阵营。
-- `KILLER_SIDED_NEUTRALS` 只是“杀手侧中立”显示和本能识别集合，不等于阵营本身。
+- `KILLER_SIDED_NEUTRALS` 只是“杀手侧中立”显示和本能识别集合，不等于阵营本身；它现在位于 `NoellesRoleGroups`，不再通过 `Noellesroles.X` 导出。
 
 ## 职业总览
 
@@ -120,7 +135,7 @@
 
 ### 杀手阵营
 
-- 造尸怪：能伪造尸体、假身份和假死因；源码入口是 `CorpsemakerC2SPacket`、`CorpsemakerAbility` 和 `CorpsemakerRoleAssignedHandler`，尸体信息通过 `BodyDeathReasonComponent` 和 `Noellesroles.CORPSEMAKER_FORGED_BODY_EVENT` 记录。
+- 造尸怪：能伪造尸体、假身份和假死因；源码入口是 `CorpsemakerC2SPacket`、`CorpsemakerAbility` 和 `CorpsemakerRoleAssignedHandler`，尸体信息通过 `BodyDeathReasonComponent` 和 `NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT` 记录。
 - 潜行者：三阶段成长，靠凝视攒能量，二阶段拿刀，三阶段进入处刑突进；核心状态都在 `StalkerPlayerComponent`，技能包在 `StalkerGazeC2SPacket` / `StalkerDashC2SPacket`，免死在 `StalkerDeathProtectionHandler`，商店动态切换在 `StalkerShopHandler`。
 - 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerLogicMixin` 和客户端 mixin 负责输入与显示。
 - 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathMixin` 在真实死亡里补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
@@ -175,18 +190,31 @@
 
 ## 通用系统
 
-- `Noellesroles.java` 是总注册表，负责角色、词条、packet id、回放事件 id、动态最大人数和初始化顺序。
+- `Noellesroles.java` 现在只是 Fabric entrypoint，唯一职责是调用 `NoellesRolesBootstrap.init()`。
+- `NoellesRolesBootstrap.java` 负责维护初始化顺序，把配置、物品、实体、托盘/床效果、回放、商店、经济、事件和 packet 引导串起来。
+- `NoellesRolesCore.java` 保存 `MOD_ID`、日志器和 `Identifier` 工具方法，避免再把入口类当公共常量仓库。
+- `NoellesRoleIds.java` 保存所有职业 / 词条稳定 id；新增 id 先放这里。
+- `NoellesRoleRegistry.java` 保存所有 `Role` 实例和 Wathe 显式阵营注册；新增职业不要再写进 `Noellesroles.java`。
+- `NoellesModifierRegistry.java` 保存 Harpy 词条注册。
+- `NoellesRoleGroups.java` 保存跨系统共享分组，例如原版角色列表和 `KILLER_SIDED_NEUTRALS`。
+- `NoellesDeathReasons.java` 保存 NoellesRoles 专属死亡原因 id。
+- `NoellesEventIds.java` 保存回放事件、托盘/床效果和护盾来源 id。
+- `NoellesRolesPayloadTypes.java` 负责注册自定义 payload codec。
+- `NoellesRolesPacketReceivers.java` 负责注册服务端 packet receiver，并把旧的按职业能力分发逻辑集中在 packet 层。
+- `NoellesRolesEventBootstrap.java` 负责事件监听、server tick、回合清理和 Harpy 禁用职业配置同步；其中人数相关动态上限包括 `Mimic`、`Vulture`、`Hacker`、`Drugmaker` 和 `Better Vigilante`。
+- `NoellesRoleLimitsBootstrap.java` 负责开服时的静态 Harpy 上限，例如 `Conductor`、`Executioner`、`Jester`、`Dreamer`、`Starstruck` 等默认最大生成数。
 - `NoellesRolesComponents.java` 负责把所有 CCA component 和 world component 一次性注册进去。
 - `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
 - `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath`，保持“先保命，再强制放行，再反噬”的顺序。
 - `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
 - `NoellesRolesShops.java` 负责支付、物品交付、特殊道具瞬发结算和购买回填。
+- `NoellesRolesEconomyBootstrap.java` 负责金币 HUD、任务收入、被动收入和经济类词条接入。
 - `NoellesRolesTrayEffects.java` 和 `NoellesRolesBedEffects.java` 负责把炸弹、毒药、镇静等逻辑接进托盘和床。
-- `NoellesRolesReplayFormatters.java` 负责把 noellesroles 的专属事件翻译成回放文本。
+- `NoellesRolesReplayBootstrap.java` 负责把 NoellesRoles 的事件 id 注册到 Wathe 回放系统。
+- `NoellesRolesReplayFormatters.java` 负责把 NoellesRoles 的专属事件翻译成回放文本。
 - `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
 - `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
-- `Noellesroles.onInitialize()` 会动态控制一些角色池：`Conductor`、`Executioner`、`Vulture` 和 `Jester` 默认限 1，`Better Vigilante` 默认限 0，`Mimic` 和 `Vulture` 会按人数在 server tick 里动态开关；`shitpostRoles=false` 时还会自动禁用记者、更好的义警和亡语杀手。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
 
 ## 背包按钮接入方式
@@ -221,7 +249,7 @@ public static void register() {
 }
 
 private static InventoryButtonExtension create(InventoryButtonContext context) {
-    return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.MY_ROLE)
+    return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), NoellesRoleRegistry.MY_ROLE)
             ? new Extension()
             : null;
 }
@@ -245,16 +273,22 @@ NoellesInventoryButtonSupport.PagedExtension<MyRolePlayerWidget>
 
 ### 1. 先注册角色
 
-建议在 `src/main/java/org/agmas/noellesroles/Noellesroles.java` 里新增 `Identifier` 和 `Role` 字段，或者仿照现有结构单独做一个 `MyModRoles.java` 再在主入口调用。
+建议按当前拆分结构注册，不要再把字段加回 `Noellesroles.java`：
+
+- 在 `NoellesRoleIds.java` 里新增稳定 `Identifier`。
+- 在 `NoellesRoleRegistry.java` 里新增 `Role` 实例，并用 Wathe 的显式阵营注册方法。
+- 如果这是词条，改 `NoellesModifierRegistry.java`；如果它需要共享分组，再改 `NoellesRoleGroups.java`。
 
 推荐写法：
 
 ```java
-public static final Identifier MY_ROLE_ID = Identifier.of(MOD_ID, "my_role");
+// NoellesRoleIds.java
+public static final Identifier MY_ROLE_ID = NoellesRolesCore.id("my_role");
 
+// NoellesRoleRegistry.java
 public static final Role MY_ROLE = WatheRoles.registerCivilianRole(
     new Role(
-        MY_ROLE_ID,
+        NoellesRoleIds.MY_ROLE_ID,
         0x66CCFF,
         true,
         false,
@@ -325,8 +359,8 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 注册时要做两步：
 
-1. `PayloadTypeRegistry.playC2S().register(...)`
-2. `ServerPlayNetworking.registerGlobalReceiver(...)`
+1. 在 `NoellesRolesPayloadTypes.register()` 里注册 codec：`PayloadTypeRegistry.playC2S().register(...)`
+2. 在 `NoellesRolesPacketReceivers.register()` 里注册服务端接收器：`ServerPlayNetworking.registerGlobalReceiver(...)`
 
 如果有客户端选择界面，就在 `src/client/java/org/agmas/noellesroles/client/...` 里接按钮、屏幕或 HUD。背包内按钮必须优先走 Wathe `InventoryButtonApi`，按上面的“背包按钮接入方式”放到职业自己的 `*InventoryButtons.java`。
 

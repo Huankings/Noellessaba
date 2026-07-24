@@ -1,11 +1,13 @@
 package org.agmas.noellesroles.client.appearance.modifiers.graverobber;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,14 +25,14 @@ public final class GraverobberBodyInfoAccess {
     public static boolean canSeeBodyReadout(@NotNull ClientPlayerEntity viewer) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
         return GameFunctions.isPlayerSpectatingOrCreative(viewer)
-                || gameWorld.isRole(viewer, Noellesroles.CORONER)
-                || gameWorld.isRole(viewer, Noellesroles.VULTURE)
+                || gameWorld.isRole(viewer, NoellesRoleRegistry.CORONER)
+                || gameWorld.isRole(viewer, NoellesRoleRegistry.VULTURE)
                 || isGraverobber(viewer);
     }
 
     public static boolean canSeeExaminePrompt(@NotNull ClientPlayerEntity viewer) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
-        return gameWorld.isRole(viewer, Noellesroles.CORONER) || isGraverobber(viewer);
+        return gameWorld.isRole(viewer, NoellesRoleRegistry.CORONER) || isGraverobber(viewer);
     }
 
     public static boolean shouldBlockCoronerReadoutForSanity(@NotNull ClientPlayerEntity viewer) {
@@ -43,7 +45,7 @@ public final class GraverobberBodyInfoAccess {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
-        if (!gameWorld.isRole(viewer, Noellesroles.CORONER) && !isGraverobber(viewer)) {
+        if (!gameWorld.isRole(viewer, NoellesRoleRegistry.CORONER) && !isGraverobber(viewer)) {
             return false;
         }
 
@@ -60,6 +62,6 @@ public final class GraverobberBodyInfoAccess {
     }
 
     public static boolean isGraverobber(@NotNull ClientPlayerEntity viewer) {
-        return WorldModifierComponent.KEY.get(viewer.getWorld()).isModifier(viewer.getUuid(), Noellesroles.GRAVEROBBER);
+        return WorldModifierComponent.KEY.get(viewer.getWorld()).isModifier(viewer.getUuid(), NoellesModifierRegistry.GRAVEROBBER);
     }
 }

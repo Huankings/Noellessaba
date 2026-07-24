@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.physician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,7 +15,7 @@ public final class PhysicianRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(@NotNull PlayerEntity player, @NotNull Role role) {
-        if (!role.equals(Noellesroles.PHYSICIAN)) {
+        if (!role.equals(NoellesRoleRegistry.PHYSICIAN)) {
             return;
         }
 

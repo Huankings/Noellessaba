@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.awesomebinglus;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.index.WatheItems;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 记者职业分配处理器。
@@ -21,7 +22,7 @@ public final class AwesomeBinglusRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.AWESOME_BINGLUS)) {
+        if (!role.equals(NoellesRoleRegistry.AWESOME_BINGLUS)) {
             return;
         }
 

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.ui.roles.operator;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonExtension;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonLayout;
@@ -7,7 +9,6 @@ import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtonSupport;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ public final class OperatorInventoryButtons {
     }
 
     private static @Nullable InventoryButtonExtension create(@NotNull InventoryButtonContext context) {
-        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.OPERATOR) ? new Extension() : null;
+        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), NoellesRoleRegistry.OPERATOR) ? new Extension() : null;
     }
 
     private static final class Extension extends NoellesInventoryButtonSupport.PagedExtension<OperatorPlayerWidget> {
@@ -49,7 +50,7 @@ public final class OperatorInventoryButtons {
             Text text = OperatorPlayerWidget.firstChoice == null
                     ? Text.translatable("hud.operator.first_player_selection")
                     : Text.translatable("hud.operator.second_player_selection");
-            drawContext.drawTextWithShadow(context.textRenderer(), text, context.width() / 2 - context.textRenderer().getWidth(text) / 2, (context.height() - 32) / 2 + 40, Noellesroles.OPERATOR.color());
+            drawContext.drawTextWithShadow(context.textRenderer(), text, context.width() / 2 - context.textRenderer().getWidth(text) / 2, (context.height() - 32) / 2 + 40, NoellesRoleRegistry.OPERATOR.color());
         }
     }
 }

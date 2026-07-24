@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -118,7 +120,7 @@ public class WindMarkItem extends Item {
         if (user instanceof net.minecraft.server.network.ServerPlayerEntity serverUser) {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("target_player", target.getUuid());
-            GameRecordManager.recordGlobalEvent(serverUser.getServerWorld(), org.agmas.noellesroles.Noellesroles.WINDER_WIND_MARK_APPLIED_EVENT, serverUser, extra);
+            GameRecordManager.recordGlobalEvent(serverUser.getServerWorld(), NoellesEventIds.WINDER_WIND_MARK_APPLIED_EVENT, serverUser, extra);
         }
         user.sendMessage(Text.translatable("message.noellesroles.wind_mark.applied", target.getDisplayName()), true);
         return true;

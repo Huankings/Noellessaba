@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.winder;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -9,7 +11,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +38,7 @@ public abstract class WinderHudMixin {
         }
 
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorldComponent.isRole(client.player, Noellesroles.WINDER)) {
+        if (!gameWorldComponent.isRole(client.player, NoellesRoleRegistry.WINDER)) {
             return;
         }
 
@@ -65,7 +66,7 @@ public abstract class WinderHudMixin {
                     line,
                     context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                     drawY,
-                    Noellesroles.WINDER.color()
+                    NoellesRoleRegistry.WINDER.color()
             );
         }
     }

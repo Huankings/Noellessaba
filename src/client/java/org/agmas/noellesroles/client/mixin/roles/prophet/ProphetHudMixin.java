@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.prophet;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.client.MinecraftClient;
@@ -10,7 +12,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.prophet.ProphetConstants;
 import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
@@ -40,7 +41,7 @@ public abstract class ProphetHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.PROPHET)) {
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.PROPHET)) {
             return;
         }
 
@@ -72,7 +73,7 @@ public abstract class ProphetHudMixin {
                     line,
                     context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                     drawY,
-                    Noellesroles.PROPHET.color()
+                    NoellesRoleRegistry.PROPHET.color()
             );
         }
     }

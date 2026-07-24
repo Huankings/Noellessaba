@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.arsonist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.index.WatheItems;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +16,7 @@ public final class ArsonistRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(@NotNull PlayerEntity player, @NotNull Role role) {
-        if (!role.equals(Noellesroles.ARSONIST)) {
+        if (!role.equals(NoellesRoleRegistry.ARSONIST)) {
             return;
         }
 

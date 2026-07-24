@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.mixin.roles.assassin;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +37,7 @@ public abstract class AssassinHideBodyOnKillMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(killer.getWorld());
-        if (!gameWorld.isRole(killer, Noellesroles.ASSASSIN)) {
+        if (!gameWorld.isRole(killer, NoellesRoleRegistry.ASSASSIN)) {
             return;
         }
 

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +14,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +52,7 @@ public class PillItem extends Item {
             PhysicianPlayerComponent.KEY.get(player).givePillArmor();
 
             if (player instanceof ServerPlayerEntity serverPlayer) {
-                GameRecordManager.recordItemUse(serverPlayer, Noellesroles.PILL_SHIELD_SOURCE, null, null);
+                GameRecordManager.recordItemUse(serverPlayer, NoellesEventIds.PILL_SHIELD_SOURCE, null, null);
             }
             player.playSoundToPlayer(SoundEvents.ITEM_HONEY_BOTTLE_DRINK, SoundCategory.PLAYERS, 1.0F, 1.0F);
         }

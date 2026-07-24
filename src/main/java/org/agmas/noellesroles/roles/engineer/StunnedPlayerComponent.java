@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.engineer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -15,7 +17,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 public class StunnedPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<StunnedPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "stunned"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "stunned"),
             StunnedPlayerComponent.class
     );
 
@@ -28,7 +30,7 @@ public class StunnedPlayerComponent implements AutoSyncedComponent, ServerTickin
     }
 
     public void stun(int ticks) {
-        this.stun(ticks, Noellesroles.CAPTURE_DEVICE_RELEASED_EVENT);
+        this.stun(ticks, NoellesEventIds.CAPTURE_DEVICE_RELEASED_EVENT);
     }
 
     public void stun(int ticks, @Nullable Identifier stunEndEvent) {

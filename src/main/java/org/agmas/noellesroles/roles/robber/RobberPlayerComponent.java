@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.robber;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -9,7 +11,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -24,7 +25,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 public class RobberPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
 
     public static final ComponentKey<RobberPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "robber"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "robber"),
             RobberPlayerComponent.class
     );
 

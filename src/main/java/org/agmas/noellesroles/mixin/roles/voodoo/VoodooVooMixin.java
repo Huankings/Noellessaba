@@ -1,11 +1,13 @@
 package org.agmas.noellesroles.mixin.roles.voodoo;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.death.DeathProcessComponent;
 import org.agmas.noellesroles.roles.voodoo.VoodooPlayerComponent;
@@ -26,7 +28,7 @@ public abstract class VoodooVooMixin {
 
         if (NoellesRolesConfig.HANDLER.instance().voodooNonKillerDeaths || killer != null) {
             GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(victim.getWorld());
-            if (gameWorldComponent.isRole(victim, Noellesroles.VOODOO)) {
+            if (gameWorldComponent.isRole(victim, NoellesRoleRegistry.VOODOO)) {
                 VoodooPlayerComponent voodooPlayerComponent = VoodooPlayerComponent.KEY.get(victim);
                 if (voodooPlayerComponent.target != null) {
                     PlayerEntity voodooed = victim.getWorld().getPlayerByUuid(voodooPlayerComponent.target);
@@ -43,7 +45,7 @@ public abstract class VoodooVooMixin {
                              */
                             NbtCompound replayDeathData = new NbtCompound();
                             replayDeathData.putUuid("replay_actor", victim.getUuid());
-                            GameFunctions.killPlayer(voodooed, true, null, Noellesroles.VOODOO_MAGIC_DEATH_REASON, replayDeathData);
+                            GameFunctions.killPlayer(voodooed, true, null, NoellesDeathReasons.VOODOO_MAGIC_DEATH_REASON, replayDeathData);
                         }
                     }
                 }

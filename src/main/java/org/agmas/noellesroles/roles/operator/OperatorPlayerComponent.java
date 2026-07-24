@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.operator;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -9,7 +13,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -29,7 +32,7 @@ import java.util.UUID;
  */
 public class OperatorPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<OperatorPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "operator"), OperatorPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "operator"), OperatorPlayerComponent.class);
 
     private final PlayerEntity player;
 
@@ -142,7 +145,7 @@ public class OperatorPlayerComponent implements AutoSyncedComponent, ServerTicki
     public void serverTick() {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(this.player, Noellesroles.OPERATOR)
+                || !gameWorld.isRole(this.player, NoellesRoleRegistry.OPERATOR)
                 || !GameFunctions.isPlayerAliveAndSurvival(this.player)) {
             this.reset();
             return;
@@ -210,7 +213,7 @@ public class OperatorPlayerComponent implements AutoSyncedComponent, ServerTicki
         extra.putString("player_two_name", this.connectionPlayerTwoName);
         GameRecordManager.recordGlobalEvent(
                 operator.getServerWorld(),
-                interrupted ? Noellesroles.OPERATOR_CONNECTION_INTERRUPTED_EVENT : Noellesroles.OPERATOR_CONNECTION_ENDED_EVENT,
+                interrupted ? NoellesEventIds.OPERATOR_CONNECTION_INTERRUPTED_EVENT : NoellesEventIds.OPERATOR_CONNECTION_ENDED_EVENT,
                 operator,
                 extra
         );
@@ -241,7 +244,7 @@ public class OperatorPlayerComponent implements AutoSyncedComponent, ServerTicki
         extra.putString("target_player_name", this.broadcastTargetName);
         GameRecordManager.recordGlobalEvent(
                 operator.getServerWorld(),
-                interrupted ? Noellesroles.OPERATOR_BROADCAST_INTERRUPTED_EVENT : Noellesroles.OPERATOR_BROADCAST_ENDED_EVENT,
+                interrupted ? NoellesEventIds.OPERATOR_BROADCAST_INTERRUPTED_EVENT : NoellesEventIds.OPERATOR_BROADCAST_ENDED_EVENT,
                 operator,
                 extra
         );

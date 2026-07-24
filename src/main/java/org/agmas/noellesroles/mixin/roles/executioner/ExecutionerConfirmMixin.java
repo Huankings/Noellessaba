@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.roles.executioner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -15,7 +17,6 @@ import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +33,7 @@ public class ExecutionerConfirmMixin {
     private static void executionerConfirm(PlayerEntity victim, boolean spawnBody, PlayerEntity killer, Identifier identifier, CallbackInfo ci) {
         if (victim.getWorld().isClient()) return;
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(victim.getWorld());
-        for (UUID uuid : gameWorldComponent.getAllWithRole(Noellesroles.EXECUTIONER)) {
+        for (UUID uuid : gameWorldComponent.getAllWithRole(NoellesRoleRegistry.EXECUTIONER)) {
             PlayerEntity executioner = victim.getWorld().getPlayerByUuid(uuid);
             if (executioner == null) continue;
             if (!(executioner instanceof ServerPlayerEntity serverExecutioner)) {

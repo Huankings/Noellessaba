@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.cleaner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -10,7 +12,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +36,7 @@ public abstract class CleanerHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.CLEANER)
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.CLEANER)
                 || !GameFunctions.isPlayerAliveAndSurvival(client.player)) {
             return;
         }
@@ -57,7 +58,7 @@ public abstract class CleanerHudMixin {
                 line,
                 context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                 drawY,
-                Noellesroles.CLEANER.color()
+                NoellesRoleRegistry.CLEANER.color()
         );
     }
 }

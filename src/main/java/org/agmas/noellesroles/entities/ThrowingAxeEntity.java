@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.entities;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -23,7 +26,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -205,7 +207,7 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
         if (MagicianServerHooks.stopPlaybackByWeaponTarget(
                 entity,
                 killer,
-                Noellesroles.DEATH_REASON_THROWING_AXE,
+                NoellesDeathReasons.DEATH_REASON_THROWING_AXE,
                 MagicianServerHooks.getWeaponName(this.getItemStack())
         )) {
             this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
@@ -241,7 +243,7 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
             replayStack = new ItemStack(ModItems.THROWING_AXE);
         }
         NbtCompound replayDeathData = GameFunctions.createReplayItemData(target.getServerWorld(), replayStack);
-        GameFunctions.killPlayer(target, true, killer, Noellesroles.DEATH_REASON_THROWING_AXE, replayDeathData);
+        GameFunctions.killPlayer(target, true, killer, NoellesDeathReasons.DEATH_REASON_THROWING_AXE, replayDeathData);
 
         // 飞斧是一击必杀武器，但仍可能被护盾、免死等机制挡下。
         // 因此这里只在 killPlayer 执行后再次确认目标是否真的死亡，
@@ -273,7 +275,7 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(killer.getWorld());
-        if (!gameWorld.isRole(killer, Noellesroles.ROBBER)) {
+        if (!gameWorld.isRole(killer, NoellesRoleRegistry.ROBBER)) {
             return;
         }
 

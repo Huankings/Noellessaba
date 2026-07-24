@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.client.appearance.PlayerAppearanceApi;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -7,7 +9,6 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +66,6 @@ public final class NoellesAppearanceSupport {
     }
 
     public static Identifier id(String path) {
-        return Identifier.of(Noellesroles.MOD_ID, path);
+        return Identifier.of(NoellesRolesCore.MOD_ID, path);
     }
 }

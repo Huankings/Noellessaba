@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.death;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * noellesroles 死亡判定里的公共“强制放行”规则。
@@ -33,9 +34,9 @@ public final class CommonForcedDeathHandler {
      * <p>4. 但这些死亡仍然会继续进入第二段监听器，以保留 Mimic / Executioner 的后续连锁逻辑。</p>
      */
     public static boolean shouldForceAllow(Identifier deathReason) {
-        return Noellesroles.DEATH_REASON_BOMB.equals(deathReason)
-                || Noellesroles.DEATH_REASON_SEDATIVE_OVERDOSE.equals(deathReason)
-                || Noellesroles.DEATH_REASON_SNIPER_RIFLE.equals(deathReason)
+        return NoellesDeathReasons.DEATH_REASON_BOMB.equals(deathReason)
+                || NoellesDeathReasons.DEATH_REASON_SEDATIVE_OVERDOSE.equals(deathReason)
+                || NoellesDeathReasons.DEATH_REASON_SNIPER_RIFLE.equals(deathReason)
                 || deathReason == GameConstants.DeathReasons.FELL_OUT_OF_TRAIN;
     }
 }

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
 
@@ -19,7 +20,7 @@ public final class DreamerInstinctHandler {
     public static void register() {
         InstinctApi.registerAvailability(NoellesInstinctHandlers.id("dreamer_availability"), InstinctApi.DEFAULT_PRIORITY, viewer -> {
             if (GameFunctions.isPlayerAliveAndSurvival(viewer)
-                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.DREAMER)
+                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.DREAMER)
                     && WatheClient.isInstinctInputActive()) {
                 return InstinctApi.AvailabilityResult.ENABLE;
             }
@@ -30,9 +31,9 @@ public final class DreamerInstinctHandler {
             if (target instanceof PlayerEntity targetPlayer
                     && GameFunctions.isPlayerAliveAndSurvival(viewer)
                     && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
-                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, Noellesroles.DREAMER)
+                    && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.DREAMER)
                     && WatheClient.isInstinctEnabled()) {
-                return InstinctApi.HighlightResult.color(Noellesroles.DREAMER.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.DREAMER.color());
             }
             return InstinctApi.HighlightResult.pass();
         });
@@ -51,7 +52,7 @@ public final class DreamerInstinctHandler {
             boolean viewerIsDreamer = viewer == dreamer && WatheClient.isPlayerAliveAndInSurvival();
             if ((viewerIsDreamer && !WatheClient.isKiller())
                     || (viewerIsDreamer && WatheClient.isKiller() && !WatheClient.isInstinctEnabled())) {
-                return InstinctApi.HighlightResult.color(Noellesroles.DREAMER.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.DREAMER.color());
             }
             return InstinctApi.HighlightResult.pass();
         });

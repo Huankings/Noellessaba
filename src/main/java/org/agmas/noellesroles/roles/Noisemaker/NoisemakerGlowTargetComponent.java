@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.Noisemaker;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
@@ -9,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -27,7 +29,7 @@ import java.util.UUID;
  */
 public class NoisemakerGlowTargetComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<NoisemakerGlowTargetComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "noisemaker_glow_target"), NoisemakerGlowTargetComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "noisemaker_glow_target"), NoisemakerGlowTargetComponent.class);
 
     private final PlayerEntity player;
     private boolean active = false;
@@ -96,7 +98,7 @@ public class NoisemakerGlowTargetComponent implements AutoSyncedComponent, Serve
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             GameRecordManager.event(GameRecordTypes.GLOBAL_EVENT)
                     .world(serverPlayer.getServerWorld())
-                    .put("event", Noellesroles.NOISEMAKER_GLOW_ENDED_EVENT.toString())
+                    .put("event", NoellesEventIds.NOISEMAKER_GLOW_ENDED_EVENT.toString())
                     .putUuid("victim", serverPlayer.getUuid())
                     .record();
         }

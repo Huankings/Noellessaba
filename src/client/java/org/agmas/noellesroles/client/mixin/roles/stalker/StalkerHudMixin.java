@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.stalker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,7 +26,7 @@ public abstract class StalkerHudMixin {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.STALKER)) return;
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.STALKER)) return;
         StalkerPlayerComponent comp = StalkerPlayerComponent.KEY.get(client.player);
         if (!comp.isActiveStalker()) return;
 

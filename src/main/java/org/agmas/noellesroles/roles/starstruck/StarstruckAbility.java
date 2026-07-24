@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -10,7 +13,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.NoellesRolesParticles;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 星界使者主动能力。
@@ -32,7 +34,7 @@ public final class StarstruckAbility {
          * 这样只有任务真的完成时才会触发，不会被其它增加心情值的效果误判成任务奖励。
          */
         TaskCompletionApi.AFTER_TASK_COMPLETE.register(context -> {
-            if (context.role() != Noellesroles.STARSTRUCK || !StarstruckConstants.TASK_REDUCES_COOLDOWN) {
+            if (context.role() != NoellesRoleRegistry.STARSTRUCK || !StarstruckConstants.TASK_REDUCES_COOLDOWN) {
                 return;
             }
 
@@ -44,7 +46,7 @@ public final class StarstruckAbility {
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(player, Noellesroles.STARSTRUCK)
+                || !gameWorld.isRole(player, NoellesRoleRegistry.STARSTRUCK)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
@@ -60,7 +62,7 @@ public final class StarstruckAbility {
          */
         ability.setCooldown(StarstruckConstants.ABILITY_COOLDOWN_TICKS);
         StarstruckPlayerComponent.KEY.get(player).setTicks(StarstruckConstants.ABILITY_DURATION_TICKS);
-        GameRecordManager.recordSkillUse(player, Noellesroles.STARSTRUCK_ABILITY_EVENT, null, null);
+        GameRecordManager.recordSkillUse(player, NoellesEventIds.STARSTRUCK_ABILITY_EVENT, null, null);
 
         player.getServerWorld().playSound(
                 null,

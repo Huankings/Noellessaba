@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.convener;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -9,7 +11,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +28,7 @@ public final class ConvenerBodyHudHandler {
                 context -> {
                     ClientPlayerEntity player = context.player();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                    if (!gameWorld.isRole(player, Noellesroles.CONVENER) || GameFunctions.isPlayerSpectatingOrCreative(player)) {
+                    if (!gameWorld.isRole(player, NoellesRoleRegistry.CONVENER) || GameFunctions.isPlayerSpectatingOrCreative(player)) {
                         return;
                     }
 
@@ -40,7 +41,7 @@ public final class ConvenerBodyHudHandler {
                     Text text = ability.cooldown > 0
                             ? Text.translatable("hud.noellesroles.convener.cooldown", Math.max(0, (ability.cooldown + 19) / 20))
                             : Text.translatable("hud.noellesroles.convener.select_body");
-                    drawCentered(context.renderer(), context.drawContext(), text, 32, Noellesroles.CONVENER.color());
+                    drawCentered(context.renderer(), context.drawContext(), text, 32, NoellesRoleRegistry.CONVENER.color());
                 }
         );
     }

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.item.RevolverItem;
 import net.minecraft.entity.Entity;
@@ -81,7 +83,7 @@ public class SniperRifleItem extends Item {
             extra.putInt("max_ammo", RemembererConstants.SNIPER_MAX_AMMO);
             dev.doctor4t.wathe.record.GameRecordManager.recordGlobalEvent(
                     serverPlayer.getServerWorld(),
-                    org.agmas.noellesroles.Noellesroles.REMEMBERER_SNIPER_RELOADED_EVENT,
+                    NoellesEventIds.REMEMBERER_SNIPER_RELOADED_EVENT,
                     serverPlayer,
                     extra
             );

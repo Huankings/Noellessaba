@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.physician;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 医师与任务大师词条的本地联动。
@@ -19,6 +20,6 @@ public final class PhysicianTaskmasterCompat {
          * 医疗包的奖励结算发生在服务端物品使用逻辑里。
          * 这里通过 Harpy 的世界词条组件读取玩家当前词条，保证结果与实际分配状态一致。
          */
-        return WorldModifierComponent.KEY.get(player.getWorld()).isModifier(player, Noellesroles.TASKMASTER);
+        return WorldModifierComponent.KEY.get(player.getWorld()).isModifier(player, NoellesModifierRegistry.TASKMASTER);
     }
 }

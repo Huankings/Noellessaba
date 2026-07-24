@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.muzzler;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -14,14 +18,13 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 静语者“撕下胶带”交互。
  */
 public final class MuzzlerInteractionHandler {
     private static final SoundEvent TAPE_APPLY_SOUND =
-            SoundEvent.of(Identifier.of(Noellesroles.MOD_ID, "item.tape.apply"));
+            SoundEvent.of(Identifier.of(NoellesRolesCore.MOD_ID, "item.tape.apply"));
     private static boolean initialized = false;
 
     private MuzzlerInteractionHandler() {
@@ -104,7 +107,7 @@ public final class MuzzlerInteractionHandler {
                 .world(serverRemover.getServerWorld())
                 .actor(serverRemover)
                 .target(serverVictim)
-                .put("event", Noellesroles.TAPE_REMOVED_EVENT.toString());
+                .put("event", NoellesEventIds.TAPE_REMOVED_EVENT.toString());
         if (victimSilence.getSilencer() != null) {
             event.putUuid("silencer", victimSilence.getSilencer());
         }
@@ -124,7 +127,7 @@ public final class MuzzlerInteractionHandler {
                 victim,
                 true,
                 killer,
-                Noellesroles.SILENCED_TAPE_REMOVED_DEATH_REASON,
+                NoellesDeathReasons.SILENCED_TAPE_REMOVED_DEATH_REASON,
                 extraDeathData
         );
     }

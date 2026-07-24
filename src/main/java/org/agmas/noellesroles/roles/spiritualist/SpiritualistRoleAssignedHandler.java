@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 灵术师职业分配处理器。
@@ -15,7 +16,7 @@ public final class SpiritualistRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.SPIRITUALIST)) {
+        if (!role.equals(NoellesRoleRegistry.SPIRITUALIST)) {
             return;
         }
 

@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.api.event.DelusionEvents;
 
 /**
@@ -31,17 +32,17 @@ public final class DreamerDelusionHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-            if (gameWorld.canUseKillerFeatures(player) || gameWorld.isRole(player, Noellesroles.DREAMER)) {
+            if (gameWorld.canUseKillerFeatures(player) || gameWorld.isRole(player, NoellesRoleRegistry.DREAMER)) {
                 return;
             }
 
             for (ServerPlayerEntity possibleDreamer : player.getServer().getPlayerManager().getPlayerList()) {
-                if (!GameFunctions.isPlayerAliveAndSurvival(possibleDreamer) || !gameWorld.isRole(possibleDreamer, Noellesroles.DREAMER)) {
+                if (!GameFunctions.isPlayerAliveAndSurvival(possibleDreamer) || !gameWorld.isRole(possibleDreamer, NoellesRoleRegistry.DREAMER)) {
                     continue;
                 }
 
                 DreamerKillerComponent dreamerProgress = DreamerKillerComponent.KEY.get(possibleDreamer);
-                possibleDreamer.sendMessage(Text.translatable("tip.noellesroles.dreamer.fake_poisoned").withColor(Noellesroles.DREAMER.color()), true);
+                possibleDreamer.sendMessage(Text.translatable("tip.noellesroles.dreamer.fake_poisoned").withColor(NoellesRoleRegistry.DREAMER.color()), true);
                 dreamerProgress.addDreamerCount(possibleDreamer);
             }
         });

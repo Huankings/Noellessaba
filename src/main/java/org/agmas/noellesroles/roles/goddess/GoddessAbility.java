@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.goddess;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -13,7 +15,6 @@ import net.minecraft.text.Text;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.goddess.GoddessC2SPacket;
 
 import java.awt.*;
@@ -37,7 +38,7 @@ public final class GoddessAbility {
         if (server == null) return;
 
         var gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.GODDESS)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.GODDESS)) return;
 
         var ability = AbilityPlayerComponent.KEY.get(player);
         if (ability.cooldown > 0) return;
@@ -53,7 +54,7 @@ public final class GoddessAbility {
         availableRoles.removeIf(role ->
                 !role.isInnocent() ||                // 不是好人
                         role.canUseKiller() ||                // 是杀手（或中立杀手）
-                        role.equals(Noellesroles.GODDESS) ||   // 排除圣母自身
+                        role.equals(NoellesRoleRegistry.GODDESS) ||   // 排除圣母自身
                         HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().getPath())
         );
         if (availableRoles.isEmpty()) {

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.nbt.NbtCompound;
@@ -9,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -20,7 +22,7 @@ import java.util.UUID;
 
 public class ControllerPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<ControllerPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "controller_player"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "controller_player"),
             ControllerPlayerComponent.class
     );
 
@@ -151,7 +153,7 @@ public class ControllerPlayerComponent implements AutoSyncedComponent, ServerTic
         if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("target_player", target);
-            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.CONTROLLER_POSSESS_STARTED_EVENT, serverPlayer, extra);
+            GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.CONTROLLER_POSSESS_STARTED_EVENT, serverPlayer, extra);
         }
 
         this.sync();
@@ -210,9 +212,9 @@ public class ControllerPlayerComponent implements AutoSyncedComponent, ServerTic
             if (manual) {
                 NbtCompound extra = new NbtCompound();
                 extra.putUuid("target_player", targetUuid);
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.CONTROLLER_POSSESS_STOPPED_EARLY_EVENT, serverPlayer, extra);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.CONTROLLER_POSSESS_STOPPED_EARLY_EVENT, serverPlayer, extra);
             } else if (!killed) {
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.CONTROLLER_POSSESS_ENDED_EVENT, serverPlayer, null);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.CONTROLLER_POSSESS_ENDED_EVENT, serverPlayer, null);
             }
         }
 

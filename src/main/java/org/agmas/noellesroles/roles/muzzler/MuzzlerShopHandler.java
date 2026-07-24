@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.roles.muzzler;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.shop.ShopContext;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.util.ShopEntry;
 import net.minecraft.item.Item;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public final class MuzzlerShopHandler {
     }
 
     public static void modifyShop(@NotNull ShopContext context, @NotNull List<ShopEntry> entries) {
-        if (context.role() != Noellesroles.MUZZLER) {
+        if (context.role() != NoellesRoleRegistry.MUZZLER) {
             return;
         }
 

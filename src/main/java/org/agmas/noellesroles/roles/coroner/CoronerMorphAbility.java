@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.coroner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 
 public final class CoronerMorphAbility {
@@ -20,7 +21,7 @@ public final class CoronerMorphAbility {
         var gameWorld = GameWorldComponent.KEY.get(world);
 
         // 检查角色
-        if (!gameWorld.isRole(player, Noellesroles.CORONER)) return;
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.CORONER)) return;
 
         var coronerComp = CoronerPlayerComponent.KEY.get(player);
 

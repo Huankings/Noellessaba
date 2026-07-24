@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.phantom;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+
 import dev.doctor4t.ratatouille.client.render.feature.PlushOnHeadFeatureRenderer;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
@@ -15,7 +17,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,6 +31,6 @@ public abstract class PhantomRattatoulieMixin {
     public void phantomRatMixin(MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
        if (livingEntity.isInvisible()) ci.cancel();
        WorldModifierComponent worldModifierComponent = WorldModifierComponent.KEY.get(livingEntity.getWorld());
-       if (worldModifierComponent.isRole(livingEntity.getUuid(), Noellesroles.CHAMELEON)) ci.cancel();
+       if (worldModifierComponent.isRole(livingEntity.getUuid(), NoellesModifierRegistry.CHAMELEON)) ci.cancel();
     }
 }

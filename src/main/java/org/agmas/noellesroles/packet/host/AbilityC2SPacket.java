@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.packet.host;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 通用能力键 C2S 数据包。
@@ -21,7 +22,7 @@ import org.agmas.noellesroles.Noellesroles;
  * 服务端只做合法性 / 距离校验，不再重新做那次容易丢目标的瞄准判定。</p>
  */
 public record AbilityC2SPacket(int targetId) implements CustomPayload {
-    public static final Identifier ABILITY_PAYLOAD_ID = Identifier.of(Noellesroles.MOD_ID, "ability");
+    public static final Identifier ABILITY_PAYLOAD_ID = Identifier.of(NoellesRolesCore.MOD_ID, "ability");
     public static final Id<AbilityC2SPacket> ID = new Id<>(ABILITY_PAYLOAD_ID);
     public static final PacketCodec<RegistryByteBuf, AbilityC2SPacket> CODEC;
 

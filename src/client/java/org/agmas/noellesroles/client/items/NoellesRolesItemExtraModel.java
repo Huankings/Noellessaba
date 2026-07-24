@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.client.items;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import dev.doctor4t.wathe.game.GameFunctions;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,11 +17,11 @@ public class NoellesRolesItemExtraModel {
      * 获取冷却模型谓词 ID（用于物品模型根据冷却状态变化）
      */
     public static Identifier getCooldownId() {
-        return Identifier.of(Noellesroles.MOD_ID, "item_cooldown");
+        return Identifier.of(NoellesRolesCore.MOD_ID, "item_cooldown");
     }
 
     public static Identifier getKillerGroupId() {
-        return Identifier.of(Noellesroles.MOD_ID, "killer_group");
+        return Identifier.of(NoellesRolesCore.MOD_ID, "killer_group");
     }
 
     /**

@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.coroner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
@@ -14,7 +16,6 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.client.appearance.modifiers.graverobber.GraverobberBodyInfoAccess;
@@ -86,7 +87,7 @@ public final class CoronerBodyHudHandler {
          * 非存活玩家需要继续读到完整身份，所以这里不要把“尸体被啃过”直接当成硬开关。
          */
         boolean canShowRoleInfo = GameFunctions.isPlayerSpectatingOrCreative(player)
-                || GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.CORONER)
+                || GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.CORONER)
                 || GraverobberBodyInfoAccess.isGraverobber(player);
         if (canShowRoleInfo && (!bodyDeathReason.vultured || !GameFunctions.isPlayerAliveAndSurvival(player))) {
             Role foundRole = WatheRoles.CIVILIAN;
@@ -102,9 +103,9 @@ public final class CoronerBodyHudHandler {
             drawCentered(renderer, context, roleInfo, CoronerConstants.BODY_ROLE_INFO_Y, Colors.WHITE);
         }
 
-        if (GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.VULTURE)) {
+        if (GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.VULTURE)) {
             if (bodyDeathReason.vultured) {
-                Text roleInfo = Text.translatable("hud.vulture.already_consumed").withColor(Noellesroles.VULTURE.color());
+                Text roleInfo = Text.translatable("hud.vulture.already_consumed").withColor(NoellesRoleRegistry.VULTURE.color());
                 drawCentered(renderer, context, roleInfo, CoronerConstants.BODY_ROLE_INFO_Y, Colors.WHITE);
             } else if (AbilityPlayerComponent.KEY.get(player).cooldown <= 0 && GameFunctions.isPlayerAliveAndSurvival(player)) {
                 Text roleInfo = Text.translatable("hud.vulture.eat", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText())

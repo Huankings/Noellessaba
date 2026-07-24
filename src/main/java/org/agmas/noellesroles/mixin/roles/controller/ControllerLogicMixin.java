@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.mixin.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.agmas.noellesroles.death.DeathProcessComponent;
@@ -53,7 +54,7 @@ public abstract class ControllerLogicMixin {
                      */
                     NbtCompound replayDeathData = new NbtCompound();
                     replayDeathData.putUuid("replay_actor", victim.getUuid());
-                    GameFunctions.killPlayer(target, true, killer, Noellesroles.VOODOO_MAGIC_DEATH_REASON, replayDeathData);
+                    GameFunctions.killPlayer(target, true, killer, NoellesDeathReasons.VOODOO_MAGIC_DEATH_REASON, replayDeathData);
                 }
             }
 

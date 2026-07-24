@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.hunter;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -10,7 +12,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +36,7 @@ public abstract class HunterHudMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (!gameWorld.isRole(client.player, Noellesroles.HUNTER)
+        if (!gameWorld.isRole(client.player, NoellesRoleRegistry.HUNTER)
                 || !GameFunctions.isPlayerAliveAndSurvival(client.player)) {
             return;
         }
@@ -57,7 +58,7 @@ public abstract class HunterHudMixin {
                 line,
                 context.getScaledWindowWidth() - getTextRenderer().getWidth(line),
                 drawY,
-                Noellesroles.HUNTER.color()
+                NoellesRoleRegistry.HUNTER.color()
         );
     }
 }

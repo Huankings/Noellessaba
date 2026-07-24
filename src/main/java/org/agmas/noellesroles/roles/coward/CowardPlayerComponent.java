@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.coward;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -9,7 +13,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -27,7 +30,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  */
 public class CowardPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<CowardPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "coward"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "coward"),
             CowardPlayerComponent.class
     );
 
@@ -80,7 +83,7 @@ public class CowardPlayerComponent implements AutoSyncedComponent, ServerTicking
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(serverPlayer.getWorld());
-        if (!gameWorld.isRole(serverPlayer, Noellesroles.COWARD) || !gameWorld.isRunning() || !GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
+        if (!gameWorld.isRole(serverPlayer, NoellesRoleRegistry.COWARD) || !gameWorld.isRunning() || !GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
             if (this.currentSanMultiplier != 1.0f || this.dangerActive || this.dangerSessionOpen || this.leaveGraceTicks != 0) {
                 this.currentSanMultiplier = 1.0f;
                 this.dangerActive = false;
@@ -121,10 +124,10 @@ public class CowardPlayerComponent implements AutoSyncedComponent, ServerTicking
 
             if (!this.dangerSessionOpen) {
                 serverPlayer.sendMessage(
-                        Text.translatable("message.noellesroles.coward.danger_nearby").withColor(Noellesroles.COWARD.color()),
+                        Text.translatable("message.noellesroles.coward.danger_nearby").withColor(NoellesRoleRegistry.COWARD.color()),
                         true
                 );
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.COWARD_DANGER_SENSED_EVENT, serverPlayer, null);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.COWARD_DANGER_SENSED_EVENT, serverPlayer, null);
                 this.dangerSessionOpen = true;
             }
             return;
@@ -136,10 +139,10 @@ public class CowardPlayerComponent implements AutoSyncedComponent, ServerTicking
 
             if (this.leaveGraceTicks >= CowardConstants.SENSE_LEAVE_GRACE_TICKS) {
                 serverPlayer.sendMessage(
-                        Text.translatable("message.noellesroles.coward.danger_gone").withColor(Noellesroles.COWARD.color()),
+                        Text.translatable("message.noellesroles.coward.danger_gone").withColor(NoellesRoleRegistry.COWARD.color()),
                         true
                 );
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.COWARD_DANGER_LEFT_EVENT, serverPlayer, null);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.COWARD_DANGER_LEFT_EVENT, serverPlayer, null);
                 this.dangerSessionOpen = false;
                 this.leaveGraceTicks = 0;
             }

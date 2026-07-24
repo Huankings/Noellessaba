@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.necromancer;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -18,7 +19,7 @@ import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
  */
 public class NecromancerWorldComponent implements AutoSyncedComponent {
     public static final ComponentKey<NecromancerWorldComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "necromancer"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "necromancer"),
             NecromancerWorldComponent.class
     );
 

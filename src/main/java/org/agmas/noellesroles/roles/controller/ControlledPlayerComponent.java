@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.controller;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 public class ControlledPlayerComponent implements AutoSyncedComponent,ServerTickingComponent{
     public static final ComponentKey<ControlledPlayerComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "controlled_player"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "controlled_player"),
             ControlledPlayerComponent.class
     );
 

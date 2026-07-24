@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.mixin.roles.robot;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.bed.BedEffectRegistry;
 import dev.doctor4t.wathe.block_entity.TrimmedBedBlockEntity;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +20,7 @@ import java.util.UUID;
 public abstract class RobotBedPoisonMixin {
     @Inject(method = "triggerBedEffect", at = @At("HEAD"), cancellable = true)
     private static void noellesroles$cancelRobotBedPoison(ServerPlayerEntity player, CallbackInfo ci) {
-        if (!GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.ROBOT)) {
+        if (!GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.ROBOT)) {
             return;
         }
 
@@ -36,7 +38,7 @@ public abstract class RobotBedPoisonMixin {
         if (poisoner != null) {
             NbtCompound extra = new NbtCompound();
             extra.putUuid("poisoner", poisoner);
-            GameRecordManager.recordGlobalEvent(player.getServerWorld(), Noellesroles.ROBOT_BED_POISON_IMMUNE_EVENT, player, extra);
+            GameRecordManager.recordGlobalEvent(player.getServerWorld(), NoellesEventIds.ROBOT_BED_POISON_IMMUNE_EVENT, player, extra);
         }
         ci.cancel();
     }

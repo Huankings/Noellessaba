@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.dreamer;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 梦之印记护盾死亡保护。
@@ -30,7 +31,7 @@ public final class DreamerDeathProtectionHandler {
             GameRecordManager.recordShieldBlocked(
                     victimPlayer,
                     killer instanceof ServerPlayerEntity killerPlayer ? killerPlayer : null,
-                    Noellesroles.DREAM_IMPRINT_SHIELD_SOURCE,
+                    NoellesEventIds.DREAM_IMPRINT_SHIELD_SOURCE,
                     GameFunctions.getReplayItemId(blockedReplayData),
                     blockedReplayData
             );

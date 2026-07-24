@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.cook;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -12,7 +14,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 平底锅蓄力时的挡枪逻辑。
@@ -36,7 +37,7 @@ public final class CookDeathProtectionHandler {
             GameRecordManager.recordShieldBlocked(
                     victimPlayer,
                     killer instanceof ServerPlayerEntity killerPlayer ? killerPlayer : null,
-                    Noellesroles.PAN_SHIELD_SOURCE,
+                    NoellesEventIds.PAN_SHIELD_SOURCE,
                     GameFunctions.getReplayItemId(blockedReplayData),
                     blockedReplayData
             );

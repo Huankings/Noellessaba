@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -17,7 +19,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +56,7 @@ public class PoisonInjectorItem extends Item {
                 ? GameFunctions.createReplayItemData(serverPlayer.getServerWorld(), stack)
                 : null;
 
-        if (gameWorld.isRole(targetPlayer, Noellesroles.ROBOT)) {
+        if (gameWorld.isRole(targetPlayer, NoellesRoleRegistry.ROBOT)) {
             recordRobotFailedUse(player, targetPlayer);
             player.sendMessage(Text.translatable("tip.noellesroles.drugmaker.poison_failed").withColor(Color.RED.getRGB()), true);
             player.playSoundToPlayer(SoundEvents.ENTITY_VILLAGER_AMBIENT, SoundCategory.PLAYERS, 1.0F, 1.0F);

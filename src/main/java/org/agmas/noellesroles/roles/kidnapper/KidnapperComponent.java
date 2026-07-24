@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.kidnapper;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -15,7 +18,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -33,7 +35,7 @@ import java.util.UUID;
  */
 public class KidnapperComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<KidnapperComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "kidnapper"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "kidnapper"),
             KidnapperComponent.class
     );
 
@@ -222,10 +224,10 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
              * 自然结束则由目标自己作为 actor，表示“这个人的被劫持状态结束”。
              */
             if (controller instanceof ServerPlayerEntity serverController && this.player instanceof ServerPlayerEntity serverTarget) {
-                GameRecordManager.recordSkillUse(serverController, Noellesroles.KIDNAPPER_RELEASE_EVENT, serverTarget, null);
+                GameRecordManager.recordSkillUse(serverController, NoellesEventIds.KIDNAPPER_RELEASE_EVENT, serverTarget, null);
             }
         } else if (this.player instanceof ServerPlayerEntity serverTarget) {
-            GameRecordManager.recordSkillUse(serverTarget, Noellesroles.KIDNAPPER_RELEASE_EVENT, null, null);
+            GameRecordManager.recordSkillUse(serverTarget, NoellesEventIds.KIDNAPPER_RELEASE_EVENT, null, null);
         }
         this.reset();
     }

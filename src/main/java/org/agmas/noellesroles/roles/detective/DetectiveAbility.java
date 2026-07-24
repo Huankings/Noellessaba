@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.detective;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -16,7 +19,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 侦探主动能力。
@@ -28,7 +30,7 @@ public final class DetectiveAbility {
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(player, Noellesroles.DETECTIVE)
+                || !gameWorld.isRole(player, NoellesRoleRegistry.DETECTIVE)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
@@ -82,7 +84,7 @@ public final class DetectiveAbility {
         NbtCompound extra = new NbtCompound();
         extra.putBoolean("innocent", innocent);
         extra.putInt("price", DetectiveConstants.ABILITY_PRICE);
-        GameRecordManager.recordSkillUse(player, Noellesroles.DETECTIVE_CHECK_EVENT, targetPlayer, extra);
+        GameRecordManager.recordSkillUse(player, NoellesEventIds.DETECTIVE_CHECK_EVENT, targetPlayer, extra);
 
         ability.setCooldown(DetectiveConstants.ABILITY_COOLDOWN_TICKS);
     }

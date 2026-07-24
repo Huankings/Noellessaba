@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.renderer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.FirecrackerEntity;
@@ -17,7 +19,6 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.entities.RoleMineEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +42,7 @@ public class RoleMineEntityRenderer extends EntityRenderer<RoleMineEntity> {
     }
 
     public void render(@NotNull RoleMineEntity roleMine, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        if ((roleMine.age >= 2 || !(this.dispatcher.camera.getFocusedEntity().squaredDistanceTo(roleMine) < (double)12.25F)) && (GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld()).isRole(MinecraftClient.getInstance().player, Noellesroles.TRAPPER) || WatheClient.isPlayerSpectatingOrCreative())) {
+        if ((roleMine.age >= 2 || !(this.dispatcher.camera.getFocusedEntity().squaredDistanceTo(roleMine) < (double)12.25F)) && (GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld()).isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.TRAPPER) || WatheClient.isPlayerSpectatingOrCreative())) {
             matrices.push();
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-roleMine.getYaw()));
             matrices.translate(0.0F, (float)roleMine.hashCode() % 24.0F * 1.0E-4F, 0.0F);

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.winder;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -11,7 +14,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -30,7 +32,7 @@ import java.util.UUID;
  */
 public class WindMarkPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<WindMarkPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "wind_mark"), WindMarkPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "wind_mark"), WindMarkPlayerComponent.class);
 
     private final PlayerEntity player;
     private int remainingTicks = 0;
@@ -90,7 +92,7 @@ public class WindMarkPlayerComponent implements AutoSyncedComponent, ServerTicki
                 NbtCompound extra = new NbtCompound();
                 extra.putUuid("victim", serverPlayer.getUuid());
                 extra.putUuid("knife_user", knifeUser.getUuid());
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.WINDER_WIND_MARK_TRIGGERED_EVENT, null, extra);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.WINDER_WIND_MARK_TRIGGERED_EVENT, null, extra);
             }
             this.reset();
             return;
@@ -101,7 +103,7 @@ public class WindMarkPlayerComponent implements AutoSyncedComponent, ServerTicki
             if (this.player instanceof ServerPlayerEntity serverPlayer) {
                 NbtCompound extra = new NbtCompound();
                 extra.putUuid("victim", serverPlayer.getUuid());
-                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), Noellesroles.WINDER_WIND_MARK_EXPIRED_EVENT, null, extra);
+                GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.WINDER_WIND_MARK_EXPIRED_EVENT, null, extra);
             }
             this.reset();
         }

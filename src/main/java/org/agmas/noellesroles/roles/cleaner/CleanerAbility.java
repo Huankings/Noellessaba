@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.cleaner;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -11,7 +14,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 清道夫主动能力：花费金币清除场上的掉落物。
@@ -23,7 +25,7 @@ public final class CleanerAbility {
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(player, Noellesroles.CLEANER)
+                || !gameWorld.isRole(player, NoellesRoleRegistry.CLEANER)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
@@ -62,7 +64,7 @@ public final class CleanerAbility {
         NbtCompound extra = new NbtCompound();
         extra.putInt("price", CleanerConstants.ABILITY_PRICE);
         extra.putInt("cleared_items", clearedItems);
-        GameRecordManager.recordSkillUse(player, Noellesroles.CLEANER_CLEAR_ITEMS_EVENT, null, extra);
+        GameRecordManager.recordSkillUse(player, NoellesEventIds.CLEANER_CLEAR_ITEMS_EVENT, null, extra);
 
         ability.setCooldown(CleanerConstants.ABILITY_COOLDOWN_TICKS);
     }

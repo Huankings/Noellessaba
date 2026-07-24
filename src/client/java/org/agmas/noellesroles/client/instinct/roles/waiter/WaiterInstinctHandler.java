@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.client.instinct.roles.waiter;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 
@@ -28,10 +29,10 @@ public final class WaiterInstinctHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
-            if (gameWorld.isRole(viewer, Noellesroles.WAITER)
+            if (gameWorld.isRole(viewer, NoellesRoleRegistry.WAITER)
                     && WaiterPlayerComponent.KEY.get(targetPlayer).isVisibleToWaiters()) {
                 // 颜色复用职业注册色，也就是需求中的 RGB(225, 170, 40)。
-                return InstinctApi.HighlightResult.color(Noellesroles.WAITER.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.WAITER.color());
             }
             return InstinctApi.HighlightResult.pass();
         });

@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.instinct.roles.bomber;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 
@@ -22,7 +23,7 @@ public final class BomberInstinctHandler {
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
             if (GameFunctions.isPlayerAliveAndSurvival(viewer)
                     && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
-                    && gameWorld.isRole(viewer, Noellesroles.BOMBER)
+                    && gameWorld.isRole(viewer, NoellesRoleRegistry.BOMBER)
                     && WatheClient.isInstinctEnabled()
                     && BomberPlayerComponent.KEY.get(targetPlayer).hasBomb()) {
                 /*
@@ -30,7 +31,7 @@ public final class BomberInstinctHandler {
                  * viewer 必须仍存活，否则死亡观察者会因为 isInstinctEnabled() 被观察者本能开启而误看到炸弹客颜色。
                  * 因此这里使用高于 0 的 priority，但仍依赖 isInstinctEnabled()，保证本能压制能统一生效。
                  */
-                return InstinctApi.HighlightResult.color(Noellesroles.BOMBER.color());
+                return InstinctApi.HighlightResult.color(NoellesRoleRegistry.BOMBER.color());
             }
             return InstinctApi.HighlightResult.pass();
         });

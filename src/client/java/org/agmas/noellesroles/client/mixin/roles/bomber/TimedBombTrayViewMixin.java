@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.mixin.roles.bomber;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.block_entity.BeveragePlateBlockEntity;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.index.WatheParticles;
@@ -9,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,7 +40,7 @@ public abstract class TimedBombTrayViewMixin {
          * 托盘定时炸弹如今是通过 trayEffect 来同步和持久化的，
          * 所以这里直接读取托盘当前真实记录下来的效果 id。
          */
-        if (!Noellesroles.TIMED_BOMB_TRAY_EMBEDDED_EVENT.toString().equals(tray.getTrayEffect())) {
+        if (!NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT.toString().equals(tray.getTrayEffect())) {
             return;
         }
 

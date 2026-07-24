@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.hunter;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -11,7 +14,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 追猎者主动能力：花费金币刷新匕首和猎刀冷却。
@@ -23,7 +25,7 @@ public final class HunterAbility {
     public static void handle(ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorld.isRunning()
-                || !gameWorld.isRole(player, Noellesroles.HUNTER)
+                || !gameWorld.isRole(player, NoellesRoleRegistry.HUNTER)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;
         }
@@ -55,7 +57,7 @@ public final class HunterAbility {
 
         NbtCompound extra = new NbtCompound();
         extra.putInt("price", HunterConstants.ABILITY_PRICE);
-        GameRecordManager.recordSkillUse(player, Noellesroles.HUNTER_REFRESH_EVENT, null, extra);
+        GameRecordManager.recordSkillUse(player, NoellesEventIds.HUNTER_REFRESH_EVENT, null, extra);
 
         ability.setCooldown(HunterConstants.ABILITY_COOLDOWN_TICKS);
     }

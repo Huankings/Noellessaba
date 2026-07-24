@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.modifiers.taskmaster;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.economy.EconomyApi;
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 public final class TaskmasterTaskIncomeHandler {
     private static boolean initialized = false;
@@ -21,7 +23,7 @@ public final class TaskmasterTaskIncomeHandler {
         initialized = true;
 
         TaskCompletionApi.registerTaskIncomeProvider(
-                Identifier.of(Noellesroles.MOD_ID, "taskmaster_task_income"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "taskmaster_task_income"),
                 TaskCompletionApi.DEFAULT_PRIORITY,
                 context -> {
                     /*
@@ -72,6 +74,6 @@ public final class TaskmasterTaskIncomeHandler {
 
     private static boolean hasTaskmaster(TaskCompletionApi.TaskCompletionContext context) {
         WorldModifierComponent modifier = WorldModifierComponent.KEY.get(context.player().getWorld());
-        return modifier.isModifier(context.player(), Noellesroles.TASKMASTER);
+        return modifier.isModifier(context.player(), NoellesModifierRegistry.TASKMASTER);
     }
 }

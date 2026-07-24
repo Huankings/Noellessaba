@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.client.roles.executioner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.client.mood.MoodHudApi;
 import dev.doctor4t.wathe.api.client.mood.MoodHudContext;
@@ -11,7 +14,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 public final class ExecutionerMoodHud {
     /**
@@ -26,11 +28,11 @@ public final class ExecutionerMoodHud {
     private static final int BURN_FRAME_COUNT = 7;
     private static final int BURN_TEXTURE_HEIGHT = BURN_FRAME_HEIGHT * BURN_FRAME_COUNT;
 
-    private static final Identifier EXECUTIONER_MOOD = Identifier.of(Noellesroles.MOD_ID, "hud/mood_executioner");
-    private static final Identifier EXECUTIONER_BURN_TEXTURE = Identifier.of(Noellesroles.MOD_ID, "textures/gui/sprites/hud/mood_executioner_burn.png");
+    private static final Identifier EXECUTIONER_MOOD = Identifier.of(NoellesRolesCore.MOD_ID, "hud/mood_executioner");
+    private static final Identifier EXECUTIONER_BURN_TEXTURE = Identifier.of(NoellesRolesCore.MOD_ID, "textures/gui/sprites/hud/mood_executioner_burn.png");
     private static final MoodHudStyle EXECUTIONER_STYLE = MoodHudStyle
             .builder(EXECUTIONER_MOOD)
-            .barColor(Noellesroles.EXECUTIONER.color())
+            .barColor(NoellesRoleRegistry.EXECUTIONER.color())
             .build();
     private static final MoodHudStyle BURN_STYLE = MoodHudStyle
             .builder(context -> null)
@@ -45,9 +47,9 @@ public final class ExecutionerMoodHud {
     }
 
     public static void register() {
-        MoodHudApi.registerRoleStyle(Noellesroles.EXECUTIONER, EXECUTIONER_STYLE);
+        MoodHudApi.registerRoleStyle(NoellesRoleRegistry.EXECUTIONER, EXECUTIONER_STYLE);
         MoodHudApi.registerMoodProvider(
-                Identifier.of(Noellesroles.MOD_ID, "mood/executioner_burn"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "mood/executioner_burn"),
                 BURN_STYLE_PRIORITY,
                 context -> burnTicks > 0 ? BURN_STYLE : null
         );
@@ -78,9 +80,9 @@ public final class ExecutionerMoodHud {
          * 这里检测“上一 tick 是 Executioner、这一 tick 已经不是”的转职边沿，
          * 然后本地显示 20 tick 的动态图标覆盖新杀手图标。
          */
-        boolean justBecameKiller = previousRole == Noellesroles.EXECUTIONER
+        boolean justBecameKiller = previousRole == NoellesRoleRegistry.EXECUTIONER
                 && currentRole != null
-                && currentRole != Noellesroles.EXECUTIONER
+                && currentRole != NoellesRoleRegistry.EXECUTIONER
                 && currentRole.canUseKiller();
         previousRole = currentRole;
 
@@ -105,7 +107,7 @@ public final class ExecutionerMoodHud {
          * 输入颜色里的 0xFF 仍会让心情条保持不透明。
          * 因此这里先保留低 24 位 RGB，再叠加 Wathe 本帧算出的 alpha。
          */
-        int colour = context.role() == null ? Noellesroles.EXECUTIONER.color() : context.role().color();
+        int colour = context.role() == null ? NoellesRoleRegistry.EXECUTIONER.color() : context.role().color();
         int rgb = colour & 0x00FFFFFF;
         int alphaByte = Math.max(0, Math.min(255, (int) (alpha * 255.0F)));
         context.drawContext().fill(0, 0, width, 1, rgb | (alphaByte << 24));

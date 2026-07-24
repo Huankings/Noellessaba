@@ -1,5 +1,7 @@
 package org.agmas.noellesroles;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -19,7 +21,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 import java.util.UUID;
 
 public class ConfigWorldComponent implements AutoSyncedComponent, ServerTickingComponent {
-    public static final ComponentKey<ConfigWorldComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "config"), ConfigWorldComponent.class);
+    public static final ComponentKey<ConfigWorldComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "config"), ConfigWorldComponent.class);
     public boolean insaneSeesMorphs = true;
     public boolean naturalVoodoosAllowed = false;
     public int masterKeyVisibleCount = 0;

@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.operator;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 
 /**
@@ -15,7 +16,7 @@ public final class OperatorRoleAssignedHandler {
     }
 
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.OPERATOR)) {
+        if (!role.equals(NoellesRoleRegistry.OPERATOR)) {
             return;
         }
 

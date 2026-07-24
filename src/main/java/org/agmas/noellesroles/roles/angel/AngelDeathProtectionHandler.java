@@ -1,5 +1,9 @@
 package org.agmas.noellesroles.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -7,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 天使的死亡保护处理器。
@@ -42,7 +45,7 @@ public final class AngelDeathProtectionHandler {
          * B 又尝试为 A 代死 -> A 再为 B 代死……
          * 最终形成无限递归并把服务器栈打爆。
          */
-        if (Noellesroles.ANGEL_SACRIFICE_DEATH_REASON.equals(deathReason)) {
+        if (NoellesDeathReasons.ANGEL_SACRIFICE_DEATH_REASON.equals(deathReason)) {
             return true;
         }
 
@@ -52,7 +55,7 @@ public final class AngelDeathProtectionHandler {
 
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(playerEntity.getWorld());
         for (ServerPlayerEntity possibleAngel : protectedPlayer.getServerWorld().getPlayers()) {
-            if (!gameWorldComponent.isRole(possibleAngel, Noellesroles.ANGEL)) {
+            if (!gameWorldComponent.isRole(possibleAngel, NoellesRoleRegistry.ANGEL)) {
                 continue;
             }
             if (!GameFunctions.isPlayerAliveAndSurvival(possibleAngel)) {
@@ -85,7 +88,7 @@ public final class AngelDeathProtectionHandler {
             GameRecordManager.recordShieldBlocked(
                     protectedPlayer,
                     killer instanceof ServerPlayerEntity killerPlayer ? killerPlayer : null,
-                    Noellesroles.ANGEL_GUARD_SHIELD_SOURCE,
+                    NoellesEventIds.ANGEL_GUARD_SHIELD_SOURCE,
                     GameFunctions.getReplayItemId(blockedReplayData),
                     blockedReplayData
             );
@@ -103,7 +106,7 @@ public final class AngelDeathProtectionHandler {
                     possibleAngel,
                     true,
                     null,
-                    Noellesroles.ANGEL_SACRIFICE_DEATH_REASON,
+                    NoellesDeathReasons.ANGEL_SACRIFICE_DEATH_REASON,
                     sacrificeDeathData
             );
             return false;

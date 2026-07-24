@@ -1,0 +1,269 @@
+package org.agmas.noellesroles.bootstrap;
+
+import org.agmas.noellesroles.registry.NoellesRoleIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
+import dev.doctor4t.wathe.api.economy.EconomyApi;
+import dev.doctor4t.wathe.api.event.AllowPlayerPunching;
+import dev.doctor4t.wathe.api.event.CanSeePoison;
+import dev.doctor4t.wathe.api.event.GameEvents;
+import dev.doctor4t.wathe.api.event.ShouldDropOnDeath;
+import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.cca.PlayerMoodComponent;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
+import org.agmas.harpymodloader.Harpymodloader;
+import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
+import org.agmas.harpymodloader.events.ModifierAssigned;
+import org.agmas.harpymodloader.events.ResetPlayerEvent;
+import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.config.NoellesRolesConfig;
+import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
+import org.agmas.noellesroles.framing.DelusionPlayerComponent;
+import org.agmas.noellesroles.roleassign.NoellesRolesRoleAssignedBootstrap;
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesFramingShopEntries;
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.angel.AngelConstants;
+import org.agmas.noellesroles.roles.arsonist.ArsonistReplayTracker;
+import org.agmas.noellesroles.roles.arsonist.ArsonistVictoryRule;
+import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
+import org.agmas.noellesroles.roles.arsonist.OilDousingHandler;
+import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerCommunicationManager;
+import org.agmas.noellesroles.roles.convener.ConvenerDisguiseComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerMomentumComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerPlayerComponent;
+import org.agmas.noellesroles.roles.convener.ConvenerSummonHandler;
+import org.agmas.noellesroles.roles.convener.ConvenerTaskShieldHandler;
+import org.agmas.noellesroles.roles.convener.ConvenerVictoryRule;
+import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
+import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerConstants;
+import org.agmas.noellesroles.roles.dreamer.DreamerDelusionHandler;
+import org.agmas.noellesroles.roles.dreamer.DreamerKillerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerComponent;
+import org.agmas.noellesroles.roles.hacker.HackerConstants;
+import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
+import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
+import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
+import org.agmas.noellesroles.roles.mimic.MimicConstants;
+import org.agmas.noellesroles.roles.muzzler.MuzzlerInteractionHandler;
+import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
+import org.agmas.noellesroles.roles.necromancer.NecromancerRevivalHandler;
+import org.agmas.noellesroles.roles.necromancer.NecromancerRoleLimitHandler;
+import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
+import org.agmas.noellesroles.roles.phantom.PhantomPlayerComponent;
+import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
+import org.agmas.noellesroles.roles.physician.PhysicianStatusAlertHandler;
+import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
+import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
+import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManager;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
+import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
+import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
+import org.agmas.noellesroles.roles.swapper.SwapperAbility;
+import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
+import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
+import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * NoellesRoles 的事件和生命周期总引导器。
+ *
+ * <p>这里负责把原先入口类中的各种事件监听拆到独立方法里，
+ * 但仍然保持统一注册，避免监听器顺序意外变化。</p>
+ */
+public final class NoellesRolesEventBootstrap {
+    private static boolean initialized = false;
+    private static final EntityAttributeModifier TINY_MODIFIER = new EntityAttributeModifier(Identifier.of(org.agmas.noellesroles.registry.NoellesRolesCore.MOD_ID, "tiny_modifier"), -0.15, EntityAttributeModifier.Operation.ADD_VALUE);
+
+    private NoellesRolesEventBootstrap() {
+    }
+
+    public static void init() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+
+        NoellesRolesDeathBootstrap.init();
+        registerCombatAndStateEvents();
+        NoellesRolesRoleAssignedBootstrap.init();
+        registerServerTickEvents();
+        registerRoundCleanup();
+        applyHarpyDisabledRoles();
+    }
+
+    private static void registerCombatAndStateEvents() {
+        AllowPlayerPunching.EVENT.register((playerEntity, playerEntity1) -> {
+            GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(playerEntity.getWorld());
+            return (gameWorldComponent.isRole(playerEntity, NoellesRoleRegistry.MIMIC) && playerEntity.getMainHandStack().isOf(ModItems.FAKE_KNIFE))
+                    || (gameWorldComponent.isRole(playerEntity, NoellesRoleRegistry.ASSASSIN) && playerEntity.getMainHandStack().isOf(ModItems.BAYONET))
+                    || playerEntity.getMainHandStack().isOf(ModItems.HUNTING_KNIFE);
+        });
+        ModifierAssigned.EVENT.register((playerEntity, modifier) -> {
+            if (modifier.equals(NoellesModifierRegistry.TINY)) {
+                playerEntity.getAttributeInstance(EntityAttributes.GENERIC_SCALE).removeModifier(TINY_MODIFIER);
+                playerEntity.getAttributeInstance(EntityAttributes.GENERIC_SCALE).addPersistentModifier(TINY_MODIFIER);
+            }
+            if (modifier.equals(NoellesModifierRegistry.FEATHER)) {
+                playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, StatusEffectInstance.INFINITE, 0, true, false));
+            }
+        });
+        ResetPlayerEvent.EVENT.register(playerEntity -> {
+            playerEntity.removeStatusEffect(StatusEffects.SLOW_FALLING);
+            playerEntity.getAttributeInstance(EntityAttributes.GENERIC_SCALE).removeModifier(TINY_MODIFIER);
+            DelusionPlayerComponent.KEY.get(playerEntity).reset();
+            PhantomPlayerComponent.KEY.get(playerEntity).reset();
+            WaiterPlayerComponent.KEY.get(playerEntity).reset();
+            org.agmas.noellesroles.roles.cook.CookPlayerComponent.KEY.get(playerEntity).reset();
+            PhysicianPlayerComponent.KEY.get(playerEntity).reset();
+            DreamerComponent.KEY.get(playerEntity).reset();
+            DreamerKillerComponent.KEY.get(playerEntity).reset();
+            HackerComponent.KEY.get(playerEntity).reset();
+            HackerPhoneComponent.KEY.get(playerEntity).reset();
+            StarstruckPlayerComponent.KEY.get(playerEntity).reset();
+            SilencePlayerComponent.KEY.get(playerEntity).reset();
+            HunterPlayerComponent.KEY.get(playerEntity).reset();
+            org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent.KEY.get(playerEntity).reset();
+            KidnapperComponent.KEY.get(playerEntity).resetAll();
+            RobotPlayerComponent.KEY.get(playerEntity).reset();
+            DousedPlayerComponent.KEY.get(playerEntity).reset();
+            DousedPlayerComponent.KEY.get(playerEntity).sync();
+            ConvenerPlayerComponent.KEY.get(playerEntity).reset();
+            ConvenerDisguiseComponent.KEY.get(playerEntity).clearDisguise();
+            ConvenerMomentumComponent.KEY.get(playerEntity).reset();
+        });
+        CanSeePoison.EVENT.register(player -> GameWorldComponent.KEY.get(player.getWorld()).isRole((PlayerEntity) player, NoellesRoleRegistry.BARTENDER));
+        ShouldDropOnDeath.EVENT.register((itemStack, identifier) -> itemStack.isOf(ModItems.MASTER_KEY));
+    }
+
+    private static void registerServerTickEvents() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            for (ServerWorld world : server.getWorlds()) {
+                GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
+                for (ServerPlayerEntity player : world.getPlayers()) {
+                    if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
+                        PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(AngelConstants.MOOD_DRAIN_MULTIPLIER);
+                    } else if (gameWorld.isRole(player, NoellesRoleRegistry.COWARD)) {
+                        PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(CowardPlayerComponent.KEY.get(player).getCurrentSanMultiplier());
+                    } else {
+                        PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(1.0f);
+                    }
+                }
+
+                SwapperAbility.tickPendingSwaps(server);
+
+                for (EnderPearlEntity pearl : world.getEntitiesByType(EntityType.ENDER_PEARL, entity -> true)) {
+                    if (pearl.getCommandTags().contains("noellesroles_replay_recorded")) {
+                        continue;
+                    }
+                    if (!(pearl.getOwner() instanceof net.minecraft.server.network.ServerPlayerEntity owner)) {
+                        continue;
+                    }
+                    if (!gameWorld.isRole(owner, NoellesRoleRegistry.RECALLER)) {
+                        continue;
+                    }
+                    dev.doctor4t.wathe.record.GameRecordManager.recordGlobalEvent(world, NoellesEventIds.RECALLER_ENDER_PEARL_THROWN_EVENT, owner, null);
+                    pearl.addCommandTag("noellesroles_replay_recorded");
+                }
+
+                for (var windCharge : world.getEntitiesByType(EntityType.WIND_CHARGE, entity -> true)) {
+                    if (windCharge.getCommandTags().contains("noellesroles_replay_recorded")) {
+                        continue;
+                    }
+                    if (!(windCharge instanceof net.minecraft.entity.projectile.ProjectileEntity projectile)) {
+                        continue;
+                    }
+                    if (!(projectile.getOwner() instanceof net.minecraft.server.network.ServerPlayerEntity owner)) {
+                        continue;
+                    }
+                    if (!gameWorld.isRole(owner, NoellesRoleRegistry.WINDER)) {
+                        continue;
+                    }
+                    dev.doctor4t.wathe.record.GameRecordManager.recordGlobalEvent(world, NoellesEventIds.WINDER_WIND_CHARGE_USED_EVENT, owner, null);
+                    windCharge.addCommandTag("noellesroles_replay_recorded");
+                }
+            }
+
+            if (server.getPlayerManager().getCurrentPlayerCount() >= 8) {
+                Harpymodloader.setRoleMaximum(NoellesRoleRegistry.VULTURE, 1);
+            } else {
+                Harpymodloader.setRoleMaximum(NoellesRoleRegistry.VULTURE, 0);
+            }
+            if (server.getPlayerManager().getCurrentPlayerCount() >= HackerConstants.PLAYER_LIMIT) {
+                Harpymodloader.setRoleMaximum(NoellesRoleRegistry.HACKER, 1);
+            } else {
+                Harpymodloader.setRoleMaximum(NoellesRoleRegistry.HACKER, 0);
+            }
+
+            ServerWorld overworld = server.getOverworld();
+            GameWorldComponent gameWorld = GameWorldComponent.KEY.get(overworld);
+            int killerSlots = (int) Math.floor((float) dev.doctor4t.wathe.game.GameFunctions.getReadyPlayerCount(overworld) / (float) gameWorld.getKillerDividend());
+            Harpymodloader.setRoleMaximum(NoellesRoleRegistry.DRUGMAKER, killerSlots >= org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants.MIN_KILLER_COUNT ? 1 : 0);
+            Harpymodloader.setRoleMaximum(NoellesRoleRegistry.MIMIC, killerSlots >= MimicConstants.MIMIC_MIN_KILLER_COUNT ? 1 : 0);
+
+
+            int vigilanteSlots = 0;
+            if (!server.getPlayerManager().getPlayerList().isEmpty()) {
+                vigilanteSlots = (int) Math.floor((float) server.getPlayerManager().getCurrentPlayerCount() / (float) gameWorld.getVigilanteDividend());
+            }
+            Harpymodloader.setRoleMaximum(NoellesRoleRegistry.BETTER_VIGILANTE, vigilanteSlots >= 4 ? 1 : 0);
+        });
+    }
+
+    private static void registerRoundCleanup() {
+        GameEvents.ON_FINISH_FINALIZE.register((world, gameComponent) -> {
+            if (!(world instanceof ServerWorld serverWorld)) {
+                return;
+            }
+            SwapperAbility.clearPendingSwaps();
+            HiddenBodiesWorldComponent.KEY.get(serverWorld).reset();
+            MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);
+
+            for (org.agmas.noellesroles.entities.ThrowingAxeEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.ThrowingAxeEntity.class), ignored -> true)) {
+                entity.discard();
+            }
+            for (org.agmas.noellesroles.entities.RoleMineEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.RoleMineEntity.class), ignored -> true)) {
+                entity.discard();
+            }
+            for (org.agmas.noellesroles.entities.CaptureDeviceEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.CaptureDeviceEntity.class), ignored -> true)) {
+                entity.discard();
+            }
+        });
+    }
+
+    private static void applyHarpyDisabledRoles() {
+        if (!NoellesRolesConfig.HANDLER.instance().shitpostRoles) {
+            HarpyModLoaderConfig.HANDLER.load();
+            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(org.agmas.noellesroles.registry.NoellesRoleIds.AWESOME_BINGLUS_ID.getPath())) {
+                HarpyModLoaderConfig.HANDLER.instance().disabled.add(org.agmas.noellesroles.registry.NoellesRoleIds.AWESOME_BINGLUS_ID.getPath());
+            }
+            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(org.agmas.noellesroles.registry.NoellesRoleIds.BETTER_VIGILANTE_ID.getPath())) {
+                HarpyModLoaderConfig.HANDLER.instance().disabled.add(org.agmas.noellesroles.registry.NoellesRoleIds.BETTER_VIGILANTE_ID.getPath());
+            }
+            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(org.agmas.noellesroles.registry.NoellesRoleIds.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath())) {
+                HarpyModLoaderConfig.HANDLER.instance().disabled.add(org.agmas.noellesroles.registry.NoellesRoleIds.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath());
+            }
+            HarpyModLoaderConfig.HANDLER.save();
+        }
+    }
+}

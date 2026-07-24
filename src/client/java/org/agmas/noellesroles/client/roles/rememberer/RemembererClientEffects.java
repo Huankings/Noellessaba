@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.roles.rememberer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
@@ -9,7 +11,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.item.SniperRifleItem;
 import org.agmas.noellesroles.roles.rememberer.RemembererConstants;
 import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
@@ -58,7 +59,7 @@ public final class RemembererClientEffects {
     }
 
     public static boolean isRememberer(@Nullable PlayerEntity player) {
-        return player != null && GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.REMEMBERER);
+        return player != null && GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.REMEMBERER);
     }
 
     public static boolean shouldRenderRemembererHud(@Nullable PlayerEntity player) {

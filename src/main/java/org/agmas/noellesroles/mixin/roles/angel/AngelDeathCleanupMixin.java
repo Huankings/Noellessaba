@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.roles.angel;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,7 +10,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +32,7 @@ public abstract class AngelDeathCleanupMixin {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(victim.getWorld());
-        if (!gameWorld.isRole(victim, Noellesroles.ANGEL)) {
+        if (!gameWorld.isRole(victim, NoellesRoleRegistry.ANGEL)) {
             return;
         }
 
@@ -44,7 +45,7 @@ public abstract class AngelDeathCleanupMixin {
         if (guardedTarget != null && !sacrificeDeath) {
             guardedTarget.sendMessage(
                     Text.translatable("message.noellesroles.angel.guardian_died", angelPlayer.getDisplayName())
-                            .withColor(Noellesroles.ANGEL.color()),
+                            .withColor(NoellesRoleRegistry.ANGEL.color()),
                     true
             );
             guardedTarget.playSoundToPlayer(SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1.0f, 1.0f);

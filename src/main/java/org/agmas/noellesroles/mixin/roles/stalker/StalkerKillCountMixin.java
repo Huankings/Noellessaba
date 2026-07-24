@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.mixin.roles.stalker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +21,7 @@ public class StalkerKillCountMixin {
         if (!deathReason.equals(GameConstants.DeathReasons.KNIFE)) return;
 
         var gameWorld = dev.doctor4t.wathe.cca.GameWorldComponent.KEY.get(killer.getWorld());
-        if (!gameWorld.isRole(killer, Noellesroles.STALKER)) return;
+        if (!gameWorld.isRole(killer, NoellesRoleRegistry.STALKER)) return;
 
         StalkerPlayerComponent comp = StalkerPlayerComponent.KEY.get(killer);
         if (comp.isActiveStalker() && comp.phase >= 2) {

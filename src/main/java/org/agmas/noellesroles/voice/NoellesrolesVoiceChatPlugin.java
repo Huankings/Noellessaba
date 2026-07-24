@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.voice;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
@@ -19,7 +22,6 @@ import dev.doctor4t.wathe.compat.TrainVoicePlugin;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerCommunicationHelper;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
@@ -36,12 +38,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
-    public static final UUID KILLER_GROUP_ID = UUID.nameUUIDFromBytes((Noellesroles.MOD_ID + ":hacker_killer_group").getBytes(StandardCharsets.UTF_8));
+    public static final UUID KILLER_GROUP_ID = UUID.nameUUIDFromBytes((NoellesRolesCore.MOD_ID + ":hacker_killer_group").getBytes(StandardCharsets.UTF_8));
     public static Group KILLER_GROUP;
 
     @Override
     public String getPluginId() {
-        return Noellesroles.MOD_ID;
+        return NoellesRolesCore.MOD_ID;
     }
 
     @Override
@@ -132,7 +134,7 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(spectator.getWorld());
         if (spectator.interactionManager.getGameMode().equals(GameMode.SPECTATOR)) {
             spectator.getWorld().getPlayers().forEach((p) -> {
-                if (gameWorldComponent.isRole(p, Noellesroles.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES) && GameFunctions.isPlayerAliveAndSurvival(p)) {
+                if (gameWorldComponent.isRole(p, NoellesRoleRegistry.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES) && GameFunctions.isPlayerAliveAndSurvival(p)) {
                     if (spectator.distanceTo(p) <= api.getVoiceChatDistance()) {
                         VoicechatConnection con = api.getConnectionOf(p.getUuid());
                         api.sendLocationalSoundPacketTo(con, event.getPacket().locationalSoundPacketBuilder()
@@ -218,7 +220,7 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
      */
     private UUID getPossessionVoiceChannelId(ServerPlayerEntity spiritualist, ServerPlayerEntity host) {
         return UUID.nameUUIDFromBytes(
-                (Noellesroles.MOD_ID + ":spiritualist_voice:" + spiritualist.getUuid() + ":" + host.getUuid())
+                (NoellesRolesCore.MOD_ID + ":spiritualist_voice:" + spiritualist.getUuid() + ":" + host.getUuid())
                         .getBytes(StandardCharsets.UTF_8)
         );
     }

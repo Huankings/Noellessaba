@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.assassin;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 刺客职业分配处理器。
@@ -20,7 +21,7 @@ public final class AssassinRoleAssignedHandler {
      * 并且无声手雷本身已经有独立的长冷却与一次性消耗语义。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.ASSASSIN)) {
+        if (!role.equals(NoellesRoleRegistry.ASSASSIN)) {
             return;
         }
 

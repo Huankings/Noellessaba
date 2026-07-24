@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.spiritualist;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 灵术师能力键入口。
@@ -36,7 +37,7 @@ public final class SpiritualistAbility {
      */
     public static void handle(ServerPlayerEntity player, int clientTargetId) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.SPIRITUALIST)
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.SPIRITUALIST)
                 || !gameWorld.isRunning()
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return;

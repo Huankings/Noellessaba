@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
@@ -32,7 +33,7 @@ public final class HackerTargetHudHandler {
                 context -> {
                     ClientPlayerEntity player = context.player();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                    if (!gameWorld.isRole(player, Noellesroles.HACKER) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
+                    if (!gameWorld.isRole(player, NoellesRoleRegistry.HACKER) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
                         return;
                     }
 
@@ -45,12 +46,12 @@ public final class HackerTargetHudHandler {
 
                     Text targetInfo;
                     if (HackerSafeTimeComponent.KEY.get(player.getWorld()).isSafe()) {
-                        targetInfo = Text.translatable("hud.noellesroles.hacker.target_safe").withColor(Noellesroles.HACKER.color());
+                        targetInfo = Text.translatable("hud.noellesroles.hacker.target_safe").withColor(NoellesRoleRegistry.HACKER.color());
                     } else {
                         HackerComponent targetHack = HackerComponent.KEY.get(target);
                         if (targetHack.hackingTime < HackerConstants.HACKING_TIME_TICKS) {
                             targetInfo = Text.translatable("hud.noellesroles.hacker.target")
-                                    .styled(style -> style.withColor(Noellesroles.HACKER.color()))
+                                    .styled(style -> style.withColor(NoellesRoleRegistry.HACKER.color()))
                                     .append(Text.literal(" [ " + (int) (((float) targetHack.hackingTime / HackerConstants.HACKING_TIME_TICKS) * 100) + "% ]")
                                             .styled(style -> style.withColor(Color.GREEN.getRGB())));
                         } else {
@@ -59,7 +60,7 @@ public final class HackerTargetHudHandler {
                         }
                     }
 
-                    drawCentered(context.renderer(), context.drawContext(), targetInfo, 32, Noellesroles.HACKER.color());
+                    drawCentered(context.renderer(), context.drawContext(), targetInfo, 32, NoellesRoleRegistry.HACKER.color());
                 }
         );
     }

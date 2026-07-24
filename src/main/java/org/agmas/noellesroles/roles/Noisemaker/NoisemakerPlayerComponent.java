@@ -1,10 +1,11 @@
 package org.agmas.noellesroles.roles.Noisemaker;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 public class NoisemakerPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<NoisemakerPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "noisemaker"), NoisemakerPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "noisemaker"), NoisemakerPlayerComponent.class);
     private final PlayerEntity player;
     private int cooldownTicks = 0;  // 冷却时间，0表示可用
     private UUID lastTarget = null;  // 上次选择的目标（可选，用于UI显示）

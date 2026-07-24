@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.renderer;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.WatheClient;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +16,6 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.entities.CaptureDeviceEntity;
 
 public class CaptureDeviceEntityRenderer extends EntityRenderer<CaptureDeviceEntity> {
@@ -44,7 +45,7 @@ public class CaptureDeviceEntityRenderer extends EntityRenderer<CaptureDeviceEnt
         if (client.player == null) return;
 
         var gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
-        if (gameWorld.isRole(client.player, Noellesroles.ENGINEER) || WatheClient.isPlayerSpectatingOrCreative()) {
+        if (gameWorld.isRole(client.player, NoellesRoleRegistry.ENGINEER) || WatheClient.isPlayerSpectatingOrCreative()) {
             // 渲染捕捉装置物品
             matrices.push();
             // 旋转朝向

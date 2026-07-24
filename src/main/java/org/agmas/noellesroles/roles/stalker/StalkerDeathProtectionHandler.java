@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.roles.stalker;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.index.WatheSounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 潜行者一阶段免死处理器。
@@ -23,7 +24,7 @@ public final class StalkerDeathProtectionHandler {
      */
     public static boolean allowDeath(PlayerEntity playerEntity, PlayerEntity killer, Identifier deathReason) {
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(playerEntity.getWorld());
-        if (!gameWorldComponent.isRole(playerEntity, Noellesroles.STALKER)) {
+        if (!gameWorldComponent.isRole(playerEntity, NoellesRoleRegistry.STALKER)) {
             return true;
         }
 

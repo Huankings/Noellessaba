@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.starstruck;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -7,7 +10,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.NoellesRolesParticles;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -22,7 +24,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  */
 public class StarstruckPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<StarstruckPlayerComponent> KEY =
-            ComponentRegistry.getOrCreate(Identifier.of(Noellesroles.MOD_ID, "starstruck"), StarstruckPlayerComponent.class);
+            ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "starstruck"), StarstruckPlayerComponent.class);
 
     private final PlayerEntity player;
     public int ticks = 0;
@@ -58,7 +60,7 @@ public class StarstruckPlayerComponent implements AutoSyncedComponent, ServerTic
                 // 能力自然耗尽时统一由服务端记回放，保证结算回放和实时回放不会漏。
                 GameRecordManager.recordGlobalEvent(
                         serverPlayer.getServerWorld(),
-                        Noellesroles.STARSTRUCK_ABILITY_END_EVENT,
+                        NoellesEventIds.STARSTRUCK_ABILITY_END_EVENT,
                         serverPlayer,
                         null
                 );

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.arsonist;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -11,7 +14,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.List;
 
@@ -42,7 +44,7 @@ public final class OilDousingHandler {
             }
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
-            if (!gameWorld.isRole(player, Noellesroles.ARSONIST)) {
+            if (!gameWorld.isRole(player, NoellesRoleRegistry.ARSONIST)) {
                 return ActionResult.PASS;
             }
             if (!player.getStackInHand(hand).isOf(ModItems.JERRY_CAN)) {
@@ -64,7 +66,7 @@ public final class OilDousingHandler {
                     boolean lighterWasCoolingDown = arsonist.getItemCooldownManager().isCoolingDown(ModItems.LIGHTER);
                     arsonist.getItemCooldownManager().set(ModItems.LIGHTER, cooldownTicks);
                     if (!lighterWasCoolingDown) {
-                        GameRecordManager.recordGlobalEvent(arsonist.getServerWorld(), Noellesroles.ARSONIST_LIGHTER_COOLDOWN_STARTED_EVENT, arsonist, null);
+                        GameRecordManager.recordGlobalEvent(arsonist.getServerWorld(), NoellesEventIds.ARSONIST_LIGHTER_COOLDOWN_STARTED_EVENT, arsonist, null);
                         ArsonistReplayTracker.trackLighterCooldown(arsonist);
                     }
                 }
@@ -76,7 +78,7 @@ public final class OilDousingHandler {
 
             NbtCompound extra = new NbtCompound();
             extra.putUuid("target_player", target.getUuid());
-            GameRecordManager.recordGlobalEvent(arsonist.getServerWorld(), Noellesroles.ARSONIST_DOUSED_EVENT, arsonist, extra);
+            GameRecordManager.recordGlobalEvent(arsonist.getServerWorld(), NoellesEventIds.ARSONIST_DOUSED_EVENT, arsonist, extra);
 
             arsonist.playSoundToPlayer(SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.PLAYERS, 1.0F, 1.0F);
             return ActionResult.CONSUME;

@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.roles.winder;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 
 /**
@@ -16,7 +17,7 @@ public final class WinderTargetAbility {
 
     public static void handle(MorphC2SPacket payload, ServerPlayerEntity player) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.WINDER)) {
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.WINDER)) {
             return;
         }
 

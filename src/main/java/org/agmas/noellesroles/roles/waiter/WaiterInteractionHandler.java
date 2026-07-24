@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.roles.waiter;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.tray.TrayEffectHandler;
 import dev.doctor4t.wathe.api.tray.TrayEffectRegistry;
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
@@ -37,7 +40,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.mixin.roles.waiter.PlayerMoodComponentAccessor;
 import org.jetbrains.annotations.Nullable;
 
@@ -247,7 +249,7 @@ public final class WaiterInteractionHandler {
     private static boolean canUseWaiterService(ServerPlayerEntity player) {
         // 只允许对局内、存活、服务员身份的玩家触发这些特殊右键。
         return GameFunctions.isPlayerAliveAndSurvival(player)
-                && GameWorldComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.WAITER);
+                && GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.WAITER);
     }
 
     private static @Nullable ServerPlayerEntity getTargetedPlayer(ServerPlayerEntity waiter) {
@@ -430,7 +432,7 @@ public final class WaiterInteractionHandler {
                 .world(waiter.getServerWorld())
                 .actor(waiter)
                 .target(target)
-                .put("event", Noellesroles.WAITER_SERVE_EVENT.toString())
+                .put("event", NoellesEventIds.WAITER_SERVE_EVENT.toString())
                 .put("item", Registries.ITEM.getId(replaySnapshot.getItem()).toString())
                 .put("item_name", Text.Serialization.toJsonString(replaySnapshot.getName(), waiter.getRegistryManager()))
                 .put("task", serviceType.taskTranslationKey());
@@ -452,7 +454,7 @@ public final class WaiterInteractionHandler {
         GameRecordManager.event(GameRecordTypes.GLOBAL_EVENT)
                 .world(waiter.getServerWorld())
                 .actor(waiter)
-                .put("event", Noellesroles.WAITER_SELF_USE_EVENT.toString())
+                .put("event", NoellesEventIds.WAITER_SELF_USE_EVENT.toString())
                 .put("item", Registries.ITEM.getId(replaySnapshot.getItem()).toString())
                 .put("item_name", Text.Serialization.toJsonString(replaySnapshot.getName(), waiter.getRegistryManager()))
                 .put("task", serviceType.taskTranslationKey())
@@ -469,16 +471,16 @@ public final class WaiterInteractionHandler {
         if (trayEffectId == null) {
             return null;
         }
-        if (trayEffectId.equals(Noellesroles.DEFENSE_TRAY_EFFECT)) {
+        if (trayEffectId.equals(NoellesEventIds.DEFENSE_TRAY_EFFECT)) {
             return new EffectReplayInfo("item.noellesroles.defense_vial", "Defense Vial");
         }
-        if (trayEffectId.equals(Noellesroles.DELUSION_TRAY_EFFECT)) {
+        if (trayEffectId.equals(NoellesEventIds.DELUSION_TRAY_EFFECT)) {
             return new EffectReplayInfo("item.noellesroles.delusion_vial", "Delusion Vial");
         }
-        if (trayEffectId.equals(Noellesroles.SEDATIVE_TRAY_EFFECT)) {
+        if (trayEffectId.equals(NoellesEventIds.SEDATIVE_TRAY_EFFECT)) {
             return new EffectReplayInfo("item.noellesroles.sedative", "Sedative");
         }
-        if (trayEffectId.equals(Noellesroles.TIMED_BOMB_TRAY_EMBEDDED_EVENT)) {
+        if (trayEffectId.equals(NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT)) {
             return new EffectReplayInfo("item.noellesroles.timed_bomb", "Timed Bomb");
         }
         return new EffectReplayInfo("effect." + trayEffectId.toString().replace(':', '.'), trayEffectId.getPath());

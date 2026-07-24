@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.magician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -15,7 +17,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.Box;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ public final class MagicianServerHooks {
         }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-        if (!gameWorld.isRole(player, Noellesroles.MAGICIAN)
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.MAGICIAN)
                 || !gameWorld.isRunning()
                 || !GameFunctions.isPlayerAliveAndSurvival(player)) {
             return null;

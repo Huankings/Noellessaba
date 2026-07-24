@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.mixin.framing;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +28,7 @@ public abstract class DoNotApplyFakePoisonMixin {
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorldComponent.canUseKillerFeatures(player)) {
             if (gameWorldComponent.getRole(player) == null) return;
-            if (gameWorldComponent.getRole(player).identifier().getNamespace().equals(Noellesroles.MOD_ID)) { // Don't interfere with any custom non-killer poisoning roles from other mods
+            if (gameWorldComponent.getRole(player).identifier().getNamespace().equals(NoellesRolesCore.MOD_ID)) { // Don't interfere with any custom non-killer poisoning roles from other mods
                 if (poisonTicks <= 5) {
                     reset();
                     ci.cancel();

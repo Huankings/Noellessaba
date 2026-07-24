@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.packet.item;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -12,7 +14,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record BayonetStabC2SPacket(int target) implements CustomPayload {
 
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "bayonet_stab");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "bayonet_stab");
     public static final Id<BayonetStabC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, BayonetStabC2SPacket> CODEC = new PacketCodec<>() {
         @Override

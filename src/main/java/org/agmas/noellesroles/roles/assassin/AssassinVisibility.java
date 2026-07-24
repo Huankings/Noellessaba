@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.assassin;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +42,7 @@ public final class AssassinVisibility {
             return false;
         }
 
-        if (gameWorld.isRole(player, Noellesroles.CORONER)) {
+        if (gameWorld.isRole(player, NoellesRoleRegistry.CORONER)) {
             return true;
         }
         if (isPhysician(role)) {
@@ -55,7 +56,7 @@ public final class AssassinVisibility {
         if (role == null) {
             return false;
         }
-        if (role == Noellesroles.PHYSICIAN) {
+        if (role == NoellesRoleRegistry.PHYSICIAN) {
             return true;
         }
         return FabricLoader.getInstance().isModLoaded("kinswathe")

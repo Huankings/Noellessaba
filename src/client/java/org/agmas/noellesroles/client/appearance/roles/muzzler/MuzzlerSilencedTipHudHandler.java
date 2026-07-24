@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.appearance.roles.muzzler;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
@@ -49,7 +50,7 @@ public final class MuzzlerSilencedTipHudHandler {
         context.getMatrices().push();
         context.getMatrices().translate(context.getScaledWindowWidth() / 2.0F, context.getScaledWindowHeight() / 2.0F - 37.5F, 0.0F);
         context.getMatrices().scale(0.6F, 0.6F, 1.0F);
-        context.drawTextWithShadow(renderer, text, -renderer.getWidth(text) / 2, 32, Noellesroles.MUZZLER.color());
+        context.drawTextWithShadow(renderer, text, -renderer.getWidth(text) / 2, 32, NoellesRoleRegistry.MUZZLER.color());
         context.getMatrices().pop();
     }
 }

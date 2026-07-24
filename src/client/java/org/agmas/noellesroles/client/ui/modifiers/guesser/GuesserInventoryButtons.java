@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.ui.modifiers.guesser;
 
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonExtension;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
@@ -8,7 +10,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtonSupport;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,7 @@ public final class GuesserInventoryButtons {
 
     private static @Nullable InventoryButtonExtension create(@NotNull InventoryButtonContext context) {
         ClientPlayerEntity player = context.requirePlayer();
-        return WorldModifierComponent.KEY.get(player.getWorld()).isRole(player, Noellesroles.GUESSER) ? new Extension() : null;
+        return WorldModifierComponent.KEY.get(player.getWorld()).isRole(player, NoellesModifierRegistry.GUESSER) ? new Extension() : null;
     }
 
     private static final class Extension extends NoellesInventoryButtonSupport.PagedExtension<GuesserPlayerWidget> {

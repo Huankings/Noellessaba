@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.packet.item;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 水晶球标记数据包。
@@ -19,7 +20,7 @@ import org.agmas.noellesroles.Noellesroles;
  */
 public record CrystalBallMarkC2SPacket(int targetId, boolean offHand) implements CustomPayload {
 
-    public static final Identifier PACKET_ID = Identifier.of(Noellesroles.MOD_ID, "crystal_ball_mark");
+    public static final Identifier PACKET_ID = Identifier.of(NoellesRolesCore.MOD_ID, "crystal_ball_mark");
     public static final Id<CrystalBallMarkC2SPacket> ID = new Id<>(PACKET_ID);
     public static final PacketCodec<RegistryByteBuf, CrystalBallMarkC2SPacket> CODEC = PacketCodec.of(
             CrystalBallMarkC2SPacket::write,

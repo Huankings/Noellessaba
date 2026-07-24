@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.client.ui.roles.morphling;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonContext;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonExtension;
 import dev.doctor4t.wathe.api.client.inventory.InventoryButtonLayout;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtonSupport;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ public final class MorphlingInventoryButtons {
     }
 
     private static @Nullable InventoryButtonExtension create(@NotNull InventoryButtonContext context) {
-        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.MORPHLING) ? new Extension() : null;
+        return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), NoellesRoleRegistry.MORPHLING) ? new Extension() : null;
     }
 
     private static final class Extension extends NoellesInventoryButtonSupport.PagedExtension<MorphlingPlayerWidget> {

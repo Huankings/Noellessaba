@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.roles.hacker;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.api.event.GameEvents;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -9,7 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -25,7 +26,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  */
 public class HackerSafeTimeComponent implements AutoSyncedComponent, ServerTickingComponent {
     public static final ComponentKey<HackerSafeTimeComponent> KEY = ComponentRegistry.getOrCreate(
-            Identifier.of(Noellesroles.MOD_ID, "hacker_safe"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "hacker_safe"),
             HackerSafeTimeComponent.class
     );
 

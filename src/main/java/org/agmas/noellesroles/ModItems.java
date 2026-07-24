@@ -1,5 +1,7 @@
 package org.agmas.noellesroles;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import com.mojang.serialization.Codec;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.item.RevolverItem;
@@ -125,7 +127,7 @@ public class ModItems {
      */
     public static final ComponentType<Integer> SNIPER_AMMO = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(Noellesroles.MOD_ID, "sniper_ammo"),
+            Identifier.of(NoellesRolesCore.MOD_ID, "sniper_ammo"),
             ComponentType.<Integer>builder()
                     .codec(Codec.INT)
                     .packetCodec(PacketCodecs.INTEGER)
@@ -354,7 +356,7 @@ public class ModItems {
 
     public static Item register(Item item, String id) {
         // Create the identifier for the item.
-        Identifier itemID = Identifier.of(Noellesroles.MOD_ID, id);
+        Identifier itemID = Identifier.of(NoellesRolesCore.MOD_ID, id);
 
         // Register the item.
         Item registeredItem = Registry.register(Registries.ITEM, itemID, item);

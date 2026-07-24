@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.client.appearance.roles.physician;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -10,7 +12,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.client.appearance.modifiers.graverobber.GraverobberBodyInfoAccess;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
@@ -31,7 +32,7 @@ public final class PhysicianBodyHudHandler {
                 context -> {
                     ClientPlayerEntity player = context.player();
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-                    if (!gameWorld.isRole(player, Noellesroles.PHYSICIAN) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
+                    if (!gameWorld.isRole(player, NoellesRoleRegistry.PHYSICIAN) || !GameFunctions.isPlayerAliveAndSurvival(player)) {
                         return;
                     }
 

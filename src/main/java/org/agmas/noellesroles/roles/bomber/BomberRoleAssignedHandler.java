@@ -1,9 +1,10 @@
 package org.agmas.noellesroles.roles.bomber;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.api.Role;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.Noellesroles;
 
 /**
  * 炸弹客职业分配处理器。
@@ -21,7 +22,7 @@ public final class BomberRoleAssignedHandler {
      * 都不会带着旧局或旧职业残留的炸弹状态进入新身份。</p>
      */
     public static void onRoleAssigned(PlayerEntity player, Role role) {
-        if (!role.equals(Noellesroles.BOMBER)) {
+        if (!role.equals(NoellesRoleRegistry.BOMBER)) {
             return;
         }
 

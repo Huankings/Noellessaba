@@ -1,12 +1,14 @@
 package org.agmas.noellesroles.roles.executioner;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 
 import java.util.Objects;
 
@@ -20,7 +22,7 @@ public final class ExecutionerBackfireDeathHandler {
      *
      * <p>这里不挪到主类里，目的是把这段“只服务于仇杀客 / 模仿者反噬”的局部语义收回到处理器内部。</p>
      */
-    private static final Identifier BACKFIRE_DEATH_REASON = Identifier.of(Noellesroles.MOD_ID, "modded_backfire");
+    private static final Identifier BACKFIRE_DEATH_REASON = Identifier.of(NoellesRolesCore.MOD_ID, "modded_backfire");
 
     private ExecutionerBackfireDeathHandler() {
     }
@@ -38,7 +40,7 @@ public final class ExecutionerBackfireDeathHandler {
         }
 
         GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(playerEntity.getWorld());
-        if (!gameWorldComponent.isRole(killer, Noellesroles.EXECUTIONER)) {
+        if (!gameWorldComponent.isRole(killer, NoellesRoleRegistry.EXECUTIONER)) {
             return true;
         }
         if (Objects.equals(ExecutionerPlayerComponent.KEY.get(killer).target, playerEntity.getUuid())) {

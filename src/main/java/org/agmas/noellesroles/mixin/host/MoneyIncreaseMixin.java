@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.mixin.host;
 
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -7,7 +9,6 @@ import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.Noellesroles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +20,7 @@ public class MoneyIncreaseMixin {
     private static void increaseMoney(PlayerEntity victim, boolean spawnBody, PlayerEntity killer, Identifier identifier, CallbackInfo ci) {
         if (killer != null) {
             GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(victim.getWorld());
-            if (gameWorldComponent.isRole(victim, Noellesroles.CONDUCTOR) && !gameWorldComponent.isInnocent(killer)) {
+            if (gameWorldComponent.isRole(victim, NoellesRoleRegistry.CONDUCTOR) && !gameWorldComponent.isInnocent(killer)) {
                 PlayerShopComponent component = PlayerShopComponent.KEY.get(killer);
                 component.addToBalance(100);
             }

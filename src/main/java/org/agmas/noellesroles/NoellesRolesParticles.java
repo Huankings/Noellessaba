@@ -1,5 +1,7 @@
 package org.agmas.noellesroles;
 
+import org.agmas.noellesroles.registry.NoellesRolesCore;
+
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
@@ -21,7 +23,7 @@ public final class NoellesRolesParticles {
     public static void init() {
         Registry.register(
                 Registries.PARTICLE_TYPE,
-                Identifier.of(Noellesroles.MOD_ID, "starstruck_sparkle"),
+                Identifier.of(NoellesRolesCore.MOD_ID, "starstruck_sparkle"),
                 STARSTRUCK_SPARKLE
         );
     }

@@ -1,5 +1,8 @@
 package org.agmas.noellesroles.item;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -15,7 +18,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +44,7 @@ public class SulfuricAcidBarrelItem extends Item {
                  */
                 NbtCompound extra = new NbtCompound();
                 extra.putUuid("body_owner", playerBody.getPlayerUuid());
-                GameRecordManager.recordItemUse(serverPlayer, Noellesroles.SULFURIC_ACID_BARREL_USE_EVENT, null, extra);
+                GameRecordManager.recordItemUse(serverPlayer, NoellesEventIds.SULFURIC_ACID_BARREL_USE_EVENT, null, extra);
             }
 
             /*
@@ -66,7 +68,7 @@ public class SulfuricAcidBarrelItem extends Item {
             );
 
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
-            if (gameWorld.isRole(player, Noellesroles.CLEANER)) {
+            if (gameWorld.isRole(player, NoellesRoleRegistry.CLEANER)) {
                 PlayerShopComponent.KEY.get(player).addToBalance(CleanerConstants.DISSOLVE_REWARD_COINS);
             }
             return ActionResult.SUCCESS;

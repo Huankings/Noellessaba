@@ -1,5 +1,7 @@
 package org.agmas.noellesroles.entities;
 
+import org.agmas.noellesroles.registry.NoellesEventIds;
+
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -19,7 +21,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.Noellesroles;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class CaptureDeviceEntity extends Entity {
             if (ownerUuid != null && this.getWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
                 NbtCompound extra = new NbtCompound();
                 extra.putUuid("owner", ownerUuid);
-                GameRecordManager.recordGlobalEvent(serverWorld, Noellesroles.CAPTURE_DEVICE_EXPIRED_EVENT, null, extra);
+                GameRecordManager.recordGlobalEvent(serverWorld, NoellesEventIds.CAPTURE_DEVICE_EXPIRED_EVENT, null, extra);
             }
             this.discard();
             return;
@@ -93,7 +94,7 @@ public class CaptureDeviceEntity extends Entity {
                     if (ownerUuid != null) {
                         extra.putUuid("owner", ownerUuid);
                     }
-                    GameRecordManager.recordGlobalEvent(serverWorld, Noellesroles.CAPTURE_DEVICE_TRIGGERED_EVENT, null, extra);
+                    GameRecordManager.recordGlobalEvent(serverWorld, NoellesEventIds.CAPTURE_DEVICE_TRIGGERED_EVENT, null, extra);
                 }
 
                 // 缓慢 II 效果（5秒）
@@ -138,7 +139,7 @@ public class CaptureDeviceEntity extends Entity {
                     if (this.getWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
                         NbtCompound extra = new NbtCompound();
                         extra.putUuid("owner", owner.getUuid());
-                        GameRecordManager.recordGlobalEvent(serverWorld, Noellesroles.CAPTURE_DEVICE_REPORT_EVENT, null, extra);
+                        GameRecordManager.recordGlobalEvent(serverWorld, NoellesEventIds.CAPTURE_DEVICE_REPORT_EVENT, null, extra);
                     }
                 }
             }
