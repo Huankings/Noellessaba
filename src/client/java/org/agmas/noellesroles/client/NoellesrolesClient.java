@@ -49,7 +49,6 @@ import org.agmas.noellesroles.client.roles.convener.ConvenerMoodHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckMoodHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
-import org.agmas.noellesroles.client.ui.common.PagedPlayerScreenState;
 import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerState;
 import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
@@ -71,7 +70,6 @@ import org.agmas.noellesroles.client.items.NoellesRolesItemExtraModel;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtons;
 
 import java.util.*;
-import dev.doctor4t.wathe.api.event.GameEvents;
 
 public class NoellesrolesClient implements ClientModInitializer {
 
@@ -111,11 +109,6 @@ public class NoellesrolesClient implements ClientModInitializer {
         registerItemColors();
         registerItemTooltipsAndModels();
 
-        // 分页缓存只在当前对局内生效。
-        // 开局、停局、结算完成都清空一次，避免上一把的页码残留到下一把。
-        GameEvents.ON_GAME_START.register(gameMode -> PagedPlayerScreenState.reset());
-        GameEvents.ON_GAME_STOP.register(gameMode -> PagedPlayerScreenState.reset());
-        GameEvents.ON_FINISH_FINALIZE.register((world, gameComponent) -> PagedPlayerScreenState.reset());
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> noellesroles$resetClientCaches());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> noellesroles$resetClientCaches());
         SpiritualistClientController.init();
@@ -484,7 +477,6 @@ public class NoellesrolesClient implements ClientModInitializer {
         // 二次进服崩溃的根源之一，就是上一局留下来的客户端临时缓存
         // 会在新连接建立早期参与渲染判断，而此时真实玩家列表/外观缓存还没同步完整。
         // 这里在 JOIN / DISCONNECT 两个时机都重置一次，让每次连接都从干净状态开始。
-        PagedPlayerScreenState.reset();
         SHUFFLED_PLAYER_ENTRIES_CACHE.clear();
         LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES = null;
         insanityTime = 0;

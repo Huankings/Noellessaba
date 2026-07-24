@@ -94,6 +94,10 @@ import org.agmas.noellesroles.roles.magician.MagicianConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
 import org.agmas.noellesroles.roles.magician.MagicianTargetAbility;
 import org.agmas.noellesroles.modifiers.guesser.GuesserAbility;
+import org.agmas.noellesroles.modifiers.magnate.MagnateConstants;
+import org.agmas.noellesroles.modifiers.magnate.MagnateEconomyHandler;
+import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterConstants;
+import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterTaskIncomeHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.item.BayonetKnockbackC2SPacket;
@@ -204,6 +208,8 @@ public class Noellesroles implements ModInitializer {
     public static Identifier CHAMELEON_ID = Identifier.of(MOD_ID, "chameleon");
     public static Identifier GRAVEROBBER_ID = Identifier.of(MOD_ID, "graverobber");
     public static Identifier FEATHER_ID = Identifier.of(MOD_ID, "feather");
+    public static Identifier MAGNATE_ID = Identifier.of(MOD_ID, "magnate");
+    public static Identifier TASKMASTER_ID = Identifier.of(MOD_ID, "taskmaster");
     public static Identifier THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID = Identifier.of(MOD_ID, "the_insane_damned_paranoid_killer");
     public static Identifier CONTROLLER_ID = Identifier.of(MOD_ID, "controller");
     public static Identifier CORPSEMAKER_ID = Identifier.of(MOD_ID, "corpsemaker");
@@ -492,6 +498,28 @@ public class Noellesroles implements ModInitializer {
     public static Modifier GRAVEROBBER = HMLModifiers.registerModifier(new Modifier(GRAVEROBBER_ID, new Color(174, 95, 95, 255).getRGB(),null,null,true,false));
     //羽化者
     public static Modifier FEATHER = HMLModifiers.registerModifier(new Modifier(FEATHER_ID, new Color(255, 236, 161, 255).getRGB(),null,null,false,false));
+    //富豪
+    public static Modifier MAGNATE = HMLModifiers.registerModifier(new Modifier(MAGNATE_ID, MagnateConstants.COLOR,null,null,false,false)
+            .setEligibilityPredicate((gameWorld, player, modifier) -> {
+                /*
+                 * 富豪只应该分配给已经拥有通用被动收入的玩家。
+                 * 这里直接询问 Wathe 经济 API，而不是维护静态职业名单；
+                 * 后续其他扩展只要注册了被动收入，NoellesRoles 的富豪就能自然兼容。
+                 */
+                if (!(player instanceof ServerPlayerEntity serverPlayer) || !(player.getWorld() instanceof ServerWorld serverWorld)) {
+                    return false;
+                }
+                return EconomyApi.canReceivePassiveIncome(serverWorld, gameWorld, serverPlayer);
+            }));
+    //任务大师
+    public static Modifier TASKMASTER = HMLModifiers.registerModifier(new Modifier(TASKMASTER_ID, TaskmasterConstants.COLOR,null,null,false,false)
+            .setEligibilityPredicate((gameWorld, player, modifier) -> {
+                /*
+                 * 任务大师的收益依赖金币 HUD/金币余额，因此生成条件也统一看 Wathe 公开 API。
+                 * 这能覆盖 NoellesRoles、Wathe 本体和其他扩展中明确注册了金币 HUD 的角色。
+                 */
+                return EconomyApi.shouldRenderBalanceHud(gameWorld, player);
+            }));
 
 
 
@@ -607,6 +635,8 @@ public class Noellesroles implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(SpiritualistPossessionViewS2CPacket.ID, SpiritualistPossessionViewS2CPacket.CODEC);
         NoellesRolesShopBootstrap.init();
         registerEconomyApi();
+        MagnateEconomyHandler.init();
+        TaskmasterTaskIncomeHandler.init();
         ServerPlayNetworking.registerGlobalReceiver(NoisemakerGlowC2SPacket.ID,
                 (packet, context) -> NoisemakerGlowC2SPacket.handle(packet, context.player().networkHandler));
 
