@@ -21,7 +21,7 @@ import java.util.UUID;
 /**
  * 召集者背包里的伪装头像按钮。
  */
-public class ConvenerDisguiseButton extends ButtonWidget {
+public class ConvenerPlayerWidget extends ButtonWidget {
     private static final int SLOT_HIGHLIGHT = 0x90FFBF49;
     private static final int SELF_BORDER = 0xC0F2B95B;
     private static final int CURRENT_BORDER = 0xD05734E5;
@@ -31,7 +31,7 @@ public class ConvenerDisguiseButton extends ButtonWidget {
     private final boolean self;
     private final @Nullable PlayerListEntry playerListEntry;
 
-    public ConvenerDisguiseButton(
+    public ConvenerPlayerWidget(
             LimitedInventoryScreen screen,
             int x,
             int y,

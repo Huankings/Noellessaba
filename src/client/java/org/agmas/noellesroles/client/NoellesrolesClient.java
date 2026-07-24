@@ -68,6 +68,7 @@ import org.lwjgl.glfw.GLFW;
 
 import org.agmas.noellesroles.client.items.NoellesRolesItemToolTip;
 import org.agmas.noellesroles.client.items.NoellesRolesItemExtraModel;
+import org.agmas.noellesroles.client.inventory.NoellesInventoryButtons;
 
 import java.util.*;
 import dev.doctor4t.wathe.api.event.GameEvents;
@@ -96,6 +97,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
         NoellesHeldItemVisibilityHandlers.register();
+        NoellesInventoryButtons.register();
         ExecutionerMoodHud.register();
         JesterMoodHud.register();
         RemembererMoodHud.register();

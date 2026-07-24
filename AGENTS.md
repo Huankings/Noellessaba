@@ -45,6 +45,10 @@
 - `src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
 - `src/main/java/org/agmas/noellesroles/record/NoellesRolesReplayFormatters.java`
 - `src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+- `src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtons.java`：背包按钮总注册入口，只调用各职业自己的 `register()`。
+- `src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`：背包按钮的 Wathe API 接入、分页、在线玩家和头像列表共享工具。
+- `src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`：各职业自己的背包按钮 provider。
+- `src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/*InventoryButtons.java`：词条自己的背包按钮 provider。
 - `src/main/resources/fabric.mod.json`
 - `src/main/resources/noellesroles.mixins.json`
 - `src/client/resources/noellesroles.client.mixins.json`
@@ -71,6 +75,7 @@
 - 心情 HUD：`MoodHudApi`
 - 名字 HUD：`RoleNameHudApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
+- 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
 - 胜利规则：`VictoryApi`
 - 尸体外观：`BodyAppearanceApi`
 - 托盘/床效果：`TrayEffectRegistry`、`BedEffectRegistry`
@@ -84,7 +89,7 @@
 4. 如果用户要求“先分析方案”，先给方案，不改文件。否则按需求直接实现。
 5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。
 6. 关键代码写详细中文注释，尤其是：为什么要这么接入 API、为什么要在服务端/客户端判断、为什么要同步组件、为什么要这样处理回合结束/玩家死亡/掉线。
-7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/mixin/roles/<role_id>/`、`client/instinct/roles/<role_id>/`、`client/ui/roles/<role_id>/` 等。
+7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 screen mixin。
 8. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
 
 ## 注册点检查清单
@@ -99,6 +104,7 @@
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
 - `ModItems.java`：新增物品、数据组件、默认冷却。
 - `NoellesrolesClient.java`：客户端按键、tooltip/model predicate、实体渲染、客户端网络包。
+- `NoellesInventoryButtons.java`：新增背包按钮 provider 后，在这里调用该职业 `*InventoryButtons.register()`。
 - `NoellesInstinctHandlers.java` / `NoellesAppearanceHandlers.java` / `NoellesHeldItemVisibilityHandlers.java`：本能、外观、手持隐藏注册。
 - `noellesroles.mixins.json` / `noellesroles.client.mixins.json`：服务端和客户端 mixin 分开注册，环境要正确。
 - `zh_cn.json` / `en_us.json`：职业名、欢迎公告、物品名、tooltip、HUD、actionbar、回放、死亡原因。
@@ -160,7 +166,21 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 客户端 HUD / 准星 / 屏幕 / 相机 / 手臂动作放 `src/client/java`，并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。
-- 背包玩家选择界面优先复用 `client/ui/common` 的分页/头像组件，避免某个职业 mixin 影响其他职业界面。
+- 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
+
+## 背包按钮接入
+
+Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\inventory`。NoellesRoles 只是调用这些 API，当前工程自己的接入代码在 `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\inventory` 和各职业 `client/ui/roles/<role>` 包里，路径不要混写。
+
+- 新职业背包按钮新建 `src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/<RoleName>InventoryButtons.java`。
+- 新词条背包按钮新建 `src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/<ModifierName>InventoryButtons.java`。
+- 在 `NoellesInventoryButtons.register()` 里调用该类的 `register()`，不要把职业按钮逻辑塞回总类。
+- 职业按钮通常用 `NoellesInventoryButtonSupport.registerLimited("role_id", Factory::create)`，只挂到 Wathe `InventoryScreenType.LIMITED`。
+- 玩家头像分页用 `NoellesInventoryButtonSupport.PagedExtension` 或 `PagedButtons`，不要复制一套分页坐标。
+- 动态增删列表用同一个 group 重建，参考 `client/ui/roles/convener/ConvenerInventoryButtons.java`。
+- 变形怪这类点击后要隐藏头像和翻页按钮的职业，覆写 `selectionVisible(...)`，让翻页按钮和头像共用同一条件。
+- 文本输入阶段要禁止 E 键关闭背包时，实现 `allowInventoryKeyClose(...)` 返回 `false`；关闭时在 `close(...)` 清理静态输入状态。
+- 已被 API 替代的 `*ScreenMixin` / `*DoNotClose` 不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 回放和语言
 

@@ -28,6 +28,10 @@
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
+- 背包按钮注册入口：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtons.java`
+- 背包按钮共享工具：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`
+- 职业背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`
+- 词条背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/*InventoryButtons.java`
 - mixin：`src/main/java/org/agmas/noellesroles/mixin/` 和 `src/client/java/org/agmas/noellesroles/client/mixin/`
 
 ## 阵营规则
@@ -180,8 +184,60 @@
 - `NoellesRolesTrayEffects.java` 和 `NoellesRolesBedEffects.java` 负责把炸弹、毒药、镇静等逻辑接进托盘和床。
 - `NoellesRolesReplayFormatters.java` 负责把 noellesroles 的专属事件翻译成回放文本。
 - `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
+- `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
+- `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `Noellesroles.onInitialize()` 会动态控制一些角色池：`Conductor`、`Executioner`、`Vulture` 和 `Jester` 默认限 1，`Better Vigilante` 默认限 0，`Mimic` 和 `Vulture` 会按人数在 server tick 里动态开关；`shitpostRoles=false` 时还会自动禁用记者、更好的义警和亡语杀手。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
+
+## 背包按钮接入方式
+
+NoellesRoles 只消费 Wathe 的公开 API，不在本工程复制 API 类。Wathe API 定义在：
+
+- `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\inventory`
+
+NoellesRoles 的接入代码放在当前工程：
+
+- `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\inventory`
+- `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\ui\roles\<role>`
+- `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\ui\modifiers\<modifier>`
+
+新增职业如果要在 Wathe 限制背包里显示玩家选择按钮，优先新建：
+
+```text
+src/client/java/org/agmas/noellesroles/client/ui/roles/my_role/MyRoleInventoryButtons.java
+```
+
+然后在 `NoellesInventoryButtons.register()` 里加一行：
+
+```java
+MyRoleInventoryButtons.register();
+```
+
+常规写法：
+
+```java
+public static void register() {
+    NoellesInventoryButtonSupport.registerLimited("my_role", MyRoleInventoryButtons::create);
+}
+
+private static InventoryButtonExtension create(InventoryButtonContext context) {
+    return NoellesInventoryButtonSupport.isRole(context.requirePlayer(), Noellesroles.MY_ROLE)
+            ? new Extension()
+            : null;
+}
+```
+
+需要玩家头像分页时，让内部 `Extension` 继承：
+
+```java
+NoellesInventoryButtonSupport.PagedExtension<MyRolePlayerWidget>
+```
+
+并在 `populate(...)` 里添加按钮。`PagedExtension` 会负责上一页/下一页按钮、居中坐标、每页 10 人和页码缓存。像变形怪这种点击后按钮必须全部消失的职业，应覆写 `selectionVisible(...)`，让头像和翻页按钮共用同一个可见性条件。
+
+需要动态增删列表时参考 `ConvenerInventoryButtons`：每 tick 比较目标 UUID 列表，变化后重建同一个 group。需要文本输入阶段禁止按 E 关背包时，在自己的 `InventoryButtonExtension.allowInventoryKeyClose(...)` 返回 `false`，并在 `close(...)` 里清掉静态输入状态。
+
+旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；只有 HUD、相机、输入控制、物品渲染这类 Wathe 尚未公开 API 的场景才考虑窄 mixin。
 
 ## 新职业注册流程
 
@@ -272,7 +328,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 1. `PayloadTypeRegistry.playC2S().register(...)`
 2. `ServerPlayNetworking.registerGlobalReceiver(...)`
 
-如果有客户端选择界面，就在 `src/client/java/org/agmas/noellesroles/client/...` 里接一个按钮、屏幕或 HUD。
+如果有客户端选择界面，就在 `src/client/java/org/agmas/noellesroles/client/...` 里接按钮、屏幕或 HUD。背包内按钮必须优先走 Wathe `InventoryButtonApi`，按上面的“背包按钮接入方式”放到职业自己的 `*InventoryButtons.java`。
 
 ### 6. 需要物品、实体或模型时
 
@@ -323,6 +379,8 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 - `src/main/resources/noellesroles.mixins.json`
 - `src/client/resources/noellesroles.client.mixins.json`
+
+背包内玩家选择按钮不是 mixin。它们应通过 `NoellesInventoryButtons` 注册，再由各职业包里的 `*InventoryButtons.java` 接入 Wathe `InventoryButtonApi`。
 
 ### 10. 需要回放和文本时
 
