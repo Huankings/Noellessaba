@@ -43,6 +43,7 @@ public final class NoellesRoleIds {
     public static final Identifier CORPSEMAKER_ID = NoellesRolesCore.id("corpsemaker");
     public static final Identifier BRAINWASHER_ID = NoellesRolesCore.id("brainwasher");
     public static final Identifier BOMBER_ID = NoellesRolesCore.id("bomber");
+    public static final Identifier BOUNTY_HUNTER_ID = NoellesRolesCore.id("bounty_hunter");
     public static final Identifier ROBBER_ID = NoellesRolesCore.id("robber");
     public static final Identifier ASSASSIN_ID = NoellesRolesCore.id("assassin");
     public static final Identifier CLEANER_ID = NoellesRolesCore.id("cleaner");

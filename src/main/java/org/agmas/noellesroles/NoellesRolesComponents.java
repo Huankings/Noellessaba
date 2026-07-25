@@ -37,6 +37,7 @@ import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
@@ -97,6 +98,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, StunnedPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(StunnedPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, StalkerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(StalkerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, BomberPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(BomberPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, BountyHunterPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(BountyHunterPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, RobberPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(RobberPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, EngineerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(EngineerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AssassinPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AssassinPlayerComponent::new);

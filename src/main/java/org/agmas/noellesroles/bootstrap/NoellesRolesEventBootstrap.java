@@ -44,6 +44,7 @@ import org.agmas.noellesroles.roles.arsonist.ArsonistVictoryRule;
 import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
 import org.agmas.noellesroles.roles.arsonist.OilDousingHandler;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerCommunicationManager;
 import org.agmas.noellesroles.roles.convener.ConvenerDisguiseComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerMomentumComponent;
@@ -155,6 +156,7 @@ public final class NoellesRolesEventBootstrap {
             ConvenerPlayerComponent.KEY.get(playerEntity).reset();
             ConvenerDisguiseComponent.KEY.get(playerEntity).clearDisguise();
             ConvenerMomentumComponent.KEY.get(playerEntity).reset();
+            BountyHunterPlayerComponent.KEY.get(playerEntity).reset();
         });
         CanSeePoison.EVENT.register(player -> GameWorldComponent.KEY.get(player.getWorld()).isRole((PlayerEntity) player, NoellesRoleRegistry.BARTENDER));
         ShouldDropOnDeath.EVENT.register((itemStack, identifier) -> itemStack.isOf(ModItems.MASTER_KEY));

@@ -3,6 +3,8 @@
   "values": [
     "noellesroles:fake_revolver",
     "noellesroles:robber_pistol",
-    "noellesroles:silenced_revolver"
+    "noellesroles:silenced_revolver",
+    "noellesroles:bounty_pistol",
+    "noellesroles:bounty_derringer"
   ]
 }

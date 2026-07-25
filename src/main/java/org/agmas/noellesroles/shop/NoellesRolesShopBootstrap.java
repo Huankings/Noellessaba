@@ -13,6 +13,7 @@ import org.agmas.noellesroles.roles.Noisemaker.NoisemakerShopHandler;
 import org.agmas.noellesroles.roles.assassin.AssassinShopHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderShopHandler;
 import org.agmas.noellesroles.roles.bomber.BomberShopHandler;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterShopHandler;
 import org.agmas.noellesroles.roles.controller.ControllerShopHandler;
 import org.agmas.noellesroles.roles.cook.CookShopHandler;
 import org.agmas.noellesroles.roles.coward.CowardShopHandler;
@@ -89,6 +90,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(NoellesRolesCore.MOD_ID, "robber_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 RobberShopHandler::modifyShop
+        );
+        /*
+         * 赏金猎人也是默认杀手商店的局部改写：
+         * 禁售部分近战/毒物，左轮替换为赏金手枪，疯魔模式替换为赏金模式。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(NoellesRolesCore.MOD_ID, "bounty_hunter_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                BountyHunterShopHandler::modifyShop
         );
         /*
          * 静语者只替换默认杀手商店的左轮格子为胶带。

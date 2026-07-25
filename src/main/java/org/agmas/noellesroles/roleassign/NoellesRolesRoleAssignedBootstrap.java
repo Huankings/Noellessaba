@@ -10,6 +10,7 @@ import org.agmas.noellesroles.roles.awesomebinglus.AwesomeBinglusRoleAssignedHan
 import org.agmas.noellesroles.roles.avaricious.AvariciousRoleAssignedHandler;
 import org.agmas.noellesroles.roles.bettervigilante.BetterVigilanteRoleAssignedHandler;
 import org.agmas.noellesroles.roles.bomber.BomberRoleAssignedHandler;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterRoleAssignedHandler;
 import org.agmas.noellesroles.roles.brainwasher.BrainwasherRoleAssignedHandler;
 import org.agmas.noellesroles.roles.cleaner.CleanerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.conductor.ConductorRoleAssignedHandler;
@@ -84,6 +85,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             CorpsemakerRoleAssignedHandler.onRoleAssigned(player, role);
             BrainwasherRoleAssignedHandler.onRoleAssigned(player, role);
             BomberRoleAssignedHandler.onRoleAssigned(player, role);
+            BountyHunterRoleAssignedHandler.onRoleAssigned(player, role);
             RobberRoleAssignedHandler.onRoleAssigned(player, role);
             AssassinRoleAssignedHandler.onRoleAssigned(player, role);
             CleanerRoleAssignedHandler.onRoleAssigned(player, role);

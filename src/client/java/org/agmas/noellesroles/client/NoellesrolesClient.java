@@ -285,6 +285,9 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_AXE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.CRYSTAL_BALL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ROBBER_PISTOL, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_PISTOL, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_DERRINGER, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_MODE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SILENCED_REVOLVER, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SILENT_GRENADE, itemStack, list);
@@ -332,6 +335,9 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_AXE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.CRYSTAL_BALL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROBBER_PISTOL);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOUNTY_PISTOL);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOUNTY_DERRINGER);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOUNTY_MODE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BAYONET);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENCED_REVOLVER);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SILENT_GRENADE);

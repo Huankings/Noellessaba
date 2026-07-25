@@ -99,6 +99,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JESTER_PSYCHO_STARTED_EVENT, NoellesRolesReplayFormatters::formatJesterPsychoStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.EXECUTIONER_TARGET_LOCKED_EVENT, NoellesRolesReplayFormatters::formatExecutionerTargetLocked);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.EXECUTIONER_TARGET_CHANGED_EVENT, NoellesRolesReplayFormatters::formatExecutionerTargetChanged);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.BOUNTY_HUNTER_TARGET_LOCKED_EVENT, NoellesRolesReplayFormatters::formatBountyHunterTargetLocked);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.BOUNTY_HUNTER_TARGET_CHANGED_EVENT, NoellesRolesReplayFormatters::formatBountyHunterTargetChanged);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VULTURE_PROGRESS_EVENT, NoellesRolesReplayFormatters::formatVultureProgress);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.RECALLER_POSITION_SAVED_EVENT, NoellesRolesReplayFormatters::formatRecallerPositionSaved);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.RECALLER_TELEPORTED_EVENT, NoellesRolesReplayFormatters::formatRecallerTeleported);

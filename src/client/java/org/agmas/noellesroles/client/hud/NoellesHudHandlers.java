@@ -5,6 +5,7 @@ import org.agmas.noellesroles.client.hud.modifiers.lovers.LoversPartnerHud;
 import org.agmas.noellesroles.client.roles.angel.AngelStatusHud;
 import org.agmas.noellesroles.client.roles.avaricious.AvariciousStatusHud;
 import org.agmas.noellesroles.client.roles.bellringer.BellringerStatusHud;
+import org.agmas.noellesroles.client.roles.bounty_hunter.BountyHunterTargetHud;
 import org.agmas.noellesroles.client.roles.cleaner.CleanerStatusHud;
 import org.agmas.noellesroles.client.roles.conductor.MasterKeyHud;
 import org.agmas.noellesroles.client.roles.controller.ControlledStatusHud;
@@ -65,6 +66,7 @@ public final class NoellesHudHandlers {
         CleanerStatusHud.register();
         HunterStatusHud.register();
         MasterKeyHud.register();
+        BountyHunterTargetHud.register();
         ExecutionerTargetHud.register();
         ConvenerStatusHud.register();
         RobotStatusHud.register();

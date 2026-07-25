@@ -7,6 +7,7 @@ import org.agmas.noellesroles.roles.amnesiac.AmnesiacConstants;
 import org.agmas.noellesroles.roles.arsonist.ArsonistConstants;
 import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
 import org.agmas.noellesroles.roles.bellringer.BellringerConstants;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.agmas.noellesroles.roles.convener.ConvenerConstants;
 import org.agmas.noellesroles.roles.cook.CookConstants;
@@ -108,6 +109,8 @@ public final class NoellesRoleRegistry {
     public static final Role AVARICIOUS = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.AVARICIOUS_ID, AvariciousConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //炸弹客(杀手)：没有一般性武器，但是可购买特殊炸弹武器来杀人
     public static final Role BOMBER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.BOMBER_ID, new Color(50, 50, 50).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    //赏金猎人(杀手)：锁定悬赏目标，击杀目标时获得额外金币，并拥有赏金枪械与赏金模式商店。
+    public static final Role BOUNTY_HUNTER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.BOUNTY_HUNTER_ID, BountyHunterConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //洗脑师(杀手)：把别人变成杀手阵营
     public static final Role BRAINWASHER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.BRAINWASHER_ID, new Color(255, 105, 180).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //清道夫(杀手)：拥有专属武器硫酸桶，可以清理尸体并额外获得金币。还可以花钱来清理掉落物

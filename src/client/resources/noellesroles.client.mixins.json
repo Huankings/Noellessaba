@@ -47,6 +47,7 @@
     "roles.engineer.StunnedMouseMixin",
     "roles.bomber.TimedBombBedViewMixin",
     "roles.bomber.TimedBombTrayViewMixin",
+    "roles.bounty_hunter.BountyHunterLockSlotMixin",
     "roles.muzzler.MuzzlerPsychoDroneMixin",
     "roles.muzzler.MuzzlerPsychoDroneLoopMixin",
     "roles.hunter.HunterFovMixin",
@@ -63,6 +64,7 @@
   "mixins": [
     "roles.prophet.CrystalBallCrosshairMixin",
     "roles.robber.RobberGunCrosshairMixin",
+    "roles.bounty_hunter.BountyGunCrosshairMixin",
     "roles.assassin.AssassinBayonetCrosshairMixin",
     "roles.assassin.AssassinBodyCanHitMixin",
     "roles.bartender.DefenseVialViewMixin",

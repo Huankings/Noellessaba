@@ -3,6 +3,7 @@ package org.agmas.noellesroles.bootstrap;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.noellesroles.modifiers.lovers.LoversConstants;
 import org.agmas.noellesroles.registry.NoellesRoleIds;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 
 /**
  * NoellesRoles 的 Harpy 生成上限初始化。
@@ -20,6 +21,7 @@ public final class NoellesRoleLimitsBootstrap {
         Harpymodloader.setRoleMaximum(NoellesRoleIds.VULTURE_ID, 1);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.JESTER_ID, 1);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.DREAMER_ID, 1);
+        Harpymodloader.setRoleMaximum(NoellesRoleIds.BOUNTY_HUNTER_ID, BountyHunterConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.HACKER_ID, 0);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.BETTER_VIGILANTE_ID, 0);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.STARSTRUCK_ID, 1);

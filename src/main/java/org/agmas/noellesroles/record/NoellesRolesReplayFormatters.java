@@ -940,6 +940,30 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatBountyHunterTargetLocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (target == null && event.data().containsUuid("locked_target")) {
+            target = ReplayGenerator.formatPlayerName(event.data().getUuid("locked_target"), ReplayGenerator.getPlayerInfoCache(match));
+        }
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.bounty_hunter_target_locked", actor, target);
+    }
+
+    @Nullable
+    public static Text formatBountyHunterTargetChanged(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null || !event.data().containsUuid("old_target") || !event.data().containsUuid("new_target")) {
+            return null;
+        }
+        Text oldTarget = ReplayGenerator.formatPlayerName(event.data().getUuid("old_target"), ReplayGenerator.getPlayerInfoCache(match));
+        Text newTarget = ReplayGenerator.formatPlayerName(event.data().getUuid("new_target"), ReplayGenerator.getPlayerInfoCache(match));
+        return Text.translatable("replay.global.noellesroles.bounty_hunter_target_changed", actor, oldTarget, newTarget);
+    }
+
+    @Nullable
     public static Text formatVultureProgress(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         if (actor == null) {

@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
@@ -55,6 +56,15 @@ public class NoellesRolesItemToolTip {
                 return RobberPlayerComponent.ROBBER_START_COOLDOWN_TICKS;
             }
             return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.BOUNTY_PISTOL) {
+            /*
+             * 赏金手枪有三种总时长：开局 30 秒、目标击杀 15 秒、失败/非目标 45 秒。
+             * 冷却遮罩本身只给剩余比例，所以必须从赏金猎人组件读取这次冷却来源。
+             */
+            int displayedTicks = BountyHunterPlayerComponent.KEY.get(client.player).getDisplayedBountyPistolCooldownTotalTicks();
+            return displayedTicks > 0 ? displayedTicks : getItemCooldownTicks(item);
         }
 
         if (item == ModItems.BLOWGUN || item == ModItems.POISON_INJECTOR) {

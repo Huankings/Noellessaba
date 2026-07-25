@@ -18,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
@@ -156,6 +157,13 @@ public class NoellesRolesShops {
         }
         if (item == WatheItems.PSYCHO_MODE) {
             return PlayerShopComponent.usePsychoMode(player);
+        }
+        if (item == ModItems.BOUNTY_MODE) {
+            /*
+             * 赏金模式是商店即时按钮：购买成功后直接给模式德林加并开启疯魔外观/护盾，
+             * 不把图标物品放进背包，避免玩家把“按钮”当作普通物品移动或丢弃。
+             */
+            return BountyHunterPlayerComponent.KEY.get(player).tryStartBountyMode();
         }
         if (item == ModItems.POWER_RESTORATION) {
             return EngineerPlayerComponent.tryRestorePower(player);

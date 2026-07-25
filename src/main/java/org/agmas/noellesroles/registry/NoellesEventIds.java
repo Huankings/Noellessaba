@@ -32,6 +32,8 @@ public final class NoellesEventIds {
     public static final Identifier JESTER_PSYCHO_STARTED_EVENT = NoellesRolesCore.id("jester_psycho_started");
     public static final Identifier EXECUTIONER_TARGET_LOCKED_EVENT = NoellesRolesCore.id("executioner_target_locked");
     public static final Identifier EXECUTIONER_TARGET_CHANGED_EVENT = NoellesRolesCore.id("executioner_target_changed");
+    public static final Identifier BOUNTY_HUNTER_TARGET_LOCKED_EVENT = NoellesRolesCore.id("bounty_hunter_target_locked");
+    public static final Identifier BOUNTY_HUNTER_TARGET_CHANGED_EVENT = NoellesRolesCore.id("bounty_hunter_target_changed");
     public static final Identifier VULTURE_PROGRESS_EVENT = NoellesRolesCore.id("vulture_progress");
     public static final Identifier RECALLER_POSITION_SAVED_EVENT = NoellesRolesCore.id("recaller_position_saved");
     public static final Identifier RECALLER_TELEPORTED_EVENT = NoellesRolesCore.id("recaller_teleported");

@@ -151,6 +151,10 @@
   "subtitles.noellesroles.bomb_beep": "定时炸弹滴滴声",
   "subtitles.noellesroles.bomb_explode": "定时炸弹爆炸",
 
+  "announcement.goals.noellesroles.bounty_hunter": "击杀目标，获得额外的赏金！",
+  "announcement.role.noellesroles.bounty_hunter": "赏金猎人",
+  "hud.noellesroles.bounty_hunter.target": "悬赏目标：%s",
+
   "announcement.goals.noellesroles.robber": "用你特制的武器杀死所有平民！",
   "announcement.role.noellesroles.robber": "强盗",
 
@@ -452,6 +456,12 @@
   "item.noellesroles.crystal_ball.tooltip": "对准玩家进行蓄力，蓄力0.1s后进行标记\n标记后该玩家将成为你下一个预言的准确目标\n一次性物品，使用后消失",
   "item.noellesroles.robber_pistol": "强盗手枪",  
   "item.noellesroles.robber_pistol.tooltip": "一把特制的手枪，可远程击杀其他玩家\n击杀后有概率保留，消失或掉落，同时物品进入冷却",
+  "item.noellesroles.bounty_pistol": "赏金手枪",
+  "item.noellesroles.bounty_pistol.tooltip": "一把具有观赏价值的手枪，浑身嵌满金色\n使用该武器击杀目标时，冷却时间更短\n击杀目标则冷却15s并且保留手枪，击杀非目标则冷却45s并且清空手枪\n射程为15格",
+  "item.noellesroles.bounty_derringer": "赏金德林加",
+  "item.noellesroles.bounty_derringer.tooltip": "一把具有收藏价值的枪，射程比大部分枪短\n射程为7格，开枪后仅需冷却1s即可再次开枪",
+  "item.noellesroles.bounty_mode": "赏金模式",
+  "item.noellesroles.bounty_mode.tooltip": "\"你喜欢伤害别人吗？\"\n隐藏你的身份，让你在 45 秒内举着赏金德林加肆意妄为\n赏金德林加开火即可击杀玩家，持续期间无法切换其他物品\n购买后立即启用，冷却时间 3 分钟 40 秒",
   "item.noellesroles.bayonet": "刺刀",
   "item.noellesroles.bayonet.tooltip": "右键无需蓄力，靠近玩家即可发动暗杀\n蓄力和击杀都不会带任何声音\n击杀后冷却 35 秒\n攻击可击退玩家（无冷却）",
   "item.noellesroles.hunting_knife": "猎刀",
@@ -616,6 +626,8 @@
   "replay.global.noellesroles.jester_psycho_started": "%s 进入了疯魔状态",
   "replay.global.noellesroles.executioner_target_locked": "%s 锁定了仇杀目标为 %s",
   "replay.global.noellesroles.executioner_target_changed": "%s 的仇杀目标从 %s 转变成 %s",
+  "replay.global.noellesroles.bounty_hunter_target_locked": "%s锁定了悬赏目标为%s",
+  "replay.global.noellesroles.bounty_hunter_target_changed": "%s的悬赏目标从%s切换为%s",
   "replay.global.noellesroles.vulture_ate_body": "%s 吃掉了 %s 的尸体",
   "replay.global.noellesroles.vulture_progress": "%s 当前吃尸体的进度 %s/%s",
   "replay.global.noellesroles.recaller_position_saved": "%s 保存了位置[%s %s %s]",

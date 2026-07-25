@@ -12,6 +12,7 @@ import org.agmas.noellesroles.client.instinct.roles.amnesiac.AmnesiacInstinctHan
 import org.agmas.noellesroles.client.instinct.roles.arsonist.ArsonistInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.bartender.BartenderInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.bomber.BomberInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.bounty_hunter.BountyHunterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.convener.ConvenerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.cook.CookInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.drugmaker.DrugmakerInstinctHandler;
@@ -46,6 +47,7 @@ public final class NoellesInstinctHandlers {
         BartenderInstinctHandler.register();
         AngelInstinctHandler.register();
         ExecutionerInstinctHandler.register();
+        BountyHunterInstinctHandler.register();
         BomberInstinctHandler.register();
         MimicInstinctHandler.register();
         WaiterInstinctHandler.register();

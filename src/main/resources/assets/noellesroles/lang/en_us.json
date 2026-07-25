@@ -98,6 +98,9 @@
     "announcement.goals.noellesroles.bomber": "Pass the timed bomb to others before it explodes on you.",
     "announcement.role.noellesroles.bomber": "Bomber",
 
+    "announcement.goals.noellesroles.bounty_hunter": "Kill your target and claim an extra bounty!",
+    "announcement.role.noellesroles.bounty_hunter": "Bounty Hunter",
+    "hud.noellesroles.bounty_hunter.target": "Bounty Target: %s",
 
     "announcement.goals.noellesroles.bartender": "See players that drink through walls!",
     "announcement.role.noellesroles.bartender": "Bartender",
@@ -221,6 +224,12 @@
 
 
     "item.noellesroles.fake_revolver": "Fake Revolver",
+    "item.noellesroles.bounty_pistol": "Bounty Pistol",
+    "item.noellesroles.bounty_pistol.tooltip": "A display-worthy pistol covered in gold\nKilling your target with this weapon gives it a shorter cooldown\nKilling the target puts it on a 15s cooldown and keeps the pistol; killing a non-target puts it on a 45s cooldown and removes one pistol\n15 block range",
+    "item.noellesroles.bounty_derringer": "Bounty Derringer",
+    "item.noellesroles.bounty_derringer.tooltip": "A collectible pistol with a shorter range than most guns\n7 block range; after firing, it only needs a 1s cooldown before firing again",
+    "item.noellesroles.bounty_mode": "Bounty Mode",
+    "item.noellesroles.bounty_mode.tooltip": "\"Do you like hurting other people?\"\nHides your identity and lets you run wild with a Bounty Derringer for 45 seconds\nThe Bounty Derringer kills players on hit, and you cannot switch items during the effect\nActivated instantly on purchase, 3 minute 40 second cooldown",
     "item.noellesroles.fake_grenade": "Fake Grenade",
     "item.noellesroles.fake_grenade.tooltip": "Left click to switch between direct throw and charge throw\nIn direct throw mode, right click throws immediately at base speed; in charge mode, hold right click for up to 1 second before release\n\nOn impact it plays the same explosion sound and particles as a real grenade, but it never deals real damage",
     "item.noellesroles.master_key": "Master Key",
@@ -480,6 +489,8 @@
       "replay.global.noellesroles.jester_psycho_started": "%s entered psycho mode",
       "replay.global.noellesroles.executioner_target_locked": "%s locked onto %s as the execution target",
       "replay.global.noellesroles.executioner_target_changed": "%s's execution target changed from %s to %s",
+      "replay.global.noellesroles.bounty_hunter_target_locked": "%s locked %s as the bounty target",
+      "replay.global.noellesroles.bounty_hunter_target_changed": "%s's bounty target changed from %s to %s",
       "replay.global.noellesroles.vulture_ate_body": "%s ate %s's corpse",
       "replay.global.noellesroles.vulture_progress": "%s's corpse-eating progress is %s/%s",
       "replay.global.noellesroles.recaller_position_saved": "%s saved position [%s %s %s]",

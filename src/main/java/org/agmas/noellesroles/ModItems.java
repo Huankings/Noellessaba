@@ -21,6 +21,7 @@ import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.agmas.noellesroles.roles.cook.CookConstants;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
@@ -35,6 +36,13 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(THROWING_AXE, GameConstants.getInTicks(0, 0));
         // 强盗手枪使用固定冷却，与飞斧分开控制，后续改数值也更直观。
         GameConstants.ITEM_COOLDOWNS.put(ROBBER_PISTOL, GameConstants.getInTicks(0, 35));
+        /*
+         * 赏金手枪有 30 秒开局冷却、15 秒目标击杀冷却、45 秒失败/非目标冷却三种来源。
+         * 这里登记最长的失败冷却作为默认值，客户端 tooltip 会按组件同步的来源动态修正。
+         */
+        GameConstants.ITEM_COOLDOWNS.put(BOUNTY_PISTOL, BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(BOUNTY_DERRINGER, BountyHunterConstants.BOUNTY_DERRINGER_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(BOUNTY_MODE, BountyHunterConstants.BOUNTY_MODE_COOLDOWN_TICKS);
         // 刺刀是刺客的主力近战武器，击杀后进入 35 秒冷却。
         GameConstants.ITEM_COOLDOWNS.put(BAYONET, GameConstants.getInTicks(0, 35));
         // 无声左轮沿用用户指定的 15 秒冷却。
@@ -83,6 +91,8 @@ public class ModItems {
             entries.add(THROWING_AXE);
             entries.add(CRYSTAL_BALL);
             entries.add(ROBBER_PISTOL);
+            entries.add(BOUNTY_PISTOL);
+            entries.add(BOUNTY_DERRINGER);
             entries.add(BAYONET);
             entries.add(SILENCED_REVOLVER);
             entries.add(SILENT_GRENADE);
@@ -133,6 +143,20 @@ public class ModItems {
                     .packetCodec(PacketCodecs.INTEGER)
                     .build()
     );
+
+    /**
+     * 标记“赏金模式临时给予”的德林加。
+     *
+     * <p>结束赏金模式时只移除带这个标记的那一把，避免误删玩家通过其他来源拿到的普通赏金德林加。</p>
+     */
+    public static final ComponentType<Boolean> BOUNTY_MODE_GRANTED = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "bounty_mode_granted"),
+            ComponentType.<Boolean>builder()
+                    .codec(Codec.BOOL)
+                    .packetCodec(PacketCodecs.BOOL)
+                    .build()
+    );
     ///添加noellesroles的物品
     //假刀
     public static final Item FAKE_KNIFE = register(
@@ -163,6 +187,16 @@ public class ModItems {
     public static final Item ROBBER_PISTOL = register(
             new RobberPistolItem(new Item.Settings().maxCount(1)),
             "robber_pistol"
+    );
+    //赏金手枪
+    public static final Item BOUNTY_PISTOL = register(
+            new BountyPistolItem(new Item.Settings().maxCount(1)),
+            "bounty_pistol"
+    );
+    //赏金德林加
+    public static final Item BOUNTY_DERRINGER = register(
+            new BountyDerringerItem(new Item.Settings().maxCount(1)),
+            "bounty_derringer"
     );
     // 刺刀
     public static final Item BAYONET = register(
@@ -325,6 +359,11 @@ public class ModItems {
     public static final Item RANDOM_POTION = register(
             new Item(new Item.Settings().maxCount(1)),
             "random_potion"
+    );
+    // 赏金模式图标：购买后立即进入赏金德林加模式，不会作为普通物品进入背包。
+    public static final Item BOUNTY_MODE = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "bounty_mode"
     );
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(
