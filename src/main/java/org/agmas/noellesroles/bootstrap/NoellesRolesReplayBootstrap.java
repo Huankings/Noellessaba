@@ -127,6 +127,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_INSTINCT_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatAllergicInstinctTriggered);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_INSTINCT_ENDED_EVENT, NoellesRolesReplayFormatters::formatAllergicInstinctEnded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_SHIELD_GAINED_EVENT, NoellesRolesReplayFormatters::formatAllergicShieldGained);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DUAL_ACTIVE_STARTED_EVENT, NoellesRolesReplayFormatters::formatDualActiveStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_ADVANCE_1_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance12);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_ADVANCE_2_TO_3_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance23);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_REGRESS_3_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseRegress32);
@@ -188,5 +189,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_IGNITED_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistIgnitedDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_FAILED_IGNITE_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistFailedIgniteDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ALLERGIES_DEATH_REASON, NoellesRolesReplayFormatters::formatAllergiesDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.BROKEN_HEART_DEATH_REASON, NoellesRolesReplayFormatters::formatBrokenHeartDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DUAL_ACTIVE_TIMEOUT_DEATH_REASON, NoellesRolesReplayFormatters::formatDualActiveTimeoutDeath);
     }
 }

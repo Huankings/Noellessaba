@@ -26,6 +26,8 @@ public final class NoellesDeathReasons {
     public static final Identifier GUESS_EXPLODE_DEATH_REASON = NoellesRolesCore.id("guess_explode");
     public static final Identifier GUESS_EXPLODE_NEARBY_DEATH_REASON = NoellesRolesCore.id("guess_explode_nearby");
     public static final Identifier ALLERGIES_DEATH_REASON = NoellesRolesCore.id("allergies");
+    public static final Identifier BROKEN_HEART_DEATH_REASON = NoellesRolesCore.id("broken_heart");
+    public static final Identifier DUAL_ACTIVE_TIMEOUT_DEATH_REASON = NoellesRolesCore.id("dual_active_timeout");
 
     private NoellesDeathReasons() {
     }

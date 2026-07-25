@@ -5,6 +5,8 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.client.instinct.killer.KillerNeutralInstinctHandler;
 import org.agmas.noellesroles.client.instinct.modifiers.allergic.AllergicInstinctHandler;
+import org.agmas.noellesroles.client.instinct.modifiers.dual_personality.DualPersonalityInstinctHandler;
+import org.agmas.noellesroles.client.instinct.modifiers.lovers.LoversInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.angel.AngelInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.amnesiac.AmnesiacInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.arsonist.ArsonistInstinctHandler;
@@ -29,6 +31,7 @@ public final class NoellesInstinctHandlers {
     public static final int PRIORITY_ROLE_INSTINCT_COLOR = 150;
     public static final int PRIORITY_SPECIAL_NEUTRAL_COLOR = 200;
     public static final int PRIORITY_CONVENER_COLOR = 1000;
+    public static final int PRIORITY_DUAL_PERSONALITY = 10000;
     public static final int PRIORITY_CONVENER_SUPPRESSION = 20000;
 
     private NoellesInstinctHandlers() {
@@ -53,6 +56,8 @@ public final class NoellesInstinctHandlers {
         ArsonistInstinctHandler.register();
         ConvenerInstinctHandler.register();
         AllergicInstinctHandler.register();
+        LoversInstinctHandler.register();
+        DualPersonalityInstinctHandler.register();
         KillerNeutralInstinctHandler.register();
     }
 

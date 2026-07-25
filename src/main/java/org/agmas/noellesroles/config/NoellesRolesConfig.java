@@ -6,6 +6,7 @@ import dev.doctor4t.wathe.game.GameConstants;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
@@ -42,4 +43,7 @@ public class NoellesRolesConfig {
 
     @SerialEntry(comment = "How many players must be online for the Master Key to look like a master key and not a lockpick. (0 = key always looks like a lockpick, 1-6 = key always looks normal)")
     public int playerCountToMakeConducterKeyVisible = 10;
+
+    @SerialEntry(comment = "Minimum participating player count required before the Dual Personality modifier can enter the random modifier pool. This is intentionally configurable and can be changed with /noellesroles constants minplayerspawn dual_personality.")
+    public int dualPersonalityMinPlayerSpawn = DualPersonalityConstants.DEFAULT_MIN_RANDOM_PLAYER_COUNT;
 }

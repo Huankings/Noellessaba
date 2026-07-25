@@ -6,6 +6,12 @@
   "mixins": [
     "compat.WorldBlackoutComponentAccessor",
     "DoNotCollideWithFeatherMixin",
+    "modifiers.RoundModifierStateResetMixin",
+    "modifiers.lovers.ForcedLoversAssignMixin",
+    "modifiers.dual_personality.DualPersonalityAssignMixin",
+    "modifiers.dual_personality.DualPersonalityDeathMixin",
+    "modifiers.dual_personality.DualPersonalityItemPickupMixin",
+    "modifiers.dual_personality.DualPersonalityKnifeCooldownMixin",
     "roles.bartender.BartenderReseterMixin",
     "roles.bartender.CocktailItemMixin",
     "roles.winder.WinderReseterMixin",

@@ -67,6 +67,8 @@ public final class NoellesRoleIds {
     public static final Identifier STARSTRUCK_ID = NoellesRolesCore.id("starstruck");
     public static final Identifier MUZZLER_ID = NoellesRolesCore.id("muzzler");
     public static final Identifier AVARICIOUS_ID = NoellesRolesCore.id("avaricious");
+    public static final Identifier LOVERS_ID = NoellesRolesCore.id("lovers");
+    public static final Identifier DUAL_PERSONALITY_ID = NoellesRolesCore.id("dual_personality");
     public static final Identifier NECROMANCER_ID = NoellesRolesCore.id("necromancer");
     public static final Identifier AMNESIAC_ID = NoellesRolesCore.id("amnesiac");
     public static final Identifier ARSONIST_ID = NoellesRolesCore.id("arsonist");

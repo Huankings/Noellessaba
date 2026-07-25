@@ -13,6 +13,8 @@ import org.agmas.noellesroles.packet.item.HuntingKnifeC2SPacket;
 import org.agmas.noellesroles.packet.item.PanC2SPacket;
 import org.agmas.noellesroles.packet.item.SniperRifleShootC2SPacket;
 import org.agmas.noellesroles.packet.modifiers.GuessC2SPacket;
+import org.agmas.noellesroles.packet.modifiers.dual_personality.DualPersonalitySwitchC2SPacket;
+import org.agmas.noellesroles.packet.modifiers.dual_personality.DualPersonalitySwitchKeyLabelC2SPacket;
 import org.agmas.noellesroles.packet.role.brainwasher.BrainwasherC2SPacket;
 import org.agmas.noellesroles.packet.role.controller.ControllerPossessC2SPacket;
 import org.agmas.noellesroles.packet.role.controller.ControllerReleaseC2SPacket;
@@ -56,6 +58,7 @@ import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderAbility;
 import org.agmas.noellesroles.roles.winder.WinderTargetAbility;
 import org.agmas.noellesroles.roles.voodoo.VoodooTargetAbility;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityManager;
 
 /**
  * NoellesRoles 所有网络包接收器的注册中心。
@@ -135,6 +138,8 @@ public final class NoellesRolesPacketReceivers {
         ServerPlayNetworking.registerGlobalReceiver(VultureEatC2SPacket.ID, (payload, context) -> context.server().execute(() -> VultureAbility.handle(payload, context.player())));
         ServerPlayNetworking.registerGlobalReceiver(SwapperC2SPacket.ID, (payload, context) -> context.server().execute(() -> SwapperAbility.handle(payload, context.player())));
         ServerPlayNetworking.registerGlobalReceiver(GuessC2SPacket.ID, (payload, context) -> context.server().execute(() -> org.agmas.noellesroles.modifiers.guesser.GuesserAbility.handle(payload, context.player())));
+        ServerPlayNetworking.registerGlobalReceiver(DualPersonalitySwitchC2SPacket.ID, (payload, context) -> context.server().execute(() -> DualPersonalityManager.requestEarlySwitch(context.player())));
+        ServerPlayNetworking.registerGlobalReceiver(DualPersonalitySwitchKeyLabelC2SPacket.ID, (payload, context) -> context.server().execute(() -> DualPersonalityManager.updateSwitchKeyLabel(context.player().getUuid(), payload.keyLabel())));
         ServerPlayNetworking.registerGlobalReceiver(OperatorC2SPacket.ID, (payload, context) -> context.server().execute(() -> OperatorAbility.handle(payload, context.player())));
         ServerPlayNetworking.registerGlobalReceiver(BlowgunC2SPacket.ID, new BlowgunC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(AbilityC2SPacket.ID, (payload, context) -> context.server().execute(() -> {

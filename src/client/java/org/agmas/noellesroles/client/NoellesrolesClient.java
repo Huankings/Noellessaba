@@ -48,6 +48,9 @@ import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
 import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
 import org.agmas.noellesroles.client.roles.convener.ConvenerMoodHud;
+import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityClientState;
+import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityKeybinds;
+import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityTimeHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckMoodHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
@@ -96,6 +99,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + NoellesRolesCore.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
+        DualPersonalityTimeHud.register();
+        DualPersonalityKeybinds.init();
         NoellesHeldItemVisibilityHandlers.register();
         NoellesInventoryButtons.register();
         ExecutionerMoodHud.register();
@@ -491,6 +496,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         CorpsemakerState.reset();
         SpiritualistClientController.reset();
         RemembererClientEffects.reset();
+        DualPersonalityClientState.resetTransientRenderState();
+        DualPersonalityKeybinds.resetSyncedState();
         ExecutionerMoodHud.reset();
         wasGazingPressed = false;
         wasChargingPressed = false;

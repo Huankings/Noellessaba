@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.executioner;
 
 import org.agmas.noellesroles.registry.NoellesEventIds;
+import org.agmas.noellesroles.registry.NoellesModifierRegistry;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
@@ -13,6 +14,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.agmas.harpymodloader.component.WorldModifierComponent;
+import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -56,9 +59,20 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
         PlayerEntity player1 = player.getWorld().getPlayerByUuid(target);
         if (player1 == null || !gameWorldComponent.getRole(player1).isInnocent() || (GameFunctions.isPlayerEliminated(player1)) && !won) {
             List<UUID> innocentPlayers = new ArrayList<>();
+            WorldModifierComponent modifierComponent = WorldModifierComponent.KEY.get(player.getWorld());
+            LoversPairComponent loversPairComponent = LoversPairComponent.KEY.get(player.getWorld());
+            List<UUID> lovers = modifierComponent.getAllWithModifier(NoellesModifierRegistry.LOVERS);
             gameWorldComponent.getRoles().forEach((uuid2,role1)->{
                 PlayerEntity player2 = player.getWorld().getPlayerByUuid(uuid2);
                 if (uuid2 == null) return;
+                /*
+                 * 恋人迁移到 Noelles 后，处刑人不能把自己的恋人抽成目标。
+                 * 否则“恋人共生”和“处刑人希望目标死亡”会在同一名玩家身上互相冲突；
+                 * 多对恋人存在时必须通过 LoversPairComponent 精确判断自己的伴侣，不能只看是否同为 LOVERS。
+                 */
+                if (loversPairComponent.arePartnersOrFallback(player.getUuid(), uuid2, lovers)) {
+                    return;
+                }
                 if (role1.isInnocent() && GameFunctions.isPlayerAliveAndSurvival(player2) && !role1.equals(WatheRoles.VIGILANTE) && !role1.equals(NoellesRoleRegistry.MIMIC)) {
                     innocentPlayers.add(uuid2);
                 }

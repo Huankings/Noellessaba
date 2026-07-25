@@ -25,6 +25,7 @@ import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerCommunicationHelper;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityCommunicationHelper;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
@@ -146,6 +147,13 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             });
         }
 
+        /*
+         * 双重人格普通轮换阶段的“脑内语音”不应该受距离衰减影响。
+         * 原始空间语音是否被拦截仍走 handleSoundPacket/shouldBlockVoiceBetween；
+         * 这里额外给另一人格补发一份静态语音包。
+         */
+        relayDualPersonalityVoice(api, event, spectator);
+
         // 接线员的语音效果不替换原始 proximity voice，
         // 而是在默认语音之外额外补发“超距可听”的副本。
         relayOperatorVoice(api, event, spectator);
@@ -260,6 +268,10 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
     }
 
     private boolean shouldBlockVoiceBetween(ServerPlayerEntity sender, ServerPlayerEntity receiver) {
+        if (DualPersonalityCommunicationHelper.shouldBlockVoiceBetween(sender, receiver)) {
+            return true;
+        }
+
         /*
          * 召集者召集后的限时伪装会造成“活人彼此隔离”的混乱效果。
          * 这里走同一个语音过滤入口，不新增客户端/服务端 mixin，避免和灵术师、接线员的重定向语音互相打架。
@@ -289,6 +301,25 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         }
 
         return false;
+    }
+
+    private void relayDualPersonalityVoice(
+            VoicechatServerApi api,
+            MicrophonePacketEvent event,
+            ServerPlayerEntity sender
+    ) {
+        ServerPlayerEntity recipient = DualPersonalityCommunicationHelper.getStaticVoiceRecipient(sender);
+        if (recipient == null) {
+            return;
+        }
+
+        VoicechatConnection connection = api.getConnectionOf(recipient.getUuid());
+        if (connection == null) {
+            return;
+        }
+
+        StaticSoundPacket redirectedPacket = event.getPacket().staticSoundPacketBuilder().build();
+        api.sendStaticSoundPacketTo(connection, redirectedPacket);
     }
 
     private boolean canHearPossessingSpiritualist(ServerPlayerEntity recipient) {

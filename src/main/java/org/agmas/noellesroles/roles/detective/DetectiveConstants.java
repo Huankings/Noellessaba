@@ -10,7 +10,7 @@ import dev.doctor4t.wathe.game.GameConstants;
  */
 public final class DetectiveConstants {
     public static final int ROLE_COLOR = 0xFFFFCC;
-    public static final int ABILITY_PRICE = 200;
+    public static final int ABILITY_PRICE = 125;
     public static final int ABILITY_COOLDOWN_TICKS = GameConstants.getInTicks(1, 30);
     public static final float TARGET_RANGE = 2.0f;
 

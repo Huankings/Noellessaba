@@ -30,6 +30,18 @@ public final class NoellesAppearancePriorities {
     public static final int ACTIVE_DISGUISE = 100;
 
     /**
+     * 双重人格副人格默认显示为主人格。
+     * 这是低优先级兜底：如果召集者、变形怪、控制者等主动伪装存在，应优先显示那些更明确的效果。
+     */
+    public static final int DUAL_PERSONALITY = -100;
+
+    /**
+     * 休眠人格视角不应通过准心 HUD 读取身份信息。
+     * 这个规则只隐藏 HUD，不改名字，因此单独给较高优先级。
+     */
+    public static final int DUAL_PERSONALITY_DORMANT_VISIBILITY = 1100;
+
+    /**
      * 共用名字规则只处理隐身等横向词条，略低于主动伪装。
      */
     public static final int SHARED_NAME_RULES = 95;

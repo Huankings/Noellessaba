@@ -1782,6 +1782,32 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatBrokenHeartDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        if (victim == null) {
+            return null;
+        }
+
+        Text partner = playerFromKey(event, match, "broken_heart_partner");
+        if (partner == null) {
+            return Text.translatable("replay.death.noellesroles.broken_heart.died", victim);
+        }
+        return Text.translatable("replay.death.noellesroles.broken_heart.died_with_partner", victim, partner);
+    }
+
+    @Nullable
+    public static Text formatDualActiveTimeoutDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.dual_active_timeout.died", victim);
+    }
+
+    @Nullable
+    public static Text formatDualActiveStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.dual_active_started", actor);
+    }
+
+    @Nullable
     public static Text formatAngelSacrificeDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text angel = targetText(event, match);
         Text guarded = playerFromKey(event, match, "target_player");

@@ -85,7 +85,9 @@
       "noellesroles:robot",
       "noellesroles:allergic",
       "noellesroles:avaricious_payout",
-      "noellesroles:necromancer"
+      "noellesroles:necromancer",
+      "noellesroles:lovers_pairs",
+      "noellesroles:dual_personality"
     ]
   },
   "mixins": [

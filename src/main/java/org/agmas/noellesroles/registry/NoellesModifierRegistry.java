@@ -6,6 +6,8 @@ import net.minecraft.server.world.ServerWorld;
 import org.agmas.harpymodloader.modifiers.HMLModifiers;
 import org.agmas.harpymodloader.modifiers.Modifier;
 import org.agmas.noellesroles.modifiers.allergic.AllergicConstants;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityConstants;
+import org.agmas.noellesroles.modifiers.lovers.LoversConstants;
 import org.agmas.noellesroles.modifiers.magnate.MagnateConstants;
 import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterConstants;
 import org.agmas.noellesroles.modifiers.violator.ViolatorConstants;
@@ -62,6 +64,10 @@ public final class NoellesModifierRegistry {
     public static final Modifier VIOLATOR = HMLModifiers.registerModifier(new Modifier(NoellesRoleIds.VIOLATOR_ID, ViolatorConstants.COLOR, null, null, false, false));
     //过敏患者
     public static final Modifier ALLERGIC = HMLModifiers.registerModifier(new Modifier(NoellesRoleIds.ALLERGIC_ID, AllergicConstants.COLOR, null, null, false, false));
+    //恋人
+    public static final Modifier LOVERS = HMLModifiers.registerModifier(new Modifier(NoellesRoleIds.LOVERS_ID, LoversConstants.COLOR, null, null, false, false));
+    //双重人格
+    public static final Modifier DUAL_PERSONALITY = HMLModifiers.registerModifier(new Modifier(NoellesRoleIds.DUAL_PERSONALITY_ID, DualPersonalityConstants.COLOR, null, null, false, false));
 
     //小孩子
     public static final Modifier TINY = HMLModifiers.registerModifier(new Modifier(

@@ -7,6 +7,8 @@ import org.agmas.noellesroles.death.DeathProcessComponent;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.modifiers.allergic.AllergicPlayerComponent;
 import org.agmas.noellesroles.modifiers.chameleon.ChameleonPlayerComponent;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityComponent;
+import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerGlowTargetComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
 import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
@@ -131,5 +133,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(HackerSafeTimeComponent.KEY, HackerSafeTimeComponent::new);
         worldComponentFactoryRegistry.register(AvariciousPayoutComponent.KEY, AvariciousPayoutComponent::new);
         worldComponentFactoryRegistry.register(NecromancerWorldComponent.KEY, NecromancerWorldComponent::new);
+        worldComponentFactoryRegistry.register(LoversPairComponent.KEY, LoversPairComponent::new);
+        worldComponentFactoryRegistry.register(DualPersonalityComponent.KEY, DualPersonalityComponent::new);
     }
 }

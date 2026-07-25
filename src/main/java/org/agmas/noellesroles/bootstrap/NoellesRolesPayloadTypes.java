@@ -10,6 +10,8 @@ import org.agmas.noellesroles.packet.item.HuntingKnifeC2SPacket;
 import org.agmas.noellesroles.packet.item.PanC2SPacket;
 import org.agmas.noellesroles.packet.item.SniperRifleShootC2SPacket;
 import org.agmas.noellesroles.packet.modifiers.GuessC2SPacket;
+import org.agmas.noellesroles.packet.modifiers.dual_personality.DualPersonalitySwitchC2SPacket;
+import org.agmas.noellesroles.packet.modifiers.dual_personality.DualPersonalitySwitchKeyLabelC2SPacket;
 import org.agmas.noellesroles.packet.role.brainwasher.BrainwasherC2SPacket;
 import org.agmas.noellesroles.packet.role.controller.ControllerPossessC2SPacket;
 import org.agmas.noellesroles.packet.role.controller.ControllerReleaseC2SPacket;
@@ -39,6 +41,8 @@ public final class NoellesRolesPayloadTypes {
         PayloadTypeRegistry.playC2S().register(SwapperC2SPacket.ID, SwapperC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(VultureEatC2SPacket.ID, VultureEatC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(GuessC2SPacket.ID, GuessC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(DualPersonalitySwitchC2SPacket.ID, DualPersonalitySwitchC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(DualPersonalitySwitchKeyLabelC2SPacket.ID, DualPersonalitySwitchKeyLabelC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(OperatorC2SPacket.ID, OperatorC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(NoisemakerGlowC2SPacket.ID, NoisemakerGlowC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ControllerPossessC2SPacket.ID, ControllerPossessC2SPacket.CODEC);

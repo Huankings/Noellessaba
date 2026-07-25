@@ -62,6 +62,7 @@ public final class NoellesEventIds {
     public static final Identifier ALLERGIC_INSTINCT_ENDED_EVENT = NoellesRolesCore.id("allergic_instinct_ended");
     public static final Identifier ALLERGIC_SHIELD_GAINED_EVENT = NoellesRolesCore.id("allergic_shield_gained");
     public static final Identifier ALLERGIC_SHIELD_SOURCE = NoellesRolesCore.id("allergic_shield");
+    public static final Identifier DUAL_ACTIVE_STARTED_EVENT = NoellesRolesCore.id("dual_active_started");
     public static final Identifier STALKER_PHASE_ADVANCE_1_TO_2_EVENT = NoellesRolesCore.id("stalker_phase_1_to_2");
     public static final Identifier STALKER_PHASE_ADVANCE_2_TO_3_EVENT = NoellesRolesCore.id("stalker_phase_2_to_3");
     public static final Identifier STALKER_PHASE_REGRESS_3_TO_2_EVENT = NoellesRolesCore.id("stalker_phase_3_to_2");
