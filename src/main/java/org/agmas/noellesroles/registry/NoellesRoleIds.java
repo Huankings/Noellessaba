@@ -71,8 +71,10 @@ public final class NoellesRoleIds {
     public static final Identifier DUAL_PERSONALITY_ID = NoellesRolesCore.id("dual_personality");
     public static final Identifier NECROMANCER_ID = NoellesRolesCore.id("necromancer");
     public static final Identifier AMNESIAC_ID = NoellesRolesCore.id("amnesiac");
+    public static final Identifier INITIATE_ID = NoellesRolesCore.id("initiate");
     public static final Identifier ARSONIST_ID = NoellesRolesCore.id("arsonist");
     public static final Identifier CONVENER_ID = NoellesRolesCore.id("convener");
+    public static final Identifier THIEF_ID = NoellesRolesCore.id("thief");
 
     private NoellesRoleIds() {
     }

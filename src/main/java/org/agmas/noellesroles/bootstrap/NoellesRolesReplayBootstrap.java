@@ -178,6 +178,9 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROBOT_NIGHT_VISION_END_EVENT, NoellesRolesReplayFormatters::formatRobotNightVisionEnd);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROBOT_POISON_IMMUNE_EVENT, NoellesRolesReplayFormatters::formatRobotPoisonImmune);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ROBOT_BED_POISON_IMMUNE_EVENT, NoellesRolesReplayFormatters::formatRobotBedPoisonImmune);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ATTEMPT_EVENT, NoellesRolesReplayFormatters::formatThiefAttempt);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_SUCCESS_EVENT, NoellesRolesReplayFormatters::formatThiefSuccess);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_FAIL_EVENT, NoellesRolesReplayFormatters::formatThiefFail);
 
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
@@ -191,5 +194,6 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ALLERGIES_DEATH_REASON, NoellesRolesReplayFormatters::formatAllergiesDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.BROKEN_HEART_DEATH_REASON, NoellesRolesReplayFormatters::formatBrokenHeartDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DUAL_ACTIVE_TIMEOUT_DEATH_REASON, NoellesRolesReplayFormatters::formatDualActiveTimeoutDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.FAILED_INITIATION_DEATH_REASON, NoellesRolesReplayFormatters::formatFailedInitiationDeath);
     }
 }

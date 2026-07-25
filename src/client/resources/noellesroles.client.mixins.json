@@ -74,7 +74,8 @@
     "roles.kidnapper.KidnapperKeyControlledMixin",
     "roles.kidnapper.KidnapperControlledMouseMixin",
     "roles.convener.ConvenerHudMixin",
-    "roles.robot.RobotHudMixin"
+    "roles.robot.RobotHudMixin",
+    "roles.thief.ThiefCooldownHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -105,6 +106,7 @@
     "roles.waiter.WaiterCrosshairMixin",
     "roles.cook.PanCrosshairMixin",
     "roles.hunter.HuntingKnifeCrosshairMixin",
-    "roles.drugmaker.DrugmakerCrosshairMixin"
+    "roles.drugmaker.DrugmakerCrosshairMixin",
+    "roles.thief.ThiefCrosshairRendererMixin"
   ]
 }

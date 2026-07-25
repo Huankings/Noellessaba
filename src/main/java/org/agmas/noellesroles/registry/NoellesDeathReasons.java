@@ -28,6 +28,7 @@ public final class NoellesDeathReasons {
     public static final Identifier ALLERGIES_DEATH_REASON = NoellesRolesCore.id("allergies");
     public static final Identifier BROKEN_HEART_DEATH_REASON = NoellesRolesCore.id("broken_heart");
     public static final Identifier DUAL_ACTIVE_TIMEOUT_DEATH_REASON = NoellesRolesCore.id("dual_active_timeout");
+    public static final Identifier FAILED_INITIATION_DEATH_REASON = NoellesRolesCore.id("failed_initiation");
 
     private NoellesDeathReasons() {
     }

@@ -133,6 +133,9 @@ public final class NoellesEventIds {
     public static final Identifier ROBOT_POISON_IMMUNE_EVENT = NoellesRolesCore.id("robot_poison_immune");
     public static final Identifier ROBOT_BED_POISON_IMMUNE_EVENT = NoellesRolesCore.id("robot_bed_poison_immune");
     public static final Identifier KIDNAPPER_RELEASE_EVENT = NoellesRolesCore.id("kidnapper_release");
+    public static final Identifier THIEF_ATTEMPT_EVENT = NoellesRolesCore.id("thief_attempt");
+    public static final Identifier THIEF_SUCCESS_EVENT = NoellesRolesCore.id("thief_success");
+    public static final Identifier THIEF_FAIL_EVENT = NoellesRolesCore.id("thief_fail");
 
     private NoellesEventIds() {
     }

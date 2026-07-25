@@ -15,6 +15,7 @@ import org.agmas.noellesroles.roles.dreamer.DreamerConstants;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
+import org.agmas.noellesroles.roles.initiate.InitiateConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
@@ -22,6 +23,7 @@ import org.agmas.noellesroles.roles.necromancer.NecromancerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 import org.agmas.noellesroles.roles.robot.RobotConstants;
 import org.agmas.noellesroles.roles.starstruck.StarstruckConstants;
+import org.agmas.noellesroles.roles.thief.ThiefConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 
 import java.awt.Color;
@@ -157,6 +159,8 @@ public final class NoellesRoleRegistry {
  */
     //失忆患者(普通中立)：可以透视到尸体，对尸体交互即可获得该尸体的身份
     public static final Role AMNESIAC = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.AMNESIAC_ID, AmnesiacConstants.ROLE_COLOR, false, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    //初学者(普通中立)：总是成对出现，正确击杀另一名初学者后晋升为随机杀手；失败或同伴死亡时按死因转职
+    public static final Role INITIATE = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.INITIATE_ID, InitiateConstants.ROLE_COLOR, false, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
 
 /**
  * 独立中立：达成自己的胜利条件获胜
@@ -165,6 +169,8 @@ public final class NoellesRoleRegistry {
     public static final Role ARSONIST = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.ARSONIST_ID, ArsonistConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
     //召集者(独立中立)：召集尸体到一定次数或者全场只剩下自己的时候获胜
     public static final Role CONVENER = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.CONVENER_ID, ConvenerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
+    //小偷(独立中立)：空手从玩家背包偷取武器/工具，场上仍有可用武器时拖住普通结算，最终独自存活获胜
+    public static final Role THIEF = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.THIEF_ID, ThiefConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
 ///
     private NoellesRoleRegistry() {
     }

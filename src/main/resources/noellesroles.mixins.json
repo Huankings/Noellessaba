@@ -90,6 +90,7 @@
     "roles.necromancer.NecromancerKillTrackerMixin",
     "roles.drugmaker.DrugmakerGiveCoinsMixin",
     "roles.kidnapper.KidnapperMoneyIncreaseMixin",
+    "roles.initiate.InitiateAssignMixin",
     "roles.robot.RobotNoPoisonMixin",
     "roles.robot.RobotBedPoisonMixin",
     "roles.convener.ItemCooldownManagerAccessor",

@@ -18,10 +18,12 @@ import org.agmas.noellesroles.client.instinct.roles.drugmaker.DrugmakerInstinctH
 import org.agmas.noellesroles.client.instinct.roles.dreamer.DreamerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.executioner.ExecutionerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.hacker.HackerInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.initiate.InitiateInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.jester.JesterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.starstruck.StarstruckInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.thief.ThiefInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.waiter.WaiterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.winder.WinderInstinctHandler;
 
@@ -55,6 +57,8 @@ public final class NoellesInstinctHandlers {
         AmnesiacInstinctHandler.register();
         ArsonistInstinctHandler.register();
         ConvenerInstinctHandler.register();
+        InitiateInstinctHandler.register();
+        ThiefInstinctHandler.register();
         AllergicInstinctHandler.register();
         LoversInstinctHandler.register();
         DualPersonalityInstinctHandler.register();

@@ -8,7 +8,7 @@ import dev.doctor4t.wathe.api.Role;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.modifiers.magnate.MagnateEconomyHandler;
 import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterTaskIncomeHandler;
-import org.agmas.noellesroles.roles.avaricious.AvariciousConstants;
+import org.agmas.noellesroles.roles.initiate.InitiateConstants;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,7 +45,8 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.COWARD,
                 NoellesRoleRegistry.WAITER,
                 NoellesRoleRegistry.COOK,
-                NoellesRoleRegistry.PHYSICIAN
+                NoellesRoleRegistry.PHYSICIAN,
+                NoellesRoleRegistry.INITIATE
         ));
 
         /*
@@ -88,6 +89,15 @@ public final class NoellesRolesEconomyBootstrap {
                 org.agmas.noellesroles.registry.NoellesRolesCore.id("task_income"),
                 TaskCompletionApi.DEFAULT_PRIORITY,
                 context -> taskIncomeRoles.contains(context.role()) ? 50 : 0
+        );
+        /*
+         * 初学者从 StupidExpress 迁移后继续按每个任务 50 金币发放；
+         * 该数值单独走 InitiateConstants，后续调职业时不会混进其它 Noelles 通用任务收入。
+         */
+        TaskCompletionApi.registerTaskIncomeProvider(
+                NoellesRolesCore.id("initiate_task_income"),
+                TaskCompletionApi.DEFAULT_PRIORITY,
+                context -> context.role() == NoellesRoleRegistry.INITIATE ? InitiateConstants.TASK_INCOME_COINS : 0
         );
 
         /*

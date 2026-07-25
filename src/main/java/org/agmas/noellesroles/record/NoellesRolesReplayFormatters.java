@@ -434,6 +434,36 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatThiefAttempt(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.thief_attempt", actor, target);
+    }
+
+    @Nullable
+    public static Text formatThiefSuccess(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.thief_success", actor, target, ReplayGenerator.formatItemName(event.data(), world));
+    }
+
+    @Nullable
+    public static Text formatThiefFail(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.thief_fail", actor, target);
+    }
+
+    @Nullable
     public static Text formatStarstruckAbilityEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.starstruck_end", actor);
@@ -1799,6 +1829,12 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatDualActiveTimeoutDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = targetText(event, match);
         return victim == null ? null : Text.translatable("replay.death.noellesroles.dual_active_timeout.died", victim);
+    }
+
+    @Nullable
+    public static Text formatFailedInitiationDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.failed_initiation.died", victim);
     }
 
     @Nullable
