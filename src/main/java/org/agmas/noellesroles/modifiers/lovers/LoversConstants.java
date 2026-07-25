@@ -12,7 +12,7 @@ public final class LoversConstants {
     public static final boolean KNOW_IMMEDIATELY = true;
     public static final boolean WIN_WITH_KILLERS = false;
     public static final boolean WIN_WITH_CIVILIANS = true;
-    public static final boolean GLOW_TO_EACH_OTHER = false;
+    public static final boolean GLOW_TO_EACH_OTHER = true;
 
     private LoversConstants() {
     }

@@ -43,6 +43,10 @@
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
+- 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
+- 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
+- 职业状态 HUD：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`
+- 词条固定 HUD：`src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/*Hud.java`
 - 背包按钮注册入口：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtons.java`
 - 背包按钮共享工具：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`
 - 职业背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`
@@ -165,8 +169,8 @@
 - 接线员：`OperatorAbility`、`OperatorPlayerComponent` 和 `OperatorCommunicationManager` 负责把两个人接通或把某个人广播出去，持续时间、成功冷却和失败冷却都在 `OperatorConstants`。
 - 大嗓门：`NoisemakerGlowC2SPacket` 点亮目标，`NoisemakerPlayerComponent` 管主动技能冷却，`NoisemakerGlowTargetComponent` 负责追踪发光结束并补回放事件，`NoisemakerKillMixin` 让自己死亡后的尸体也会发光。
 - 巫毒师：`VoodooTargetAbility` 负责选人，`VoodooVooMixin` 在死亡流程里把目标一起杀掉；默认配置下只有“有击杀者的死亡”会触发，是否允许自然死亡触发由 `voodooNonKillerDeaths` 控制。
-- 调查官：`RoleMineItem` 放角色检测器，`TrapperShopHandler` 只卖这个核心道具，HUD 和报告展示走角色专属客户端 mixin。
-- 演尸官：`CoronerPlayerComponent` 保存伪装、尸体检查记录和金币，`CoronerMorphAbility` 负责变形目标，`CoronerExamineRewardMixin` 在靠近尸体时自动结算奖励，`CoronerHudMixin` / `CoronerBodyExamineHudMixin` 显示死因和身份。
+- 调查官：`RoleMineItem` 放角色检测器，`TrapperShopHandler` 只卖这个核心道具，客户端 HUD 和目标提示优先走 Wathe `HudOverlayApi` / `RoleNameHudApi`。
+- 演尸官：`CoronerPlayerComponent` 保存伪装、尸体检查记录和金币，`CoronerMorphAbility` 负责变形目标，`CoronerExamineRewardMixin` 在靠近尸体时自动结算奖励，尸体死因和身份提示走 `RoleNameHudApi.registerExtraHud(...)`。
 - 回溯者：`RecallerAbility` 先存点位，再花钱传送，`RecallerPlayerComponent` 和 `RecallerShopHandler` 负责位置、冷却和商店，末影珍珠投掷也会被记录进回放。
 - 先知：`CrystalBallItem` 负责 0.1 秒标记目标，`ProphetAbility` 花 125 金揭露角色，`ProphetDeathProtectionHandler` 给被揭露者一层巫毒免疫，`ProphetShopHandler` 只卖水晶球。
 - 圣母：`GoddessAbility` 把目标洗成随机平民角色，清空商店并发左轮，`GoddessRoleAssignedHandler` 只做分配时的冷却初始化。
@@ -185,7 +189,7 @@
 - 小孩子：只允许给变形怪，靠 `EntityAttributes.GENERIC_SCALE` 缩小模型。
 - 变色龙：走 `ChameleonPlayerComponent` 和客户端 mixin，重点是外观伪装。
 - 猜测者：`GuessC2SPacket` + `GuesserAbility`，可以猜平民职业，猜错以后按配置走 `none / death / explode`，是否允许平民拿到它由 `allowCivillianGuessers` 决定。
-- 盗墓者：当前主要是给尸体相关 HUD 和验尸视图开权限，`CoronerHudMixin` 里会把它当成可看尸体信息的 modifier。
+- 盗墓者：当前主要是给尸体相关 HUD 和验尸视图开权限，尸体提示由演尸官/盗墓者共享的 `RoleNameHudApi` provider 判断权限。
 - 羽化者：只要任意一方带这个词条，就不会和另一名玩家发生实体碰撞，`DoNotCollideWithFeatherMixin` 负责这条规则。
 
 ## 通用系统
@@ -213,6 +217,8 @@
 - `NoellesRolesReplayBootstrap.java` 负责把 NoellesRoles 的事件 id 注册到 Wathe 回放系统。
 - `NoellesRolesReplayFormatters.java` 负责把 NoellesRoles 的专属事件翻译成回放文本。
 - `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
+- `NoellesHudHandlers.java` 是客户端通用屏幕 HUD 总注册入口，只负责调用各职业 / 词条自己的 `register()` 和少量准心/实体名牌 provider。
+- `NoellesHudSupport.java` 负责复用 Wathe `HudOverlayApi` 的存活职业注册、右下角文字绘制和玩家名兜底。
 - `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
@@ -265,7 +271,40 @@ NoellesInventoryButtonSupport.PagedExtension<MyRolePlayerWidget>
 
 需要动态增删列表时参考 `ConvenerInventoryButtons`：每 tick 比较目标 UUID 列表，变化后重建同一个 group。需要文本输入阶段禁止按 E 关背包时，在自己的 `InventoryButtonExtension.allowInventoryKeyClose(...)` 返回 `false`，并在 `close(...)` 里清掉静态输入状态。
 
-旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；只有 HUD、相机、输入控制、物品渲染这类 Wathe 尚未公开 API 的场景才考虑窄 mixin。
+旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD 也已经有 Wathe `HudOverlayApi` / `RoleNameHudApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
+
+## HUD 接入方式
+
+NoellesRoles 的普通屏幕 HUD 已经迁移到 Wathe 公开 API，不再通过 `InGameHud` 或 `RoleNameRenderer` mixin 注入。新增职业/词条时按现有结构拆文件：
+
+- 普通右下角职业状态：新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>StatusHud.java`。
+- 词条自己的固定屏幕 HUD：新建 `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/<ModifierName>Hud.java`。
+- 通用注册入口：在 `NoellesHudHandlers.register()` 里调用该职业 `*StatusHud.register()`。
+- 重复布局和存活职业过滤：使用 `NoellesHudSupport.registerAliveRole(...)`、`drawBottomRightLine(...)` 或 `drawBottomRightLines(...)`。
+- 准心名字、尸体信息、目标旁边的小提示：使用 Wathe `RoleNameHudApi.registerExtraHud(...)`、`registerName(...)` 或 `registerEntityName(...)`。
+- 狙击镜、黑屏控制、绑架提示这类全屏叠加：使用 `HudOverlayApi.register(...)` 并选择合适的 `HudOverlayLayer`。
+
+普通职业状态推荐写法：
+
+```java
+public static void register() {
+    NoellesHudSupport.registerAliveRole("roles/my_role/status", NoellesRoleRegistry.MY_ROLE, context -> {
+        MyRolePlayerComponent component = MyRolePlayerComponent.KEY.get(context.player());
+        if (!component.shouldShowStatus()) {
+            return;
+        }
+        NoellesHudSupport.drawBottomRightLine(
+                context,
+                Text.translatable("hud.noellesroles.my_role.status"),
+                NoellesRoleRegistry.MY_ROLE.color()
+        );
+    });
+}
+```
+
+`registerAliveRole(...)` 会统一检查“本地玩家是该职业”以及 Wathe 的 `GameFunctions.isPlayerAliveAndSurvival(...)` 存活定义，所以死亡、旁观、创造和非局内状态不会继续显示职业 HUD。不是职业独占的 provider，例如被附体者、被绑架者或狙击镜遮罩，必须在自己的 lambda 里显式判断 `context.aliveAndSurvival()`。
+
+不要把多个职业/词条 HUD 合并到一个巨大的 renderer。`NoellesHudHandlers` 只负责注册顺序，具体状态、文本和颜色仍然放在各职业或词条自己的客户端包里；旧的 `*HudMixin` 被 API 替代后，也不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 新职业注册流程
 
@@ -403,18 +442,20 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 常见内容包括：
 
-- HUD
+- 普通屏幕 HUD：走 `NoellesHudHandlers` + 各职业 `*StatusHud.java`，并接入 Wathe `HudOverlayApi`
+- 准心名字 / 准心附近提示：走 Wathe `RoleNameHudApi`
 - 角色头像
 - 光标高亮
 - 视角/相机
 - 皮肤和外观伪装
 
-如果是 mixin，记得加到：
+如果确实需要 mixin，记得加到：
 
 - `src/main/resources/noellesroles.mixins.json`
 - `src/client/resources/noellesroles.client.mixins.json`
 
 背包内玩家选择按钮不是 mixin。它们应通过 `NoellesInventoryButtons` 注册，再由各职业包里的 `*InventoryButtons.java` 接入 Wathe `InventoryButtonApi`。
+普通屏幕 HUD 也不是 mixin。它们应通过 `NoellesHudHandlers` 注册，再由各职业包里的 `*StatusHud.java` 接入 Wathe `HudOverlayApi`；只有相机、输入控制、物品渲染等缺少公开 API 的场景才保留窄 mixin。
 
 ### 10. 需要回放和文本时
 

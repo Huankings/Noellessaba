@@ -35,6 +35,7 @@ import org.agmas.noellesroles.NoellesRolesParticles;
 import org.agmas.noellesroles.client.particle.StarstruckSparkleParticle;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceHandlers;
+import org.agmas.noellesroles.client.hud.NoellesHudHandlers;
 import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
 import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
@@ -82,7 +83,6 @@ public class NoellesrolesClient implements ClientModInitializer {
 
     public static int insanityTime = 0;
     public static KeyBinding abilityBind;
-    public static PlayerEntity target;
     public static PlayerBodyEntity targetBody;
     // 在 NoellesrolesClient 类中添加变量
     private static boolean wasGazingPressed = false;
@@ -100,6 +100,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         abilityBind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key." + NoellesRolesCore.MOD_ID + ".ability", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.wathe.keybinds"));
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
+        NoellesHudHandlers.register();
         DualPersonalityTimeHud.register();
         DualPersonalityKeybinds.init();
         NoellesHeldItemVisibilityHandlers.register();
@@ -489,7 +490,6 @@ public class NoellesrolesClient implements ClientModInitializer {
         SHUFFLED_PLAYER_ENTRIES_CACHE.clear();
         LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES = null;
         insanityTime = 0;
-        target = null;
         targetBody = null;
         CowardClientEffects.reset();
         GuesserPlayerWidget.selectedPlayer = null;

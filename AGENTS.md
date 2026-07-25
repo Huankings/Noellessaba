@@ -60,6 +60,10 @@
 - `src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
 - `src/main/java/org/agmas/noellesroles/record/NoellesRolesReplayFormatters.java`
 - `src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+- `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`：通用屏幕 HUD 总注册入口，只调用各职业自己的 `register()`。
+- `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`：Wathe `HudOverlayApi` 的存活职业过滤、右下角文字和玩家名兜底辅助。
+- `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`：各职业自己的普通屏幕 HUD provider。
+- `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/*Hud.java`：各词条自己的固定屏幕 HUD provider。
 - `src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtons.java`：背包按钮总注册入口，只调用各职业自己的 `register()`。
 - `src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`：背包按钮的 Wathe API 接入、分页、在线玩家和头像列表共享工具。
 - `src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`：各职业自己的背包按钮 provider。
@@ -88,7 +92,8 @@
 - 回放：`GameRecordManager` + `ReplayRegistry`
 - 本能透视：`InstinctApi`
 - 心情 HUD：`MoodHudApi`
-- 名字 HUD：`RoleNameHudApi`
+- 通用屏幕 HUD：`HudOverlayApi`、`HudOverlayContext`、`HudOverlayLayer`、`HudOverlayLayout`
+- 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
 - 胜利规则：`VictoryApi`
@@ -104,7 +109,7 @@
 4. 如果用户要求“先分析方案”，先给方案，不改文件。否则按需求直接实现。
 5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。
 6. 关键代码写详细中文注释，尤其是：为什么要这么接入 API、为什么要在服务端/客户端判断、为什么要同步组件、为什么要这样处理回合结束/玩家死亡/掉线。
-7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 screen mixin。
+7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
 8. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
 
 ## 注册点检查清单
@@ -132,6 +137,7 @@
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
 - `ModItems.java`：新增物品、数据组件、默认冷却。
 - `NoellesrolesClient.java`：客户端按键、tooltip/model predicate、实体渲染、客户端网络包。
+- `NoellesHudHandlers.java`：新增普通屏幕 HUD provider 后，在这里调用该职业/词条 HUD 类的 `register()`。
 - `NoellesInventoryButtons.java`：新增背包按钮 provider 后，在这里调用该职业 `*InventoryButtons.register()`。
 - `NoellesInstinctHandlers.java` / `NoellesAppearanceHandlers.java` / `NoellesHeldItemVisibilityHandlers.java`：本能、外观、手持隐藏注册。
 - `noellesroles.mixins.json` / `noellesroles.client.mixins.json`：服务端和客户端 mixin 分开注册，环境要正确。
@@ -196,10 +202,25 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 
 ## 客户端与 mixin
 
-- 客户端 HUD / 准星 / 屏幕 / 相机 / 手臂动作放 `src/client/java`，并注册到 `noellesroles.client.mixins.json`。
+- 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
+- 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
+- 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
+- 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。
-- 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
+
+## HUD 接入
+
+Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\hud` 和 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\gui\RoleNameHudApi.java`。NoellesRoles 只是调用这些 API，当前工程自己的接入代码在 `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\hud` 和各职业 `client/roles/<role>` 包里。
+
+- 新职业普通右下角状态新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>StatusHud.java`。
+- 新词条固定屏幕 HUD 新建 `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/<ModifierName>Hud.java`。
+- 在 `NoellesHudHandlers.register()` 里调用该类的 `register()`，不要把职业/词条状态判定塞回总类。
+- 职业独占 HUD 优先用 `NoellesHudSupport.registerAliveRole("roles/<role>/status", NoellesRoleRegistry.MY_ROLE, renderer)`。这个 helper 会同时检查职业和 Wathe 的 `GameFunctions.isPlayerAliveAndSurvival(...)`，死亡、旁观、创造和非局内状态不会继续显示 HUD。
+- 不是职业独占、但仍只应给活人看的 HUD，例如被附体者、被绑架者、开局安全、停电提示、狙击镜遮罩，用 `HudOverlayApi.register(...)`，并在 provider 内显式判断 `context.aliveAndSurvival()`。
+- 常规状态文字用 `HudOverlayLayer.MAIN_HUD`；需要尽早盖画面的提示用 `BEFORE_HUD`；狙击镜这类最终遮罩用 `AFTER_HUD`，需要保留快捷栏时调用 `context.renderHotbar()`。
+- 准心目标旁边的信息、尸体死因/身份提示和魔术师播放体名字使用 `RoleNameHudApi`；非玩家实体名牌用 `registerEntityName(...)`，不要写 `RoleNameRenderer` mixin。
+- 已被 API 替代的 `*HudMixin`、`*ScreenMixin` 和旧 RoleNameRenderer mixin 不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 背包按钮接入
 
@@ -290,7 +311,7 @@ StupidExpress 当前按用户说明使用本机 `gradle build`。StarryExpress �
 数值常量：
 商店/经济：
 新增物品/实体/资源：
-HUD/UI/准星/本能/心情图标：
+HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`，准心提示优先走 `RoleNameHudApi`
 回放/死亡/胜利：
 参考职业：
 是否先给方案：

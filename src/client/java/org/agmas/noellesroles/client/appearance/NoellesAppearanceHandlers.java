@@ -4,7 +4,6 @@ import org.agmas.noellesroles.client.appearance.killer_sided.ExecutionerCohortHu
 import org.agmas.noellesroles.client.appearance.killer_sided.HackerCohortHudHandler;
 import org.agmas.noellesroles.client.appearance.killer_sided.KillerSidedNeutralTargetHudHandler;
 import org.agmas.noellesroles.client.appearance.modifiers.dual_personality.DualPersonalityAppearanceHandler;
-import org.agmas.noellesroles.client.appearance.modifiers.dual_personality.DualPersonalityHudHandler;
 import org.agmas.noellesroles.client.appearance.modifiers.lovers.LoversHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.amnesiac.AmnesiacBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.arsonist.ArsonistTargetHudHandler;
@@ -57,6 +56,5 @@ public final class NoellesAppearanceHandlers {
         ArsonistTargetHudHandler.register();
         ConvenerBodyHudHandler.register();
         LoversHudHandler.register();
-        DualPersonalityHudHandler.register();
     }
 }
