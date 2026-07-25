@@ -5,6 +5,7 @@ import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.death.DeathProcessComponent;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
+import org.agmas.noellesroles.modifiers.allergic.AllergicPlayerComponent;
 import org.agmas.noellesroles.modifiers.chameleon.ChameleonPlayerComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerGlowTargetComponent;
 import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
@@ -120,6 +121,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, DrugmakerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DrugmakerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, KidnapperComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(KidnapperComponent::new);
         registry.beginRegistration(PlayerEntity.class, RobotPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(RobotPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, AllergicPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AllergicPlayerComponent::new);
     }
 
     @Override

@@ -25,6 +25,7 @@ public final class NoellesDeathReasons {
     public static final Identifier VOODOO_MAGIC_DEATH_REASON = NoellesRolesCore.id("voodoo");
     public static final Identifier GUESS_EXPLODE_DEATH_REASON = NoellesRolesCore.id("guess_explode");
     public static final Identifier GUESS_EXPLODE_NEARBY_DEATH_REASON = NoellesRolesCore.id("guess_explode_nearby");
+    public static final Identifier ALLERGIES_DEATH_REASON = NoellesRolesCore.id("allergies");
 
     private NoellesDeathReasons() {
     }

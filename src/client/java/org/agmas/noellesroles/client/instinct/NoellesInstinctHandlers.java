@@ -4,6 +4,7 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.client.instinct.killer.KillerNeutralInstinctHandler;
+import org.agmas.noellesroles.client.instinct.modifiers.allergic.AllergicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.angel.AngelInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.amnesiac.AmnesiacInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.arsonist.ArsonistInstinctHandler;
@@ -51,6 +52,7 @@ public final class NoellesInstinctHandlers {
         AmnesiacInstinctHandler.register();
         ArsonistInstinctHandler.register();
         ConvenerInstinctHandler.register();
+        AllergicInstinctHandler.register();
         KillerNeutralInstinctHandler.register();
     }
 

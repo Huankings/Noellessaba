@@ -74,6 +74,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.PILL_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPillShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.PAN_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPanShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.CONVENER_COUNTER_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatConvenerCounterShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.ALLERGIC_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatAllergicShieldBlocked);
 
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DELUSION_STARTED_EVENT, NoellesRolesReplayFormatters::formatDelusionStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DELUSION_ENDED_EVENT, NoellesRolesReplayFormatters::formatDelusionEnded);
@@ -122,6 +123,10 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONVENER_SUMMON_EVENT, NoellesRolesReplayFormatters::formatConvenerSummon);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONVENER_COUNTER_SHIELD_GAINED_EVENT, NoellesRolesReplayFormatters::formatConvenerCounterShieldGained);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CONVENER_VOODOO_IMMUNITY_EVENT, NoellesRolesReplayFormatters::formatConvenerVoodooImmunity);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_POISON_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatAllergicPoisonTriggered);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_INSTINCT_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatAllergicInstinctTriggered);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_INSTINCT_ENDED_EVENT, NoellesRolesReplayFormatters::formatAllergicInstinctEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.ALLERGIC_SHIELD_GAINED_EVENT, NoellesRolesReplayFormatters::formatAllergicShieldGained);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_ADVANCE_1_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance12);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_ADVANCE_2_TO_3_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseAdvance23);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.STALKER_PHASE_REGRESS_3_TO_2_EVENT, NoellesRolesReplayFormatters::formatStalkerPhaseRegress32);
@@ -182,5 +187,6 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.CONVENER_COUNTER_KILL_DEATH_REASON, NoellesRolesReplayFormatters::formatConvenerCounterKillDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_IGNITED_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistIgnitedDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_FAILED_IGNITE_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistFailedIgniteDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ALLERGIES_DEATH_REASON, NoellesRolesReplayFormatters::formatAllergiesDeath);
     }
 }

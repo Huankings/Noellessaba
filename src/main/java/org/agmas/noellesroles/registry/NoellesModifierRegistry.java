@@ -5,8 +5,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.agmas.harpymodloader.modifiers.HMLModifiers;
 import org.agmas.harpymodloader.modifiers.Modifier;
+import org.agmas.noellesroles.modifiers.allergic.AllergicConstants;
 import org.agmas.noellesroles.modifiers.magnate.MagnateConstants;
 import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterConstants;
+import org.agmas.noellesroles.modifiers.violator.ViolatorConstants;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -56,6 +58,10 @@ public final class NoellesModifierRegistry {
                  */
                 return EconomyApi.shouldRenderBalanceHud(gameWorld, player);
             }));
+    //违禁者
+    public static final Modifier VIOLATOR = HMLModifiers.registerModifier(new Modifier(NoellesRoleIds.VIOLATOR_ID, ViolatorConstants.COLOR, null, null, false, false));
+    //过敏患者
+    public static final Modifier ALLERGIC = HMLModifiers.registerModifier(new Modifier(NoellesRoleIds.ALLERGIC_ID, AllergicConstants.COLOR, null, null, false, false));
 
     //小孩子
     public static final Modifier TINY = HMLModifiers.registerModifier(new Modifier(

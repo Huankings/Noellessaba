@@ -36,6 +36,8 @@ public final class NoellesRoleIds {
     public static final Identifier FEATHER_ID = NoellesRolesCore.id("feather");
     public static final Identifier MAGNATE_ID = NoellesRolesCore.id("magnate");
     public static final Identifier TASKMASTER_ID = NoellesRolesCore.id("taskmaster");
+    public static final Identifier VIOLATOR_ID = NoellesRolesCore.id("violator");
+    public static final Identifier ALLERGIC_ID = NoellesRolesCore.id("allergic");
     public static final Identifier THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID = NoellesRolesCore.id("the_insane_damned_paranoid_killer");
     public static final Identifier CONTROLLER_ID = NoellesRolesCore.id("controller");
     public static final Identifier CORPSEMAKER_ID = NoellesRolesCore.id("corpsemaker");

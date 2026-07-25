@@ -79,6 +79,7 @@
     "roles.cook.CookFinishEatMixin",
     "roles.physician.PhysicianTipPoisonMixin",
     "roles.muzzler.MuzzlerBatHitSoundMixin",
+    "modifiers.allergic.AllergicFinishUsingMixin",
     "roles.avaricious.AvariciousGoldPayoutMixin",
     "roles.necromancer.NecromancerKillTrackerMixin",
     "roles.drugmaker.DrugmakerGiveCoinsMixin",

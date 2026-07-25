@@ -57,6 +57,11 @@ public final class NoellesEventIds {
     public static final Identifier CONVENER_COUNTER_SHIELD_GAINED_EVENT = NoellesRolesCore.id("convener_counter_shield_gained");
     public static final Identifier CONVENER_VOODOO_IMMUNITY_EVENT = NoellesRolesCore.id("convener_voodoo_immunity");
     public static final Identifier CONVENER_COUNTER_SHIELD_SOURCE = NoellesRolesCore.id("convener_counter_shield");
+    public static final Identifier ALLERGIC_POISON_TRIGGERED_EVENT = NoellesRolesCore.id("allergic_poison_triggered");
+    public static final Identifier ALLERGIC_INSTINCT_TRIGGERED_EVENT = NoellesRolesCore.id("allergic_instinct_triggered");
+    public static final Identifier ALLERGIC_INSTINCT_ENDED_EVENT = NoellesRolesCore.id("allergic_instinct_ended");
+    public static final Identifier ALLERGIC_SHIELD_GAINED_EVENT = NoellesRolesCore.id("allergic_shield_gained");
+    public static final Identifier ALLERGIC_SHIELD_SOURCE = NoellesRolesCore.id("allergic_shield");
     public static final Identifier STALKER_PHASE_ADVANCE_1_TO_2_EVENT = NoellesRolesCore.id("stalker_phase_1_to_2");
     public static final Identifier STALKER_PHASE_ADVANCE_2_TO_3_EVENT = NoellesRolesCore.id("stalker_phase_2_to_3");
     public static final Identifier STALKER_PHASE_REGRESS_3_TO_2_EVENT = NoellesRolesCore.id("stalker_phase_3_to_2");

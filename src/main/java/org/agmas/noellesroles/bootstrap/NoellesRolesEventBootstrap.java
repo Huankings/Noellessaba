@@ -30,6 +30,8 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
+import org.agmas.noellesroles.modifiers.allergic.AllergicModifierHandler;
+import org.agmas.noellesroles.modifiers.violator.ViolatorConstants;
 import org.agmas.noellesroles.roleassign.NoellesRolesRoleAssignedBootstrap;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesFramingShopEntries;
@@ -105,6 +107,7 @@ public final class NoellesRolesEventBootstrap {
         initialized = true;
 
         NoellesRolesDeathBootstrap.init();
+        AllergicModifierHandler.init();
         registerCombatAndStateEvents();
         NoellesRolesRoleAssignedBootstrap.init();
         registerServerTickEvents();
@@ -252,18 +255,51 @@ public final class NoellesRolesEventBootstrap {
     }
 
     private static void applyHarpyDisabledRoles() {
-        if (!NoellesRolesConfig.HANDLER.instance().shitpostRoles) {
-            HarpyModLoaderConfig.HANDLER.load();
-            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(org.agmas.noellesroles.registry.NoellesRoleIds.AWESOME_BINGLUS_ID.getPath())) {
-                HarpyModLoaderConfig.HANDLER.instance().disabled.add(org.agmas.noellesroles.registry.NoellesRoleIds.AWESOME_BINGLUS_ID.getPath());
-            }
-            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(org.agmas.noellesroles.registry.NoellesRoleIds.BETTER_VIGILANTE_ID.getPath())) {
-                HarpyModLoaderConfig.HANDLER.instance().disabled.add(org.agmas.noellesroles.registry.NoellesRoleIds.BETTER_VIGILANTE_ID.getPath());
-            }
-            if (!HarpyModLoaderConfig.HANDLER.instance().disabled.contains(org.agmas.noellesroles.registry.NoellesRoleIds.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath())) {
-                HarpyModLoaderConfig.HANDLER.instance().disabled.add(org.agmas.noellesroles.registry.NoellesRoleIds.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath());
-            }
+        boolean disableShitpostRoles = !NoellesRolesConfig.HANDLER.instance().shitpostRoles;
+        boolean disableViolator = ViolatorConstants.DEFAULT_DISABLE_AUTO_GENERATION;
+        if (!disableShitpostRoles && !disableViolator) {
+            return;
+        }
+
+        /*
+         * Harpy 的 disabled / disabledModifiers 是持久配置，必须先 load 再追加。
+         * 这里用“有变更才 save”的方式，避免每次启动都无意义重写用户配置文件。
+         */
+        HarpyModLoaderConfig.HANDLER.load();
+        boolean changed = false;
+
+        if (disableShitpostRoles) {
+            changed |= addDisabledRole(NoellesRoleIds.AWESOME_BINGLUS_ID.getPath());
+            changed |= addDisabledRole(NoellesRoleIds.BETTER_VIGILANTE_ID.getPath());
+            changed |= addDisabledRole(NoellesRoleIds.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID.getPath());
+        }
+
+        if (disableViolator) {
+            /*
+             * 违禁者是词条，不是职业；Harpy 对词条禁用表存完整 Identifier，
+             * 因此这里不能像职业禁用一样只写 path。
+             */
+            changed |= addDisabledModifier(NoellesRoleIds.VIOLATOR_ID.toString());
+        }
+
+        if (changed) {
             HarpyModLoaderConfig.HANDLER.save();
         }
+    }
+
+    private static boolean addDisabledRole(String rolePath) {
+        if (HarpyModLoaderConfig.HANDLER.instance().disabled.contains(rolePath)) {
+            return false;
+        }
+        HarpyModLoaderConfig.HANDLER.instance().disabled.add(rolePath);
+        return true;
+    }
+
+    private static boolean addDisabledModifier(String modifierId) {
+        if (HarpyModLoaderConfig.HANDLER.instance().disabledModifiers.contains(modifierId)) {
+            return false;
+        }
+        HarpyModLoaderConfig.HANDLER.instance().disabledModifiers.add(modifierId);
+        return true;
     }
 }

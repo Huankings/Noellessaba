@@ -252,6 +252,27 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatAllergicShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        if (victim == null) {
+            return null;
+        }
+
+        Text attacker = actorText(event, match);
+        Text damageName = DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        /*
+         * 过敏护盾回放按用户指定的“被保护者 / 来源 / 伤害名”三段展示。
+         * 某些非玩家伤害没有 actor，此时用本地化未知来源兜底，避免 formatter 返回 null 丢事件。
+         */
+        return Text.translatable(
+                "replay.shield_blocked.noellesroles.allergic.by_item",
+                victim,
+                attacker == null ? Text.translatable("replay.source.unknown") : attacker,
+                damageName
+        );
+    }
+
+    @Nullable
     public static Text formatDreamImprintUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         Text target = targetText(event, match);
@@ -623,6 +644,30 @@ public final class NoellesRolesReplayFormatters {
                 actor,
                 event.data().getInt("current_layers")
         );
+    }
+
+    @Nullable
+    public static Text formatAllergicPoisonTriggered(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.allergic_poison_triggered", actor);
+    }
+
+    @Nullable
+    public static Text formatAllergicInstinctTriggered(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.allergic_instinct_triggered", actor);
+    }
+
+    @Nullable
+    public static Text formatAllergicInstinctEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.allergic_instinct_ended", actor);
+    }
+
+    @Nullable
+    public static Text formatAllergicShieldGained(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.allergic_shield_gained", actor);
     }
 
     @Nullable
@@ -1728,6 +1773,12 @@ public final class NoellesRolesReplayFormatters {
          * 避免出现“某人被自己点火失败杀死”这种读起来不自然的击杀记录。
          */
         return victim == null ? null : Text.translatable("replay.death.noellesroles.failed_ignite.died", victim);
+    }
+
+    @Nullable
+    public static Text formatAllergiesDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.allergies.died", victim);
     }
 
     @Nullable
