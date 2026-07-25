@@ -20,6 +20,7 @@ import org.agmas.noellesroles.client.instinct.roles.executioner.ExecutionerInsti
 import org.agmas.noellesroles.client.instinct.roles.hacker.HackerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.initiate.InitiateInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.jester.JesterInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.licensed_villain.LicensedVillainInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.starstruck.StarstruckInstinctHandler;
@@ -59,6 +60,7 @@ public final class NoellesInstinctHandlers {
         ConvenerInstinctHandler.register();
         InitiateInstinctHandler.register();
         ThiefInstinctHandler.register();
+        LicensedVillainInstinctHandler.register();
         AllergicInstinctHandler.register();
         LoversInstinctHandler.register();
         DualPersonalityInstinctHandler.register();

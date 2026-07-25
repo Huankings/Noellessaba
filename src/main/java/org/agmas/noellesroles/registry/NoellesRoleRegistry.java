@@ -17,6 +17,7 @@ import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.initiate.InitiateConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.necromancer.NecromancerConstants;
@@ -171,6 +172,8 @@ public final class NoellesRoleRegistry {
     public static final Role CONVENER = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.CONVENER_ID, ConvenerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
     //小偷(独立中立)：空手从玩家背包偷取武器/工具，场上仍有可用武器时拖住普通结算，最终独自存活获胜
     public static final Role THIEF = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.THIEF_ID, ThiefConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
+    //执照恶棍(独立中立)：持证使用左轮追杀所有人，活着时会阻止普通阵营提前结算
+    public static final Role LICENSED_VILLAIN = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.LICENSED_VILLAIN_ID, LicensedVillainConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, LicensedVillainConstants.getMaxSprintTimeTicks(), false));
 ///
     private NoellesRoleRegistry() {
     }

@@ -44,6 +44,7 @@ import org.agmas.noellesroles.client.roles.executioner.ExecutionerMoodHud;
 import org.agmas.noellesroles.client.roles.dreamer.DreamerMoodHud;
 import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
+import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
 import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
@@ -111,6 +112,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         StarstruckMoodHud.register();
         RobotMoodHud.register();
         ConvenerMoodHud.register();
+        LicensedVillainMoodHud.register();
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();

@@ -33,6 +33,12 @@
   "replay.global.noellesroles.thief_success": "%s 成功偷取了 %s 的 %s",
   "replay.global.noellesroles.thief_fail": "%s 偷取 %s 的行动失败",
 
+  "announcement.goals.noellesroles.licensed_villain": "杀死所有人即可获胜！",
+  "announcement.role.noellesroles.licensed_villain": "执照恶棍",
+  "announcement.win.noellesroles.licensed_villain": "执照恶棍胜利",
+  "game.win.noellesroles.licensed_villain": "正义已得到伸张，以我的方式",
+  "tip.noellesroles.licensed_villain.weapon": "执照恶棍已经获取了武器！",
+
   "announcement.goals.noellesroles.arsonist": "将乘客浇上汽油，并在时机成熟时点燃他们",
   "announcement.role.noellesroles.arsonist": "纵火犯",
   "announcement.win.noellesroles.arsonist": "纵火犯胜利",

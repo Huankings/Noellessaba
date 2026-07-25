@@ -9,6 +9,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.modifiers.magnate.MagnateEconomyHandler;
 import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterTaskIncomeHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateConstants;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,7 +47,8 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.WAITER,
                 NoellesRoleRegistry.COOK,
                 NoellesRoleRegistry.PHYSICIAN,
-                NoellesRoleRegistry.INITIATE
+                NoellesRoleRegistry.INITIATE,
+                NoellesRoleRegistry.LICENSED_VILLAIN
         ));
 
         /*
@@ -83,12 +85,15 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.PHYSICIAN,
                 NoellesRoleRegistry.MAGICIAN,
                 NoellesRoleRegistry.ASSASSIN,
+                NoellesRoleRegistry.LICENSED_VILLAIN,
                 NoellesRoleRegistry.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES
         ));
         TaskCompletionApi.registerTaskIncomeProvider(
                 org.agmas.noellesroles.registry.NoellesRolesCore.id("task_income"),
                 TaskCompletionApi.DEFAULT_PRIORITY,
-                context -> taskIncomeRoles.contains(context.role()) ? 50 : 0
+                context -> taskIncomeRoles.contains(context.role())
+                        ? (context.role() == NoellesRoleRegistry.LICENSED_VILLAIN ? LicensedVillainConstants.TASK_INCOME_COINS : 50)
+                        : 0
         );
         /*
          * 初学者从 StupidExpress 迁移后继续按每个任务 50 金币发放；

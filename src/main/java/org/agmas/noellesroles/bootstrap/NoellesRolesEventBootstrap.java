@@ -63,6 +63,7 @@ import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
 import org.agmas.noellesroles.roles.mimic.MimicConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerInteractionHandler;
@@ -216,6 +217,15 @@ public final class NoellesRolesEventBootstrap {
                 Harpymodloader.setRoleMaximum(NoellesRoleRegistry.HACKER, 1);
             } else {
                 Harpymodloader.setRoleMaximum(NoellesRoleRegistry.HACKER, 0);
+            }
+            /*
+             * 执照恶棍沿用 kinssaba 原逻辑：按当前在线人数决定是否进入随机池。
+             * 这里不使用 ready player count，是为了避免迁移后生成门槛和原 mod 出现细微漂移。
+             */
+            if (server.getPlayerManager().getCurrentPlayerCount() >= LicensedVillainConstants.MIN_PLAYER_COUNT) {
+                Harpymodloader.setRoleMaximum(NoellesRoleRegistry.LICENSED_VILLAIN, 1);
+            } else {
+                Harpymodloader.setRoleMaximum(NoellesRoleRegistry.LICENSED_VILLAIN, 0);
             }
 
             ServerWorld overworld = server.getOverworld();

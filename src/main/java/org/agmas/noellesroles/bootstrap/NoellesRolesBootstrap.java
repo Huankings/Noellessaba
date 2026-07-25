@@ -26,6 +26,7 @@ import org.agmas.noellesroles.roles.dreamer.DreamerDelusionHandler;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.initiate.InitiateRoleLimitHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateTransformationHandler;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainVictoryRule;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerInteractionHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerRevivalHandler;
@@ -102,6 +103,7 @@ public final class NoellesRolesBootstrap {
         ConvenerTaskShieldHandler.init();
         ConvenerVictoryRule.init();
         ThiefVictoryRule.init();
+        LicensedVillainVictoryRule.init();
         NoellesRoleLimitsBootstrap.initStaticLimits();
         NoellesRolesPayloadTypes.register();
         NoellesRolesShopBootstrap.init();

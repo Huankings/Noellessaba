@@ -91,6 +91,8 @@
     "roles.drugmaker.DrugmakerGiveCoinsMixin",
     "roles.kidnapper.KidnapperMoneyIncreaseMixin",
     "roles.initiate.InitiateAssignMixin",
+    "roles.licensed_villain.LicensedVillainNoPickupMixin",
+    "roles.licensed_villain.LicensedVillainRevolverPenaltyMixin",
     "roles.robot.RobotNoPoisonMixin",
     "roles.robot.RobotBedPoisonMixin",
     "roles.convener.ItemCooldownManagerAccessor",

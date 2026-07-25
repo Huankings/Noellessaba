@@ -29,6 +29,12 @@
     "replay.global.noellesroles.thief_success": "%s successfully stole %s's %s",
     "replay.global.noellesroles.thief_fail": "%s failed to steal from %s",
 
+    "announcement.goals.noellesroles.licensed_villain": "You might still retain a shred of conscience...",
+    "announcement.role.noellesroles.licensed_villain": "Licensed Villain",
+    "announcement.win.noellesroles.licensed_villain": "Licensed Villain Win!",
+    "game.win.noellesroles.licensed_villain": "The licensed villain ended everyone's life!",
+    "tip.noellesroles.licensed_villain.weapon": "Licensed Villain has obtained weapon!",
+
     "announcement.goals.noellesroles.arsonist": "Douse passengers in oil, then ignite them when the time is right.",
     "announcement.role.noellesroles.arsonist": "Arsonist",
     "announcement.win.noellesroles.arsonist": "The Arsonist Wins!",
