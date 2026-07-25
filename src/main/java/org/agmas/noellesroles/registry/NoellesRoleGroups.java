@@ -33,6 +33,21 @@ public final class NoellesRoleGroups {
             NoellesRoleRegistry.DREAMER,
             NoellesRoleRegistry.HACKER
     ));
+    /*
+     * Wathe/Harpy 的底层分配只区分 Faction.NEUTRAL 这一大类。
+     * NoellesRoles 的玩法还需要继续拆出“普通中立”和“独立中立”：
+     * 普通中立会转职或自行选择站边；独立中立拥有自己的独胜规则，不能和普通中立混用判断。
+     */
+    public static final ArrayList<Role> ORDINARY_NEUTRALS = new ArrayList<>(List.of(
+            NoellesRoleRegistry.AMNESIAC,
+            NoellesRoleRegistry.INITIATE
+    ));
+    public static final ArrayList<Role> INDEPENDENT_NEUTRALS = new ArrayList<>(List.of(
+            NoellesRoleRegistry.ARSONIST,
+            NoellesRoleRegistry.CONVENER,
+            NoellesRoleRegistry.THIEF,
+            NoellesRoleRegistry.LICENSED_VILLAIN
+    ));
 
     private NoellesRoleGroups() {
     }

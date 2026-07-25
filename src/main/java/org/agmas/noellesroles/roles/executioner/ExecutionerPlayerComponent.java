@@ -2,10 +2,12 @@ package org.agmas.noellesroles.roles.executioner;
 
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesModifierRegistry;
+import org.agmas.noellesroles.registry.NoellesRoleGroups;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
-import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.Faction;
+import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -15,6 +17,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityComponent;
 import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -57,14 +60,17 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
         if (!gameWorldComponent.isRole(player, NoellesRoleRegistry.EXECUTIONER)) return;
         UUID previousTarget = this.target;
         PlayerEntity player1 = player.getWorld().getPlayerByUuid(target);
-        if (player1 == null || !gameWorldComponent.getRole(player1).isInnocent() || (GameFunctions.isPlayerEliminated(player1)) && !won) {
-            List<UUID> innocentPlayers = new ArrayList<>();
+        UUID dualPersonalityPartner = DualPersonalityComponent.KEY.get(player.getWorld()).getPartner(player.getUuid());
+        if (!isValidExecutionTarget(gameWorldComponent, player1)
+                || java.util.Objects.equals(this.target, dualPersonalityPartner)
+                || (GameFunctions.isPlayerEliminated(player1)) && !won) {
+            List<UUID> validTargets = new ArrayList<>();
             WorldModifierComponent modifierComponent = WorldModifierComponent.KEY.get(player.getWorld());
             LoversPairComponent loversPairComponent = LoversPairComponent.KEY.get(player.getWorld());
             List<UUID> lovers = modifierComponent.getAllWithModifier(NoellesModifierRegistry.LOVERS);
             gameWorldComponent.getRoles().forEach((uuid2,role1)->{
-                PlayerEntity player2 = player.getWorld().getPlayerByUuid(uuid2);
                 if (uuid2 == null) return;
+                PlayerEntity player2 = player.getWorld().getPlayerByUuid(uuid2);
                 /*
                  * 恋人迁移到 Noelles 后，处刑人不能把自己的恋人抽成目标。
                  * 否则“恋人共生”和“处刑人希望目标死亡”会在同一名玩家身上互相冲突；
@@ -73,13 +79,22 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
                 if (loversPairComponent.arePartnersOrFallback(player.getUuid(), uuid2, lovers)) {
                     return;
                 }
-                if (role1.isInnocent() && GameFunctions.isPlayerAliveAndSurvival(player2) && !role1.equals(WatheRoles.VIGILANTE) && !role1.equals(NoellesRoleRegistry.MIMIC)) {
-                    innocentPlayers.add(uuid2);
+                /*
+                 * 双重人格的另一人格与自己轮流操控同一具身体，本质上不是“外部仇杀对象”。
+                 * 如果允许抽中 partner，仇杀客会被卡在无法通过目标死亡转杀手的状态。
+                 */
+                if (uuid2.equals(dualPersonalityPartner)) {
+                    return;
+                }
+                if (isValidExecutionTarget(gameWorldComponent, player2, role1)) {
+                    validTargets.add(uuid2);
                 }
             });
-            Collections.shuffle(innocentPlayers);
-            if (!innocentPlayers.isEmpty()) {
-                target = innocentPlayers.getFirst();
+            Collections.shuffle(validTargets);
+            if (!validTargets.isEmpty()) {
+                target = validTargets.getFirst();
+            } else {
+                target = player.getUuid();
             }
         }
         if (!java.util.Objects.equals(previousTarget, this.target) && player instanceof ServerPlayerEntity serverPlayer) {
@@ -118,5 +133,28 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
 
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.target = tag.contains("target") ? tag.getUuid("target") : player.getUuid();
+    }
+
+    private static boolean isValidExecutionTarget(GameWorldComponent gameWorldComponent, PlayerEntity target) {
+        if (target == null) {
+            return false;
+        }
+        return isValidExecutionTarget(gameWorldComponent, target, gameWorldComponent.getRole(target));
+    }
+
+    private static boolean isValidExecutionTarget(GameWorldComponent gameWorldComponent, PlayerEntity target, Role role) {
+        if (target == null || role == null || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+            return false;
+        }
+        /*
+         * 仇杀客的目标不再只看 Role#isInnocent：
+         * 1. 平民阵营和义警阵营仍然是原本意义上的“好人目标”；
+         * 2. 独立中立拥有自己的独胜窗口，也需要在好人阵营全部死亡后继续成为可仇杀目标；
+         * 3. 普通中立只做分组导出，不进入仇杀目标池。
+         */
+        if (role.getFaction() == Faction.CIVILIAN || role.getFaction() == Faction.VIGILANTE) {
+            return !role.equals(NoellesRoleRegistry.MIMIC);
+        }
+        return NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role);
     }
 }
