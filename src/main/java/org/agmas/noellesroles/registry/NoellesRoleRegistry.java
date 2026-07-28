@@ -26,6 +26,7 @@ import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 import org.agmas.noellesroles.roles.robot.RobotConstants;
 import org.agmas.noellesroles.roles.starstruck.StarstruckConstants;
 import org.agmas.noellesroles.roles.thief.ThiefConstants;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 
 import java.awt.Color;
@@ -91,6 +92,8 @@ public final class NoellesRoleRegistry {
     public static final Role VOODOO = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.VOODOO_ID, new Color(128, 114, 253).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //服务员(好人)：可以辅助别的玩家完成心情任务
     public static final Role WAITER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.WAITER_ID, WaiterConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.VIGILANTE.getMaxSprintTime(), false));
+    //时停者(好人)：开局拥有濒毁怀表，使用光阴刷新友方冷却或发动时间回溯
+    public static final Role TIMEKEEPER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.TIMEKEEPER_ID, TimekeeperConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
     //风灵师(好人)：可以漂浮玩家，购买风弹和风之印记，风之印记可标记人，当周围有人举刀会被紧急抬升
     public static final Role WINDER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.WINDER_ID, new Color(66, 215, 215).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
 

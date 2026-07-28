@@ -26,6 +26,9 @@ import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
 
 public class ModItems {
     public static void init() {
@@ -124,6 +127,7 @@ public class ModItems {
             entries.add(SNIPER_RIFLE_BULLET);
             entries.add(SLEEPING_BAG);
             entries.add(BOOK);
+            entries.add(DYING_WATCH);
 
 
         });
@@ -155,6 +159,36 @@ public class ModItems {
             ComponentType.<Boolean>builder()
                     .codec(Codec.BOOL)
                     .packetCodec(PacketCodecs.BOOL)
+                    .build()
+    );
+
+    /**
+     * 濒毁怀表当前状态。
+     *
+     * <p>0=普通、1=损坏、2=精致。这里刻意用 int 而不是字符串，
+     * 是为了让物品数据组件的网络同步更轻，同时避免旧存档里写入未知字符串导致模型谓词崩掉。</p>
+     */
+    public static final ComponentType<Integer> TIMEKEEPER_WATCH_STATE = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "timekeeper_watch_state"),
+            ComponentType.<Integer>builder()
+                    .codec(Codec.INT)
+                    .packetCodec(PacketCodecs.INTEGER)
+                    .build()
+    );
+
+    /**
+     * 濒毁怀表当前选择的技能模式。
+     *
+     * <p>0=物品加速、1=技能加速、2=时间回溯。服务端右键使用时只信任这份组件数据，
+     * 客户端左键切换后也会发包给服务端写回，保证 HUD/tooltip/实际效果读同一份状态。</p>
+     */
+    public static final ComponentType<Integer> TIMEKEEPER_WATCH_MODE = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "timekeeper_watch_mode"),
+            ComponentType.<Integer>builder()
+                    .codec(Codec.INT)
+                    .packetCodec(PacketCodecs.INTEGER)
                     .build()
     );
     ///添加noellesroles的物品
@@ -343,6 +377,14 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1)),
             "book"
     );
+    // 濒毁怀表：时停者开局获得的核心物品，状态与模式由上方数据组件保存。
+    public static final Item DYING_WATCH = register(
+            new TimekeeperWatchItem(new Item.Settings()
+                    .maxCount(1)
+                    .component(TIMEKEEPER_WATCH_STATE, TimekeeperWatchState.NORMAL.ordinal())
+                    .component(TIMEKEEPER_WATCH_MODE, TimekeeperWatchMode.ITEM_ACCELERATE.ordinal())),
+            "dying_watch"
+    );
     
     ///添加noellesroles的商店图标
     //服务员随机食物图标
@@ -389,6 +431,11 @@ public class ModItems {
     public static final Item ICON_POTION_EFFECT_REFRESH = register(
             new Item(new Item.Settings().maxCount(1)),
             "icon_potion_effect_refresh"
+    );
+    // 回溯保护商店图标：购买成功只写入玩家标记，不会发进背包。
+    public static final Item DYING_WATCH_PROTECT = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "dying_watch_protect"
     );
 
 

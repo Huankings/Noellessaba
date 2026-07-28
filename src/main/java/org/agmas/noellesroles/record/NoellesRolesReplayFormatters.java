@@ -13,6 +13,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -1629,6 +1630,71 @@ public final class NoellesRolesReplayFormatters {
             return Text.translatable(weaponName);
         }
         return Text.literal(weaponName);
+    }
+
+    private static Text timekeeperWatchName(String stateId) {
+        return "elegant".equals(stateId)
+                ? Text.translatable("text.noellesroles.timekeeper.watch.elegant")
+                : Text.translatable("text.noellesroles.timekeeper.watch.dying");
+    }
+
+    private static Text timekeeperWatchModeName(String modeId) {
+        return TimekeeperWatchMode.byId(modeId).text();
+    }
+
+    @Nullable
+    public static Text formatTimekeeperWatchUsed(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.timekeeper_watch_used",
+                actor,
+                timekeeperWatchName(event.data().getString("watch_state")),
+                timekeeperWatchModeName(event.data().getString("mode")),
+                event.data().getInt("cost")
+        );
+    }
+
+    @Nullable
+    public static Text formatTimekeeperWatchBroken(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null
+                ? null
+                : Text.translatable(
+                "replay.global.noellesroles.timekeeper_watch_broken",
+                actor,
+                timekeeperWatchName(event.data().getString("watch_state"))
+        );
+    }
+
+    @Nullable
+    public static Text formatTimekeeperWatchRepaired(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null
+                ? null
+                : Text.translatable(
+                "replay.global.noellesroles.timekeeper_watch_repaired",
+                actor,
+                timekeeperWatchName(event.data().getString("watch_state")),
+                event.data().getInt("cost")
+        );
+    }
+
+    @Nullable
+    public static Text formatTimekeeperWatchUpgraded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.timekeeper_watch_upgraded",
+                actor,
+                timekeeperWatchName(event.data().getString("from_state")),
+                timekeeperWatchName(event.data().getString("to_state")),
+                event.data().getInt("cost")
+        );
     }
 
     @Nullable

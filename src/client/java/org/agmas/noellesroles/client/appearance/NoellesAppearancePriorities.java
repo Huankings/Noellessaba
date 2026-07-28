@@ -14,6 +14,12 @@ public final class NoellesAppearancePriorities {
     public static final int SPIRITUALIST = 2000;
 
     /**
+     * 时间狭缝是强视角隔离：玩家在狭缝内看到的其它存活玩家都应像自己。
+     * 它必须高于灵术师、召集者、变形怪等普通伪装，避免狭缝期间仍泄露真实外观。
+     */
+    public static final int TIMEKEEPER_RIFT = 3000;
+
+    /**
      * 召集者会在全体活人身上强制套尸体皮肤，必须高于普通主动变形。
      */
     public static final int CONVENER = 1000;

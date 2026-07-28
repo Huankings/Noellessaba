@@ -88,7 +88,9 @@
       "noellesroles:avaricious_payout",
       "noellesroles:necromancer",
       "noellesroles:lovers_pairs",
-      "noellesroles:dual_personality"
+      "noellesroles:dual_personality",
+      "noellesroles:timekeeper",
+      "noellesroles:timekeeper_world"
     ]
   },
   "mixins": [

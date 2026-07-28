@@ -33,6 +33,7 @@ import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManage
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -83,6 +84,15 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         VoicechatServerApi api = event.getVoicechat();
         ServerPlayerEntity spectator = resolveServerPlayer(event.getSenderConnection());
         if (spectator == null) {
+            return;
+        }
+
+        /*
+         * 时停者时间狭缝 / 回溯播放隔离的是“说话”和“听话”两端。
+         * 麦克风事件负责拦住发送者，后面的 shouldBlockVoiceBetween 再拦住接收者。
+         */
+        if (TimekeeperWorldComponent.KEY.get(spectator.getServerWorld()).shouldBlockCommunication(spectator)) {
+            event.cancel();
             return;
         }
 
@@ -268,6 +278,16 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
     }
 
     private boolean shouldBlockVoiceBetween(ServerPlayerEntity sender, ServerPlayerEntity receiver) {
+        /*
+         * 回溯/狭缝期间没有保护的玩家既不能发声，也不能听见外界语音。
+         * 这里必须同时检查 sender 与 receiver：有些语音包可能不是从 MicrophonePacketEvent
+         * 原样流过来的，例如灵术师、接线员会手动重发 static/entity sound。
+         */
+        if (TimekeeperWorldComponent.KEY.get(sender.getServerWorld()).shouldBlockCommunication(sender)
+                || TimekeeperWorldComponent.KEY.get(receiver.getServerWorld()).shouldBlockCommunication(receiver)) {
+            return true;
+        }
+
         if (DualPersonalityCommunicationHelper.shouldBlockVoiceBetween(sender, receiver)) {
             return true;
         }

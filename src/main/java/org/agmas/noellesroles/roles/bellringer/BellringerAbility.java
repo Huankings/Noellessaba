@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 /**
  * 敲钟人主动能力。
@@ -49,6 +50,15 @@ public final class BellringerAbility {
 
         GameTimeComponent time = GameTimeComponent.KEY.get(player.getWorld());
         time.setTime(Math.max(0, time.getTime() - BellringerConstants.REDUCE_SECONDS * 20));
+        /*
+         * 时停者联动：敲钟人每次成功减少局内时间时，
+         * 同样把这段“被敲掉的时间”折算为怀表冷却减少。
+         * 判断时停者是否在场、是否存活集中在世界组件工具方法里，避免敲钟人能力承担其它职业细节。
+         */
+        TimekeeperWorldComponent.reduceWatchCooldownsForAliveTimekeepers(
+                player.getServerWorld(),
+                BellringerConstants.REDUCE_SECONDS * 20
+        );
         player.playSoundToPlayer(SoundEvents.BLOCK_BELL_USE, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
         /*

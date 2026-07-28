@@ -50,6 +50,11 @@
     "roles.bounty_hunter.BountyHunterLockSlotMixin",
     "roles.muzzler.MuzzlerPsychoDroneMixin",
     "roles.muzzler.MuzzlerPsychoDroneLoopMixin",
+    "roles.timekeeper.TimekeeperKeyBindingAccessor",
+    "roles.timekeeper.TimekeeperRewindKeyBindingMixin",
+    "roles.timekeeper.TimekeeperRewindMouseMixin",
+    "roles.timekeeper.TimekeeperRewindMinecraftMixin",
+    "roles.timekeeper.TimekeeperRiftHotbarKeyMixin",
     "roles.hunter.HunterFovMixin",
     "roles.hunter.HunterLockSlotMixin",
     "roles.kidnapper.KidnapperKeyControlledMixin",
@@ -82,6 +87,7 @@
     "roles.cook.PanCrosshairMixin",
     "roles.hunter.HuntingKnifeCrosshairMixin",
     "roles.drugmaker.DrugmakerCrosshairMixin",
-    "roles.thief.ThiefCrosshairRendererMixin"
+    "roles.thief.ThiefCrosshairRendererMixin",
+    "roles.timekeeper.TimekeeperWatchCrosshairMixin"
   ]
 }

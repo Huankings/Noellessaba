@@ -26,6 +26,7 @@ import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionVie
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.swapper.SwapperC2SPacket;
+import org.agmas.noellesroles.packet.role.timekeeper.TimekeeperWatchModeC2SPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 
 /**
@@ -61,6 +62,7 @@ public final class NoellesRolesPayloadTypes {
         PayloadTypeRegistry.playC2S().register(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SpiritualistPossessionControlC2SPacket.ID, SpiritualistPossessionControlC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ConvenerMorphC2SPacket.ID, ConvenerMorphC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(TimekeeperWatchModeC2SPacket.ID, TimekeeperWatchModeC2SPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SpiritualistPossessionViewS2CPacket.ID, SpiritualistPossessionViewS2CPacket.CODEC);
     }
 }

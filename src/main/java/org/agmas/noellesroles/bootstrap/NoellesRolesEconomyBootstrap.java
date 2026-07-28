@@ -5,11 +5,13 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 import dev.doctor4t.wathe.api.economy.EconomyApi;
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
 import dev.doctor4t.wathe.api.Role;
+import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.modifiers.magnate.MagnateEconomyHandler;
 import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterTaskIncomeHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateConstants;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +28,13 @@ public final class NoellesRolesEconomyBootstrap {
     }
 
     public static void init() {
+        EconomyApi.registerCurrency(
+                TimekeeperConstants.TIME_CURRENCY_ID,
+                TimekeeperConstants.TIME_CURRENCY_ICON,
+                "currency.noellesroles.time",
+                context -> context.role() == NoellesRoleRegistry.TIMEKEEPER
+        );
+
         EconomyApi.registerBalanceHudRoles(List.of(
                 NoellesRoleRegistry.BARTENDER,
                 NoellesRoleRegistry.BELLRINGER,
@@ -48,7 +57,8 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.COOK,
                 NoellesRoleRegistry.PHYSICIAN,
                 NoellesRoleRegistry.INITIATE,
-                NoellesRoleRegistry.LICENSED_VILLAIN
+                NoellesRoleRegistry.LICENSED_VILLAIN,
+                NoellesRoleRegistry.TIMEKEEPER
         ));
 
         /*
@@ -85,6 +95,7 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.PHYSICIAN,
                 NoellesRoleRegistry.MAGICIAN,
                 NoellesRoleRegistry.ASSASSIN,
+                NoellesRoleRegistry.TIMEKEEPER,
                 NoellesRoleRegistry.LICENSED_VILLAIN,
                 NoellesRoleRegistry.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES
         ));
@@ -126,8 +137,18 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.CORONER,
                 NoellesRoleRegistry.ENGINEER,
                 NoellesRoleRegistry.RECALLER,
-                NoellesRoleRegistry.COOK
+                NoellesRoleRegistry.COOK,
+                NoellesRoleRegistry.TIMEKEEPER
         ));
+
+        TaskCompletionApi.AFTER_TASK_COMPLETE.register(context -> {
+            if (context.role() == NoellesRoleRegistry.TIMEKEEPER) {
+                PlayerShopComponent.KEY.get(context.player()).addCurrencyAmount(
+                        TimekeeperConstants.TIME_CURRENCY_ID,
+                        TimekeeperConstants.TASK_TIME_INCOME_AMOUNT
+                );
+            }
+        });
 
         MagnateEconomyHandler.init();
         TaskmasterTaskIncomeHandler.init();

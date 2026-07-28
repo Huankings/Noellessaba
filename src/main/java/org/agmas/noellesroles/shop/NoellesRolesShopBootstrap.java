@@ -35,6 +35,7 @@ import org.agmas.noellesroles.roles.rememberer.RemembererShopHandler;
 import org.agmas.noellesroles.roles.robber.RobberShopHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerShopHandler;
 import org.agmas.noellesroles.roles.trapper.TrapperShopHandler;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
 import org.agmas.noellesroles.roles.winder.WinderShopHandler;
 
@@ -68,6 +69,7 @@ public final class NoellesRolesShopBootstrap {
         registerStatic(NoellesRoleRegistry.COOK, CookShopHandler::getShopEntries);
         registerStatic(NoellesRoleRegistry.PHYSICIAN, PhysicianShopHandler::getShopEntries);
         registerStatic(NoellesRoleRegistry.WAITER, WaiterShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.TIMEKEEPER, TimekeeperShopHandler::getShopEntries);
 
         // 杀手阵营静态商店。
         registerStatic(NoellesRoleRegistry.BOMBER, BomberShopHandler::getShopEntries);

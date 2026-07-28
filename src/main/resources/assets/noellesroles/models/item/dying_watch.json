@@ -1,0 +1,20 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "noellesroles:item/dying_watch"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "noellesroles:timekeeper_watch_elegant": 1.0
+      },
+      "model": "noellesroles:item/elegant_watch"
+    },
+    {
+      "predicate": {
+        "noellesroles:timekeeper_watch_broken": 1.0
+      },
+      "model": "noellesroles:item/dying_watch_broken"
+    }
+  ]
+}

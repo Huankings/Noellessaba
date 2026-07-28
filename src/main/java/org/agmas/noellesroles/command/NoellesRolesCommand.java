@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -15,6 +16,7 @@ import net.minecraft.text.Text;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.modifiers.dual_personality.ForcedDualPersonalityManager;
 import org.agmas.noellesroles.modifiers.lovers.ForcedLoversManager;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 
 /**
  * NoellesRoles 调试/配置指令入口。
@@ -51,6 +53,10 @@ public final class NoellesRolesCommand {
                                 .then(CommandManager.argument("sub", EntityArgumentType.player())
                                         // main/sub 的顺序有意义：main 是开局活跃的主人格，sub 是开局休眠的副人格。
                                         .executes(NoellesRolesCommand::setDualPersonality))))
+                .then(CommandManager.literal("setTime")
+                        .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(NoellesRolesCommand::setTimeCurrency))))
                 .then(CommandManager.literal("constants")
                         .then(CommandManager.literal("minplayerspawn")
                                 .then(CommandManager.literal("dual_personality")
@@ -75,6 +81,29 @@ public final class NoellesRolesCommand {
                         "commands.noellesroles.set_lovers.success",
                         first.getDisplayName(),
                         second.getDisplayName()
+                ),
+                true
+        );
+        return 1;
+    }
+
+    private static int setTimeCurrency(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        int amount = IntegerArgumentType.getInteger(context, "amount");
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+
+        /*
+         * 光阴是 Wathe 多货币系统里的 noellesroles:time，不是普通金币 balance。
+         * 测试指令使用“设置为指定数值”而不是“追加数值”，方便管理员复现边界：
+         * 例如直接设置为 119 测光阴不足，设置为 120 测刚好可以回溯。
+         */
+        PlayerShopComponent.KEY.get(player).setCurrencyAmount(TimekeeperConstants.TIME_CURRENCY_ID, amount);
+
+        context.getSource().sendFeedback(
+                () -> Text.translatable(
+                        "commands.noellesroles.set_time.success",
+                        player.getDisplayName(),
+                        amount,
+                        Text.literal("§f" + TimekeeperConstants.TIME_CURRENCY_ICON + "§r")
                 ),
                 true
         );

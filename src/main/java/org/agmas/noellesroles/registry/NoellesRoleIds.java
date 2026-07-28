@@ -77,6 +77,7 @@ public final class NoellesRoleIds {
     public static final Identifier CONVENER_ID = NoellesRolesCore.id("convener");
     public static final Identifier THIEF_ID = NoellesRolesCore.id("thief");
     public static final Identifier LICENSED_VILLAIN_ID = NoellesRolesCore.id("licensed_villain");
+    public static final Identifier TIMEKEEPER_ID = NoellesRolesCore.id("timekeeper");
 
     private NoellesRoleIds() {
     }

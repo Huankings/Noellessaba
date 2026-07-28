@@ -41,6 +41,7 @@ import org.agmas.noellesroles.roles.stalker.StalkerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.starstruck.StarstruckRoleAssignedHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistRoleAssignedHandler;
 import org.agmas.noellesroles.roles.thief.ThiefRoleAssignedHandler;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperRoleAssignedHandler;
 import org.agmas.noellesroles.roles.vulture.VultureRoleAssignedHandler;
 import org.agmas.noellesroles.roles.winder.WinderRoleAssignedHandler;
 
@@ -121,6 +122,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             ConvenerRoleAssignedHandler.onRoleAssigned(player, role);
             ThiefRoleAssignedHandler.onRoleAssigned(player, role);
             LicensedVillainRoleAssignedHandler.onRoleAssigned(player, role);
+            TimekeeperRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

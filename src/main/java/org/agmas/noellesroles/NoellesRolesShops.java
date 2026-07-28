@@ -21,6 +21,7 @@ import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
 import org.agmas.noellesroles.shop.PlayerShopComponentAccessor;
@@ -107,7 +108,9 @@ public class NoellesRolesShops {
          * 例如“当前没有停电”或“刺刀没有处于冷却”。Wathe 仍会播放失败音效，
          * 但不再额外显示通用的“购买失败”覆盖细节。
          */
-        if (item == ModItems.POWER_RESTORATION || item == ModItems.BAYONET_COLDOWN_REFRESH) {
+        if (item == ModItems.POWER_RESTORATION
+                || item == ModItems.BAYONET_COLDOWN_REFRESH
+                || item == ModItems.DYING_WATCH_PROTECT) {
             return ShopPurchaseResult.FAIL_SILENT;
         }
         return ShopPurchaseResult.FAIL_SHOW_MESSAGE;
@@ -137,7 +140,9 @@ public class NoellesRolesShops {
             }
 
             // 这两类即时道具都会各自给出更具体的失败原因，不再让通用提示覆盖。
-            if (item != ModItems.POWER_RESTORATION && item != ModItems.BAYONET_COLDOWN_REFRESH) {
+            if (item != ModItems.POWER_RESTORATION
+                    && item != ModItems.BAYONET_COLDOWN_REFRESH
+                    && item != ModItems.DYING_WATCH_PROTECT) {
                 ShopApi.sendPurchaseFailedMessage(player);
             }
         } else {
@@ -183,6 +188,13 @@ public class NoellesRolesShops {
         }
         if (item == ModItems.ICON_POTION_EFFECT_REFRESH) {
             return HackerComponent.refreshPotionEffect(player);
+        }
+        if (item == ModItems.DYING_WATCH_PROTECT) {
+            /*
+             * 回溯保护是“购买后做标记”的商店按钮，不应该把图标物品塞进背包。
+             * 是否允许购买由时停者自己的 handler 判断，Wathe 负责统一扣金币和播放购买/失败音效。
+             */
+            return TimekeeperShopHandler.tryBuyRewindProtection(player);
         }
         if (item == ModItems.RANDOM_DRINK) {
             return player.giveItemStack(WaiterShopHandler.createRandomCocktailStack(player.getRandom()));

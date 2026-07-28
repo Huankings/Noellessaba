@@ -29,6 +29,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
@@ -65,10 +66,15 @@ import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
+import org.agmas.noellesroles.packet.role.timekeeper.TimekeeperWatchModeC2SPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
+import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.lwjgl.glfw.GLFW;
 
@@ -89,6 +95,7 @@ public class NoellesrolesClient implements ClientModInitializer {
     private static boolean wasChargingPressed = false;
     private static boolean wasUsingKnife = false;
     private static boolean grenadeThrowModeToggleHeld = false;
+    private static boolean watchModeToggleHeld = false;
     private static int lastThrowableGrenadeSelectedSlot = -1;
 
     public static Map<UUID, UUID> SHUFFLED_PLAYER_ENTRIES_CACHE = Maps.newHashMap();
@@ -199,6 +206,7 @@ public class NoellesrolesClient implements ClientModInitializer {
 
             if (!client.options.attackKey.isPressed()) {
                 grenadeThrowModeToggleHeld = false;
+                watchModeToggleHeld = false;
             }
 
 
@@ -267,6 +275,8 @@ public class NoellesrolesClient implements ClientModInitializer {
     }
 
     private void registerItemTooltipsAndModels() {
+        registerTimekeeperWatchCooldownTooltip();
+
         ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> {
             // 为 NoellesRoles 的所有物品添加提示（描述 + 冷却）
             NoellesRolesItemToolTip.addItemtip(ModItems.TOOLBOX, itemStack, list);
@@ -310,6 +320,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_POTION_EFFECT_REFRESH, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.DYING_WATCH_PROTECT, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SLEEPING_BAG, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BOOK, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_FOOD, itemStack, list);
@@ -358,12 +369,36 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_WEAPON_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);
+        NoellesRolesItemExtraModel.registerTimekeeperWatchModel(ModItems.DYING_WATCH);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.DYING_WATCH_PROTECT);
         NoellesRolesItemExtraModel.registerPhoneModel(ModItems.PHONE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SLEEPING_BAG);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOOK);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_FOOD);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_DRINK);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_POTION);
+    }
+
+    private static void registerTimekeeperWatchCooldownTooltip() {
+        TimekeeperWatchItem.setCooldownTooltipProvider((stack, mode) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.player == null) {
+                return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.ready");
+            }
+
+            /*
+             * 怀表冷却不是原版 ItemCooldownManager，而是时停者自己的三模式冷却。
+             * 服务端把 TimekeeperPlayerComponent 只同步给玩家本人，所以这里在客户端 tooltip 阶段
+             * 直接读取本地玩家组件，就能精确显示当前选中模式的剩余秒数。
+             */
+            int cooldownTicks = TimekeeperPlayerComponent.KEY.get(client.player).getCooldownTicks(mode);
+            if (cooldownTicks <= 0) {
+                return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.ready");
+            }
+
+            int cooldownSeconds = Math.max(1, (cooldownTicks + 19) / 20);
+            return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.seconds", cooldownSeconds);
+        });
     }
 
     /**
@@ -378,7 +413,47 @@ public class NoellesrolesClient implements ClientModInitializer {
         if (player.getMainHandStack().isOf(ModItems.SNIPER_RIFLE)) {
             return true;
         }
+        if (noellesroles$handleTimekeeperWatchModeSwitch(player)) {
+            return true;
+        }
         return noellesroles$handleGrenadeThrowModeSwitch(player);
+    }
+
+    /**
+     * 时停者怀表左键切换模式。
+     *
+     * <p>这里和手雷模式切换一样在客户端预攻击阶段吞掉左键，
+     * 这样玩家不会因为想切怀表模式而误攻击玩家或破坏方块。
+     * 本地先写一次数据组件只是为了 tooltip/actionbar 即刻更新；
+     * 服务端收到包后会重新校验并写回权威状态。</p>
+     */
+    private static boolean noellesroles$handleTimekeeperWatchModeSwitch(PlayerEntity player) {
+        if (!player.getMainHandStack().isOf(ModItems.DYING_WATCH)) {
+            return false;
+        }
+        if (!GameFunctions.isPlayerAliveAndSurvival(player)) {
+            return false;
+        }
+
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(player.getWorld());
+        if (!gameWorld.isRole(player, NoellesRoleRegistry.TIMEKEEPER)) {
+            return false;
+        }
+
+        if (watchModeToggleHeld) {
+            return true;
+        }
+        watchModeToggleHeld = true;
+
+        TimekeeperWatchMode nextMode = TimekeeperWatchItem.getMode(player.getMainHandStack()).next();
+        TimekeeperWatchItem.setMode(player.getMainHandStack(), nextMode);
+        player.sendMessage(
+                Text.translatable("message.noellesroles.timekeeper.current_watch_mode", nextMode.text())
+                        .withColor(TimekeeperConstants.ROLE_COLOR),
+                true
+        );
+        ClientPlayNetworking.send(new TimekeeperWatchModeC2SPacket(nextMode.ordinal()));
+        return true;
     }
 
     /**
@@ -511,6 +586,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         wasChargingPressed = false;
         wasUsingKnife = false;
         grenadeThrowModeToggleHeld = false;
+        watchModeToggleHeld = false;
         lastThrowableGrenadeSelectedSlot = -1;
     }
 

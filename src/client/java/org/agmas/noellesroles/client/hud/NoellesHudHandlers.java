@@ -28,6 +28,7 @@ import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistStatusHud;
 import org.agmas.noellesroles.client.roles.stalker.StalkerStatusHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckStatusHud;
 import org.agmas.noellesroles.client.roles.thief.ThiefStatusHud;
+import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperStatusHud;
 import org.agmas.noellesroles.client.roles.vulture.VultureStatusHud;
 import org.agmas.noellesroles.client.roles.winder.WinderStatusHud;
 
@@ -72,5 +73,6 @@ public final class NoellesHudHandlers {
         RobotStatusHud.register();
         ThiefStatusHud.register();
         DreamerStatusHud.register();
+        TimekeeperStatusHud.register();
     }
 }

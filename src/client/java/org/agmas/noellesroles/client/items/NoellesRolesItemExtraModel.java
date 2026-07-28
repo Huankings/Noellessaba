@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import dev.doctor4t.wathe.game.GameFunctions;
 import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,18 @@ public class NoellesRolesItemExtraModel {
 
     public static Identifier getKillerGroupId() {
         return Identifier.of(NoellesRolesCore.MOD_ID, "killer_group");
+    }
+
+    public static Identifier getTimekeeperWatchStateId() {
+        return Identifier.of(NoellesRolesCore.MOD_ID, "timekeeper_watch_state");
+    }
+
+    public static Identifier getTimekeeperWatchBrokenId() {
+        return Identifier.of(NoellesRolesCore.MOD_ID, "timekeeper_watch_broken");
+    }
+
+    public static Identifier getTimekeeperWatchElegantId() {
+        return Identifier.of(NoellesRolesCore.MOD_ID, "timekeeper_watch_elegant");
     }
 
     /**
@@ -63,5 +76,31 @@ public class NoellesRolesItemExtraModel {
             if (MinecraftClient.getInstance().player == null) return 0.0F;
             return HackerPhoneComponent.KEY.get(MinecraftClient.getInstance().player).groupKiller ? 1.0F : 0.0F;
         });
+    }
+
+    /**
+     * 注册怀表状态模型谓词。
+     *
+     * <p>濒毁怀表不使用通用冷却谓词，因为它有三套独立模式冷却；
+     * 如果把整件物品放进原版 ItemCooldownManager，切换模式后也会被同一个冷却遮罩锁住。
+     * 因此这里只根据物品数据组件切换普通 / 损坏 / 精致外观。</p>
+     */
+    public static void registerTimekeeperWatchModel(@NotNull Item item) {
+        /*
+         * 旧实现只暴露一个 ordinal 谓词：普通=0、损坏=1、精致=2。
+         * Minecraft 物品模型 override 的谓词是“当前值 >= JSON 阈值”式匹配，
+         * 所以精致状态 2 会同时满足损坏模型的 1.0 阈值；在当前加载顺序下会先命中损坏贴图。
+         *
+         * 这里保留 ordinal 谓词给调试/兼容使用，同时新增两个互斥布尔谓词：
+         * - timekeeper_watch_broken 只有损坏状态返回 1；
+         * - timekeeper_watch_elegant 只有精致状态返回 1。
+         * 这样无论模型 override 顺序如何，精致怀表都不会再被损坏怀表的阈值误覆盖。
+         */
+        ModelPredicateProviderRegistry.register(item, getTimekeeperWatchStateId(), (itemStack, world, entity, seed) ->
+                TimekeeperWatchItem.getState(itemStack).ordinal());
+        ModelPredicateProviderRegistry.register(item, getTimekeeperWatchBrokenId(), (itemStack, world, entity, seed) ->
+                TimekeeperWatchItem.getState(itemStack).isBroken() ? 1.0F : 0.0F);
+        ModelPredicateProviderRegistry.register(item, getTimekeeperWatchElegantId(), (itemStack, world, entity, seed) ->
+                TimekeeperWatchItem.getState(itemStack).isElegant() ? 1.0F : 0.0F);
     }
 }

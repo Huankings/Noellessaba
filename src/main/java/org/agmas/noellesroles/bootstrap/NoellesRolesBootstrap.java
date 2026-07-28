@@ -40,6 +40,7 @@ import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.thief.ThiefInteractionHandler;
 import org.agmas.noellesroles.roles.thief.ThiefItemTracker;
 import org.agmas.noellesroles.roles.thief.ThiefVictoryRule;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperCommunicationManager;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.shop.NoellesRolesShopBootstrap;
 import org.agmas.noellesroles.tray.NoellesRolesTrayEffects;
@@ -72,6 +73,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesBedEffects.register();
         NoellesBodyAppearanceHandlers.register();
         NoellesRolesReplayBootstrap.register();
+        TimekeeperCommunicationManager.init();
         SpiritualistCommunicationManager.init();
         OperatorCommunicationManager.init();
         RemembererInteractionHandler.init();

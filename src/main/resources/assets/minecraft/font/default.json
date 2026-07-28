@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "noellesroles:font/time.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        "\uE783"
+      ]
+    }
+  ]
+}

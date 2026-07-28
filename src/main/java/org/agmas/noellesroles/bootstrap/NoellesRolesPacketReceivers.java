@@ -28,6 +28,7 @@ import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionCon
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.swapper.SwapperC2SPacket;
+import org.agmas.noellesroles.packet.role.timekeeper.TimekeeperWatchModeC2SPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.bellringer.BellringerAbility;
@@ -53,6 +54,7 @@ import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerAbility;
 import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.swapper.SwapperAbility;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperAbility;
 import org.agmas.noellesroles.roles.vulture.VultureAbility;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderAbility;
@@ -142,6 +144,7 @@ public final class NoellesRolesPacketReceivers {
         ServerPlayNetworking.registerGlobalReceiver(DualPersonalitySwitchKeyLabelC2SPacket.ID, (payload, context) -> context.server().execute(() -> DualPersonalityManager.updateSwitchKeyLabel(context.player().getUuid(), payload.keyLabel())));
         ServerPlayNetworking.registerGlobalReceiver(OperatorC2SPacket.ID, (payload, context) -> context.server().execute(() -> OperatorAbility.handle(payload, context.player())));
         ServerPlayNetworking.registerGlobalReceiver(BlowgunC2SPacket.ID, new BlowgunC2SPacket.Receiver());
+        ServerPlayNetworking.registerGlobalReceiver(TimekeeperWatchModeC2SPacket.ID, (payload, context) -> context.server().execute(() -> TimekeeperAbility.switchWatchMode(context.player(), payload.modeOrdinal())));
         ServerPlayNetworking.registerGlobalReceiver(AbilityC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
             var player = context.player();
             var gameWorld = GameWorldComponent.KEY.get(player.getWorld());
@@ -171,6 +174,8 @@ public final class NoellesRolesPacketReceivers {
                 HunterAbility.handle(player);
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.ROBOT)) {
                 RobotAbility.handle(player);
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.TIMEKEEPER)) {
+                TimekeeperAbility.handleRepairOrUpgrade(player);
             }
         }));
     }

@@ -54,6 +54,10 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`：Harpy 静态角色上限初始化；人数相关动态上限在 `NoellesRolesEventBootstrap`。
 - `src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldComponent.java`：时停者世界级快照历史、回溯播放游标、保护名单。
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperRiftHandler.java`：时间狭缝入口、动态失效检测、以及排除狭缝玩家后的胜利收束判断。
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperSnapshots.java`：时停者回溯的玩家 / 世界组件快照白名单和恢复逻辑；新增运行态组件后必须检查这里。
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldStateSnapshot.java`：时停者回溯覆盖的门、火等可控世界状态。
 - `src/main/java/org/agmas/noellesroles/ModItems.java`
 - `src/main/java/org/agmas/noellesroles/NoellesRolesShops.java`
 - `src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
@@ -81,6 +85,7 @@
 - 风灵师：`roles/winder`，参考背包选人界面、能力键、标记、HUD、商店。
 - 接线员：`roles/operator`，参考双人选择、语音/聊天桥接、持续状态、回放。
 - 魔术师：`roles/magician`，参考复杂状态机、播放实体、动作记录、强制清理、回放。
+- 时停者：`roles/timekeeper`，参考新货币、物品多状态、商店保护、全局快照、时间回溯、时间狭缝、语音/聊天隔离；新增 CCA 运行态组件时重点参考 `TimekeeperSnapshots`，新增独立胜利或阻拦普通结算的规则时重点检查 `TimekeeperRiftHandler`。
 
 ### Wathe 公共 API 优先于新 mixin
 
@@ -110,7 +115,9 @@
 5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。
 6. 关键代码写详细中文注释，尤其是：为什么要这么接入 API、为什么要在服务端/客户端判断、为什么要同步组件、为什么要这样处理回合结束/玩家死亡/掉线。
 7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
-8. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
+8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：应回滚的玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，应回滚的世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
+9. 只要新增或改动 `VictoryApi` 胜利规则，尤其是独立阵营胜利、共胜、或活着时返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算的职业/词条，就必须评估时间狭缝：把“排除狭缝玩家后仍真正存活且仍应阻拦结算”的条件补进 `TimekeeperRiftHandler`，避免死者处于特殊存活旁观时继续卡住胜利。
+10. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
 
 ## 注册点检查清单
 
@@ -132,6 +139,9 @@
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
+- `TimekeeperSnapshots.java`：新增 CCA 运行态组件后同步加入 `PLAYER_COMPONENTS` / `WORLD_COMPONENTS`，或明确说明该组件不应被时间回溯。
+- `TimekeeperRiftHandler.java`：新增或改动独立胜利、共胜、`KEEP_RUNNING` 阻拦普通结算的职业/词条后，检查时间狭缝提前收束逻辑是否需要加入该规则。
+- `TimekeeperWorldStateSnapshot.java`：新增门、火、放置物、机关等可控世界状态时，评估是否需要纳入时停者回溯；不要做整张地图方块级回滚。
 - `NoellesRolesRoleAssignedBootstrap.java`：职业分配后发初始物品、重置状态、设置开局冷却。
 - `NoellesRolesShopBootstrap.java`：注册静态/动态职业商店，或 ShopModifier。
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
@@ -188,6 +198,27 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 只给本人看的状态：`shouldSyncWith` 限制为本人。
 - 所有人可见的被动透视/标记：`shouldSyncWith` 可以同步给所有人，再由客户端 handler 判断观看者身份。
 - 重置入口：`ResetPlayerEvent`、职业分配 handler、回合结束 `GameEvents.ON_FINISH_FINALIZE`。
+
+时停者回溯会按 `TimekeeperSnapshots` 的快照白名单恢复组件 NBT。新增组件时按下面规则处理：
+
+- 属于局内运行态的玩家组件，例如冷却、目标、标记、伪装、任务/进度、免死层数、临时控制、语音/聊天状态，加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`。
+- 属于局内运行态的世界组件，例如全局倒计时、全局标记、全局实体索引、阵营共享进度，加入 `TimekeeperSnapshots.WORLD_COMPONENTS`。
+- 组件的 `writeToNbt` / `readFromNbt` 必须覆盖所有应回滚字段；恢复后需要客户端立刻刷新的组件必须能正确 `sync`。
+- 配置、常量缓存、纯客户端显示缓存、以及 `TimekeeperWorldComponent` 这类“正在执行回溯”的播放机械通常不应进入快照；排除时要写清楚原因。
+- 如果状态存在于 CCA 之外，例如静态 Map、延迟任务队列、播放实体、自定义非物品实体、语音连接或方块实体，不能只加组件白名单；要补对应的快照恢复、重建或回合清理。
+- 新组件开发完成后至少测试一次：组件状态改变后发动时停者回溯，确认该状态回到 30 秒前；购买回溯保护的玩家则不应被回滚。
+
+## 胜利规则与时间狭缝
+
+时间狭缝会把刚死亡的玩家临时拉成 Wathe 的“特殊存活旁观”，所以他们在狭缝倒计时结束前仍可能被 `GameFunctions.isPlayerAliveAndSurvival(...)` 和 `VictoryApi` 当作存活玩家。这个机制是为了允许 30 秒内的时间回溯复活死者，但它也会影响阵营结算。
+
+新增或修改以下规则时，必须同步检查 `TimekeeperRiftHandler`：
+
+- 独立职业 / 独立词条的自定义胜利。
+- 普通阵营胜利时追加赢家的共胜规则。
+- 活着时返回 `VictoryApi.VictoryResult.keepRunning()`，用于阻拦普通杀手 / 乘客结算的规则。
+
+处理原则：如果排除当前处于时间狭缝的玩家后，游戏已经只剩一个可获胜阵营，狭缝玩家应立即 `finishTimeRift()` 转回普通死亡旁观和死亡语音频道，让 Wathe 正常结算；如果排除狭缝后仍有真正存活的独立阻拦者，则继续保留狭缝。后续新增这类职业时，要把“非狭缝存活阻拦条件”补进 `TimekeeperRiftHandler`，并测试“阻拦者正常存活”和“阻拦者死亡进入狭缝”两种局面。
 
 ## 商店和经济
 
@@ -312,6 +343,8 @@ StupidExpress 当前按用户说明使用本机 `gradle build`。StarryExpress �
 商店/经济：
 新增物品/实体/资源：
 HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`，准心提示优先走 `RoleNameHudApi`
+时停者回溯快照：新增 CCA / 世界 / 实体运行态是否需要加入 `TimekeeperSnapshots`
+时间狭缝胜利收束：独立胜利 / 共胜 / KEEP_RUNNING 阻拦规则是否需要加入 `TimekeeperRiftHandler`
 回放/死亡/胜利：
 参考职业：
 是否先给方案：

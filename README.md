@@ -120,6 +120,7 @@
 - 天使（`angel`）
 - 胆小鬼（`coward`）
 - 追忆者（`rememberer`）
+- 时停者（`timekeeper`）
 - 服务员（`waiter`）
 - 模仿者（`mimic`）
 
@@ -177,6 +178,7 @@
 - 天使：`AngelAbility` 在“安抚”和“守护”间切换，`AngelPlayerComponent` 保存守护目标和安抚粒子状态，`AngelDeathProtectionHandler` 会让守护目标死时天使代死，`AngelConstants` 控制 30 秒守护、90 秒安抚和 2 格贴身判定。
 - 胆小鬼：`CowardPlayerComponent` 按周围危险调心情和感官反馈，`SedativePlayerComponent` 管镇静状态和过量死亡，`CowardShopHandler` 卖镇静试剂，`CowardRevolverCooldownMixin`、`CowardFovMixin`、`CowardCameraMixin` 和 `SedativeTrayViewMixin` 调整左轮抖动、视野和托盘行为。
 - 追忆者：`RemembererInteractionHandler` 负责摸取回忆书，`RemembererPlayerComponent` 管回忆和狙击冷却，`RemembererSniperManager`、`SniperRifleItem`、`SniperRifleBulletItem` 实现狙击枪，`RemembererReplayBookBuilder` 负责把三分钟内的事件写成书。
+- 时停者：`TimekeeperPlayerComponent` 保存光阴收入计时、怀表三模式冷却、回溯保护和时间狭缝状态；`TimekeeperWorldComponent` 每 4 tick 采样一次局内快照，保留 120 秒历史并按 30 秒深度倒放；`TimekeeperSnapshots` 负责恢复玩家运行态、背包、物品冷却、尸体、掉落物、门/火等可控状态，后续新增组件时必须同步检查它的快照清单。
 - 服务员：`WaiterInteractionHandler` 判断玩家当前缺什么并递送，`WaiterShopHandler` 提供随机饮品、食物、药水、吧凳、钓鱼竿、唱片、篝火、烟熏炉、睡袋和书，`WaiterConstants` 里集中定义互动距离、价格和奖励。
 - 模仿者：`MimicRoleAssignedHandler` 只发假匕首，但杀手侧会把它当同伙看；`MimicBackfireDeathHandler` 在无辜者被推下列车时反噬自己，`KillerNeutralInstinctHandler` 和 `MimicInstinctHandler` 负责杀手视角提示。
 
@@ -208,6 +210,9 @@
 - `NoellesRolesEventBootstrap.java` 负责事件监听、server tick、回合清理和 Harpy 禁用职业配置同步；其中人数相关动态上限包括 `Mimic`、`Vulture`、`Hacker`、`Drugmaker` 和 `Better Vigilante`。
 - `NoellesRoleLimitsBootstrap.java` 负责开服时的静态 Harpy 上限，例如 `Conductor`、`Executioner`、`Jester`、`Dreamer`、`Starstruck` 等默认最大生成数。
 - `NoellesRolesComponents.java` 负责把所有 CCA component 和 world component 一次性注册进去。
+- `TimekeeperWorldComponent.java` 负责时停者世界级快照历史、回溯游标、保护名单和回溯播放。
+- `TimekeeperRiftHandler.java` 负责时间狭缝入口、动态失效检测，以及“狭缝玩家不应继续阻塞胜利结算”时的提前收束。
+- `TimekeeperSnapshots.java` 负责把 Wathe / Noelles 的可回溯运行态写成快照并恢复；新增 CCA 组件后要同步加入这里的 `PLAYER_COMPONENTS` 或 `WORLD_COMPONENTS`，否则回溯时该组件会停留在“回溯前未来状态”。
 - `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
 - `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath`，保持“先保命，再强制放行，再反噬”的顺序。
 - `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
@@ -222,6 +227,40 @@
 - `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
+
+## 时停者回溯快照接入
+
+时停者的时间回溯不是整张地图方块级回滚，而是“可控运行态快照”。它会恢复玩家位置、生命、药水、背包、物品冷却、部分 Wathe/Noelles 组件、尸体、掉落物、门和火等状态。核心入口是：
+
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldComponent.java`
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperRiftHandler.java`
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperSnapshots.java`
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldStateSnapshot.java`
+
+新增职业或词条只要新增了 CCA 组件，就必须判断这个组件是否属于局内运行态。如果它会影响冷却、目标、标记、伪装、任务进度、免死层数、语音/聊天状态、商店状态、转职状态、实体控制状态等玩法结果，就要加入 `TimekeeperSnapshots`：
+
+- 玩家组件加到 `PLAYER_COMPONENTS`
+- 世界组件加到 `WORLD_COMPONENTS`
+- 组件的 `writeToNbt` / `readFromNbt` 必须完整覆盖可回溯字段
+- 恢复后需要客户端立刻看到的状态，组件必须能被 `ComponentKey.sync(...)` 正确同步
+
+如果组件只是配置、常量缓存、客户端临时显示缓存，或者像 `TimekeeperWorldComponent` 自己一样代表“正在回溯的播放机械”，不要盲目加入快照；这种例外要在代码注释里说明原因。若组件指向自定义实体、延迟任务、语音连接、全局 Map 或非 CCA 静态状态，单纯保存组件 NBT 可能不够，还要给对应实体/管理器补快照恢复或回合清理逻辑。
+
+## 时间狭缝与胜利规则接入
+
+时间狭缝会把刚死亡的玩家临时拉成 Wathe 的“特殊存活旁观”。这让 30 秒内的时间回溯可以把死者从历史快照里复活，但也意味着这些玩家在倒计时结束前会被 `GameFunctions.isPlayerAliveAndSurvival(...)` 和 `VictoryApi` 视为仍然存活。
+
+因此，只要新增或修改了独立胜利、共胜、或“活着时阻拦普通杀手 / 乘客结算”的职业/词条，就必须同步检查：
+
+- `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperRiftHandler.java`
+- 对应的 `*VictoryRule.java`
+
+如果新规则会在 `VictoryApi` 中返回 `KEEP_RUNNING`，或者依赖“场上只剩自己/同阵营成员”触发独立胜利，就要把它的“非狭缝存活阻拦条件”补进 `TimekeeperRiftHandler`。否则最后一个杀手或独立阻拦者死亡后可能因为仍处于时间狭缝，被继续算作存活，导致普通阵营胜利延迟到 30 秒狭缝结束后才结算。
+
+新增这类规则时至少测试两种情况：
+
+- 目标职业/词条玩家正常存活时，仍能按自己的规则阻拦或触发独立胜利。
+- 目标职业/词条玩家死亡并进入时间狭缝时，如果排除狭缝玩家后已经只剩一个可获胜阵营，狭缝应立即收束为真死亡，普通结算不应被拖住。
 
 ## 背包按钮接入方式
 
@@ -387,6 +426,10 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 - `RespawnCopyStrategy.NEVER_COPY`
 - `AutoSyncedComponent`
 - `ServerTickingComponent`，必要时再加 `ClientTickingComponent`
+
+注册新组件后还要同步检查时停者回溯：如果该组件属于局内运行态，把玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，把世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`。这一步和 `NoellesRolesComponents`、`fabric.mod.json` 一样属于组件注册的必做项，否则时间回溯只会回滚玩家背包/位置等基础状态，而新组件仍停在回溯前的未来状态。
+
+如果新职业或词条还新增了 `VictoryApi` 规则，尤其是独立阵营胜利、共胜，或活着时会返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算，也要同步检查 `TimekeeperRiftHandler`。时间狭缝玩家会被 Wathe 当作特殊存活旁观；没有把新阻拦条件加入狭缝收束判断时，最后一个阻拦者死亡后可能仍在狭缝里卡住胜利结算。
 
 ### 5. 需要按键或目标选择时，加 packet
 

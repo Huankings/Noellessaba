@@ -83,6 +83,9 @@ import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperRiftHandler;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.agmas.noellesroles.roles.swapper.SwapperAbility;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
@@ -151,6 +154,7 @@ public final class NoellesRolesEventBootstrap {
             org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent.KEY.get(playerEntity).reset();
             KidnapperComponent.KEY.get(playerEntity).resetAll();
             RobotPlayerComponent.KEY.get(playerEntity).reset();
+            TimekeeperPlayerComponent.KEY.get(playerEntity).reset();
             DousedPlayerComponent.KEY.get(playerEntity).reset();
             DousedPlayerComponent.KEY.get(playerEntity).sync();
             ConvenerPlayerComponent.KEY.get(playerEntity).reset();
@@ -166,6 +170,15 @@ public final class NoellesRolesEventBootstrap {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (ServerWorld world : server.getWorlds()) {
                 GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
+                /*
+                 * 时间狭缝是“时停者仍能回溯”的临时窗口，而不是永久死亡保护。
+                 * 每个服务端 tick 都重新检查：
+                 * 1. 时停者是否仍存活且持有可用怀表；
+                 * 2. 狭缝玩家是否已经成为胜利结算唯一阻碍。
+                 * 这样最后一个杀手/独立阻拦者死亡时不会被 30 秒狭缝拖住结算，
+                 * 时停者自己在窗口内死亡时，狭缝玩家也会马上回到普通死亡旁观和死亡语音频道。
+                 */
+                TimekeeperRiftHandler.tickActiveRifts(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
                         PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(AngelConstants.MOOD_DRAIN_MULTIPLIER);
@@ -252,6 +265,7 @@ public final class NoellesRolesEventBootstrap {
             }
             SwapperAbility.clearPendingSwaps();
             HiddenBodiesWorldComponent.KEY.get(serverWorld).reset();
+            TimekeeperWorldComponent.KEY.get(serverWorld).reset();
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);
 
             for (org.agmas.noellesroles.entities.ThrowingAxeEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.ThrowingAxeEntity.class), ignored -> true)) {

@@ -101,7 +101,10 @@
     "roles.robot.RobotNoPoisonMixin",
     "roles.robot.RobotBedPoisonMixin",
     "roles.convener.ItemCooldownManagerAccessor",
-    "roles.convener.ItemCooldownEntryAccessor"
+    "roles.convener.ItemCooldownEntryAccessor",
+    "roles.timekeeper.TimekeeperDeathRiftMixin",
+    "roles.timekeeper.TimekeeperGameTimePauseMixin",
+    "roles.timekeeper.TimekeeperTrainPauseMixin"
 
   ],
   "injectors": {

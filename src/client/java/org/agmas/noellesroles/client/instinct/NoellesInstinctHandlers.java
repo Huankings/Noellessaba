@@ -26,6 +26,7 @@ import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.starstruck.StarstruckInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.thief.ThiefInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.timekeeper.TimekeeperRiftInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.waiter.WaiterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.winder.WinderInstinctHandler;
 
@@ -37,11 +38,13 @@ public final class NoellesInstinctHandlers {
     public static final int PRIORITY_CONVENER_COLOR = 1000;
     public static final int PRIORITY_DUAL_PERSONALITY = 10000;
     public static final int PRIORITY_CONVENER_SUPPRESSION = 20000;
+    public static final int PRIORITY_TIMEKEEPER_RIFT_SUPPRESSION = 30000;
 
     private NoellesInstinctHandlers() {
     }
 
     public static void register() {
+        TimekeeperRiftInstinctHandler.register();
         JesterInstinctHandler.register();
         WinderInstinctHandler.register();
         BartenderInstinctHandler.register();

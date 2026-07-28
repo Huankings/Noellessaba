@@ -12,5 +12,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface WorldBlackoutComponentAccessor {
 
     @Accessor("ticks")
+    int noellesroles$getTicks();
+
+    @Accessor("ticks")
     void noellesroles$setTicks(int ticks);
 }

@@ -52,6 +52,8 @@ import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
@@ -126,6 +128,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, KidnapperComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(KidnapperComponent::new);
         registry.beginRegistration(PlayerEntity.class, RobotPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(RobotPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AllergicPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AllergicPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, TimekeeperPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(TimekeeperPlayerComponent::new);
     }
 
     @Override
@@ -137,5 +140,6 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(NecromancerWorldComponent.KEY, NecromancerWorldComponent::new);
         worldComponentFactoryRegistry.register(LoversPairComponent.KEY, LoversPairComponent::new);
         worldComponentFactoryRegistry.register(DualPersonalityComponent.KEY, DualPersonalityComponent::new);
+        worldComponentFactoryRegistry.register(TimekeeperWorldComponent.KEY, TimekeeperWorldComponent::new);
     }
 }

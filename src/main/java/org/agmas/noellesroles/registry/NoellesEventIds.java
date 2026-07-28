@@ -138,6 +138,10 @@ public final class NoellesEventIds {
     public static final Identifier THIEF_ATTEMPT_EVENT = NoellesRolesCore.id("thief_attempt");
     public static final Identifier THIEF_SUCCESS_EVENT = NoellesRolesCore.id("thief_success");
     public static final Identifier THIEF_FAIL_EVENT = NoellesRolesCore.id("thief_fail");
+    public static final Identifier TIMEKEEPER_WATCH_USED_EVENT = NoellesRolesCore.id("timekeeper_watch_used");
+    public static final Identifier TIMEKEEPER_WATCH_BROKEN_EVENT = NoellesRolesCore.id("timekeeper_watch_broken");
+    public static final Identifier TIMEKEEPER_WATCH_REPAIRED_EVENT = NoellesRolesCore.id("timekeeper_watch_repaired");
+    public static final Identifier TIMEKEEPER_WATCH_UPGRADED_EVENT = NoellesRolesCore.id("timekeeper_watch_upgraded");
 
     private NoellesEventIds() {
     }

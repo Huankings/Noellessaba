@@ -183,6 +183,10 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ATTEMPT_EVENT, NoellesRolesReplayFormatters::formatThiefAttempt);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_SUCCESS_EVENT, NoellesRolesReplayFormatters::formatThiefSuccess);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_FAIL_EVENT, NoellesRolesReplayFormatters::formatThiefFail);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_USED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchUsed);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_BROKEN_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchBroken);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_REPAIRED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchRepaired);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_UPGRADED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchUpgraded);
 
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);

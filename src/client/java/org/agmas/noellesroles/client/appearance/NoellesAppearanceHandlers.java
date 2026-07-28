@@ -21,6 +21,7 @@ import org.agmas.noellesroles.client.appearance.roles.muzzler.MuzzlerSilencedTip
 import org.agmas.noellesroles.client.appearance.roles.necromancer.NecromancerBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.physician.PhysicianBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.spiritualist.SpiritualistAppearanceHandler;
+import org.agmas.noellesroles.client.appearance.roles.timekeeper.TimekeeperRiftAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.shared.InvisibleNameHudHandler;
 
 /**
@@ -34,6 +35,7 @@ public final class NoellesAppearanceHandlers {
     }
 
     public static void register() {
+        TimekeeperRiftAppearanceHandler.register();
         SpiritualistAppearanceHandler.register();
         DualPersonalityAppearanceHandler.register();
         InsaneObserverAppearanceHandler.register();
