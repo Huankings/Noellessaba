@@ -49,7 +49,7 @@ public final class AssassinShopHandler {
     //    ));
         entries.add(new ShopEntry(
                 WatheItems.BLACKOUT.getDefaultStack(),
-                NoellesRolesShops.getItemPrice(WatheItems.BLACKOUT, 200),
+                NoellesRolesShops.getItemPrice(WatheItems.BLACKOUT, 200) + 50,
                 ShopEntry.Type.TOOL
         ));
         entries.add(new ShopEntry(

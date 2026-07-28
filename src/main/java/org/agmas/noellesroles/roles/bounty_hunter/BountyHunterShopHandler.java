@@ -49,7 +49,7 @@ public final class BountyHunterShopHandler {
          */
         replaceItem(entries, WatheItems.PSYCHO_MODE, ShopEntry.action(
                 ModItems.BOUNTY_MODE.getDefaultStack(),
-                NoellesRolesShops.getItemPrice(WatheItems.PSYCHO_MODE, 350),
+                NoellesRolesShops.getItemPrice(WatheItems.PSYCHO_MODE, 350)+50,
                 ShopEntry.Type.WEAPON,
                 player -> BountyHunterPlayerComponent.KEY.get(player).tryStartBountyMode()
         ));

@@ -4,7 +4,6 @@ import dev.doctor4t.wathe.api.Faction;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
-import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
@@ -154,9 +153,11 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
          * 这里不调用 PlayerPsychoComponent#startPsycho，因为原方法会塞入球棒。
          * 我们只复用同一份 psychoTicks / armour 状态，让 Wathe 的疯魔皮肤、心情图标、
          * 护盾抵挡链和环境音全部继续工作，但手持物改为赏金德林加。
+         *
+         * 护盾层数使用赏金猎人自己的常量，避免后续 Wathe 调整疯魔模式时连带改变赏金模式强度。
          */
         psycho.setPsychoTicks(BountyHunterConstants.BOUNTY_MODE_DURATION_TICKS);
-        psycho.setArmour(GameConstants.PSYCHO_MODE_ARMOUR);
+        psycho.setArmour(BountyHunterConstants.BOUNTY_MODE_SHIELD_LAYERS);
         gameWorld.setPsychosActive(gameWorld.getPsychosActive() + 1);
 
         this.player.getItemCooldownManager().set(ModItems.BOUNTY_MODE, BountyHunterConstants.BOUNTY_MODE_COOLDOWN_TICKS);

@@ -55,6 +55,8 @@
     "roles.timekeeper.TimekeeperRewindMouseMixin",
     "roles.timekeeper.TimekeeperRewindMinecraftMixin",
     "roles.timekeeper.TimekeeperRiftHotbarKeyMixin",
+    "roles.timekeeper.TimekeeperRiftAbilityInventoryKeyMixin",
+    "roles.timekeeper.TimekeeperRiftJumpKeyMixin",
     "roles.hunter.HunterFovMixin",
     "roles.hunter.HunterLockSlotMixin",
     "roles.kidnapper.KidnapperKeyControlledMixin",

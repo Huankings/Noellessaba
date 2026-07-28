@@ -102,6 +102,7 @@
     "roles.robot.RobotBedPoisonMixin",
     "roles.convener.ItemCooldownManagerAccessor",
     "roles.convener.ItemCooldownEntryAccessor",
+    "roles.timekeeper.TimekeeperRepeatedDeathGuardMixin",
     "roles.timekeeper.TimekeeperDeathRiftMixin",
     "roles.timekeeper.TimekeeperGameTimePauseMixin",
     "roles.timekeeper.TimekeeperTrainPauseMixin"

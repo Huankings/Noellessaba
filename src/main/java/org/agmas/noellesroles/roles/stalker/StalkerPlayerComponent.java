@@ -43,21 +43,21 @@ public class StalkerPlayerComponent implements AutoSyncedComponent, ServerTickin
     /** 二阶段进阶所需击杀基数（人数/6，向上取整，最小1） */
     public static final int PHASE2_KILLS_PER_PLAYER_DIVISOR = 6;
     /** 三阶段持续时间（秒） */
-    public static final int PHASE3_DURATION_SECONDS = 300;
+    public static final int PHASE3_DURATION_SECONDS = 60;
     /** 处决减少时间（秒） */
     public static final int EXECUTION_REDUCTION_SECONDS = 10;
     /** 二阶段攻击冷却（秒） */
-    public static final int PHASE2_ATTACK_COOLDOWN_SECONDS = 1;
+    public static final int PHASE2_ATTACK_COOLDOWN_SECONDS = 45;
     /** 三阶段突进冷却（秒） */
-    public static final int DASH_COOLDOWN_SECONDS = 0;
+    public static final int DASH_COOLDOWN_SECONDS = 2;
     /** 最小蓄力时间（秒） */
-    public static final int MIN_CHARGE_SECONDS = 0;
+    public static final int MIN_CHARGE_SECONDS = 1;
     /** 最大蓄力时间（秒） */
-    public static final int MAX_CHARGE_SECONDS = 4;
+    public static final int MAX_CHARGE_SECONDS = 2;
     /** 基础突进距离（格） */
-    public static final double BASE_DASH_DISTANCE = 8.0;
+    public static final double BASE_DASH_DISTANCE = 4.0;
     /** 每秒蓄力增加突进距离（格） */
-    public static final double DASH_DISTANCE_PER_SECOND = 6.0;
+    public static final double DASH_DISTANCE_PER_SECOND = 3.0;
     /** 窥视角度（度） */
     public static final double GAZE_ANGLE = 80.0;
     /** 窥视最大距离（格） */

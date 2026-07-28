@@ -36,6 +36,24 @@ public final class TimekeeperRiftHandler {
     private TimekeeperRiftHandler() {
     }
 
+    public static boolean shouldSuppressRepeatedDeathInRift(@NotNull ServerPlayerEntity victim) {
+        /*
+         * 时间狭缝里的玩家已经完成过一次真正死亡流程：
+         * Wathe 已经记录死亡、生成尸体/掉落物、增加无辜死亡时间、切换语音频道，
+         * 随后我们才把他临时拉回“特殊存活旁观”，等待 30 秒内可能发生的时间回溯。
+         *
+         * 这个特殊存活旁观会让 GameFunctions.isPlayerAliveAndSurvival(...) 继续返回 true。
+         * 因此像“跌出列车边界”这种每 tick 扫描存活玩家的环境死因，会不断把狭缝玩家重新送进
+         * GameFunctions.killPlayer(...)。如果不在死亡流程开头吞掉，后续会反复产生尸体、回放、
+         * 击杀奖励、无辜死亡加时和语音频道变动，严重时还会造成卡顿。
+         *
+         * 注意这里不能用“当前是否仍被 Wathe 视作存活”作为条件：
+         * 狭缝状态本身就是靠 aliveOverride 维持的；只要 TimekeeperPlayerComponent 还标记为
+         * inTimeRift，第二次及之后的 killPlayer 都只是同一次死亡状态的重复触发。
+         */
+        return TimekeeperPlayerComponent.KEY.get(victim).isInTimeRift();
+    }
+
     public static void tryStartRiftAfterDeath(@NotNull ServerPlayerEntity victim) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(victim.getServerWorld());
         TimekeeperWorldComponent worldComponent = TimekeeperWorldComponent.KEY.get(victim.getServerWorld());

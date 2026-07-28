@@ -11,7 +11,7 @@ import dev.doctor4t.wathe.game.GameConstants;
 public final class BellringerConstants {
     public static final int ROLE_COLOR = 0x66B2FF;
     public static final int ABILITY_PRICE = 100;
-    public static final int REDUCE_SECONDS = 45;
+    public static final int REDUCE_SECONDS = 60;
     public static final int ABILITY_COOLDOWN_TICKS = GameConstants.getInTicks(0, 0);
 
     private BellringerConstants() {

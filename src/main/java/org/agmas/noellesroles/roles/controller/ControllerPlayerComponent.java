@@ -59,7 +59,7 @@ public class ControllerPlayerComponent implements AutoSyncedComponent, ServerTic
     public float targetOriginalPitch = 0;
 
     // 常量
-    public static final int POSSESS_DURATION_TICKS = GameConstants.getInTicks(0, 60); // 60秒
+    public static final int POSSESS_DURATION_TICKS = GameConstants.getInTicks(0, 25); // 25秒
     public static final int COOLDOWN_SHORT_TICKS = GameConstants.getInTicks(0, 10);  // 10秒
     public static final int COOLDOWN_LONG_TICKS = GameConstants.getInTicks(0, 10);  // 20秒
 

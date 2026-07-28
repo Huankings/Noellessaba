@@ -46,10 +46,10 @@ public final class TimekeeperConstants {
     public static final int ELEGANT_ACCELERATE_COOLDOWN_TICKS = GameConstants.getInTicks(0, 40);
 
     /** 普通濒毁怀表发动时间回溯后的冷却；普通表成功回溯后仍会破碎。 */
-    public static final int NORMAL_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(2, 30);
+    public static final int NORMAL_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(2, 0);
 
     /** 精致怀表发动时间回溯后的冷却。 */
-    public static final int ELEGANT_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(2, 0);
+    public static final int ELEGANT_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(1, 30);
 
     /** 时间回溯右键蓄力要求：按满 3 秒才真正触发回溯。 */
     public static final int REWIND_CHARGE_TICKS = GameConstants.getInTicks(0, 3);
@@ -97,7 +97,7 @@ public final class TimekeeperConstants {
     public static final int REPAIR_WATCH_PRICE = 250;
 
     /** 普通濒毁怀表升级为精致怀表需要的金币。 */
-    public static final int UPGRADE_WATCH_PRICE = 300;
+    public static final int UPGRADE_WATCH_PRICE = 250;
 
     /** 时停者最大生成数量，避免一局出现多个全局回溯源互相踩状态。 */
     public static final int MAX_ROLE_COUNT = 1;

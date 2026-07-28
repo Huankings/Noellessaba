@@ -229,7 +229,13 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         boolean timekeeperProtectionConsumed = false;
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(serverWorld);
 
+        collectAutomaticSpectatorProtectionPlayers(serverWorld);
+
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+            if (this.protectedPlayers.contains(player.getUuid())) {
+                continue;
+            }
+
             TimekeeperPlayerComponent component = TimekeeperPlayerComponent.KEY.get(player);
             if (!component.consumeRewindProtectionForRewind()) {
                 continue;
@@ -253,6 +259,30 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
             if (gameWorld.isRole(player, NoellesRoleRegistry.BELLRINGER)
                     && dev.doctor4t.wathe.game.GameFunctions.isPlayerAliveAndSurvival(player)) {
+                this.protectedPlayers.add(player.getUuid());
+            }
+        }
+    }
+
+    private void collectAutomaticSpectatorProtectionPlayers(@NotNull ServerWorld serverWorld) {
+        for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+            TimekeeperPlayerComponent component = TimekeeperPlayerComponent.KEY.get(player);
+
+            /*
+             * 普通死亡旁观不应该参与时间回溯播放。
+             * 他们已经彻底离开本轮运行态，继续把他们的相机位置、物品栏、状态效果等按 30 秒历史倒放，
+             * 体验上会像“死亡后仍被时停者拖着回滚”，也可能干扰管理员/旁观调试。
+             *
+             * 这里把普通非存活玩家直接加入 protectedPlayers，效果等同“本次回溯保护”：
+             * TimekeeperSnapshots.apply(...) 会跳过这些玩家，freezeUnprotectedPlayers(...) 也不会冻结他们。
+             * 但不要消费他们可能已经购买的回溯保护，因为这不是一次商店保护结算，只是旁观者自动保护。
+             *
+             * 特别注意：时间狭缝玩家不能走这里。
+             * 狭缝里的死者虽然是 spectator，但他们正是时停者回溯要复活的对象；
+             * 如果把 inTimeRift 玩家也加入保护名单，快照恢复会跳过他们，30 秒内死亡就无法被回溯救回。
+             */
+            if (!component.isInTimeRift()
+                    && !dev.doctor4t.wathe.game.GameFunctions.isPlayerAliveAndSurvival(player)) {
                 this.protectedPlayers.add(player.getUuid());
             }
         }
