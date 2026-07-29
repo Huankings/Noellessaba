@@ -76,8 +76,9 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         }
 
         /*
-         * 回溯保护只保护“已购买并在本次回溯开始时被消费”的玩家。
-         * 没有进入 protectedPlayers 的存活玩家，回溯播放期间不能说话也不能听语音。
+         * protectedPlayers 表示“本次回溯不参与倒放”的最终名单。
+         * 它既包含已购买并消费回溯保护的玩家，也包含未参局玩家、以及本次回溯区间无法复活的普通死者。
+         * 没有进入名单、并且当前仍作为活人参与回溯的玩家，回溯播放期间不能说话也不能听语音。
          */
         return this.rewinding
                 && !this.protectedPlayers.contains(player.getUuid())
@@ -229,7 +230,7 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         boolean timekeeperProtectionConsumed = false;
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(serverWorld);
 
-        collectAutomaticSpectatorProtectionPlayers(serverWorld);
+        collectAutomaticRewindExclusionPlayers(serverWorld);
 
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
             if (this.protectedPlayers.contains(player.getUuid())) {
@@ -264,28 +265,84 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         }
     }
 
-    private void collectAutomaticSpectatorProtectionPlayers(@NotNull ServerWorld serverWorld) {
+    private void collectAutomaticRewindExclusionPlayers(@NotNull ServerWorld serverWorld) {
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(serverWorld);
+
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+            UUID playerUuid = player.getUuid();
             TimekeeperPlayerComponent component = TimekeeperPlayerComponent.KEY.get(player);
 
             /*
-             * 普通死亡旁观不应该参与时间回溯播放。
-             * 他们已经彻底离开本轮运行态，继续把他们的相机位置、物品栏、状态效果等按 30 秒历史倒放，
-             * 体验上会像“死亡后仍被时停者拖着回滚”，也可能干扰管理员/旁观调试。
-             *
-             * 这里把普通非存活玩家直接加入 protectedPlayers，效果等同“本次回溯保护”：
-             * TimekeeperSnapshots.apply(...) 会跳过这些玩家，freezeUnprotectedPlayers(...) 也不会冻结他们。
-             * 但不要消费他们可能已经购买的回溯保护，因为这不是一次商店保护结算，只是旁观者自动保护。
-             *
-             * 特别注意：时间狭缝玩家不能走这里。
-             * 狭缝里的死者虽然是 spectator，但他们正是时停者回溯要复活的对象；
-             * 如果把 inTimeRift 玩家也加入保护名单，快照恢复会跳过他们，30 秒内死亡就无法被回溯救回。
+             * 先排除未参局玩家。
+             * 快照捕获的是 serverWorld.getPlayers()，因此管理员旁观、调试账号或中途进服但没有职业的人
+             * 也可能被写进历史。如果他们不在本轮 GameWorldComponent 的角色表里，就不应该被时停者回溯拉动、
+             * 冻结、切语音或从旁观状态“复活”。
              */
-            if (!component.isInTimeRift()
-                    && !dev.doctor4t.wathe.game.GameFunctions.isPlayerAliveAndSurvival(player)) {
-                this.protectedPlayers.add(player.getUuid());
+            if (gameWorld.getRole(player) == null) {
+                this.protectedPlayers.add(playerUuid);
+                continue;
+            }
+
+            /*
+             * 时间狭缝玩家不能自动保护。
+             * 狭缝里的死者虽然通常是 spectator，但他们正是时停者回溯要优先救回的对象；
+             * 如果把 inTimeRift 玩家加入 protectedPlayers，快照恢复会跳过他们，30 秒内死亡就无法被回溯救回。
+             */
+            if (component.isInTimeRift()) {
+                continue;
+            }
+
+            /*
+             * 当前仍被 Wathe 判定为存活的玩家会正常参与本次回溯。
+             * 他们是否有商店回溯保护，后面的 consumeRewindProtectionForRewind() 会单独处理。
+             */
+            if (dev.doctor4t.wathe.game.GameFunctions.isPlayerAliveAndSurvival(player)) {
+                continue;
+            }
+
+            /*
+             * 普通死亡旁观是否参与本次回溯，不再看“现在是不是已经死透”，而是看本次播放区间
+             * [targetIndex, playbackCursor] 里是否存在该玩家的“真实存活快照”。
+             *
+             * - 如果区间内没有真实存活快照：这次回溯无论怎么倒都救不回他，继续倒放他的死亡旁观相机、
+             *   背包和状态只会造成体验干扰，所以本次把他当作自动保护跳过。
+             * - 如果区间内存在真实存活快照：说明这次回溯能直接跨过他的死亡点，把他拉回活人状态；
+             *   因此不能加入 protectedPlayers，必须让 TimekeeperSnapshots.apply(...) 一帧帧恢复他，
+             *   等播放游标抵达那张真实存活快照时自然复活。
+             *
+             * 这里的“真实存活”排除了特殊存活旁观、创造和旁观模式，避免把时间狭缝本身误判成复活点。
+             */
+            if (!canCurrentRewindRestorePlayableAlive(playerUuid)) {
+                this.protectedPlayers.add(playerUuid);
             }
         }
+    }
+
+    private boolean canCurrentRewindRestorePlayableAlive(@NotNull UUID playerUuid) {
+        if (this.targetIndex < 0 || this.playbackCursor < 0 || this.snapshots.isEmpty()) {
+            return false;
+        }
+
+        int startIndex = Math.max(0, this.targetIndex);
+        int endIndex = Math.min(this.playbackCursor, this.snapshots.size() - 1);
+        if (startIndex > endIndex) {
+            return false;
+        }
+
+        /*
+         * 只扫描“本次已经确定要播放”的 30 秒区间。
+         * 第一次回溯如果只倒到某个死者“下一次也许能被救”的位置，但本次区间里还没有他的真实活人快照，
+         * 那么这一次仍然保护他；等下一次回溯启动时，再按新的 [targetIndex, playbackCursor] 重新判断。
+         *
+         * 从 endIndex 往 startIndex 扫描，顺序和实际回溯播放方向一致。这里只需要知道区间里“有没有”
+         * 可复活点，因此找到第一张真实存活快照后即可返回。
+         */
+        for (int i = endIndex; i >= startIndex; i--) {
+            if (this.snapshots.get(i).hasPlayableAliveSnapshot(playerUuid)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void freezeUnprotectedPlayers(@NotNull ServerWorld serverWorld) {
@@ -325,10 +382,10 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         tag.putBoolean("rewinding", this.rewinding);
 
         /*
-         * 保护名单原本只服务端使用；现在客户端也需要知道“本地玩家是否受本次回溯保护”，
+         * 保护名单原本只服务端使用；现在客户端也需要知道“本地玩家是否不参与本次回溯倒放”，
          * 用来决定是否要清掉攻击/使用键。只同步 UUID，不同步购买待消费标记：
          * 购买状态仍由 TimekeeperPlayerComponent 管，避免客户端误把“已购买但本次尚未消费”
-         * 当成本次回溯保护。
+         * 当成本次回溯保护。未参局玩家和本次不可复活死者也会出现在这里，避免客户端输入锁误拦他们。
          */
         NbtList protectedPlayerList = new NbtList();
         for (UUID protectedPlayer : this.protectedPlayers) {

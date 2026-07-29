@@ -261,6 +261,11 @@ public final class TimekeeperSnapshots {
             return new GlobalSnapshot(this);
         }
 
+        public boolean hasPlayableAliveSnapshot(@NotNull UUID playerUuid) {
+            PlayerSnapshot playerSnapshot = this.players.get(playerUuid);
+            return playerSnapshot != null && playerSnapshot.isPlayableAlive();
+        }
+
         public void apply(@NotNull ServerWorld world, @NotNull Set<UUID> protectedPlayers) {
             RegistryWrapper.WrapperLookup registryLookup = world.getRegistryManager();
 
@@ -424,6 +429,20 @@ public final class TimekeeperSnapshots {
             copyNbtMap(other.components, this.components);
         }
 
+        private boolean isPlayableAlive() {
+            /*
+             * “真实可复活快照”必须同时满足两件事：
+             * 1. Wathe 在该快照时间点认为玩家仍属于存活玩家；
+             * 2. 玩家当时不在 spectator / creative 这类非正常游玩模式。
+             *
+             * 第二点很重要。时间狭缝会用 PlayerLifeStateApi 把 spectator 临时标成“玩法存活”，
+             * 这样死者能在 30 秒内被回溯救回；但狭缝本身不是复活点。
+             * 如果只看 aliveAndSurvival，就会把“特殊存活旁观”误判成真实活人，
+             * 导致已经死透的玩家在第二次回溯里过早参与倒放，甚至回到另一个狭缝状态。
+             */
+            return this.aliveAndSurvival && !PlayerLifeStateApi.isNonSurvivalMode(this.gameMode);
+        }
+
         private void apply(@NotNull ServerPlayerEntity player) {
             RegistryWrapper.WrapperLookup registryLookup = player.getRegistryManager();
 
@@ -478,7 +497,7 @@ public final class TimekeeperSnapshots {
              * 时间狭缝本身正是这种状态，所以真正复活必须额外要求目标快照不是旁观/创造模式。
              */
             TimekeeperPlayerComponent timekeeperState = TimekeeperPlayerComponent.KEY.get(player);
-            boolean targetWasPlayableAlive = this.aliveAndSurvival && !PlayerLifeStateApi.isNonSurvivalMode(this.gameMode);
+            boolean targetWasPlayableAlive = isPlayableAlive();
             if (targetWasPlayableAlive && wasInTimeRiftBeforeRestore) {
                 timekeeperState.finishTimeRiftAsRewoundAlive();
             }

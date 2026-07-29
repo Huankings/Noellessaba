@@ -34,22 +34,22 @@ public final class TimekeeperConstants {
     public static final int TASK_TIME_INCOME_AMOUNT = 10;
 
     /** 物品加速与技能加速的光阴消耗。 */
-    public static final int ACCELERATE_TIME_COST = 60;
+    public static final int ACCELERATE_TIME_COST = 40;
 
     /** 时间回溯的光阴消耗。 */
-    public static final int REWIND_TIME_COST = 120;
+    public static final int REWIND_TIME_COST = 110;
 
     /** 普通濒毁怀表使用物品加速 / 技能加速后的冷却。 */
     public static final int NORMAL_ACCELERATE_COOLDOWN_TICKS = GameConstants.getInTicks(1, 0);
 
     /** 升级为精致怀表后，物品加速 / 技能加速使用后的冷却。 */
-    public static final int ELEGANT_ACCELERATE_COOLDOWN_TICKS = GameConstants.getInTicks(0, 40);
+    public static final int ELEGANT_ACCELERATE_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);
 
     /** 普通濒毁怀表发动时间回溯后的冷却；普通表成功回溯后仍会破碎。 */
-    public static final int NORMAL_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(2, 0);
+    public static final int NORMAL_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(1, 50);
 
     /** 精致怀表发动时间回溯后的冷却。 */
-    public static final int ELEGANT_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(1, 30);
+    public static final int ELEGANT_REWIND_COOLDOWN_TICKS = GameConstants.getInTicks(1, 20);
 
     /** 时间回溯右键蓄力要求：按满 3 秒才真正触发回溯。 */
     public static final int REWIND_CHARGE_TICKS = GameConstants.getInTicks(0, 3);
@@ -79,7 +79,7 @@ public final class TimekeeperConstants {
     public static final int WATCH_CROSSHAIR_BAR_WIDTH = 22;
 
     /** 怀表准心下方进度条高度，单位为客户端 GUI 像素。 */
-    public static final int WATCH_CROSSHAIR_BAR_HEIGHT = 3;
+    public static final int WATCH_CROSSHAIR_BAR_HEIGHT = 2;
 
     /** 怀表进度条相对屏幕中心的 Y 偏移，避免覆盖 Wathe 原准心。 */
     public static final int WATCH_CROSSHAIR_BAR_Y_OFFSET = 10;

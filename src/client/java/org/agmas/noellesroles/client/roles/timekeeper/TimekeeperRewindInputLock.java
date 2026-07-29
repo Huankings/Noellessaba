@@ -14,7 +14,8 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
  * 表现为 Derringer/REVOLVER 空枪连响、长蓄力物品松手后又触发一次等问题。</p>
  *
  * <p>这里不拦聊天键、命令输入或 GUI 文本输入，只处理游戏世界里的攻击、使用、选槽、
- * 丢弃和副手交换等会改变运行态的输入。受回溯保护的玩家不进入本锁，仍按保护语义自由操作。</p>
+ * 丢弃和副手交换等会改变运行态的输入。受回溯保护、未参局、或本次回溯无法复活的普通死者
+ * 都不进入本锁，因为他们不会被本次快照倒放牵引。</p>
  */
 public final class TimekeeperRewindInputLock {
     private TimekeeperRewindInputLock() {
