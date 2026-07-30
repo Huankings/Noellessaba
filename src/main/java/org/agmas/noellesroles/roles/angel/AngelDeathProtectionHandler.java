@@ -94,7 +94,7 @@ public final class AngelDeathProtectionHandler {
             );
 
             /*
-             * 这个标记会被 AngelDeathCleanupMixin 读取。
+             * 这个标记会被 AngelDeathCleanupHandler 在 DeathApi 的最终清理阶段读取。
              * 它的意义不是阻止本次代死，而是告诉死亡清理逻辑：
              * “这次天使死亡就是守护代死本身，不要再给被守护者发‘你的守护者死了’提示。”
              */

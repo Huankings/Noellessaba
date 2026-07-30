@@ -1,19 +1,37 @@
 package org.agmas.noellesroles.death;
 
 import dev.doctor4t.wathe.api.event.AllowPlayerDeath;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityDeathHandler;
 import org.agmas.noellesroles.roles.angel.AngelDeathProtectionHandler;
+import org.agmas.noellesroles.roles.angel.AngelDeathCleanupHandler;
+import org.agmas.noellesroles.roles.assassin.AssassinBodySpawnHandler;
 import org.agmas.noellesroles.roles.bartender.BartenderDeathProtectionHandler;
+import org.agmas.noellesroles.roles.bomber.BomberDeathHandler;
+import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterDeathHandler;
+import org.agmas.noellesroles.roles.conductor.ConductorDeathRewardHandler;
 import org.agmas.noellesroles.roles.controller.ControllerDeathProtectionHandler;
+import org.agmas.noellesroles.roles.controller.ControllerDeathHandler;
 import org.agmas.noellesroles.roles.convener.ConvenerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.cook.CookDeathProtectionHandler;
+import org.agmas.noellesroles.roles.coroner.CoronerBodySpawnHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerBackfireDeathHandler;
+import org.agmas.noellesroles.roles.executioner.ExecutionerDeathHandler;
 import org.agmas.noellesroles.roles.jester.JesterDeathProtectionHandler;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperDeathRewardHandler;
+import org.agmas.noellesroles.roles.magician.MagicianPlaybackDeathHandler;
 import org.agmas.noellesroles.roles.mimic.MimicBackfireDeathHandler;
+import org.agmas.noellesroles.roles.morphling.MorphlingDeathHandler;
+import org.agmas.noellesroles.roles.necromancer.NecromancerDeathHandler;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerBodySpawnHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianDeathProtectionHandler;
+import org.agmas.noellesroles.roles.prophet.ProphetDeathCleanupHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetDeathProtectionHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistDeathProtectionHandler;
+import org.agmas.noellesroles.roles.stalker.StalkerDeathHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperDeathHandler;
+import org.agmas.noellesroles.roles.voodoo.VoodooDeathHandler;
 
 /**
  * noellesroles 的死亡事件总引导器。
@@ -47,8 +65,46 @@ public final class NoellesRolesDeathBootstrap {
         }
         initialized = true;
 
+        registerDeathApiHandlers();
         registerProtectionChain();
         registerBackfireChain();
+    }
+
+    /**
+     * 注册 Wathe DeathApi 上的分阶段死亡机制。
+     *
+     * <p>实际逻辑仍按职业/词条拆在各自包内；这里仅负责让这些 handler 参与启动，
+     * 避免扩展继续把 killPlayer 的局部变量和返回点当成公共接口。</p>
+     */
+    private static void registerDeathApiHandlers() {
+        /*
+         * DeathApi 迁移后的执行模型：
+         * 1. DeathProcessHandler 先写“正在处理死亡”标记，给巫毒/附体等递归死亡防重入；
+         * 2. Timekeeper / DualPersonality 这类会吞掉或改写死亡的机制用高优先级拦截；
+         * 3. 具体职业的奖励、转职、尸体信息和死亡后清理仍拆在各自包里；
+         * 4. 最终清理由 DeathProcessHandler 在 afterAttempt 的最低优先级完成。
+         *
+         * 这里不写业务逻辑，只维护启动顺序，避免以后又把 killPlayer 的局部变量注入点当成 API。
+         */
+        DeathProcessHandler.init();
+        TimekeeperDeathHandler.init();
+        DualPersonalityDeathHandler.init();
+        ControllerDeathHandler.init();
+        VoodooDeathHandler.init();
+        ConductorDeathRewardHandler.init();
+        KidnapperDeathRewardHandler.init();
+        ExecutionerDeathHandler.init();
+        StalkerDeathHandler.init();
+        BountyHunterDeathHandler.init();
+        MorphlingDeathHandler.init();
+        NecromancerDeathHandler.init();
+        BomberDeathHandler.init();
+        AngelDeathCleanupHandler.init();
+        ProphetDeathCleanupHandler.init();
+        CoronerBodySpawnHandler.init();
+        AssassinBodySpawnHandler.init();
+        NoisemakerBodySpawnHandler.init();
+        MagicianPlaybackDeathHandler.init();
     }
 
     /**

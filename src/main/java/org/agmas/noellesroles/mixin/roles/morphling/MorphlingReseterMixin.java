@@ -2,7 +2,7 @@ package org.agmas.noellesroles.mixin.roles.morphling;
 
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;

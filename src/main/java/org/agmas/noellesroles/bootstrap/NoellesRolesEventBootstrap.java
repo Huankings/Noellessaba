@@ -28,6 +28,7 @@ import org.agmas.harpymodloader.events.ModifierAssigned;
 import org.agmas.harpymodloader.events.ResetPlayerEvent;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
+import org.agmas.noellesroles.combat.NoellesRolesCombatBootstrap;
 import org.agmas.noellesroles.death.NoellesRolesDeathBootstrap;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.modifiers.allergic.AllergicModifierHandler;
@@ -115,6 +116,7 @@ public final class NoellesRolesEventBootstrap {
         initialized = true;
 
         NoellesRolesDeathBootstrap.init();
+        NoellesRolesCombatBootstrap.init();
         AllergicModifierHandler.init();
         registerCombatAndStateEvents();
         NoellesRolesRoleAssignedBootstrap.init();

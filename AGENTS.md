@@ -50,6 +50,8 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPayloadTypes.java`：payload codec 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPacketReceivers.java`：服务端 packet receiver 注册和能力分发。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`：事件监听、server tick、回合清理、Harpy 禁用职业配置同步。
+- `src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`：Wathe `GunShotApi` 接入总引导，只调用各职业/词条自己的枪击、左轮惩罚和冷却 handler。
+- `src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`：`AllowPlayerDeath` 保护链和 Wathe `DeathApi` 分阶段击杀流程接入总引导。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPsychoBootstrap.java`：疯魔 API 接入分发器，只调用各职业自己的 `*PsychoHandler.init()`。
@@ -102,6 +104,8 @@
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
+- 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
+- 击杀/死亡分阶段流程、默认击杀奖励、尸体生成回调：`DeathApi`、`DeathContext`、`BodySpawnContext`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
 - 胜利规则：`VictoryApi`
 - 尸体外观：`BodyAppearanceApi`
@@ -153,6 +157,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesEconomyBootstrap.java`：新增金币 HUD、任务收入、被动收入或经济词条规则。
 - `NoellesRolesReplayBootstrap.java`：新增回放 formatter 注册。
 - `NoellesRolesPsychoBootstrap.java`：新增疯魔 profile、护盾规则、声音/皮肤规则时，在这里调用对应职业 `*PsychoHandler.init()`；具体逻辑仍留在 `roles/<role>/`。
+- `NoellesRolesCombatBootstrap.java`：新增枪械开火接管、左轮目标覆写、左轮误伤惩罚或冷却修正规则时，在这里调用对应职业/词条 `*GunHandler` 或 `*GunCooldownHandler.init()`。
+- `NoellesRolesDeathBootstrap.java`：新增死亡保护、反噬、击杀奖励、确认死亡后清理或尸体生成回调时，在这里按阶段接入对应 handler。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
@@ -237,6 +243,14 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 
 处理原则：如果排除当前处于时间狭缝的玩家后，游戏已经只剩一个可获胜阵营，狭缝玩家应立即 `finishTimeRift()` 转回普通死亡旁观和死亡语音频道，让 Wathe 正常结算；如果排除狭缝后仍有真正存活的独立阻拦者，则继续保留狭缝。后续新增这类职业时，要把“非狭缝存活阻拦条件”补进 `TimekeeperRiftHandler`，并测试“阻拦者正常存活”和“阻拦者死亡进入狭缝”两种局面。
 
+## 枪击与死亡 API
+
+枪击接管、左轮反火、客户端目标覆写、左轮冷却修正优先接 Wathe `GunShotApi`，不要再新增 `GunShootPayload`、`RevolverItem` 或 `DerringerItem` mixin。NoellesRoles 侧按职业/词条拆 handler，例如 `roles/robber/RobberGunHandler`、`roles/assassin/AssassinGunHandler`、`roles/coward/CowardGunCooldownHandler`、`roles/jester/JesterGunTargetHandler`、`roles/executioner/ExecutionerGunPenaltyHandler`，然后只在 `NoellesRolesCombatBootstrap` 里调用 `init()`。
+
+击杀奖励、重复死亡保护、致死确认前转化、确认死亡后清理、心情重置前处理、尸体生成回调优先接 Wathe `DeathApi`，不要再新增 `GameFunctions.killPlayer(...)` mixin。NoellesRoles 侧按职业或词条拆 handler，例如 `roles/timekeeper/TimekeeperDeathHandler`、`modifiers/dual_personality/DualPersonalityDeathHandler`、`roles/bounty_hunter/BountyHunterDeathHandler`、`roles/coroner/CoronerBodySpawnHandler`，然后只在 `NoellesRolesDeathBootstrap` 里注册。
+
+死亡优先级以 Wathe `DeathApi` 常量为准：重复死亡吞噬最高，其次是特殊存活保护、死亡流程状态、回放上下文、致死确认前拦截、普通逻辑、确认死亡后的奖励/二段机制、最终清理。priority 越大越先执行；同 priority 后注册的规则先执行。新增 handler 时必须在中文注释里说明它选用该阶段和 priority 的原因，避免反火、免死、赏金、时间狭缝和双重人格转化互相抢顺序。
+
 ## 商店和经济
 
 优先走 Wathe `ShopApi`：
@@ -253,6 +267,7 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
 - 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
+- 枪击、左轮反火、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `DeathApi`。
 - 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。

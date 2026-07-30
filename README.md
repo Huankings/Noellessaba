@@ -38,7 +38,8 @@
 - 回放 formatter 注册引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`
 - Harpy 角色上限引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`
 - 职业分配总引导：`src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
-- 死亡保护总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
+- 枪械 / 左轮反火总引导：`src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`
+- 死亡保护 / 击杀流程总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
@@ -142,12 +143,12 @@
 
 - 造尸怪：能伪造尸体、假身份和假死因；源码入口是 `CorpsemakerC2SPacket`、`CorpsemakerAbility` 和 `CorpsemakerRoleAssignedHandler`，尸体信息通过 `BodyDeathReasonComponent` 和 `NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT` 记录。
 - 潜行者：三阶段成长，靠凝视攒能量，二阶段拿刀，三阶段进入处刑突进；核心状态都在 `StalkerPlayerComponent`，技能包在 `StalkerGazeC2SPacket` / `StalkerDashC2SPacket`，免死在 `StalkerDeathProtectionHandler`，商店动态切换在 `StalkerShopHandler`。
-- 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerLogicMixin` 和客户端 mixin 负责输入与显示。
-- 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathMixin` 在真实死亡里补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
-- 强盗：`RobberGunShootMixin` 完整接管强盗手枪开火，命中后按目标阵营决定保留、掉左轮或消失；`RobberShopHandler` 改写默认杀手商店，`RobberRoleAssignedHandler` 开局发强盗手枪和撬棍。
-- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinHideBodyOnKillMixin` 实现无声刺杀、击退和隐藏尸体；`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
+- 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerDeathHandler` 在 DeathApi 流程里解除附体并结算目标连锁，客户端 mixin 负责输入与显示。
+- 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathHandler` 在真实死亡后补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
+- 强盗：`RobberGunHandler` 通过 Wathe `GunShotApi` 完整接管强盗手枪开火，命中后按目标阵营决定保留、掉左轮或消失；`RobberShopHandler` 改写默认杀手商店，`RobberRoleAssignedHandler` 开局发强盗手枪和撬棍。
+- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinBodySpawnHandler` 实现无声刺杀、击退和隐藏尸体；`AssassinGunHandler` 通过 `GunShotApi` 接管无声左轮，`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
 - 变形怪：`MorphlingMorphAbility` 和 `MorphlingPlayerComponent` 负责变形成任意存活玩家、变形时长和冷却，选人包复用统一的 `MorphC2SPacket`。
-- 魔术师：先录一段玩家操作，再用播放实体重放；`MagicianPlayerComponent` 存录像，`MagicianPlaybackManager`、`MagicianPlaybackEntity`、`MagicianServerHooks` 执行回放，相关 mixin 会把刀、枪、手雷和交互都记进时间线。
+- 魔术师：先录一段玩家操作，再用播放实体重放；`MagicianPlayerComponent` 存录像，`MagicianPlaybackManager`、`MagicianPlaybackEntity`、`MagicianServerHooks` 执行回放，`MagicianGunHandler` 通过 `GunShotApi` 记录枪击，`MagicianPlaybackDeathHandler` 通过 `DeathApi` 改写播放体击杀归属，其余动作记录 mixin 负责刀、手雷和交互时间线。
 - 交换者：`SwapperC2SPacket` 加 `SwapperAbility` 先选两人，再按随机延迟交换位置，执行结果也会写回放。
 - 幻灵：`PhantomAbility` 提供短时隐身，`PhantomPlayerComponent` 管倒计时，`PhantomConstants` 控制 35 秒隐身和 90 秒冷却。
 - 洗脑师：`BrainwasherAbility` 能把目标平民洗成随机杀手角色，成功后清商店并广播；`BrainwasherRoleAssignedHandler` 只负责开局冷却初始化。
@@ -155,8 +156,8 @@
 
 ### 杀手侧中立
 
-- 狂信者：开局拿假匕首、假左轮和撬棍，`JesterRoleAssignedHandler` 只做发物品；`JesterDeathProtectionHandler` 保留 psycho 无敌窗口，`FakeRevolverMixin`、`JesterJestMixin` 和 `JesterItemEntityMixin` 负责假武器和狂化表现。
-- 仇杀客：`ExecutionerPlayerComponent` 负责目标，server tick 会在目标失效后重选；`ExecutionerConfirmMixin` 处理目标达成后的转职，`ExecutionerBackfireDeathHandler` 和 `NoTargetBackfireMixin` 处理误杀反噬和射击锁定。
+- 狂信者：开局拿假匕首、假左轮和撬棍，`JesterRoleAssignedHandler` 只做发物品；`JesterDeathProtectionHandler` 保留 psycho 无敌窗口，`JesterGunTargetHandler`、`JesterJestMixin` 和 `JesterItemEntityMixin` 负责假武器和狂化表现。
+- 仇杀客：`ExecutionerPlayerComponent` 负责目标，server tick 会在目标失效后重选；`ExecutionerDeathHandler` 通过 `DeathApi` 处理目标达成后的转职，`ExecutionerBackfireDeathHandler` 和 `ExecutionerGunPenaltyHandler` 处理误杀反噬和射击锁定。
 - 秃鹫：`VultureRoleAssignedHandler` 会按当前人数算需要吞多少尸体，`VultureAbility` 吞尸后累计进度，达标后随机转成一个未禁用的杀手角色并发 200 金币，尸体状态记录在 `VulturePlayerComponent`。
 
 ### 平民阵营
@@ -168,15 +169,15 @@
 - 风灵师：`WinderPlayerComponent` 记录已选目标和漂浮状态，`WinderAbility` 开关漂浮，`WinderTargetAbility` 负责选人，`WindMarkPlayerComponent` 负责风印记，`WinderShopHandler` 卖风弹和风印。
 - 灵术师：`SpiritualistAbility` 一枚 G 键分出“出窍 / 附身 / 结束”几种行为，`SpiritualistPlayerComponent` 是主状态中心，`SpiritualistHostComponent` 保存被附身者状态，`SpiritualistManager` 负责控制输入、视角、回写背包、语音转发和结束冷却，`SpiritualistDeathProtectionHandler` 负责免死。
 - 接线员：`OperatorAbility`、`OperatorPlayerComponent` 和 `OperatorCommunicationManager` 负责把两个人接通或把某个人广播出去，持续时间、成功冷却和失败冷却都在 `OperatorConstants`。
-- 大嗓门：`NoisemakerGlowC2SPacket` 点亮目标，`NoisemakerPlayerComponent` 管主动技能冷却，`NoisemakerGlowTargetComponent` 负责追踪发光结束并补回放事件，`NoisemakerKillMixin` 让自己死亡后的尸体也会发光。
-- 巫毒师：`VoodooTargetAbility` 负责选人，`VoodooVooMixin` 在死亡流程里把目标一起杀掉；默认配置下只有“有击杀者的死亡”会触发，是否允许自然死亡触发由 `voodooNonKillerDeaths` 控制。
+- 大嗓门：`NoisemakerGlowC2SPacket` 点亮目标，`NoisemakerPlayerComponent` 管主动技能冷却，`NoisemakerGlowTargetComponent` 负责追踪发光结束并补回放事件，`NoisemakerBodySpawnHandler` 让自己死亡后的尸体也会发光。
+- 巫毒师：`VoodooTargetAbility` 负责选人，`VoodooDeathHandler` 在 `DeathApi` 死亡流程里把目标一起杀掉；默认配置下只有“有击杀者的死亡”会触发，是否允许自然死亡触发由 `voodooNonKillerDeaths` 控制。
 - 调查官：`RoleMineItem` 放角色检测器，`TrapperShopHandler` 只卖这个核心道具，客户端 HUD 和目标提示优先走 Wathe `HudOverlayApi` / `RoleNameHudApi`。
 - 演尸官：`CoronerPlayerComponent` 保存伪装、尸体检查记录和金币，`CoronerMorphAbility` 负责变形目标，`CoronerExamineRewardMixin` 在靠近尸体时自动结算奖励，尸体死因和身份提示走 `RoleNameHudApi.registerExtraHud(...)`。
 - 回溯者：`RecallerAbility` 先存点位，再花钱传送，`RecallerPlayerComponent` 和 `RecallerShopHandler` 负责位置、冷却和商店，末影珍珠投掷也会被记录进回放。
 - 先知：`CrystalBallItem` 负责 0.1 秒标记目标，`ProphetAbility` 花 125 金揭露角色，`ProphetDeathProtectionHandler` 给被揭露者一层巫毒免疫，`ProphetShopHandler` 只卖水晶球。
 - 圣母：`GoddessAbility` 把目标洗成随机平民角色，清空商店并发左轮，`GoddessRoleAssignedHandler` 只做分配时的冷却初始化。
 - 天使：`AngelAbility` 在“安抚”和“守护”间切换，`AngelPlayerComponent` 保存守护目标和安抚粒子状态，`AngelDeathProtectionHandler` 会让守护目标死时天使代死，`AngelConstants` 控制 30 秒守护、90 秒安抚和 2 格贴身判定。
-- 胆小鬼：`CowardPlayerComponent` 按周围危险调心情和感官反馈，`SedativePlayerComponent` 管镇静状态和过量死亡，`CowardShopHandler` 卖镇静试剂，`CowardRevolverCooldownMixin`、`CowardFovMixin`、`CowardCameraMixin` 和 `SedativeTrayViewMixin` 调整左轮抖动、视野和托盘行为。
+- 胆小鬼：`CowardPlayerComponent` 按周围危险调心情和感官反馈，`SedativePlayerComponent` 管镇静状态和过量死亡，`CowardShopHandler` 卖镇静试剂，`CowardGunCooldownHandler`、`CowardFovMixin`、`CowardCameraMixin` 和 `SedativeTrayViewMixin` 调整左轮冷却、视野和托盘行为。
 - 追忆者：`RemembererInteractionHandler` 负责摸取回忆书，`RemembererPlayerComponent` 管回忆和狙击冷却，`RemembererSniperManager`、`SniperRifleItem`、`SniperRifleBulletItem` 实现狙击枪，`RemembererReplayBookBuilder` 负责把三分钟内的事件写成书。
 - 时停者：`TimekeeperPlayerComponent` 保存光阴收入计时、怀表三模式冷却、回溯保护和时间狭缝状态；`TimekeeperWorldComponent` 每 4 tick 采样一次局内快照，保留 120 秒历史并按 30 秒深度倒放；`TimekeeperSnapshots` 负责恢复玩家运行态、背包、物品冷却、尸体、掉落物、门/火等可控状态，后续新增组件时必须同步检查它的快照清单。
 - 服务员：`WaiterInteractionHandler` 判断玩家当前缺什么并递送，`WaiterShopHandler` 提供随机饮品、食物、药水、吧凳、钓鱼竿、唱片、篝火、烟熏炉、睡袋和书，`WaiterConstants` 里集中定义互动距离、价格和奖励。
@@ -214,7 +215,8 @@
 - `TimekeeperRiftHandler.java` 负责时间狭缝入口、动态失效检测，以及“狭缝玩家不应继续阻塞胜利结算”时的提前收束。
 - `TimekeeperSnapshots.java` 负责把 Wathe / Noelles 的可回溯运行态写成快照并恢复；新增 CCA 组件后要同步加入这里的 `PLAYER_COMPONENTS` 或 `WORLD_COMPONENTS`，否则回溯时该组件会停留在“回溯前未来状态”。
 - `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
-- `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath`，保持“先保命，再强制放行，再反噬”的顺序。
+- `NoellesRolesCombatBootstrap.java` 负责统一接入 Wathe `GunShotApi`，只调用各职业 / 词条自己的枪击、左轮反火和冷却 handler。
+- `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath` 并接入 Wathe `DeathApi`，保持“先保命，再强制放行，再反噬”和“死亡阶段按优先级执行”的顺序。
 - `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
 - `NoellesRolesShops.java` 负责支付、物品交付、特殊道具瞬发结算和购买回填。
 - `NoellesRolesEconomyBootstrap.java` 负责金币 HUD、任务收入、被动收入和经济类词条接入。
@@ -261,6 +263,47 @@
 
 - 目标职业/词条玩家正常存活时，仍能按自己的规则阻拦或触发独立胜利。
 - 目标职业/词条玩家死亡并进入时间狭缝时，如果排除狭缝玩家后已经只剩一个可获胜阵营，狭缝应立即收束为真死亡，普通结算不应被拖住。
+
+## 枪械与死亡 API 接入方式
+
+NoellesRoles 的枪击接管、左轮反火和击杀流程已经迁移到 Wathe 公开 API。新增或维护同类机制时，默认不要再 mixin `GunShootPayload`、`RevolverItem`、`DerringerItem` 或 `GameFunctions.killPlayer(...)`。
+
+Wathe 侧公开入口：
+
+- `dev.doctor4t.wathe.api.combat.GunShotApi`
+- `dev.doctor4t.wathe.api.combat.GunShotContext`
+- `dev.doctor4t.wathe.api.combat.RevolverPenaltyContext`
+- `dev.doctor4t.wathe.api.death.DeathApi`
+- `dev.doctor4t.wathe.api.death.DeathContext`
+- `dev.doctor4t.wathe.api.death.BodySpawnContext`
+
+NoellesRoles 侧接入入口：
+
+- `src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`
+- `src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
+
+枪械相关逻辑按职业或词条拆到自己的包里，例如：
+
+- `roles/robber/RobberGunHandler.java`：强盗手枪开火和击杀后掉枪。
+- `roles/assassin/AssassinGunHandler.java`：无声左轮开火。
+- `roles/bounty_hunter/BountyHunterGunHandler.java`：赏金枪械开火。
+- `roles/coward/CowardGunCooldownHandler.java`：胆小鬼左轮冷却修正。
+- `roles/jester/JesterGunTargetHandler.java`：假左轮客户端目标覆写。
+- `roles/executioner/ExecutionerGunPenaltyHandler.java`：仇杀客目标和配置类左轮惩罚豁免。
+- `roles/licensed_villain/LicensedVillainGunPenaltyHandler.java`：执照恶棍左轮惩罚豁免。
+- `roles/morphling/MorphlingGunPenaltyHandler.java`：变形试剂伪装下的左轮惩罚豁免。
+
+死亡 / 击杀相关逻辑同样按职业或词条拆分，例如：
+
+- `roles/timekeeper/TimekeeperDeathHandler.java`：重复死亡吞噬和时间狭缝。
+- `modifiers/dual_personality/DualPersonalityDeathHandler.java`：双重人格致死转化。
+- `roles/bounty_hunter/BountyHunterDeathHandler.java`：赏金猎人击杀奖励。
+- `roles/controller/ControllerDeathHandler.java`：附体死亡连锁。
+- `roles/voodoo/VoodooDeathHandler.java`：巫毒死亡连锁。
+- `roles/coroner/CoronerBodySpawnHandler.java`：尸体死因数据。
+- `roles/assassin/AssassinBodySpawnHandler.java`：刺客隐藏尸体。
+
+优先级按 Wathe `DeathApi` 的常量表达：重复死亡保护最高，其次是特殊存活保护、死亡流程状态、回放上下文、致死确认前拦截、普通逻辑、确认死亡后的奖励 / 二段机制、最终清理。priority 越大越先执行；同 priority 后注册的规则先执行。handler 返回 `PASS` 或不处理时继续往下走，只有明确 `CANCEL`、`ALLOW`、`DENY` 或 `HANDLED` 才终止对应链路。
 
 ## 背包按钮接入方式
 
@@ -467,13 +510,14 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 ### 8. 需要死亡保护、反噬或特殊清理时
 
-把逻辑拆成独立处理器，再接进 `NoellesRolesDeathBootstrap`，不要直接把所有判断堆在主类里。
+把逻辑拆成独立处理器，再接进 `NoellesRolesDeathBootstrap`。保命类机制继续走 `AllowPlayerDeath` 保护链；真正依赖“死亡流程阶段、击杀收益、尸体生成、确认死亡后清理”的机制优先走 Wathe `DeathApi`，不要再 mixin `GameFunctions.killPlayer(...)`。
 
 常见结构：
 
 - `YourRoleDeathProtectionHandler`
 - `YourRoleBackfireDeathHandler`
-- `YourRoleDeathCleanupMixin`
+- `YourRoleDeathHandler`
+- `YourRoleBodySpawnHandler`
 
 如果这个职业会在回合结束残留实体，也要在 `GameEvents.ON_FINISH_FINALIZE` 里清掉。
 
@@ -499,6 +543,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 背包内玩家选择按钮不是 mixin。它们应通过 `NoellesInventoryButtons` 注册，再由各职业包里的 `*InventoryButtons.java` 接入 Wathe `InventoryButtonApi`。
 普通屏幕 HUD 也不是 mixin。它们应通过 `NoellesHudHandlers` 注册，再由各职业包里的 `*StatusHud.java` 接入 Wathe `HudOverlayApi`；只有相机、输入控制、物品渲染等缺少公开 API 的场景才保留窄 mixin。
+枪击接管、左轮反火、默认击杀收益、确认死亡后清理和尸体生成回调也不是 mixin；它们应通过 `NoellesRolesCombatBootstrap` / `NoellesRolesDeathBootstrap` 调用各职业 handler 接入 Wathe `GunShotApi` / `DeathApi`。
 
 ### 10. 需要回放和文本时
 

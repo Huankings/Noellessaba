@@ -192,7 +192,7 @@ public final class TimekeeperRiftHandler {
          *
          * 这里改在“死亡确认并成功进入狭缝”的瞬间处理伴侣：
          * 1. A 进入狭缝后，立刻用 broken_heart 死因杀死仍真正存活的伴侣 B；
-         * 2. B 的死亡会再次走 Wathe killPlayer，随后由 TimekeeperDeathRiftMixin 把 B 也拉进狭缝；
+         * 2. B 的死亡会再次走 Wathe killPlayer，随后由 TimekeeperDeathHandler 把 B 也拉进狭缝；
          * 3. B 进入狭缝时会再次检查伴侣 A，但 A 已经 isInTimeRift()，所以上面的保护会直接 return，
          *    不会形成 A -> B -> A 的递归死亡循环。
          *

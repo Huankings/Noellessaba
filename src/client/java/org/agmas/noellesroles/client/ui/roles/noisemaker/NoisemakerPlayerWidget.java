@@ -12,7 +12,7 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.client.ui.common.PlayerHeadTextureHelper;
-import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerPlayerComponent;
 import org.agmas.noellesroles.packet.role.noisemaker.NoisemakerGlowC2SPacket;
 import org.jetbrains.annotations.Nullable;
 

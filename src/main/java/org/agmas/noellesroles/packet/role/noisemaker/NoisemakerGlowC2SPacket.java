@@ -13,9 +13,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.roles.Noisemaker.NoisemakerConstants;
-import org.agmas.noellesroles.roles.Noisemaker.NoisemakerGlowTargetComponent;
-import org.agmas.noellesroles.roles.Noisemaker.NoisemakerPlayerComponent;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerConstants;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerGlowTargetComponent;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerPlayerComponent;
 import dev.doctor4t.wathe.record.GameRecordManager;
 
 import net.minecraft.nbt.NbtCompound;
