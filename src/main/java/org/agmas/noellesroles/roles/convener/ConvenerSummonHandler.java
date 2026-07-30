@@ -3,9 +3,9 @@ package org.agmas.noellesroles.roles.convener;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -81,10 +81,13 @@ public final class ConvenerSummonHandler {
                     continue;
                 }
 
-                PlayerPsychoComponent psycho = PlayerPsychoComponent.KEY.get(alivePlayer);
-                if (psycho.getPsychoTicks() > 0) {
-                    psycho.stopPsycho();
-                    psycho.sync();
+                if (PsychoModeApi.isActive(alivePlayer)) {
+                    /*
+                     * 召集会把所有存活玩家强制拉到同一具尸体旁边。
+                     * 若目标还处于任意疯魔 profile，继续保留锁栏/护盾/皮肤会和召集后的控场冲突；
+                     * 因此通过 Wathe API 统一结束，而不是直接改 psychoTicks。
+                     */
+                    PsychoModeApi.stop(alivePlayer);
                 }
 
                 ConvenerSummonLockdownHelper.applySummonLockdown(alivePlayer);

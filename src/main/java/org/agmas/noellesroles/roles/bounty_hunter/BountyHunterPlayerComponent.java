@@ -2,8 +2,8 @@ package org.agmas.noellesroles.roles.bounty_hunter;
 
 import dev.doctor4t.wathe.api.Faction;
 import dev.doctor4t.wathe.api.Role;
+import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
@@ -68,7 +68,7 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
     public void reset() {
         /*
          * 回合清理时必须先停赏金模式，再清冷却。
-         * 否则 PlayerPsychoComponent 还保留疯魔 ticks 时，Wathe 的服务器选槽限制会继续把玩家锁住。
+         * 否则 Wathe 疯魔 API 还保留 profile 状态时，服务器选槽限制会继续把玩家锁住。
          */
         stopBountyMode(true);
         this.target = this.player.getUuid();
@@ -126,8 +126,7 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
             return false;
         }
 
-        PlayerPsychoComponent psycho = PlayerPsychoComponent.KEY.get(serverPlayer);
-        if (psycho.getPsychoTicks() > 0) {
+        if (PsychoModeApi.isActive(serverPlayer)) {
             /*
              * 赏金模式复用 Wathe 的疯魔组件。如果玩家已经处在其他疯魔来源中，
              * 继续叠加会让护盾、皮肤、结束回放和锁槽归属混在一起，所以这里直接购买失败。
@@ -135,30 +134,24 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
             return false;
         }
 
-        int slot = findFreeHotbarSlot();
-        if (slot < 0) {
+        if (!PsychoModeApi.start(serverPlayer, BountyHunterPsychoHandler.PROFILE_ID)) {
             return false;
         }
 
-        ItemStack derringer = ModItems.BOUNTY_DERRINGER.getDefaultStack();
-        derringer.set(ModItems.BOUNTY_MODE_GRANTED, true);
-        this.player.getInventory().setStack(slot, derringer);
-        this.player.getInventory().selectedSlot = slot;
-        this.player.playerScreenHandler.sendContentUpdates();
+        int slot = findModeGrantedDerringerSlot();
+        if (slot < 0) {
+            /*
+             * profile 启动成功却没找到授予的德林加，说明有其它逻辑在同 tick 改了背包。
+             * 这里立即无回放回滚疯魔，避免玩家进入没有模式武器的锁栏状态。
+             */
+            PsychoModeApi.stop(serverPlayer, false);
+            return false;
+        }
 
         this.bountyModeActive = true;
         this.bountyDerringerSlot = slot;
-
-        /*
-         * 这里不调用 PlayerPsychoComponent#startPsycho，因为原方法会塞入球棒。
-         * 我们只复用同一份 psychoTicks / armour 状态，让 Wathe 的疯魔皮肤、心情图标、
-         * 护盾抵挡链和环境音全部继续工作，但手持物改为赏金德林加。
-         *
-         * 护盾层数使用赏金猎人自己的常量，避免后续 Wathe 调整疯魔模式时连带改变赏金模式强度。
-         */
-        psycho.setPsychoTicks(BountyHunterConstants.BOUNTY_MODE_DURATION_TICKS);
-        psycho.setArmour(BountyHunterConstants.BOUNTY_MODE_SHIELD_LAYERS);
-        gameWorld.setPsychosActive(gameWorld.getPsychosActive() + 1);
+        this.player.getInventory().selectedSlot = slot;
+        this.player.playerScreenHandler.sendContentUpdates();
 
         this.player.getItemCooldownManager().set(ModItems.BOUNTY_MODE, BountyHunterConstants.BOUNTY_MODE_COOLDOWN_TICKS);
         sync();
@@ -166,19 +159,24 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
     }
 
     public void stopBountyMode(boolean clearPsychoState) {
-        if (!this.bountyModeActive && this.bountyDerringerSlot < 0) {
+        boolean profileActive = PsychoModeApi.isActive(this.player, BountyHunterPsychoHandler.PROFILE_ID);
+        boolean hasModeWeapon = findModeGrantedDerringerSlot() >= 0;
+        if (!this.bountyModeActive && this.bountyDerringerSlot < 0 && !profileActive && !hasModeWeapon) {
             return;
         }
 
         this.bountyModeActive = false;
         this.bountyDerringerSlot = -1;
-        removeModeGrantedDerringer();
 
-        if (clearPsychoState) {
-            PlayerPsychoComponent psycho = PlayerPsychoComponent.KEY.get(this.player);
-            if (psycho.getPsychoTicks() > 0) {
-                psycho.stopPsycho();
-            }
+        if (clearPsychoState && profileActive) {
+            PsychoModeApi.stop(this.player);
+        }
+        if (!PsychoModeApi.isActive(this.player, BountyHunterPsychoHandler.PROFILE_ID)) {
+            /*
+             * 正常结束时 Wathe 会按 profile 标记回收临时物品。
+             * 这里保留一层赏金德林加标记兜底，处理旧存档或异常背包改动留下的残留物。
+             */
+            removeModeGrantedDerringer();
         }
         this.player.playerScreenHandler.sendContentUpdates();
         sync();
@@ -235,13 +233,13 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
             return;
         }
 
-        PlayerPsychoComponent psycho = PlayerPsychoComponent.KEY.get(this.player);
-        if (!GameFunctions.isPlayerAliveAndSurvival(this.player) || psycho.getPsychoTicks() <= 0) {
+        boolean alive = GameFunctions.isPlayerAliveAndSurvival(this.player);
+        if (!alive || !PsychoModeApi.isActive(this.player, BountyHunterPsychoHandler.PROFILE_ID)) {
             /*
-             * Wathe 的 PlayerPsychoComponent 会在自己的 tick 里自然结束疯魔。
-             * 如果它已经归零，这里只回收模式德林加，不再二次 stopPsycho，避免重复扣 psychosActive。
+             * Wathe 的疯魔 profile 会在自己的 tick 里自然结束。
+             * 如果它已经归零，这里只回收赏金模式本地状态；如果玩家已不再存活，则主动收束 profile。
              */
-            stopBountyMode(false);
+            stopBountyMode(!alive);
             return;
         }
 
@@ -340,15 +338,6 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
     private boolean isRealTarget(UUID uuid) {
         return uuid != null && !uuid.equals(this.player.getUuid());
-    }
-
-    private int findFreeHotbarSlot() {
-        for (int slot = 0; slot < 9; slot++) {
-            if (this.player.getInventory().getStack(slot).isEmpty()) {
-                return slot;
-            }
-        }
-        return -1;
     }
 
     private int findModeGrantedDerringerSlot() {

@@ -3,8 +3,8 @@ package org.agmas.noellesroles.roles.dreamer;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -116,7 +116,7 @@ public class DreamerComponent implements AutoSyncedComponent, ServerTickingCompo
          * kinssaba 的实现会避免把疯魔玩家强制拉回梦者身边。
          * 这里保留这个限制，防止和 Wathe 的疯魔移动/击杀节奏互相打架。
          */
-        if (PlayerPsychoComponent.KEY.get(serverTarget).getPsychoTicks() <= 0) {
+        if (!PsychoModeApi.isActive(serverTarget)) {
             serverTarget.teleport(serverWorld, serverDreamer.getX(), serverDreamer.getY(), serverDreamer.getZ(), Set.of(), serverDreamer.getYaw(), serverDreamer.getPitch());
         }
         serverDreamer.playSoundToPlayer(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f);

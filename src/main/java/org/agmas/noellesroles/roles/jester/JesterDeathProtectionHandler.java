@@ -2,9 +2,8 @@ package org.agmas.noellesroles.roles.jester;
 
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
-import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -29,7 +28,18 @@ public final class JesterDeathProtectionHandler {
             return true;
         }
 
-        PlayerPsychoComponent component = PlayerPsychoComponent.KEY.get(playerEntity);
-        return component.getPsychoTicks() <= GameConstants.getInTicks(0, 44);
+        if (JesterPsychoHandler.tryTriggerFromDeath(playerEntity, killer)) {
+            /*
+             * 狂信者第一次被无辜者杀死时，死亡事件本身要被取消，
+             * 由专属 profile 启动疯魔；持续时间、护盾、物品和结束回放都交给 Wathe API。
+             */
+            return false;
+        }
+
+        if (!PsychoModeApi.isActive(playerEntity, JesterPsychoHandler.PROFILE_ID)) {
+            return true;
+        }
+
+        return PsychoModeApi.getRemainingTicks(playerEntity) <= JesterPsychoHandler.JESTER_INVULNERABLE_END_TICKS;
     }
 }

@@ -5,10 +5,10 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheGameModes;
+import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
-import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheDataComponentTypes;
@@ -120,7 +120,7 @@ public final class SpiritualistManager {
     }
 
     public static boolean isPsychoTarget(@Nullable PlayerEntity target) {
-        return target != null && PlayerPsychoComponent.KEY.get(target).getPsychoTicks() > 0;
+        return PsychoModeApi.isActive(target);
     }
 
     public static @Nullable ServerPlayerEntity getCurrentPossessionTarget(@NotNull ServerPlayerEntity spiritualist) {

@@ -74,6 +74,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesBedEffects.register();
         NoellesBodyAppearanceHandlers.register();
         NoellesRolesReplayBootstrap.register();
+        NoellesRolesPsychoBootstrap.init();
         TimekeeperCommunicationManager.init();
         SpiritualistCommunicationManager.init();
         OperatorCommunicationManager.init();

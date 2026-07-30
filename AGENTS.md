@@ -52,6 +52,7 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`：事件监听、server tick、回合清理、Harpy 禁用职业配置同步。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPsychoBootstrap.java`：疯魔 API 接入分发器，只调用各职业自己的 `*PsychoHandler.init()`。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`：Harpy 静态角色上限初始化；人数相关动态上限在 `NoellesRolesEventBootstrap`。
 - `src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
 - `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldComponent.java`：时停者世界级快照历史、回溯播放游标、保护名单。
@@ -100,11 +101,26 @@
 - 通用屏幕 HUD：`HudOverlayApi`、`HudOverlayContext`、`HudOverlayLayer`、`HudOverlayLayout`
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
+- 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
 - 胜利规则：`VictoryApi`
 - 尸体外观：`BodyAppearanceApi`
 - 托盘/床效果：`TrayEffectRegistry`、`BedEffectRegistry`
 - 死亡保护链：`AllowPlayerDeath`，Noelles 侧还要看 `NoellesRolesDeathBootstrap` 和 `CommonForcedDeathHandler`
+
+### 疯魔 API 接入
+
+NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规则塞到一个公共大类：
+
+- 聚合入口只放 `bootstrap/NoellesRolesPsychoBootstrap.java`，它只负责调用 `roles/<role>/<RoleName>PsychoHandler.init()`。
+- 新职业需要自己的疯魔形态时，在对应 `roles/<role>/` 包里注册 `PsychoModeProfile`；持续时间、护盾层数、授予物品、锁栏物品、球棒/近战命中声音、护盾声音、背景音乐、皮肤、结束回放名称和护盾回放名称都写进 profile。
+- 服务端启动疯魔用 `PsychoModeApi.start(player, profileId)`，提前结束或回合清理用 `PsychoModeApi.stop(player, recordReplay)`；不要直接写 `PlayerPsychoComponent#psychoTicks`、`armour` 或手动增减 `psychosActive`。
+- 判断状态用 `PsychoModeApi.isActive(...)`、`getRemainingTicks(...)`、`getArmour(...)`；只有 `TimekeeperSnapshots` 这种组件快照白名单才应直接引用 Wathe 的 CCA key。
+- 疯魔护盾的穿透/强制抵挡用 `PsychoModeApi.registerShieldRule(...)`，不要再 mixin `PlayerPsychoComponent#getArmour()`。
+- 静音或自定义音乐用 profile 的 `hitSound(null)`、`backgroundSound(sound, false/true)`；客户端新增音乐时再调用 `PsychoModeClientApi.registerBackgroundAmbience(...)`。
+- 疯魔皮肤采用“profile 默认皮肤 + 客户端 visual provider 按优先级覆盖”。职业需要特殊皮肤时，先在 profile 给默认值；临时状态覆盖再放客户端 provider。
+- 疯魔 Mood 显示采用 Wathe `MoodHudApi.registerPsychoStyle(...)`。职业要自定义完整/破损图标、跑马文本、文本颜色或倒计时条颜色时返回自己的 `PsychoMoodHudStyle`；Wathe 会按当前护盾是否大于 0 切换 body / hitBody，0 护盾 profile 从启动开始就应显示破损态。颜色 provider 可返回 `0xRRGGBB` 或 `0xAARRGGBB`。
+- 已被 Wathe API 覆盖的 mixin 不要重新加回：Jester 触发疯魔、BountyHunter 锁槽/防丢弃、Muzzler 静音、Rememberer 狙击穿盾都应走各职业 handler。
 
 ## 新职业开发流程
 
@@ -136,6 +152,7 @@
 - `NoellesRolesEventBootstrap.java`：新增事件监听、server tick、回合结束清理、人数动态角色上限、Harpy 禁用列表同步。
 - `NoellesRolesEconomyBootstrap.java`：新增金币 HUD、任务收入、被动收入或经济词条规则。
 - `NoellesRolesReplayBootstrap.java`：新增回放 formatter 注册。
+- `NoellesRolesPsychoBootstrap.java`：新增疯魔 profile、护盾规则、声音/皮肤规则时，在这里调用对应职业 `*PsychoHandler.init()`；具体逻辑仍留在 `roles/<role>/`。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
