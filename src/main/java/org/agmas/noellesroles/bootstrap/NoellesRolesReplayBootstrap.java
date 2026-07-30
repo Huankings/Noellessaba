@@ -137,6 +137,10 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.NOISEMAKER_GLOW_ENDED_EVENT, NoellesRolesReplayFormatters::formatNoisemakerGlowEnded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPHLING_MORPH_STARTED_EVENT, NoellesRolesReplayFormatters::formatMorphlingMorphStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPHLING_MORPH_ENDED_EVENT, NoellesRolesReplayFormatters::formatMorphlingMorphEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPH_REAGENT_SAMPLED_EVENT, NoellesRolesReplayFormatters::formatMorphReagentSampled);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPH_REAGENT_MARKED_EVENT, NoellesRolesReplayFormatters::formatMorphReagentMarked);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPH_MARK_TRIGGERED_EVENT, NoellesRolesReplayFormatters::formatMorphMarkTriggered);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MORPH_MARK_ENDED_EVENT, NoellesRolesReplayFormatters::formatMorphMarkEnded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SWAPPER_SWAP_SELECTED_EVENT, NoellesRolesReplayFormatters::formatSwapperSwapSelected);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SWAPPER_SWAP_EXECUTED_EVENT, NoellesRolesReplayFormatters::formatSwapperSwapExecuted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT, NoellesRolesReplayFormatters::formatCorpsemakerForgedBody);

@@ -1259,6 +1259,43 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatMorphReagentSampled(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text sample = playerFromUuidOrName(event, match, "sample_player", "sample_name");
+        if (actor == null || sample == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.morph_reagent_sampled", actor, sample);
+    }
+
+    @Nullable
+    public static Text formatMorphReagentMarked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text sample = playerFromUuidOrName(event, match, "sample_player", "sample_name");
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || sample == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.morph_reagent_marked", actor, sample, target);
+    }
+
+    @Nullable
+    public static Text formatMorphMarkTriggered(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text sample = playerFromUuidOrName(event, match, "sample_player", "sample_name");
+        if (actor == null || sample == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.morph_mark_triggered", actor, sample);
+    }
+
+    @Nullable
+    public static Text formatMorphMarkEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.morph_mark_ended", actor);
+    }
+
+    @Nullable
     public static Text formatSwapperSwapSelected(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         Text playerOne = playerFromKey(event, match, "player_one");

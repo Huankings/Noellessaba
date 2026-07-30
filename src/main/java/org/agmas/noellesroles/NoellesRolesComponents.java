@@ -35,6 +35,8 @@ import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
+import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
+import org.agmas.noellesroles.roles.morphling.MorphBodyDisguiseWorldComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
@@ -76,6 +78,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
 
     public void registerEntityComponentFactories(@NotNull EntityComponentFactoryRegistry registry) {
         registry.beginRegistration(PlayerEntity.class, MorphlingPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(MorphlingPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, MorphMarkPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(MorphMarkPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, BartenderPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(BartenderPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, DelusionPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DelusionPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, VoodooPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(VoodooPlayerComponent::new);
@@ -140,6 +143,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(NecromancerWorldComponent.KEY, NecromancerWorldComponent::new);
         worldComponentFactoryRegistry.register(LoversPairComponent.KEY, LoversPairComponent::new);
         worldComponentFactoryRegistry.register(DualPersonalityComponent.KEY, DualPersonalityComponent::new);
+        worldComponentFactoryRegistry.register(MorphBodyDisguiseWorldComponent.KEY, MorphBodyDisguiseWorldComponent::new);
         worldComponentFactoryRegistry.register(TimekeeperWorldComponent.KEY, TimekeeperWorldComponent::new);
     }
 }

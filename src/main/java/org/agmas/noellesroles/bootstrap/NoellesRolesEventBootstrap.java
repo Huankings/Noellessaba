@@ -66,6 +66,9 @@ import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
+import org.agmas.noellesroles.roles.morphling.MorphBodyDisguiseWorldComponent;
+import org.agmas.noellesroles.roles.morphling.MorphlingReagentService;
+import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
 import org.agmas.noellesroles.roles.mimic.MimicConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerInteractionHandler;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
@@ -161,6 +164,10 @@ public final class NoellesRolesEventBootstrap {
             ConvenerDisguiseComponent.KEY.get(playerEntity).clearDisguise();
             ConvenerMomentumComponent.KEY.get(playerEntity).reset();
             BountyHunterPlayerComponent.KEY.get(playerEntity).reset();
+            MorphMarkPlayerComponent.KEY.get(playerEntity).clear();
+            if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
+                MorphlingReagentService.clearReagentReleaseGate(serverPlayer);
+            }
         });
         CanSeePoison.EVENT.register(player -> GameWorldComponent.KEY.get(player.getWorld()).isRole((PlayerEntity) player, NoellesRoleRegistry.BARTENDER));
         ShouldDropOnDeath.EVENT.register((itemStack, identifier) -> itemStack.isOf(ModItems.MASTER_KEY));
@@ -264,6 +271,8 @@ public final class NoellesRolesEventBootstrap {
                 return;
             }
             SwapperAbility.clearPendingSwaps();
+            MorphlingReagentService.clearAllReleaseGates();
+            MorphBodyDisguiseWorldComponent.KEY.get(serverWorld).reset();
             HiddenBodiesWorldComponent.KEY.get(serverWorld).reset();
             TimekeeperWorldComponent.KEY.get(serverWorld).reset();
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);

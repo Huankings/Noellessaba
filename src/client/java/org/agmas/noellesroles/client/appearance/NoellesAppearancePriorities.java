@@ -36,6 +36,14 @@ public final class NoellesAppearancePriorities {
     public static final int ACTIVE_DISGUISE = 100;
 
     /**
+     * 变形试剂触发后的外观伪装。
+     *
+     * <p>它低于变形怪原本的主动变形，保证变形怪自己同时处于两套伪装时，
+     * 背包主动变形仍然按原 NoellesRoles 规则显示。</p>
+     */
+    public static final int MORPH_REAGENT_DISGUISE = 90;
+
+    /**
      * 双重人格副人格默认显示为主人格。
      * 这是低优先级兜底：如果召集者、变形怪、控制者等主动伪装存在，应优先显示那些更明确的效果。
      */

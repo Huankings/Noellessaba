@@ -74,6 +74,8 @@ import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
+import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
+import org.agmas.noellesroles.roles.morphling.MorphBodyDisguiseWorldComponent;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
@@ -130,6 +132,7 @@ public final class TimekeeperSnapshots {
             component("noellesroles:doused", DousedPlayerComponent.KEY),
             component("noellesroles:bartender", BartenderPlayerComponent.KEY),
             component("noellesroles:morphling", MorphlingPlayerComponent.KEY),
+            component("noellesroles:morph_mark_player", MorphMarkPlayerComponent.KEY),
             component("noellesroles:voodoo", VoodooPlayerComponent.KEY),
             component("noellesroles:convener", ConvenerPlayerComponent.KEY),
             component("noellesroles:convener_disguise", ConvenerDisguiseComponent.KEY),
@@ -195,7 +198,12 @@ public final class TimekeeperSnapshots {
             component("noellesroles:avaricious_payout", AvariciousPayoutComponent.KEY),
             component("noellesroles:necromancer", NecromancerWorldComponent.KEY),
             component("noellesroles:lovers_pairs", LoversPairComponent.KEY),
-            component("noellesroles:dual_personality", DualPersonalityComponent.KEY)
+            component("noellesroles:dual_personality", DualPersonalityComponent.KEY),
+            /*
+             * 试剂尸体来源记录要和尸体实体一起回溯。
+             * 否则尸体本身虽然能由 TimekeeperSnapshots 恢复，客户端却不知道哪具尸体应该在本能视角显原貌。
+             */
+            component("noellesroles:morph_body_disguise_world", MorphBodyDisguiseWorldComponent.KEY)
     );
 
     private TimekeeperSnapshots() {

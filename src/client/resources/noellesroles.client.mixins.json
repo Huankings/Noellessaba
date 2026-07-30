@@ -77,6 +77,7 @@
     "roles.bartender.DefenseVialViewMixin",
     "roles.rememberer.RemembererCrosshairMixin",
     "roles.rememberer.SniperRifleCrosshairMixin",
+    "roles.morphling.MorphlingReagentCrosshairMixin",
     "roles.rememberer.SniperRifleScopeFovMixin",
     "roles.rememberer.SniperRifleMovementSpeedMixin",
     "roles.starstruck.StarstruckMovementSpeedMixin",

@@ -72,6 +72,10 @@ public final class NoellesEventIds {
     public static final Identifier NOISEMAKER_GLOW_ENDED_EVENT = NoellesRolesCore.id("noisemaker_glow_ended");
     public static final Identifier MORPHLING_MORPH_STARTED_EVENT = NoellesRolesCore.id("morphling_morph_started");
     public static final Identifier MORPHLING_MORPH_ENDED_EVENT = NoellesRolesCore.id("morphling_morph_ended");
+    public static final Identifier MORPH_REAGENT_SAMPLED_EVENT = NoellesRolesCore.id("morph_reagent_sampled");
+    public static final Identifier MORPH_REAGENT_MARKED_EVENT = NoellesRolesCore.id("morph_reagent_marked");
+    public static final Identifier MORPH_MARK_TRIGGERED_EVENT = NoellesRolesCore.id("morph_mark_triggered");
+    public static final Identifier MORPH_MARK_ENDED_EVENT = NoellesRolesCore.id("morph_mark_ended");
     public static final Identifier SWAPPER_SWAP_SELECTED_EVENT = NoellesRolesCore.id("swapper_swap_selected");
     public static final Identifier SWAPPER_SWAP_EXECUTED_EVENT = NoellesRolesCore.id("swapper_swap_executed");
     public static final Identifier CORPSEMAKER_FORGED_BODY_EVENT = NoellesRolesCore.id("corpsemaker_forged_body");

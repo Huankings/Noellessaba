@@ -30,6 +30,8 @@
   "custom": {
     "cardinal-components": [
       "noellesroles:morphling",
+      "noellesroles:morph_mark_player",
+      "noellesroles:morph_body_disguise_world",
       "noellesroles:angel",
       "noellesroles:bartender",
       "noellesroles:delusion",

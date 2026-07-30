@@ -29,6 +29,7 @@ import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityCommunic
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
+import org.agmas.noellesroles.roles.morphling.MorphlingReagentService;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistManager;
@@ -37,6 +38,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.UUID;
 
 public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
@@ -123,6 +125,17 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             return;
         }
 
+        if (MorphlingReagentService.isActivelyReagentDisguised(spectator)) {
+            /*
+             * 变形试剂伪装期间，伪装者自己的真实声音不能继续按本体播给活人。
+             * 但非存活玩家是观察视角，应该仍能听到真实声音，所以先手动补发给局外观众，
+             * 再取消原始 proximity voice，避免活人听到“外观像 B、声音却从 A 本体发出”的穿帮语音。
+             */
+            event.cancel();
+            relayDisguisedPlayerRealVoiceToOutOfGame(api, event, spectator);
+            return;
+        }
+
         /*
          * 灵术师附身时，需要把自己的语音“改从宿主身上发出”。
          *
@@ -141,6 +154,8 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             relayPossessionVoice(api, event, spectator, possessionTarget);
             return;
         }
+
+        relayMorphlingReagentVoice(api, event, spectator);
 
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(spectator.getWorld());
         if (spectator.interactionManager.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -243,6 +258,101 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         );
     }
 
+    private void relayMorphlingReagentVoice(
+            VoicechatServerApi api,
+            MicrophonePacketEvent event,
+            ServerPlayerEntity originalSpeaker
+    ) {
+        List<ServerPlayerEntity> disguisedPlayers = MorphlingReagentService.findActivePlayersDisguisedAs(originalSpeaker);
+        if (disguisedPlayers.isEmpty()) {
+            return;
+        }
+
+        for (ServerPlayerEntity disguisedPlayer : disguisedPlayers) {
+            relayVoiceAsMorphlingDisguise(api, event, originalSpeaker, disguisedPlayer);
+        }
+    }
+
+    private void relayDisguisedPlayerRealVoiceToOutOfGame(
+            VoicechatServerApi api,
+            MicrophonePacketEvent event,
+            ServerPlayerEntity disguisedSpeaker
+    ) {
+        EntitySoundPacket redirectedPacket = event.getPacket()
+                .entitySoundPacketBuilder()
+                .entityUuid(disguisedSpeaker.getUuid())
+                .whispering(event.getPacket().isWhispering())
+                .distance((float) api.getVoiceChatDistance())
+                .build();
+
+        for (ServerPlayerEntity recipient : disguisedSpeaker.getServer().getPlayerManager().getPlayerList()) {
+            if (!canReceiveDisguisedPlayerRealVoice(disguisedSpeaker, recipient)) {
+                continue;
+            }
+
+            VoicechatConnection connection = api.getConnectionOf(recipient.getUuid());
+            if (connection != null) {
+                api.sendEntitySoundPacketTo(connection, redirectedPacket);
+            }
+        }
+    }
+
+    private boolean canReceiveDisguisedPlayerRealVoice(
+            ServerPlayerEntity disguisedSpeaker,
+            ServerPlayerEntity recipient
+    ) {
+        /*
+         * 被试剂变形者自己的真实语音只给非存活玩家。
+         * 这里还要复用 shouldBlockVoiceBetween，避免手动补发绕过时停者、召集者、
+         * 双重人格、灵术师出窍等已有通信隔离规则。
+         */
+        return SpiritualistCommunicationManager.isOutOfGameAudience(recipient)
+                && !shouldBlockVoiceBetween(disguisedSpeaker, recipient);
+    }
+
+    private void relayVoiceAsMorphlingDisguise(
+            VoicechatServerApi api,
+            MicrophonePacketEvent event,
+            ServerPlayerEntity originalSpeaker,
+            ServerPlayerEntity disguisedPlayer
+    ) {
+        EntitySoundPacket.Builder<?> redirectedBuilder = event.getPacket()
+                .entitySoundPacketBuilder()
+                .entityUuid(disguisedPlayer.getUuid())
+                .whispering(event.getPacket().isWhispering())
+                .distance((float) api.getVoiceChatDistance());
+        retargetEntitySoundBuilder(
+                redirectedBuilder,
+                getMorphVoiceChannelId(originalSpeaker, disguisedPlayer),
+                disguisedPlayer.getUuid()
+        );
+        EntitySoundPacket redirectedPacket = redirectedBuilder.build();
+
+        for (ServerPlayerEntity recipient : originalSpeaker.getServer().getPlayerManager().getPlayerList()) {
+            /*
+             * 手动补发的语音包不会再经过 handleSoundPacket，所以这里显式套用同一套通信隔离。
+             * 同时检查 originalSpeaker 和 disguisedPlayer：前者防止死亡/狭缝样本泄露信息，
+             * 后者保证客户端听到的“声源实体”也遵守当前语音频道规则。
+             */
+            if (shouldBlockVoiceBetween(originalSpeaker, recipient)
+                    || shouldBlockVoiceBetween(disguisedPlayer, recipient)) {
+                continue;
+            }
+
+            VoicechatConnection connection = api.getConnectionOf(recipient.getUuid());
+            if (connection != null) {
+                api.sendEntitySoundPacketTo(connection, redirectedPacket);
+            }
+        }
+    }
+
+    private UUID getMorphVoiceChannelId(ServerPlayerEntity originalSpeaker, ServerPlayerEntity disguisedPlayer) {
+        return UUID.nameUUIDFromBytes(
+                (NoellesRolesCore.MOD_ID + ":morph_voice:" + originalSpeaker.getUuid() + ":" + disguisedPlayer.getUuid())
+                        .getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
     /**
      * 反射修正 voicechat builder 内部真正被 build() 使用的 sender/channelId 字段。
      *
@@ -258,7 +368,7 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             setFieldRecursively(builder, "sender", senderUuid);
             setFieldRecursively(builder, "channelId", channelId);
         } catch (ReflectiveOperationException exception) {
-            throw new IllegalStateException("Failed to retarget spiritualist possession voice packet", exception);
+            throw new IllegalStateException("Failed to retarget redirected voice packet", exception);
         }
     }
 

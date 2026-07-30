@@ -34,6 +34,10 @@ public final class NoellesHeldItemVisibilityHandlers {
                 Items.PAPER,
                 ModItems.ROLE_MINE
         ));
+        HeldItemInvisibilityApi.registerHiddenItems(NoellesRoleRegistry.MORPHLING, List.of(
+                ModItems.MORPH_REAGENT,
+                ModItems.MORPH_DEVICE
+        ));
 
         /*
          * 被动隐藏规则：Controller 附体别人时，被 controlled 的玩家无论手里拿什么都隐藏。

@@ -28,6 +28,8 @@
     "roles.jester.JesterItemEntityMixin",
     "roles.jester.JesterJestMixin",
     "roles.morphling.MorphlingReseterMixin",
+    "roles.morphling.MorphlingReagentDeathMixin",
+    "roles.morphling.MorphlingReagentGunPenaltyMixin",
     "roles.noisemaker.NoisemakerKillMixin",
     "roles.voodoo.VoodooVooMixin",
     "roles.coroner.CoronerReseterMixin",

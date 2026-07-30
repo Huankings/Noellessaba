@@ -114,6 +114,8 @@ public class ModItems {
             entries.add(BLOWGUN);
             entries.add(POISON_INJECTOR);
             entries.add(KNOCKOUT_DRUG);
+            entries.add(MORPH_REAGENT);
+            entries.add(MORPH_DEVICE);
             entries.add(JERRY_CAN);
             entries.add(LIGHTER);
             entries.add(PHONE);
@@ -311,6 +313,16 @@ public class ModItems {
     public static final Item KNOCKOUT_DRUG = register(
             new KnockoutDrugItem(new Item.Settings().maxCount(4)),
             "knockout_drug"
+    );
+    // 变形试剂
+    public static final Item MORPH_REAGENT = register(
+            new MorphReagentItem(new Item.Settings().maxCount(1)),
+            "morph_reagent"
+    );
+    // 变形遥控器
+    public static final Item MORPH_DEVICE = register(
+            new MorphDeviceItem(new Item.Settings().maxCount(1)),
+            "morph_device"
     );
     // 汽油桶
     public static final Item JERRY_CAN = register(

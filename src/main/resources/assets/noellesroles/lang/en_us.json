@@ -80,6 +80,11 @@
 
     "announcement.goals.noellesroles.morphling": "Fool everyone.",
     "announcement.role.noellesroles.morphling": "Morphling",
+    "message.noellesroles.morphling.sampled": "Sampled %s",
+    "message.noellesroles.morphling.marked": "Marked %s",
+    "message.noellesroles.morphling.same_target": "The sample and mark target cannot be the same player",
+    "message.noellesroles.morphling.no_marks": "No valid morph marks",
+    "message.noellesroles.morphling.triggered": "Morph marks triggered",
 
     "announcement.goals.noellesroles.awesome_binglus": "Awesome Binglu",
     "announcement.role.noellesroles.awesome_binglus": "Awesome Binglus",
@@ -224,6 +229,15 @@
 
 
     "item.noellesroles.fake_revolver": "Fake Revolver",
+    "item.noellesroles.morph_reagent": "Morph Reagent",
+    "item.noellesroles.morph_reagent.tooltip.sample": "Current sample: %s",
+    "item.noellesroles.morph_reagent.tooltip.none": "None",
+    "item.noellesroles.morph_reagent.tooltip.line1": "First right-click samples a player or body within 1.5 blocks; otherwise samples yourself",
+    "item.noellesroles.morph_reagent.tooltip.line2": "Second right-click marks a player within 1.5 blocks; otherwise marks yourself",
+    "item.noellesroles.morph_reagent.tooltip.line3": "If the mark target matches the sample, the mark fails and the reagent is not consumed",
+    "item.noellesroles.morph_reagent.tooltip.line4": "Use the Morph Device to trigger a 50s disguise with copied appearance, name, voice, and chat",
+    "item.noellesroles.morph_device": "Morph Device",
+    "item.noellesroles.morph_device.tooltip": "Triggers all pending morph reagent marks you placed",
     "item.noellesroles.bounty_pistol": "Bounty Pistol",
     "item.noellesroles.bounty_pistol.tooltip": "A display-worthy pistol covered in gold\nKilling your target with this weapon gives it a shorter cooldown\nKilling the target puts it on a 15s cooldown and keeps the pistol; killing a non-target puts it on a 45s cooldown and removes one pistol\n15 block range",
     "item.noellesroles.bounty_derringer": "Bounty Derringer",
@@ -534,6 +548,10 @@
       "replay.global.noellesroles.controller_possess_started": "%s possessed %s",
       "replay.global.noellesroles.controller_possess_stopped_early": "%s ended their possession of %s early",
       "replay.global.noellesroles.controller_possess_ended": "%s's possession ended",
+      "replay.global.noellesroles.morph_reagent_sampled": "%s sampled %s with Morph Reagent",
+      "replay.global.noellesroles.morph_reagent_marked": "%s marked %s's sample onto %s",
+      "replay.global.noellesroles.morph_mark_triggered": "%s was transformed into %s",
+      "replay.global.noellesroles.morph_mark_ended": "%s's reagent morph ended",
       "replay.global.noellesroles.amnesiac_role_stolen": "%s took %s's role from their body",
       "replay.global.noellesroles.arsonist_doused": "%s doused %s in oil",
       "replay.global.noellesroles.arsonist_lighter_cooldown_started": "%s's lighter entered ignition readiness cooldown",

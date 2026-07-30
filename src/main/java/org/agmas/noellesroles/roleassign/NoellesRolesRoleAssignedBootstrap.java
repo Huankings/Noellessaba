@@ -29,6 +29,7 @@ import org.agmas.noellesroles.roles.kidnapper.KidnapperRoleAssignedHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainRoleAssignedHandler;
 import org.agmas.noellesroles.roles.magician.MagicianRoleAssignedHandler;
 import org.agmas.noellesroles.roles.mimic.MimicRoleAssignedHandler;
+import org.agmas.noellesroles.roles.morphling.MorphlingRoleAssignedHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.operator.OperatorRoleAssignedHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianRoleAssignedHandler;
@@ -90,6 +91,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             RobberRoleAssignedHandler.onRoleAssigned(player, role);
             AssassinRoleAssignedHandler.onRoleAssigned(player, role);
             CleanerRoleAssignedHandler.onRoleAssigned(player, role);
+            MorphlingRoleAssignedHandler.onRoleAssigned(player, role);
             HunterRoleAssignedHandler.onRoleAssigned(player, role);
             StalkerRoleAssignedHandler.onRoleAssigned(player, role);
             GoddessRoleAssignedHandler.onRoleAssigned(player, role);

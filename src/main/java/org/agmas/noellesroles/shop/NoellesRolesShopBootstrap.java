@@ -27,6 +27,7 @@ import org.agmas.noellesroles.roles.initiate.InitiateShopHandler;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperShopHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
+import org.agmas.noellesroles.roles.morphling.MorphlingShopHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianShopHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetShopHandler;
@@ -133,6 +134,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(NoellesRolesCore.MOD_ID, "kidnapper_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 KidnapperShopHandler::modifyShop
+        );
+        /*
+         * 变形怪保留默认杀手商店，只用试剂替换毒药类商品。
+         * 这样原版刀、枪、手雷、疯魔模式和 Wathe 的购买结算仍然保持一致。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(NoellesRolesCore.MOD_ID, "morphling_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                MorphlingShopHandler::modifyShop
         );
         /*
          * 死灵法师沿用 StupidExpress 默认配置：有杀手能力，但没有杀手商店。
