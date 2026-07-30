@@ -36,6 +36,7 @@ import org.agmas.noellesroles.NoellesRolesParticles;
 import org.agmas.noellesroles.client.particle.StarstruckSparkleParticle;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceHandlers;
+import org.agmas.noellesroles.client.crosshair.NoellesCrosshairHandlers;
 import org.agmas.noellesroles.client.hud.NoellesHudHandlers;
 import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
@@ -108,6 +109,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
         NoellesHudHandlers.register();
+        NoellesCrosshairHandlers.register();
         DualPersonalityTimeHud.register();
         DualPersonalityKeybinds.init();
         NoellesHeldItemVisibilityHandlers.register();

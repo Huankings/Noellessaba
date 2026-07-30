@@ -46,7 +46,9 @@
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
 - 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
+- 准心图标注册入口：`src/client/java/org/agmas/noellesroles/client/crosshair/NoellesCrosshairHandlers.java`
 - 职业状态 HUD：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`
+- 职业准心图标：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`
 - 词条固定 HUD：`src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/*Hud.java`
 - 背包按钮注册入口：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtons.java`
 - 背包按钮共享工具：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`
@@ -224,8 +226,9 @@
 - `NoellesRolesReplayBootstrap.java` 负责把 NoellesRoles 的事件 id 注册到 Wathe 回放系统。
 - `NoellesRolesReplayFormatters.java` 负责把 NoellesRoles 的专属事件翻译成回放文本。
 - `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
-- `NoellesHudHandlers.java` 是客户端通用屏幕 HUD 总注册入口，只负责调用各职业 / 词条自己的 `register()` 和少量准心/实体名牌 provider。
+- `NoellesHudHandlers.java` 是客户端通用屏幕 HUD 总注册入口，只负责调用各职业 / 词条自己的 `register()` 和少量实体名牌 provider。
 - `NoellesHudSupport.java` 负责复用 Wathe `HudOverlayApi` 的存活职业注册、右下角文字绘制和玩家名兜底。
+- `NoellesCrosshairHandlers.java` 是客户端准心图标总注册入口，只负责调用各职业自己的 `*Crosshair.register()`。
 - `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
@@ -353,7 +356,7 @@ NoellesInventoryButtonSupport.PagedExtension<MyRolePlayerWidget>
 
 需要动态增删列表时参考 `ConvenerInventoryButtons`：每 tick 比较目标 UUID 列表，变化后重建同一个 group。需要文本输入阶段禁止按 E 关背包时，在自己的 `InventoryButtonExtension.allowInventoryKeyClose(...)` 返回 `false`，并在 `close(...)` 里清掉静态输入状态。
 
-旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD 也已经有 Wathe `HudOverlayApi` / `RoleNameHudApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
+旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD、准心图标和准心名字也已经有 Wathe `HudOverlayApi` / `CrosshairHudApi` / `RoleNameHudApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
 
 ## HUD 接入方式
 
@@ -363,6 +366,7 @@ NoellesRoles 的普通屏幕 HUD 已经迁移到 Wathe 公开 API，不再通过
 - 词条自己的固定屏幕 HUD：新建 `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/<ModifierName>Hud.java`。
 - 通用注册入口：在 `NoellesHudHandlers.register()` 里调用该职业 `*StatusHud.register()`。
 - 重复布局和存活职业过滤：使用 `NoellesHudSupport.registerAliveRole(...)`、`drawBottomRightLine(...)` 或 `drawBottomRightLines(...)`。
+- 准心图标、武器锁定和准心下方小进度条：新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>Crosshair.java`，并在 `NoellesCrosshairHandlers.register()` 里调用；通过 Wathe `CrosshairHudApi.registerProvider(...)` 或 `registerOverlay(...)` 接入。
 - 准心名字、尸体信息、目标旁边的小提示：使用 Wathe `RoleNameHudApi.registerExtraHud(...)`、`registerName(...)` 或 `registerEntityName(...)`。
 - 狙击镜、黑屏控制、绑架提示这类全屏叠加：使用 `HudOverlayApi.register(...)` 并选择合适的 `HudOverlayLayer`。
 
@@ -386,7 +390,7 @@ public static void register() {
 
 `registerAliveRole(...)` 会统一检查“本地玩家是该职业”以及 Wathe 的 `GameFunctions.isPlayerAliveAndSurvival(...)` 存活定义，所以死亡、旁观、创造和非局内状态不会继续显示职业 HUD。不是职业独占的 provider，例如被附体者、被绑架者或狙击镜遮罩，必须在自己的 lambda 里显式判断 `context.aliveAndSurvival()`。
 
-不要把多个职业/词条 HUD 合并到一个巨大的 renderer。`NoellesHudHandlers` 只负责注册顺序，具体状态、文本和颜色仍然放在各职业或词条自己的客户端包里；旧的 `*HudMixin` 被 API 替代后，也不要重新加回 `noellesroles.client.mixins.json`。
+不要把多个职业/词条 HUD 合并到一个巨大的 renderer。`NoellesHudHandlers` / `NoellesCrosshairHandlers` 只负责注册顺序，具体状态、文本、颜色和准心判定仍然放在各职业或词条自己的客户端包里；旧的 `*HudMixin` / `*CrosshairMixin` 被 API 替代后，也不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 新职业注册流程
 
@@ -530,6 +534,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 常见内容包括：
 
 - 普通屏幕 HUD：走 `NoellesHudHandlers` + 各职业 `*StatusHud.java`，并接入 Wathe `HudOverlayApi`
+- 准心图标 / 武器锁定 / 准心下方进度条：走 Wathe `CrosshairHudApi`
 - 准心名字 / 准心附近提示：走 Wathe `RoleNameHudApi`
 - 角色头像
 - 光标高亮

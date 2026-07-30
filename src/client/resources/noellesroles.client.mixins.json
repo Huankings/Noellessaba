@@ -66,15 +66,8 @@
     "requireAnnotations": true
   },
   "mixins": [
-    "roles.prophet.CrystalBallCrosshairMixin",
-    "roles.robber.RobberGunCrosshairMixin",
-    "roles.bounty_hunter.BountyGunCrosshairMixin",
-    "roles.assassin.AssassinBayonetCrosshairMixin",
     "roles.assassin.AssassinBodyCanHitMixin",
     "roles.bartender.DefenseVialViewMixin",
-    "roles.rememberer.RemembererCrosshairMixin",
-    "roles.rememberer.SniperRifleCrosshairMixin",
-    "roles.morphling.MorphlingReagentCrosshairMixin",
     "roles.rememberer.SniperRifleScopeFovMixin",
     "roles.rememberer.SniperRifleMovementSpeedMixin",
     "roles.starstruck.StarstruckMovementSpeedMixin",
@@ -82,12 +75,6 @@
     "modifiers.dual_personality.DualPersonalityMovementSpeedMixin",
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",
-    "roles.rememberer.SniperRifleRenderPoseMixin",
-    "roles.waiter.WaiterCrosshairMixin",
-    "roles.cook.PanCrosshairMixin",
-    "roles.hunter.HuntingKnifeCrosshairMixin",
-    "roles.drugmaker.DrugmakerCrosshairMixin",
-    "roles.thief.ThiefCrosshairRendererMixin",
-    "roles.timekeeper.TimekeeperWatchCrosshairMixin"
+    "roles.rememberer.SniperRifleRenderPoseMixin"
   ]
 }

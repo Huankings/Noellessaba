@@ -1,67 +1,61 @@
-package org.agmas.noellesroles.client.mixin.roles.timekeeper;
+package org.agmas.noellesroles.client.roles.timekeeper;
 
+import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.client.gui.CrosshairRenderer;
 import dev.doctor4t.wathe.game.GameFunctions;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.item.ItemStack;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 时停者怀表准心下方进度条。
  *
  * <p>需求明确写了“不渲染准心变化，只渲染下方指示条”。
- * 因此这里注入在 CrosshairRenderer.renderCrosshair 的 TAIL，不取消 Wathe 原准心，
+ * 因此这里接入 CrosshairHudApi 的 overlay，不取消 Wathe 原准心，
  * 只在玩家手持怀表且正在蓄力或当前模式冷却中时，额外绘制一条短进度条。</p>
  */
-@Mixin(CrosshairRenderer.class)
-public class TimekeeperWatchCrosshairMixin {
-    @Inject(method = "renderCrosshair", at = @At("TAIL"))
-    private static void noellesroles$renderTimekeeperWatchProgress(
-            @NotNull MinecraftClient client,
-            @NotNull ClientPlayerEntity player,
-            @NotNull DrawContext context,
-            @NotNull RenderTickCounter tickCounter,
-            @NotNull CallbackInfo ci
-    ) {
-        if (!client.options.getPerspective().isFirstPerson()) {
-            return;
-        }
+public final class TimekeeperWatchCrosshairOverlay {
+    private TimekeeperWatchCrosshairOverlay() {
+    }
 
-        Float progress = noellesroles$getWatchProgress(player);
+    public static void register() {
+        CrosshairHudApi.registerOverlay(
+                NoellesRolesCore.id("crosshair/timekeeper/watch_progress"),
+                CrosshairHudApi.DEFAULT_PRIORITY,
+                TimekeeperWatchCrosshairOverlay::render
+        );
+    }
+
+    private static void render(@NotNull CrosshairHudApi.Context context) {
+        Float progress = getWatchProgress(context.player());
         if (progress == null) {
             return;
         }
 
         int width = TimekeeperConstants.WATCH_CROSSHAIR_BAR_WIDTH;
         int height = TimekeeperConstants.WATCH_CROSSHAIR_BAR_HEIGHT;
-        int x = context.getScaledWindowWidth() / 2 - width / 2;
-        int y = context.getScaledWindowHeight() / 2 + TimekeeperConstants.WATCH_CROSSHAIR_BAR_Y_OFFSET;
+        int x = context.centerX() - width / 2;
+        int y = context.centerY() + TimekeeperConstants.WATCH_CROSSHAIR_BAR_Y_OFFSET;
         int fillWidth = Math.max(0, Math.min(width, Math.round(width * progress)));
 
-        context.fill(x, y, x + width, y + height, TimekeeperConstants.WATCH_CROSSHAIR_BAR_BACKGROUND_COLOR);
+        DrawContext drawContext = context.drawContext();
+        drawContext.fill(x, y, x + width, y + height, TimekeeperConstants.WATCH_CROSSHAIR_BAR_BACKGROUND_COLOR);
         if (fillWidth > 0) {
-            context.fill(x, y, x + fillWidth, y + height, TimekeeperConstants.WATCH_CROSSHAIR_BAR_FILL_COLOR);
+            drawContext.fill(x, y, x + fillWidth, y + height, TimekeeperConstants.WATCH_CROSSHAIR_BAR_FILL_COLOR);
         }
     }
 
-    @Unique
-    private static Float noellesroles$getWatchProgress(@NotNull ClientPlayerEntity player) {
+    private static @Nullable Float getWatchProgress(@NotNull ClientPlayerEntity player) {
         if (!GameFunctions.isPlayerAliveAndSurvival(player)
                 || !GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.TIMEKEEPER)) {
             return null;
@@ -85,7 +79,7 @@ public class TimekeeperWatchCrosshairMixin {
              * 冷却条表示“距离再次可用还差多少”：刚进入冷却时接近空，冷却结束时填满。
              * 冷却总长必须按当前怀表状态计算，精致怀表升级后的 40/120 秒会自然显示更快的进度。
              */
-            return 1.0F - Math.min(1.0F, cooldownTicks / (float) noellesroles$getCooldownLimit(mode, state));
+            return 1.0F - Math.min(1.0F, cooldownTicks / (float) getCooldownLimit(mode, state));
         }
 
         if (mode == TimekeeperWatchMode.REWIND
@@ -101,11 +95,7 @@ public class TimekeeperWatchCrosshairMixin {
         return null;
     }
 
-    @Unique
-    private static int noellesroles$getCooldownLimit(
-            @NotNull TimekeeperWatchMode mode,
-            @NotNull TimekeeperWatchState state
-    ) {
+    private static int getCooldownLimit(@NotNull TimekeeperWatchMode mode, @NotNull TimekeeperWatchState state) {
         return switch (mode) {
             case ITEM_ACCELERATE, ABILITY_ACCELERATE -> state.isElegant()
                     ? TimekeeperConstants.ELEGANT_ACCELERATE_COOLDOWN_TICKS

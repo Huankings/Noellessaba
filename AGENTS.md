@@ -101,6 +101,7 @@
 - 本能透视：`InstinctApi`
 - 心情 HUD：`MoodHudApi`
 - 通用屏幕 HUD：`HudOverlayApi`、`HudOverlayContext`、`HudOverlayLayer`、`HudOverlayLayout`
+- 准心图标 / 准心下方小进度条：`CrosshairHudApi`
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
@@ -265,6 +266,7 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 ## 客户端与 mixin
 
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
+- 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，不要 mixin `CrosshairRenderer`。
 - 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
 - 枪击、左轮反火、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `DeathApi`。
@@ -274,15 +276,17 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 
 ## HUD 接入
 
-Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\hud` 和 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\gui\RoleNameHudApi.java`。NoellesRoles 只是调用这些 API，当前工程自己的接入代码在 `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\hud` 和各职业 `client/roles/<role>` 包里。
+Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\hud`、`D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\gui\RoleNameHudApi.java` 和 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\gui\CrosshairHudApi.java`。NoellesRoles 只是调用这些 API，当前工程自己的接入代码在 `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\hud`、`client/crosshair` 和各职业 `client/roles/<role>` 包里。
 
 - 新职业普通右下角状态新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>StatusHud.java`。
 - 新词条固定屏幕 HUD 新建 `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/<ModifierName>Hud.java`。
 - 在 `NoellesHudHandlers.register()` 里调用该类的 `register()`，不要把职业/词条状态判定塞回总类。
+- 新职业准心图标新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>Crosshair.java`，在 `NoellesCrosshairHandlers.register()` 里调用该类的 `register()`。
 - 职业独占 HUD 优先用 `NoellesHudSupport.registerAliveRole("roles/<role>/status", NoellesRoleRegistry.MY_ROLE, renderer)`。这个 helper 会同时检查职业和 Wathe 的 `GameFunctions.isPlayerAliveAndSurvival(...)`，死亡、旁观、创造和非局内状态不会继续显示 HUD。
 - 不是职业独占、但仍只应给活人看的 HUD，例如被附体者、被绑架者、开局安全、停电提示、狙击镜遮罩，用 `HudOverlayApi.register(...)`，并在 provider 内显式判断 `context.aliveAndSurvival()`。
 - 常规状态文字用 `HudOverlayLayer.MAIN_HUD`；需要尽早盖画面的提示用 `BEFORE_HUD`；狙击镜这类最终遮罩用 `AFTER_HUD`，需要保留快捷栏时调用 `context.renderHotbar()`。
 - 准心目标旁边的信息、尸体死因/身份提示和魔术师播放体名字使用 `RoleNameHudApi`；非玩家实体名牌用 `registerEntityName(...)`，不要写 `RoleNameRenderer` mixin。
+- 替换 3x3 准心、武器命中高亮或准心下方 10x7 ready/progress 图标使用 `CrosshairHudApi.registerProvider(...)`；只追加默认准心后的短进度条使用 `registerOverlay(...)`。准心只是客户端提示，服务端仍要重新校验职业、存活、冷却、距离和目标合法性。
 - 已被 API 替代的 `*HudMixin`、`*ScreenMixin` 和旧 RoleNameRenderer mixin 不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 背包按钮接入
@@ -374,7 +378,7 @@ StupidExpress 当前按用户说明使用本机 `gradle build`。StarryExpress �
 数值常量：
 商店/经济：
 新增物品/实体/资源：
-HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`，准心提示优先走 `RoleNameHudApi`
+HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`，准心图标优先走 `CrosshairHudApi`，准心名字/目标文字优先走 `RoleNameHudApi`
 时停者回溯快照：新增 CCA / 世界 / 实体运行态是否需要加入 `TimekeeperSnapshots`
 时间狭缝胜利收束：独立胜利 / 共胜 / KEEP_RUNNING 阻拦规则是否需要加入 `TimekeeperRiftHandler`
 回放/死亡/胜利：
