@@ -4,6 +4,7 @@ import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -49,6 +50,9 @@ public final class ConvenerSummonHandler {
                 return ActionResult.PASS;
             }
             if (!(entity instanceof PlayerBodyEntity body)) {
+                return ActionResult.PASS;
+            }
+            if (!TargetVisibilityApi.canInteractWithBody(convener, body)) {
                 return ActionResult.PASS;
             }
 

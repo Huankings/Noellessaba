@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.morphling;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -51,12 +52,15 @@ public final class MorphlingReagentCrosshair {
                 entity -> {
                     if (entity instanceof PlayerEntity targetPlayer) {
                         if (targetPlayer == player
-                                || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)) {
+                                || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                                || !TargetVisibilityApi.canTargetPlayer(player, targetPlayer)) {
                             return false;
                         }
                         return !hasSample || sampleUuid.map(uuid -> !uuid.equals(targetPlayer.getUuid())).orElse(true);
                     }
-                    return !hasSample && entity instanceof PlayerBodyEntity;
+                    return !hasSample
+                            && entity instanceof PlayerBodyEntity body
+                            && TargetVisibilityApi.canTargetBody(player, body);
                 },
                 MorphlingConstants.REAGENT_TARGET_RANGE
         ) instanceof EntityHitResult;

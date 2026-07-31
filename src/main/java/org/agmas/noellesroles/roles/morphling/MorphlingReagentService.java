@@ -2,6 +2,7 @@ package org.agmas.noellesroles.roles.morphling;
 
 import com.mojang.authlib.GameProfile;
 import dev.doctor4t.wathe.api.Role;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -245,6 +246,10 @@ public final class MorphlingReagentService {
             return new SampleData(playerTarget.getUuid(), playerTarget.getGameProfile().getName());
         }
         if (target instanceof PlayerBodyEntity body) {
+            if (!TargetVisibilityApi.canInteractWithBody(morphling, body)) {
+                return new SampleData(morphling.getUuid(), morphling.getGameProfile().getName());
+            }
+
             /*
              * 按 SparkStrength66 规则，采样尸体时读取尸体真实 owner，
              * 不读取 appearanceUuid。这样被其它伪装改过外观的尸体不会把伪装目标继续套进试剂样本。
@@ -267,7 +272,7 @@ public final class MorphlingReagentService {
         HitResult hitResult = ProjectileUtil.getCollision(
                 morphling,
                 entity -> (entity instanceof ServerPlayerEntity target && isValidLivingTarget(morphling, target))
-                        || entity instanceof PlayerBodyEntity,
+                        || (entity instanceof PlayerBodyEntity body && TargetVisibilityApi.canTargetBody(morphling, body)),
                 MorphlingConstants.REAGENT_TARGET_RANGE
         );
         return hitResult instanceof EntityHitResult entityHitResult ? entityHitResult.getEntity() : null;
@@ -284,7 +289,8 @@ public final class MorphlingReagentService {
 
     private static boolean isValidLivingTarget(@NotNull ServerPlayerEntity morphling, @NotNull ServerPlayerEntity target) {
         return target != morphling
-                && GameFunctions.isPlayerAliveAndSurvival(target);
+                && GameFunctions.isPlayerAliveAndSurvival(target)
+                && TargetVisibilityApi.canInteractWithPlayer(morphling, target);
     }
 
     private static void rewardSelfMorphKill(@NotNull ServerPlayerEntity victim, @Nullable ServerPlayerEntity killer) {

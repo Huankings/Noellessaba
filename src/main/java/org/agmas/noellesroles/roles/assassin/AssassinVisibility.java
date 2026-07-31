@@ -5,9 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class AssassinVisibility {
 
-    private static final Identifier PHYSICIAN_ROLE_ID = Identifier.of("kinswathe", "physician");
-
     private AssassinVisibility() {
     }
 
@@ -25,9 +21,9 @@ public final class AssassinVisibility {
      * 判断某个玩家是否属于“可以看见刺客隐藏尸体”的观察者。
      *
      * <p>规则按需求收敛为：</p>
-     * <p>1. 旁观者 / 创造模式始终可见；</p>
+     * <p>1. Wathe 统一定义的“旁观 / 创造非存活视角”可见；</p>
      * <p>2. 验尸官始终可见；</p>
-     * <p>3. 若加载了 KinsWathe，则医师可见；</p>
+     * <p>3. NoellesRoles 内的医师可见；</p>
      * <p>4. 其他无辜阵营玩家不可见；</p>
      * <p>5. 杀手、中立等非无辜阵营可见。</p>
      */
@@ -56,10 +52,6 @@ public final class AssassinVisibility {
         if (role == null) {
             return false;
         }
-        if (role == NoellesRoleRegistry.PHYSICIAN) {
-            return true;
-        }
-        return FabricLoader.getInstance().isModLoaded("kinswathe")
-                && PHYSICIAN_ROLE_ID.equals(role.identifier());
+        return role == NoellesRoleRegistry.PHYSICIAN;
     }
 }

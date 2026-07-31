@@ -22,7 +22,6 @@
     "roles.magician.MagicianSniperVisibleTargetMixin",
     "roles.phantom.PhantomRattatoulieMixin",
     "roles.vulture.VultureEatenBodyMixin",
-    "roles.assassin.AssassinBodyHideMixin",
     "roles.assassin.AssassinBayonetAttackClientMixin",
     "roles.controller.ControlledKeyBindingMixin",
     "roles.controller.ControlledMouseMixin",
@@ -66,7 +65,6 @@
     "requireAnnotations": true
   },
   "mixins": [
-    "roles.assassin.AssassinBodyCanHitMixin",
     "roles.bartender.DefenseVialViewMixin",
     "roles.rememberer.SniperRifleScopeFovMixin",
     "roles.rememberer.SniperRifleMovementSpeedMixin",

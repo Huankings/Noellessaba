@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
@@ -57,6 +58,9 @@ public final class NecromancerRevivalHandler {
                 return ActionResult.PASS;
             }
             if (!(entity instanceof PlayerBodyEntity body)) {
+                return ActionResult.PASS;
+            }
+            if (!TargetVisibilityApi.canInteractWithBody(necromancer, body)) {
                 return ActionResult.PASS;
             }
 

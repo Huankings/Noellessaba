@@ -45,6 +45,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperCommunicationManager;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.shop.NoellesRolesShopBootstrap;
 import org.agmas.noellesroles.tray.NoellesRolesTrayEffects;
+import org.agmas.noellesroles.visibility.NoellesTargetVisibilityHandlers;
 
 /**
  * NoellesRoles 的总启动编排器。
@@ -73,6 +74,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesTrayEffects.register();
         NoellesRolesBedEffects.register();
         NoellesBodyAppearanceHandlers.register();
+        NoellesTargetVisibilityHandlers.init();
         NoellesRolesReplayBootstrap.register();
         NoellesRolesPsychoBootstrap.init();
         TimekeeperCommunicationManager.init();

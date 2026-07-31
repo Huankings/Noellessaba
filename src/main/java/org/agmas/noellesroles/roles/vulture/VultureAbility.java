@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.client.gui.RoleAnnouncementTexts;
@@ -64,6 +65,10 @@ public final class VultureAbility {
         if (bodies.isEmpty()) return;
 
         PlayerBodyEntity body = bodies.getFirst();
+        if (!TargetVisibilityApi.canInteractWithBody(player, body)) {
+            return;
+        }
+
         BodyDeathReasonComponent deathReason = BodyDeathReasonComponent.KEY.get(body);
 
         // 尸体未被吞噬过

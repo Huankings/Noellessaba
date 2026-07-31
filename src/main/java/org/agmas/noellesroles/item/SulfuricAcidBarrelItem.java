@@ -3,6 +3,7 @@ package org.agmas.noellesroles.item;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -37,6 +38,10 @@ public class SulfuricAcidBarrelItem extends Item {
         }
 
         if (!player.getWorld().isClient && entity instanceof PlayerBodyEntity playerBody) {
+            if (!TargetVisibilityApi.canInteractWithBody(player, playerBody)) {
+                return ActionResult.PASS;
+            }
+
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 /*
                  * 回放里保存尸体归属者 UUID，而不是保存显示名。

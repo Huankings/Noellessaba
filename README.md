@@ -148,7 +148,7 @@
 - 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerDeathHandler` 在 DeathApi 流程里解除附体并结算目标连锁，客户端 mixin 负责输入与显示。
 - 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathHandler` 在真实死亡后补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
 - 强盗：`RobberGunHandler` 通过 Wathe `GunShotApi` 完整接管强盗手枪开火，命中后按目标阵营决定保留、掉左轮或消失；`RobberShopHandler` 改写默认杀手商店，`RobberRoleAssignedHandler` 开局发强盗手枪和撬棍。
-- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinBodySpawnHandler` 实现无声刺杀、击退和隐藏尸体；`AssassinGunHandler` 通过 `GunShotApi` 接管无声左轮，`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
+- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinBodySpawnHandler` 实现无声刺杀、击退和隐藏尸体；隐藏尸体的渲染、准心不可选中和服务端交互拦截通过 `AssassinTargetVisibilityHandler` 接入 Wathe `TargetVisibilityApi`；`AssassinGunHandler` 通过 `GunShotApi` 接管无声左轮，`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
 - 变形怪：`MorphlingMorphAbility` 和 `MorphlingPlayerComponent` 负责变形成任意存活玩家、变形时长和冷却，选人包复用统一的 `MorphC2SPacket`。
 - 魔术师：先录一段玩家操作，再用播放实体重放；`MagicianPlayerComponent` 存录像，`MagicianPlaybackManager`、`MagicianPlaybackEntity`、`MagicianServerHooks` 执行回放，`MagicianGunHandler` 通过 `GunShotApi` 记录枪击，`MagicianPlaybackDeathHandler` 通过 `DeathApi` 改写播放体击杀归属，其余动作记录 mixin 负责刀、手雷和交互时间线。
 - 交换者：`SwapperC2SPacket` 加 `SwapperAbility` 先选两人，再按随机延迟交换位置，执行结果也会写回放。
@@ -304,7 +304,8 @@ NoellesRoles 侧接入入口：
 - `roles/controller/ControllerDeathHandler.java`：附体死亡连锁。
 - `roles/voodoo/VoodooDeathHandler.java`：巫毒死亡连锁。
 - `roles/coroner/CoronerBodySpawnHandler.java`：尸体死因数据。
-- `roles/assassin/AssassinBodySpawnHandler.java`：刺客隐藏尸体。
+- `roles/assassin/AssassinBodySpawnHandler.java`：刺客隐藏尸体登记。
+- `roles/assassin/AssassinTargetVisibilityHandler.java`：刺客隐藏尸体的渲染、准心选中和服务端交互拦截。
 
 优先级按 Wathe `DeathApi` 的常量表达：重复死亡保护最高，其次是特殊存活保护、死亡流程状态、回放上下文、致死确认前拦截、普通逻辑、确认死亡后的奖励 / 二段机制、最终清理。priority 越大越先执行；同 priority 后注册的规则先执行。handler 返回 `PASS` 或不处理时继续往下走，只有明确 `CANCEL`、`ALLOW`、`DENY` 或 `HANDLED` 才终止对应链路。
 
@@ -356,7 +357,7 @@ NoellesInventoryButtonSupport.PagedExtension<MyRolePlayerWidget>
 
 需要动态增删列表时参考 `ConvenerInventoryButtons`：每 tick 比较目标 UUID 列表，变化后重建同一个 group。需要文本输入阶段禁止按 E 关背包时，在自己的 `InventoryButtonExtension.allowInventoryKeyClose(...)` 返回 `false`，并在 `close(...)` 里清掉静态输入状态。
 
-旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD、准心图标和准心名字也已经有 Wathe `HudOverlayApi` / `CrosshairHudApi` / `RoleNameHudApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
+旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD、准心图标、准心名字以及玩家 / 尸体隐藏已经有 Wathe `HudOverlayApi` / `CrosshairHudApi` / `RoleNameHudApi` / `TargetVisibilityApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
 
 ## HUD 接入方式
 

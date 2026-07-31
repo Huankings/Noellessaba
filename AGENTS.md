@@ -103,6 +103,7 @@
 - 通用屏幕 HUD：`HudOverlayApi`、`HudOverlayContext`、`HudOverlayLayer`、`HudOverlayLayout`
 - 准心图标 / 准心下方小进度条：`CrosshairHudApi`
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
+- 玩家 / 尸体隐藏、不可选中和不可交互：`TargetVisibilityApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
@@ -287,6 +288,7 @@ Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\
 - 常规状态文字用 `HudOverlayLayer.MAIN_HUD`；需要尽早盖画面的提示用 `BEFORE_HUD`；狙击镜这类最终遮罩用 `AFTER_HUD`，需要保留快捷栏时调用 `context.renderHotbar()`。
 - 准心目标旁边的信息、尸体死因/身份提示和魔术师播放体名字使用 `RoleNameHudApi`；非玩家实体名牌用 `registerEntityName(...)`，不要写 `RoleNameRenderer` mixin。
 - 替换 3x3 准心、武器命中高亮或准心下方 10x7 ready/progress 图标使用 `CrosshairHudApi.registerProvider(...)`；只追加默认准心后的短进度条使用 `registerOverlay(...)`。准心只是客户端提示，服务端仍要重新校验职业、存活、冷却、距离和目标合法性。
+- 隐藏玩家或玩家尸体、让其不可被准心选中 / 不可被职业道具交互时，优先在对应职业包注册 `TargetVisibilityApi` 规则，并在 `visibility/NoellesTargetVisibilityHandlers` 中调用。不要再新增 `PlayerBodyEntityRenderer`、`LivingEntity#canHit`、`RoleNameRenderer` 或 `CrosshairRenderer` 的隐藏类 mixin。
 - 已被 API 替代的 `*HudMixin`、`*ScreenMixin` 和旧 RoleNameRenderer mixin 不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 背包按钮接入
