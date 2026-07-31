@@ -3,7 +3,6 @@ package org.agmas.noellesroles.roles.jester;
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -23,8 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class JesterPsychoHandler {
     public static final Identifier PROFILE_ID = NoellesRolesCore.id("jester_psycho");
-    private static final int JESTER_PSYCHO_DURATION_TICKS = GameConstants.getInTicks(0, 48);
-    public static final int JESTER_INVULNERABLE_END_TICKS = GameConstants.getInTicks(0, 44);
+    public static final int JESTER_INVULNERABLE_END_TICKS = JesterConstants.INVULNERABLE_END_TICKS;
 
     private JesterPsychoHandler() {
     }
@@ -32,14 +30,47 @@ public final class JesterPsychoHandler {
     public static void init() {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.jester")
-                .durationTicks(JESTER_PSYCHO_DURATION_TICKS)
-                .armour(1)
+                .durationTicks(JesterConstants.PSYCHO_DURATION_TICKS)
+                /*
+                 * 注册表里的 profile 保存“只有 1 个杀手时”的默认护盾。
+                 * 真正启动疯魔时还会经过下面的 start profile provider，
+                 * 根据本局杀手数量临时复制同 id profile 并替换 armour。
+                 * 这样 Wathe 仍然只看到 noellesroles:jester_psycho 这一个稳定 profile id，
+                 * 回放、皮肤、临时球棒标记和客户端图标都不会因为护盾层数不同而分叉。
+                 */
+                .armour(JesterConstants.INITIAL_PSYCHO_SHIELD_LAYERS)
                 .build();
         PsychoModeApi.registerProfile(profile);
+
+        PsychoModeApi.registerStartProfileProvider(NoellesRolesCore.id("jester/dynamic_psycho_shields"), PsychoModeApi.DEFAULT_PRIORITY + 100, (player, requestedProfile) -> {
+            if (!requestedProfile.id().equals(PROFILE_ID)) {
+                return null;
+            }
+
+            /*
+             * 狂信者护盾在“疯魔真正启动的那一刻”读取杀手人数。
+             * 不能提前在 init() 里写死，因为 init() 发生在服务器启动阶段，
+             * 那时还不知道这一局到底有几个杀手位。
+             */
+            int shieldLayers = JesterConstants.getPsychoShieldLayers(player);
+            return PsychoModeProfile.copyOf(requestedProfile, PROFILE_ID)
+                    .armour(shieldLayers)
+                    .build();
+        });
     }
 
     public static boolean tryTriggerFromDeath(PlayerEntity victim, @Nullable PlayerEntity killer) {
         if (killer == null) {
+            return false;
+        }
+
+        /*
+         * 狂信者疯魔触发总开关。
+         * 当常量配置为 false 时，这里直接放弃启动 profile；
+         * JesterDeathProtectionHandler 会继续向后返回 true，Wathe/Noelles 的普通死亡流程
+         * 就会照常杀死狂信者，而不会再取消死亡事件。
+         */
+        if (!JesterConstants.TRIGGER_PSYCHO_WHEN_KILLED_BY_INNOCENT) {
             return false;
         }
 

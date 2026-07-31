@@ -19,6 +19,7 @@ import org.agmas.noellesroles.roles.arsonist.ArsonistConstants;
 import org.agmas.noellesroles.item.LighterItem;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
 import org.agmas.noellesroles.roles.cook.CookConstants;
+import org.agmas.noellesroles.roles.dreamer.DreamerConstants;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
@@ -266,7 +267,8 @@ public class ModItems {
     );
     //梦之印记
     public static final Item DREAM_IMPRINT = register(
-            new DreamImprintItem(new Item.Settings().maxCount(4)),
+            // 梦者最多只能动态拿到 3 个梦之印记；堆叠上限也跟随常量，避免创造栏/其它交付入口出现 4 个一组的旧上限。
+            new DreamImprintItem(new Item.Settings().maxCount(DreamerConstants.MAX_DREAM_IMPRINT_COUNT)),
             "dream_imprint"
     );
     //医疗箱
