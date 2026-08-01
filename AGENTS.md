@@ -55,6 +55,7 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPsychoBootstrap.java`：疯魔 API 接入分发器，只调用各职业自己的 `*PsychoHandler.init()`。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMoodTaskBootstrap.java`：Wathe 心情任务 API 接入分发器，只调用各职业 / 词条自己的 `*MoodTaskHandler.init()`。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`：Harpy 静态角色上限初始化；人数相关动态上限在 `NoellesRolesEventBootstrap`。
 - `src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
 - `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldComponent.java`：时停者世界级快照历史、回溯播放游标、保护名单。
@@ -96,6 +97,8 @@
 
 - 商店：`ShopApi.registerRoleShop`、`ShopApi.registerShopModifier`
 - 金币 HUD / 被动收入：`EconomyApi`
+- 心情任务注册、指定发放、完成拦截：`MoodTaskApi`
+- 心情任务点透视：`MoodTaskPointApi`
 - 任务收入和任务完成后效果：`TaskCompletionApi`
 - 回放：`GameRecordManager` + `ReplayRegistry`
 - 本能透视：`InstinctApi`
@@ -263,6 +266,9 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 需要金币 HUD 的非杀手职业，注册 `EconomyApi.registerBalanceHudRole(role)`。
 - 需要普通被动收入，注册 `EconomyApi.registerPassiveIncomeRole(role)`。
 - 任务金币走 `TaskCompletionApi.registerTaskIncomeProvider`；需要“任务完成后的特殊效果”走 `TaskCompletionApi.AFTER_TASK_COMPLETE`。
+- 需要“任务完成但跳过 Wathe 默认收入”的窄场景，例如服务员帮别人完成任务，用 `TaskCompletionApi.registerTaskIncomeRule(...)`，不要再 mixin `TaskCompletionApi`。
+- 需要阻止任务完成确认的职业状态，例如灵术师附身，用 `MoodTaskApi.registerCompletionRule(...)`，不要再 mixin `PlayerMoodComponent#completeTask(...)`。
+- 新增 Noelles 自定义心情任务时，按职业或词条拆到 `roles/<role>/<RoleName>MoodTaskHandler` 或 `modifiers/<modifier>/*MoodTaskHandler`，再由 `NoellesRolesMoodTaskBootstrap` 聚合调用；不要塞进总入口或经济 bootstrap。
 
 ## 客户端与 mixin
 

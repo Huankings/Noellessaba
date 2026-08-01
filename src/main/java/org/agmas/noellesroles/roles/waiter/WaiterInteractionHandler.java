@@ -2,12 +2,13 @@ package org.agmas.noellesroles.roles.waiter;
 
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import dev.doctor4t.wathe.api.tray.TrayEffectHandler;
 import dev.doctor4t.wathe.api.tray.TrayEffectRegistry;
+import dev.doctor4t.wathe.api.task.MoodTaskApi;
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -40,7 +41,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import org.agmas.noellesroles.mixin.roles.waiter.PlayerMoodComponentAccessor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -59,8 +59,9 @@ import java.util.UUID;
 public final class WaiterInteractionHandler {
     /*
      * 服务员“帮别人完成任务”时，目标玩家不能因为这次交互额外拿任务收入金币。
-     * Wathe 的任务完成入口会统一发钱，所以这里用 ThreadLocal 临时标记“这一帧这个玩家的这个任务要跳过收入”；
-     * WaiterTaskIncomeMixin 会在 TaskCompletionApi.handleTaskCompleted 的 HEAD 读取并取消默认收入流程。
+     * Wathe 的任务完成入口会统一发钱，所以这里用 ThreadLocal 临时标记“这一帧这个玩家的这个任务要跳过收入”。
+     * 旧版靠 WaiterTaskIncomeMixin 拦截 TaskCompletionApi；现在改为注册 Wathe 公开的收入规则，
+     * 不再依赖 TaskCompletionApi 的私有执行顺序或 PlayerMoodComponent 私有方法 invoker。
      */
     private static final ThreadLocal<Set<SuppressedTaskIncome>> SUPPRESSED_TASK_INCOME =
             ThreadLocal.withInitial(HashSet::new);
@@ -78,6 +79,18 @@ public final class WaiterInteractionHandler {
         // 任意玩家完成心情任务都会短暂暴露给服务员；客户端再判断观看者是不是服务员。
         TaskCompletionApi.AFTER_TASK_COMPLETE.register(context ->
                 WaiterPlayerComponent.KEY.get(context.player()).revealToWaiters()
+        );
+
+        /*
+         * 服务员帮别人完成任务时，目标仍会正常触发 AFTER_TASK_COMPLETE，
+         * 但 Wathe 默认任务收入会被这里跳过；服务员自己的 25 金币在服务成功后单独发放。
+         */
+        TaskCompletionApi.registerTaskIncomeRule(
+                NoellesRolesCore.id("waiter/suppress_served_task_income"),
+                TaskCompletionApi.DEFAULT_PRIORITY + 100,
+                context -> shouldSuppressServedTaskIncome(context.player(), context.taskId())
+                        ? TaskCompletionApi.TaskIncomeDecision.SUPPRESS_DEFAULT_INCOME
+                        : TaskCompletionApi.TaskIncomeDecision.PASS
         );
 
         /*
@@ -130,7 +143,7 @@ public final class WaiterInteractionHandler {
         });
     }
 
-    public static boolean shouldSuppressServedTaskIncome(ServerPlayerEntity player, PlayerMoodComponent.Task task) {
+    public static boolean shouldSuppressServedTaskIncome(ServerPlayerEntity player, Identifier task) {
         // 只消费一次标记，避免同一个玩家之后自然完成同类任务时也被错误免收入。
         Set<SuppressedTaskIncome> suppressed = SUPPRESSED_TASK_INCOME.get();
         boolean removed = suppressed.remove(new SuppressedTaskIncome(player.getUuid(), task));
@@ -194,7 +207,10 @@ public final class WaiterInteractionHandler {
          * 回放、试剂、毒药都必须读取“成功递予的那一份”自己的 NBT/组件，不能在 decrement 后再从手上取。
          */
         ItemStack replaySnapshot = stack.copy();
-        completeTask(target, serviceType.task(), true);
+        if (!completeTask(target, serviceType.task(), true)) {
+            sendFailure(waiter, target, serviceType.failureTranslationKey());
+            return true;
+        }
         applyDeliveredStackEffects(target, replaySnapshot, serviceType);
         if (serviceType == WaiterServiceItems.ServiceType.SLEEPING_BAG) {
             blind(target);
@@ -236,7 +252,10 @@ public final class WaiterInteractionHandler {
     ) {
         ItemStack replaySnapshot = stack.copy();
         // 自己满足自己的任务不抑制任务收入，仍按 Noelles 规则由 TaskCompletionApi 发 50 金币。
-        completeTask(waiter, serviceType.task(), false);
+        if (!completeTask(waiter, serviceType.task(), false)) {
+            sendFailure(waiter, waiter, serviceType.failureTranslationKey());
+            return true;
+        }
         if (serviceType == WaiterServiceItems.ServiceType.SLEEPING_BAG) {
             blind(waiter);
         }
@@ -268,21 +287,23 @@ public final class WaiterInteractionHandler {
         return null;
     }
 
-    private static boolean hasTask(ServerPlayerEntity player, PlayerMoodComponent.Task task) {
-        return PlayerMoodComponent.KEY.get(player).tasks.containsKey(task);
+    private static boolean hasTask(ServerPlayerEntity player, Identifier task) {
+        return MoodTaskApi.hasTask(player, task);
     }
 
-    private static void completeTask(ServerPlayerEntity player, PlayerMoodComponent.Task task, boolean suppressIncome) {
+    private static boolean completeTask(ServerPlayerEntity player, Identifier task, boolean suppressIncome) {
         /*
-         * PlayerMoodComponent#completeTask 是 Wathe 私有方法，这里通过 mixin invoker 调用，
-         * 可以完整走 Wathe 的任务移除、心情回复、任务完成 API 和同步流程。
+         * PlayerMoodComponent#completeTask 已经由 Wathe 新开放的 MoodTaskApi 代理。
+         * 这里直接调用公开 API，完整走 Wathe 的任务移除、心情回复、任务完成事件、回放和同步流程。
+         * suppressIncome 只影响 TaskCompletionApi 的默认收入，不会取消 AFTER_TASK_COMPLETE。
          */
         if (suppressIncome) {
             SUPPRESSED_TASK_INCOME.get().add(new SuppressedTaskIncome(player.getUuid(), task));
         }
 
+        boolean completed;
         try {
-            ((PlayerMoodComponentAccessor) PlayerMoodComponent.KEY.get(player)).noellesroles$completeTask(task, true);
+            completed = MoodTaskApi.completeTask(player, task, true).success();
         } finally {
             if (suppressIncome) {
                 Set<SuppressedTaskIncome> suppressed = SUPPRESSED_TASK_INCOME.get();
@@ -293,8 +314,11 @@ public final class WaiterInteractionHandler {
             }
         }
 
-        // 服务员服务完成的任务也算“完成心情任务”，所以同样触发 4 秒可见。
-        WaiterPlayerComponent.KEY.get(player).revealToWaiters();
+        if (completed) {
+            // 服务员服务完成的任务也算“完成心情任务”，所以同样触发 4 秒可见。
+            WaiterPlayerComponent.KEY.get(player).revealToWaiters();
+        }
+        return completed;
     }
 
     private static void applyDeliveredStackEffects(
@@ -486,7 +510,7 @@ public final class WaiterInteractionHandler {
         return new EffectReplayInfo("effect." + trayEffectId.toString().replace(':', '.'), trayEffectId.getPath());
     }
 
-    private record SuppressedTaskIncome(UUID playerUuid, PlayerMoodComponent.Task task) {
+    private record SuppressedTaskIncome(UUID playerUuid, Identifier task) {
     }
 
     private record EffectReplayInfo(String translationKey, String fallback) {

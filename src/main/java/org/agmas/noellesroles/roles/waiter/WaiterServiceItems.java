@@ -1,12 +1,13 @@
 package org.agmas.noellesroles.roles.waiter;
 
 import dev.doctor4t.wathe.block.DrinkTrayBlock;
-import dev.doctor4t.wathe.cca.PlayerMoodComponent;
+import dev.doctor4t.wathe.api.task.MoodTaskApi;
 import dev.doctor4t.wathe.index.WatheBlocks;
 import dev.doctor4t.wathe.item.CocktailItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,18 +23,18 @@ public final class WaiterServiceItems {
 
     public enum ServiceType {
         // consumeType 会传给 Wathe 的托盘效果接口，保证试剂/毒药知道这次物品是以什么方式被消耗的。
-        COCKTAIL(PlayerMoodComponent.Task.DRINK, "task.drink", "message.noellesroles.waiter.fail.drink", "drink_cocktail", false, false),
-        FOOD(PlayerMoodComponent.Task.EAT, "task.eat", "message.noellesroles.waiter.fail.food", "eat_food", false, false),
-        POTION(PlayerMoodComponent.Task.POTION, "task.potion", "message.noellesroles.waiter.fail.potion", "drink_potion", false, false),
-        BAR_STOOL(PlayerMoodComponent.Task.SIT, "task.sit", "message.noellesroles.waiter.fail.bar_stool", "waiter_bar_stool", true, false),
-        FISHING_ROD(PlayerMoodComponent.Task.FISH, "task.fish", "message.noellesroles.waiter.fail.fishing_rod", "waiter_fishing_rod", false, false),
-        MUSIC_DISC(PlayerMoodComponent.Task.MUSIC, "task.music", "message.noellesroles.waiter.fail.music_disc", "waiter_music_disc", true, false),
-        CAMPFIRE(PlayerMoodComponent.Task.FIRE, "task.fire", "message.noellesroles.waiter.fail.campfire", "waiter_campfire", true, false),
-        SMOKER(PlayerMoodComponent.Task.COOK, "task.cook", "message.noellesroles.waiter.fail.smoker", "waiter_smoker", true, false),
-        SLEEPING_BAG(PlayerMoodComponent.Task.SLEEP, "task.sleep", "message.noellesroles.waiter.fail.sleeping_bag", "waiter_sleeping_bag", true, true),
-        BOOK(PlayerMoodComponent.Task.BOOK, "task.book", "message.noellesroles.waiter.fail.book", "waiter_book", true, true);
+        COCKTAIL(MoodTaskApi.DRINK, "task.drink", "message.noellesroles.waiter.fail.drink", "drink_cocktail", false, false),
+        FOOD(MoodTaskApi.EAT, "task.eat", "message.noellesroles.waiter.fail.food", "eat_food", false, false),
+        POTION(MoodTaskApi.POTION, "task.potion", "message.noellesroles.waiter.fail.potion", "drink_potion", false, false),
+        BAR_STOOL(MoodTaskApi.SIT, "task.sit", "message.noellesroles.waiter.fail.bar_stool", "waiter_bar_stool", true, false),
+        FISHING_ROD(MoodTaskApi.FISH, "task.fish", "message.noellesroles.waiter.fail.fishing_rod", "waiter_fishing_rod", false, false),
+        MUSIC_DISC(MoodTaskApi.MUSIC, "task.music", "message.noellesroles.waiter.fail.music_disc", "waiter_music_disc", true, false),
+        CAMPFIRE(MoodTaskApi.FIRE, "task.fire", "message.noellesroles.waiter.fail.campfire", "waiter_campfire", true, false),
+        SMOKER(MoodTaskApi.COOK, "task.cook", "message.noellesroles.waiter.fail.smoker", "waiter_smoker", true, false),
+        SLEEPING_BAG(MoodTaskApi.SLEEP, "task.sleep", "message.noellesroles.waiter.fail.sleeping_bag", "waiter_sleeping_bag", true, true),
+        BOOK(MoodTaskApi.BOOK, "task.book", "message.noellesroles.waiter.fail.book", "waiter_book", true, true);
 
-        private final PlayerMoodComponent.Task task;
+        private final Identifier task;
         private final String taskTranslationKey;
         private final String failureTranslationKey;
         private final String consumeType;
@@ -41,7 +42,7 @@ public final class WaiterServiceItems {
         private final boolean selfFallbackWhenTargetFails;
 
         /**
-         * @param task 对应 Wathe 的心情任务类型。
+         * @param task 对应 Wathe 注册式心情任务 id。
          * @param taskTranslationKey 回放里显示的任务 lang key，例如 task.drink。
          * @param failureTranslationKey 目标或自己没有对应任务时的 actionbar lang key。
          * @param consumeType 递予成功后传入 TrayEffectHandler#onConsume 的消费类型标识。
@@ -49,7 +50,7 @@ public final class WaiterServiceItems {
          * @param selfFallbackWhenTargetFails 是否允许“瞄准别人但对方没有任务”时回退为自用。
          */
         ServiceType(
-                PlayerMoodComponent.Task task,
+                Identifier task,
                 String taskTranslationKey,
                 String failureTranslationKey,
                 String consumeType,
@@ -64,7 +65,7 @@ public final class WaiterServiceItems {
             this.selfFallbackWhenTargetFails = selfFallbackWhenTargetFails;
         }
 
-        public PlayerMoodComponent.Task task() {
+        public Identifier task() {
             return this.task;
         }
 

@@ -10,11 +10,11 @@
   "shop.noellesroles.power_restoration_unavailable": "当前不是停电状态，无法购买",
   "shop.noellesroles.bayonet_refresh_unavailable": "刺刀当前不在冷却中，无法购买",
 
-  "announcement.goals.noellesroles.amnesiac": "从尸首上汲取回忆，继承其生前身份",
+  "announcement.goals.noellesroles.amnesiac": "从尸首汲取回忆，继承其生前身份",
   "announcement.role.noellesroles.amnesiac": "失忆患者",
   "hud.noellesroles.amnesiac.select_body": "与尸体交互，扮演其生前的角色",
 
-  "announcement.goals.noellesroles.initiate": "除掉同门即可晋升为杀手",
+  "announcement.goals.noellesroles.initiate": "除掉同门，晋升杀手",
   "announcement.role.noellesroles.initiate": "初学者",
   "announcement.title.noellesroles.initiate": "复仇心理",
   "death_reason.noellesroles.failed_initiation": "考核失败",
@@ -39,7 +39,7 @@
   "game.win.noellesroles.licensed_villain": "正义已得到伸张，以我的方式",
   "tip.noellesroles.licensed_villain.weapon": "执照恶棍已经获取了武器！",
 
-  "announcement.goals.noellesroles.arsonist": "将乘客浇上汽油，并在时机成熟时点燃他们",
+  "announcement.goals.noellesroles.arsonist": "泼上汽油，等待时机，点火焚烧",
   "announcement.role.noellesroles.arsonist": "纵火犯",
   "announcement.win.noellesroles.arsonist": "纵火犯胜利",
   "game.win.noellesroles.arsonist": "在火焰的焚烧中重获你们的新生",
@@ -63,14 +63,14 @@
   "hud.noellesroles.convener.tasks_to_next_shield": "当前需要完成 %s 个任务来获得一层护盾",
   "hud.noellesroles.convener.progress": "当前需要召集 %s/%s 人",
 
-  "announcement.goals.noellesroles.dreamer": "让你的世界变得不可思议！",
+  "announcement.goals.noellesroles.dreamer": "寻觅梦境，投喂试剂，我与杀手烙印记",
   "announcement.role.noellesroles.dreamer": "梦者",
   "tip.noellesroles.dreamer.imprint": "%s 与你烙下了印记",
   "tip.noellesroles.dreamer.disconnect": "烙印之人似乎与你而去了...",
   "tip.noellesroles.dreamer.counts": "已服用幻觉试剂的玩家 %s/%s",
   "tip.noellesroles.dreamer.fake_poisoned": "有人陷入了幻觉",
 
-  "announcement.goals.noellesroles.hacker": "试图辅助杀手破解平民的身份...",
+  "announcement.goals.noellesroles.hacker": "辅助杀手破解平民的身份",
   "announcement.role.noellesroles.hacker": "黑客",
   "hud.noellesroles.hacker.target": "正在破解角色身份",
   "hud.noellesroles.hacker.target_hacked": "角色身份已被破解",
@@ -79,10 +79,10 @@
   "tip.noellesroles.hacker.potion_effect_refresh": "黑客为你清除了药水状态",
   "tip.noellesroles.hacker.weapon_cooldown_refresh": "黑客为你刷新了武器冷却",
 
-  "announcement.goals.noellesroles.jester": "找到杀手并与其合作取得胜利。",
+  "announcement.goals.noellesroles.jester": "愚命捉弄，枪声放送，我与杀手共行动。",
   "announcement.role.noellesroles.jester": "狂信者",
 
-  "announcement.goals.noellesroles.morphling": "变成其他人的样子愚弄所有人。",
+  "announcement.goals.noellesroles.morphling": "变形能力，变形试剂，愚弄他人于天地",
   "announcement.role.noellesroles.morphling": "变形怪",
   "hud.noellesroles.morphling.ready": "变形已就绪",
   "hud.noellesroles.morphling.active": "变形中，剩余 %s 秒结束",
@@ -93,11 +93,11 @@
   "message.noellesroles.morphling.no_marks": "没有可触发的变形标记",
   "message.noellesroles.morphling.triggered": "已触发变形标记",
 
-  "announcement.goals.noellesroles.awesome_binglus": "获取最新的一手情报！",
+  "announcement.goals.noellesroles.awesome_binglus": "我们尊贵的13道具大人！",
   "announcement.role.noellesroles.awesome_binglus": "记者",
 
   "announcement.role.noellesroles.cook": "厨师",
-  "announcement.goals.noellesroles.cook": "透过墙壁看见吃过东西的玩家！",
+  "announcement.goals.noellesroles.cook": "制作食材，以锅保命",
 
   "announcement.role.noellesroles.drugmaker": "制毒师",
   "announcement.goals.noellesroles.drugmaker": "用毒药征服所有人！",
@@ -112,11 +112,11 @@
   "tip.noellesroles.kidnapper.release": "劫持已结束",
 
   "announcement.role.noellesroles.robot": "机器人",
-  "announcement.goals.noellesroles.robot": "毫无感情可言的机器。",
+  "announcement.goals.noellesroles.robot": "机械之躯，毫无感性。",
   "tip.noellesroles.robot.night_vision": "按下 %s 键发动夜视",
 
   "announcement.role.noellesroles.starstruck": "星界使者",
-  "announcement.goals.noellesroles.starstruck": "在关键时刻发挥你的真正实力",
+  "announcement.goals.noellesroles.starstruck": "万象天地，星界能力，刹那眼界透真谛",
   "tip.noellesroles.starstruck": "按下 %s 键使用星界能力",
 
   "announcement.role.noellesroles.muzzler": "静语者",
@@ -171,7 +171,7 @@
   "tip.noellesroles.cleaner.use": "按下 %s 键清理掉落物",
   "tip.noellesroles.cleaner.not_enough_money": "需要 %s§f\uE781§r 清理掉落物",
 
-  "announcement.goals.noellesroles.hunter": "尽情享受你的猎物！",
+  "announcement.goals.noellesroles.hunter": "奔跑并举刀，追赶你的猎物！",
   "announcement.role.noellesroles.hunter": "追猎者",
   "tip.noellesroles.hunter.use": "按下 %s 键刷新匕首猎刀冷却",
   "tip.noellesroles.hunter.not_enough_money": "需要 %s§f\uE781§r 刷新匕首猎刀冷却",
@@ -180,12 +180,12 @@
   "announcement.goals.noellesroles.bartender": "透过墙壁看见喝酒和中毒的玩家！",
   "announcement.role.noellesroles.bartender": "酒保",
 
-  "announcement.goals.noellesroles.bellringer": "查看时间，并修改时间。",
+  "announcement.goals.noellesroles.bellringer": "查看时间，并减少时间。",
   "announcement.role.noellesroles.bellringer": "敲钟人",
   "tip.noellesroles.bellringer.use": "按下 %s 键敲响时间之钟",
   "tip.noellesroles.bellringer.not_enough_money": "需要 %s§f\uE781§r 敲响时间之钟",
 
-  "announcement.goals.noellesroles.detective": "调查出一切！",
+  "announcement.goals.noellesroles.detective": "查明玩家身份！",
   "announcement.role.noellesroles.detective": "侦探",
   "tip.noellesroles.detective.use": "按下 %s 键进行调查",
   "tip.noellesroles.detective.not_enough_money": "需要 %s§f\uE781§r 来调查身份",
@@ -202,7 +202,7 @@
   "message.noellesroles.wind_mark.applied": "你烙印了%s",
   "message.noellesroles.wind_mark.exists": "%s的烙印还存在于此，请等待烙印消失",
 
-  "announcement.goals.noellesroles.magician": "上演一场绝妙的欺诈！",
+  "announcement.goals.noellesroles.magician": "录制，播放，上演玩偶欺诈！",
   "announcement.role.noellesroles.magician": "魔术师",
   "hud.noellesroles.magician.selected_target": "当前选择玩家:%s",
   "hud.noellesroles.magician.cooldown": "能力在 %s 秒后可用",
@@ -249,7 +249,7 @@
   "message.noellesroles.operator.broadcast_failed_dead": "你想让其广播的玩家貌似不在了...",
   "message.noellesroles.operator.chat_bridge": "<%s>%s",
 
-  "announcement.goals.noellesroles.phantom": "可以隐形，但要小心你还有碰撞体积。",
+  "announcement.goals.noellesroles.phantom": "化为虚幻的存在，但小心他们碰到你。",
   "announcement.role.noellesroles.phantom": "幻灵",
   "tip.phantom": "按下 %s 键来隐形！",
 
@@ -263,7 +263,7 @@
   "hud.physician.death_info": "死于 %s 秒前，死因是",
 
 
-  "announcement.goals.noellesroles.voodoo": "选择一名玩家，在你死时一起同归于尽。",
+  "announcement.goals.noellesroles.voodoo": "选择倒霉的玩家作为你死后的陪葬品。",
   "announcement.role.noellesroles.voodoo": "巫毒师",
   "hud.voodoo.player_deaths_only": "巫毒师的死亡必须由另一名玩家触发！",
 
@@ -352,7 +352,7 @@
   "message.noellesroles.angel.already_guarding": "你已经守护了该玩家",
   "message.noellesroles.angel.guardian_died": "%s 在守护你的过程中已先你而去...",
 
-  "announcement.goals.noellesroles.recaller": "传送到魔女岛的任意位置！",
+  "announcement.goals.noellesroles.recaller": "保存，传送，游走各个地方！",
   "announcement.role.noellesroles.recaller": "回溯者",
   "tip.recaller.place": "按下 %s 键来保存你的位置！",
   "tip.recaller.teleport": "按下 %s 键来传送至保存的位置！",
@@ -377,7 +377,7 @@
   "message.noellesroles.rememberer.recalled": "你追溯了 %s 的回忆",
   "book.noellesroles.rememberer.empty": "近三分钟内没有可追溯的主动行为记录",
 
-  "announcement.goals.noellesroles.waiter": "带给大家优质的服务！",
+  "announcement.goals.noellesroles.waiter": "携带双倍托盘之物，帮助玩家完成任务！",
   "announcement.role.noellesroles.waiter": "服务员",
   "message.noellesroles.waiter.serve": "你将%s递给了%s，%s的需求已满足！",
   "message.noellesroles.waiter.served": "%s将%s递给了你，需求已满足！",
@@ -396,7 +396,7 @@
 
   "announcement.goals.noellesroles.guesser": "猜测平民的角色以将其瞬间击杀。",
 
-  "announcement.goals.noellesroles.mimic": "在其他杀手眼中，你看起来像杀手同伙。但你是平民。",
+  "announcement.goals.noellesroles.mimic": "欺骗杀手的眼睛，帮助好人获得胜利",
   "announcement.role.noellesroles.mimic": "模仿者",
 
   "announcement.goals.noellesroles.better_vigilante": "呃——————",
@@ -714,7 +714,7 @@
   "replay.global.noellesroles.angel_guard_selected": "%s 选择守护了 %s",
   "replay.global.noellesroles.angel_guard_blocked_full": "%s 因为 %s 的守护而抵挡住了来自 %s 的 %s 伤害",
   "replay.global.noellesroles.angel_sacrifice": "%s 因为守护 %s 而献出了自己的生命",
-  "replay.global.noellesroles.waiter_serve": "%s将%s递予了%s，满足了%s“%s”需求",
+  "replay.global.noellesroles.waiter_serve": "%s将%s递予了%s，满足了%s的需求:%s",
   "replay.global.noellesroles.waiter_serve.effect": "%s将带有[%s]的%s递予了%s，满足了%s的需求:%s",
   "replay.global.noellesroles.waiter_self_use": "%s使用了%s，完成了%s任务",
   "replay.skill_use.noellesroles.hacker": "%s 破解了 %s 的身份",
