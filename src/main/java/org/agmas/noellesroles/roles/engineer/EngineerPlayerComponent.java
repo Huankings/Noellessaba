@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.engineer;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.blackout.BlackoutApi;
 import dev.doctor4t.wathe.cca.WorldBlackoutComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.index.WatheSounds;
@@ -14,11 +15,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.mixin.compat.WorldBlackoutComponentAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -61,10 +62,16 @@ public class EngineerPlayerComponent implements AutoSyncedComponent, ServerTicki
                 GameConstants.ITEM_COOLDOWNS.getOrDefault(ModItems.POWER_RESTORATION, 0)
         );
 
-        // reset() 只会恢复灯光与黑暗详情列表，不会清空内部 ticks。
-        // 这里通过 accessor 把剩余停电计时一并归零，确保“停电状态”真正结束。
-        blackoutComponent.reset();
-        ((WorldBlackoutComponentAccessor) blackoutComponent).noellesroles$setTicks(0);
+        /*
+         * Wathe 现在公开了 BlackoutApi.restorePower：
+         * 它会统一恢复灯光、清空停电时间线、同步客户端黑幕并清理 Wathe 自己发放的停电药水。
+         * 工程师不再需要通过 mixin 访问 WorldBlackoutComponent 的私有 ticks 字段。
+         */
+        if (player.getWorld() instanceof ServerWorld serverWorld) {
+            BlackoutApi.restorePower(serverWorld);
+        } else {
+            blackoutComponent.restorePower();
+        }
 
         MinecraftServer server = player.getWorld().getServer();
         if (server == null) {

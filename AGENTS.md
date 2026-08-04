@@ -56,6 +56,7 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPsychoBootstrap.java`：疯魔 API 接入分发器，只调用各职业自己的 `*PsychoHandler.init()`。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMoodTaskBootstrap.java`：Wathe 心情任务 API 接入分发器，只调用各职业 / 词条自己的 `*MoodTaskHandler.init()`。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesBlackoutBootstrap.java`：Wathe 停电 API 接入分发器，只放分组规则和各职业 `*BlackoutHandler.init()` 调用。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`：Harpy 静态角色上限初始化；人数相关动态上限在 `NoellesRolesEventBootstrap`。
 - `src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
 - `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldComponent.java`：时停者世界级快照历史、回溯播放游标、保护名单。
@@ -109,6 +110,7 @@
 - 玩家 / 尸体隐藏、不可选中和不可交互：`TargetVisibilityApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
+- 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
 - 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
 - 击杀/死亡分阶段流程、默认击杀奖励、尸体生成回调：`DeathApi`、`DeathContext`、`BodySpawnContext`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
@@ -130,6 +132,14 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - 疯魔皮肤采用“profile 默认皮肤 + 客户端 visual provider 按优先级覆盖”。职业需要特殊皮肤时，先在 profile 给默认值；临时状态覆盖再放客户端 provider。
 - 疯魔 Mood 显示采用 Wathe `MoodHudApi.registerPsychoStyle(...)`。职业要自定义完整/破损图标、跑马文本、文本颜色或倒计时条颜色时返回自己的 `PsychoMoodHudStyle`；Wathe 会按当前护盾是否大于 0 切换 body / hitBody，0 护盾 profile 从启动开始就应显示破损态。颜色 provider 可返回 `0xRRGGBB` 或 `0xAARRGGBB`。
 - 已被 Wathe API 覆盖的 mixin 不要重新加回：Jester 触发疯魔、BountyHunter 锁槽/防丢弃、Muzzler 静音、Rememberer 狙击穿盾都应走各职业 handler。
+
+### 停电 API 接入
+
+- 统一使用 Wathe `BlackoutApi`，不要再写 `WorldBlackoutComponentAccessor` 或客户端监听停电音效计时黑幕。
+- `NoellesRolesBlackoutBootstrap` 当前注册两个分组规则：`KILLER_SIDED_NEUTRALS` 获得停电夜视，`INDEPENDENT_NEUTRALS` 获得停电失明。
+- 工程师恢复供电调用 `BlackoutApi.restorePower(world)`；这个入口会恢复灯光、同步 Wathe 黑幕并清理 Wathe 自己发放的停电药水。
+- 后续具体职业或词条需要特殊停电规则时，按 `roles/<role>/<RoleName>BlackoutHandler` 或 `modifiers/<modifier>/*BlackoutHandler` 拆文件，再由 bootstrap 调用 `init()`。
+- 时停者快照恢复 `wathe:blackout` 世界组件即可；Wathe 组件 NBT 已包含 ticks、总时长、恢复事件标记、黑幕不透明度和药水开关，不要再额外 accessor 私有字段。
 
 ## 新职业开发流程
 

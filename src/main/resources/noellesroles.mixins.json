@@ -4,7 +4,6 @@
   "package": "org.agmas.noellesroles.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "compat.WorldBlackoutComponentAccessor",
     "DoNotCollideWithFeatherMixin",
     "modifiers.RoundModifierStateResetMixin",
     "modifiers.lovers.ForcedLoversAssignMixin",

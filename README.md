@@ -35,6 +35,7 @@
 - 服务端 packet 接收：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPacketReceivers.java`
 - 事件 / tick / 回合清理引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`
 - 经济 / 任务收入引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`
+- 停电机制引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesBlackoutBootstrap.java`
 - 回放 formatter 注册引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`
 - Harpy 角色上限引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`
 - 职业分配总引导：`src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
@@ -166,7 +167,7 @@
 
 - 典狱长：`ConductorRoleAssignedHandler` 开局发万能钥匙、开锁器和假左轮，`MasterKeyTrainDoorMixin`、`MasterKeySmallDoorMixin` 让钥匙能开火车上各种门，`ShouldDropOnDeath` 保证死亡掉落。
 - 记者：`AwesomeBinglusRoleAssignedHandler` 直接发 12 张纸条和撬棍，这是一个默认关闭的搞笑职业。
-- 工程师：`ToolboxItem` 负责修门，`CaptureDeviceItem` 负责定点拘束并生成报告，`PowerRestorationItem` 负责消除停电；`EngineerShopHandler` 把这三件东西接进商店。
+- 工程师：`ToolboxItem` 负责修门，`CaptureDeviceItem` 负责定点拘束并生成报告，`PowerRestorationItem` 通过 Wathe `BlackoutApi.restorePower` 消除停电；`EngineerShopHandler` 把这三件东西接进商店。
 - 酒保：`BartenderPlayerComponent` 追踪防御瓶充能和护甲，`BartenderDeathProtectionHandler` 把护甲当一次免死，`DefenseVialApplyMixin`、`PoisonToHealsMixin` 和 `CocktailItemMixin` 改酒和毒的处理。
 - 风灵师：`WinderPlayerComponent` 记录已选目标和漂浮状态，`WinderAbility` 开关漂浮，`WinderTargetAbility` 负责选人，`WindMarkPlayerComponent` 负责风印记，`WinderShopHandler` 卖风弹和风印。
 - 灵术师：`SpiritualistAbility` 一枚 G 键分出“出窍 / 附身 / 结束”几种行为，`SpiritualistPlayerComponent` 是主状态中心，`SpiritualistHostComponent` 保存被附身者状态，`SpiritualistManager` 负责控制输入、视角、回写背包、语音转发和结束冷却，`SpiritualistDeathProtectionHandler` 负责免死。
@@ -222,6 +223,7 @@
 - `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
 - `NoellesRolesShops.java` 负责支付、物品交付、特殊道具瞬发结算和购买回填。
 - `NoellesRolesEconomyBootstrap.java` 负责金币 HUD、任务收入、被动收入和经济类词条接入。
+- `NoellesRolesBlackoutBootstrap.java` 负责接入 Wathe `BlackoutApi`，当前把杀手侧中立注册为停电夜视、独立中立注册为停电失明；后续具体职业特殊规则要拆到对应 `roles/<role>/*BlackoutHandler` 再由这里调用。
 - `NoellesRolesTrayEffects.java` 和 `NoellesRolesBedEffects.java` 负责把炸弹、毒药、镇静等逻辑接进托盘和床。
 - `NoellesRolesReplayBootstrap.java` 负责把 NoellesRoles 的事件 id 注册到 Wathe 回放系统。
 - `NoellesRolesReplayFormatters.java` 负责把 NoellesRoles 的专属事件翻译成回放文本。
@@ -308,6 +310,27 @@ NoellesRoles 侧接入入口：
 - `roles/assassin/AssassinTargetVisibilityHandler.java`：刺客隐藏尸体的渲染、准心选中和服务端交互拦截。
 
 优先级按 Wathe `DeathApi` 的常量表达：重复死亡保护最高，其次是特殊存活保护、死亡流程状态、回放上下文、致死确认前拦截、普通逻辑、确认死亡后的奖励 / 二段机制、最终清理。priority 越大越先执行；同 priority 后注册的规则先执行。handler 返回 `PASS` 或不处理时继续往下走，只有明确 `CANCEL`、`ALLOW`、`DENY` 或 `HANDLED` 才终止对应链路。
+
+## 停电 API 接入方式
+
+Wathe 的停电黑幕、停电夜视/失明和恢复电力现在统一由 `dev.doctor4t.wathe.api.blackout.BlackoutApi` 管理。NoellesRoles 不再 mixin `WorldBlackoutComponent` 私有字段；时停者快照只恢复 `wathe:blackout` 世界组件 NBT，组件里已经包含完整倒计时和配置。
+
+当前 Noelles 接入入口是：
+
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesBlackoutBootstrap.java`
+
+已有规则：
+
+- `NoellesRoleGroups.KILLER_SIDED_NEUTRALS` 停电期间获得夜视。
+- `NoellesRoleGroups.INDEPENDENT_NEUTRALS` 停电期间获得失明。
+
+新增职业如果要改变停电效果或时长，不要把逻辑直接写进大 bootstrap。按职业新建：
+
+```text
+src/main/java/org/agmas/noellesroles/roles/my_role/MyRoleBlackoutHandler.java
+```
+
+然后在 `NoellesRolesBlackoutBootstrap.init()` 里调用 `MyRoleBlackoutHandler.init()`。工程师这类“恢复供电”技能直接调用 `BlackoutApi.restorePower(world)`。
 
 ## 背包按钮接入方式
 

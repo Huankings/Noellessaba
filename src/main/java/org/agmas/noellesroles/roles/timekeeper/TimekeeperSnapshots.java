@@ -33,7 +33,6 @@ import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.death.DeathProcessComponent;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
-import org.agmas.noellesroles.mixin.compat.WorldBlackoutComponentAccessor;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownEntryAccessor;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownManagerAccessor;
 import org.agmas.noellesroles.modifiers.allergic.AllergicPlayerComponent;
@@ -218,7 +217,6 @@ public final class TimekeeperSnapshots {
     public static final class GlobalSnapshot {
         private final long worldTime;
         private final Map<String, NbtCompound> worldComponents = new LinkedHashMap<>();
-        private final int blackoutTicks;
         private final Map<UUID, PlayerSnapshot> players = new HashMap<>();
         private final Map<UUID, NbtCompound> bodyEntityData = new HashMap<>();
         private final Map<UUID, NbtCompound> itemEntityData = new HashMap<>();
@@ -231,7 +229,6 @@ public final class TimekeeperSnapshots {
             for (ComponentEntry entry : WORLD_COMPONENTS) {
                 this.worldComponents.put(entry.id(), captureComponent(entry.key(), world, registryLookup));
             }
-            this.blackoutTicks = ((WorldBlackoutComponentAccessor) (Object) WorldBlackoutComponent.KEY.get(world)).noellesroles$getTicks();
             this.worldStateSnapshot = TimekeeperWorldStateSnapshot.capture(world);
 
             for (ServerPlayerEntity player : world.getPlayers()) {
@@ -255,7 +252,6 @@ public final class TimekeeperSnapshots {
 
         private GlobalSnapshot(@NotNull GlobalSnapshot other) {
             this.worldTime = other.worldTime;
-            this.blackoutTicks = other.blackoutTicks;
             this.worldStateSnapshot = new TimekeeperWorldStateSnapshot(other.worldStateSnapshot);
             copyNbtMap(other.worldComponents, this.worldComponents);
             copyPlayerMap(other.players, this.players);
@@ -286,9 +282,6 @@ public final class TimekeeperSnapshots {
                     restoreComponent(entry.key(), world, data, registryLookup);
                 }
             }
-            WorldBlackoutComponent blackout = WorldBlackoutComponent.KEY.get(world);
-            ((WorldBlackoutComponentAccessor) (Object) blackout).noellesroles$setTicks(this.blackoutTicks);
-            WorldBlackoutComponent.KEY.sync(world);
 
             this.worldStateSnapshot.restore(world);
             restoreBodyEntities(world);
