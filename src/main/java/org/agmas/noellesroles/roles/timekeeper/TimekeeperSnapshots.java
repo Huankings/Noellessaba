@@ -361,6 +361,9 @@ public final class TimekeeperSnapshots {
         private final boolean aliveAndSurvival;
         private final GameMode gameMode;
         private final boolean aliveOverride;
+        private final boolean invisible;
+        private final boolean noGravity;
+        private final boolean noClip;
         private final Vec3d position;
         private final Vec3d velocity;
         private final float yaw;
@@ -386,6 +389,9 @@ public final class TimekeeperSnapshots {
             NbtCompound lifeStateData = captureComponent(PlayerLifeStateComponent.KEY, player, registryLookup);
             this.aliveOverride = lifeStateData.getBoolean(ALIVE_IN_NON_SURVIVAL_MODE_KEY);
 
+            this.invisible = player.isInvisible();
+            this.noGravity = player.hasNoGravity();
+            this.noClip = player.noClip;
             this.position = player.getPos();
             this.velocity = player.getVelocity();
             this.yaw = player.getYaw();
@@ -411,6 +417,9 @@ public final class TimekeeperSnapshots {
             this.aliveAndSurvival = other.aliveAndSurvival;
             this.gameMode = other.gameMode;
             this.aliveOverride = other.aliveOverride;
+            this.invisible = other.invisible;
+            this.noGravity = other.noGravity;
+            this.noClip = other.noClip;
             this.position = other.position;
             this.velocity = other.velocity;
             this.yaw = other.yaw;
@@ -462,6 +471,16 @@ public final class TimekeeperSnapshots {
             player.teleport(player.getServerWorld(), this.position.x, this.position.y, this.position.z, this.yaw, this.pitch);
             player.setVelocity(this.velocity);
             player.velocityModified = true;
+            /*
+             * 恢复玩家实体底层 flag。
+             *
+             * 灵术师附身会直接使用 setInvisible/noGravity/noClip 把本体变成隐藏空气壳；
+             * 这些标记不属于状态效果，也不会随组件 NBT 自动回滚。若不在快照里恢复，
+             * 回溯到附身前的时间点时，组件可能已经是 NORMAL，本体却仍保留未来时间线的隐身标记。
+             */
+            player.setInvisible(this.invisible);
+            player.setNoGravity(this.noGravity);
+            player.noClip = this.noClip;
             player.setHealth(Math.max(1.0F, this.health));
             player.setAbsorptionAmount(this.absorption);
             player.setFireTicks(this.fireTicks);
@@ -486,6 +505,13 @@ public final class TimekeeperSnapshots {
                     restoreComponent(entry.key(), player, data, registryLookup);
                 }
             }
+
+            /*
+             * 组件和实体 flag 都恢复后，再让灵术师本体状态做一次收口。
+             * 这一步只处理灵术师自己的“空气壳运行期缓存”，避免回溯绕过 finishPossession 后，
+             * invisible/noClip 或缓存标记滞留在错误时间点。
+             */
+            SpiritualistPlayerComponent.KEY.get(player).reconcileDetachedBodyShellAfterSnapshotRestore();
 
             /*
              * 回溯到玩家仍活着的快照时，时间狭缝中的死者应被拉回正常游戏。

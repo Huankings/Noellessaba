@@ -52,6 +52,8 @@
     "roles.spiritualist.SpiritualistReseterMixin",
     "roles.spiritualist.SpiritualistProjectionDamageMixin",
     "roles.spiritualist.SpiritualistBodyCollisionMixin",
+    "roles.spiritualist.SpiritualistEntityCollisionViewMixin",
+    "roles.spiritualist.SpiritualistLivingEntityPushMixin",
     "roles.spiritualist.SpiritualistPossessedMovementBlockMixin",
     "roles.spiritualist.SpiritualistPossessedClientCommandBlockMixin",
     "roles.spiritualist.PlayerEntityPoseInvoker",

@@ -203,6 +203,28 @@ public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerT
         return this.state != SpiritualistState.NORMAL;
     }
 
+    /**
+     * 时停者快照恢复后，对齐灵术师本体的实体标记和运行期缓存。
+     *
+     * <p>时间回溯不是“正常结束附身”，它会直接把组件 NBT 和玩家基础状态恢复到目标时间点。
+     * 因此这里不能依赖 {@link #finishPossession(boolean)} 自动收尾，而要在快照恢复完成后明确对齐一次：</p>
+     * <p>1. 目标快照仍处于附身：继续把本体维持成隐藏空气壳；</p>
+     * <p>2. 目标快照不是附身：快照已经恢复了 {@code invisible/noGravity/noClip}，
+     *    这里只清理“空气壳已应用”的内部缓存，避免下一次附身或结束附身读到旧时间线的备份。</p>
+     */
+    public void reconcileDetachedBodyShellAfterSnapshotRestore() {
+        if (this.player.getWorld().isClient) {
+            return;
+        }
+
+        if (this.isPossessing()) {
+            applyDetachedBodyShellState();
+            return;
+        }
+
+        clearDetachedBodyShellBookkeeping();
+    }
+
     public void startProjection() {
         rememberCurrentBodyAnchor();
         this.state = SpiritualistState.PROJECTING;
@@ -503,6 +525,10 @@ public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerT
         this.player.setVelocity(Vec3d.ZERO);
         this.player.fallDistance = 0.0f;
 
+        clearDetachedBodyShellBookkeeping();
+    }
+
+    private void clearDetachedBodyShellBookkeeping() {
         this.detachedBodyShellApplied = false;
         this.savedDetachedBodyInvisible = false;
         this.savedDetachedBodyNoGravity = false;
@@ -530,6 +556,12 @@ public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerT
         }
 
         if (this.state == SpiritualistState.NORMAL) {
+            /*
+             * 正常路径会在 finishPossession/reset 里恢复空气壳。
+             * 这里是给时间回溯、外部组件恢复等“直接把 state 改回 NORMAL”的路径兜底：
+             * 只要运行期还记着本体曾经被隐藏，就立刻恢复实体标记，避免隐身/noClip 残留。
+             */
+            restoreDetachedBodyShellState();
             return;
         }
 
@@ -607,6 +639,15 @@ public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerT
         tag.putDouble("lingeringReturnZ", this.lingeringReturnZ);
         tag.putFloat("lingeringReturnYaw", this.lingeringReturnYaw);
         tag.putFloat("lingeringReturnPitch", this.lingeringReturnPitch);
+
+        /*
+         * 这组字段虽然是“附身空气壳”的运行期备份，但时停者快照也是通过组件 NBT 保存运行态。
+         * 如果不写入 NBT，回溯到附身中/附身前的时间点时，实体 invisible/noClip 能否恢复就会依赖未来时间线的缓存。
+         */
+        tag.putBoolean("detachedBodyShellApplied", this.detachedBodyShellApplied);
+        tag.putBoolean("savedDetachedBodyInvisible", this.savedDetachedBodyInvisible);
+        tag.putBoolean("savedDetachedBodyNoGravity", this.savedDetachedBodyNoGravity);
+        tag.putBoolean("savedDetachedBodyNoClip", this.savedDetachedBodyNoClip);
     }
 
     @Override
@@ -630,5 +671,10 @@ public class SpiritualistPlayerComponent implements AutoSyncedComponent, ServerT
         this.lingeringReturnZ = tag.getDouble("lingeringReturnZ");
         this.lingeringReturnYaw = tag.getFloat("lingeringReturnYaw");
         this.lingeringReturnPitch = tag.getFloat("lingeringReturnPitch");
+
+        this.detachedBodyShellApplied = tag.getBoolean("detachedBodyShellApplied");
+        this.savedDetachedBodyInvisible = tag.getBoolean("savedDetachedBodyInvisible");
+        this.savedDetachedBodyNoGravity = tag.getBoolean("savedDetachedBodyNoGravity");
+        this.savedDetachedBodyNoClip = tag.getBoolean("savedDetachedBodyNoClip");
     }
 }
