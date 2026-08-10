@@ -41,6 +41,7 @@
 - 职业分配总引导：`src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
 - 枪械 / 左轮反火总引导：`src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`
 - 死亡保护 / 击杀流程总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
+- 体力与移动速度修正总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
 - 玩家碰撞总引导：`src/main/java/org/agmas/noellesroles/collision/NoellesPlayerCollisionHandlers.java`
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
@@ -48,6 +49,7 @@
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
 - 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
+- 客户端移动表现总引导：`src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`
 - 准心图标注册入口：`src/client/java/org/agmas/noellesroles/client/crosshair/NoellesCrosshairHandlers.java`
 - 职业状态 HUD：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`
 - 职业准心图标：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`
@@ -222,6 +224,7 @@
 - `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
 - `NoellesRolesCombatBootstrap.java` 负责统一接入 Wathe `GunShotApi`，只调用各职业 / 词条自己的枪击、左轮反火和冷却 handler。
 - `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath` 并接入 Wathe `DeathApi`，保持“先保命，再强制放行，再反噬”和“死亡阶段按优先级执行”的顺序。
+- `NoellesRolesMovementBootstrap.java` 负责统一接入 Wathe `PlayerStaminaApi` / `PlayerMovementApi`，把各职业 / 词条的体力、加速、减速和覆盖规则聚合到一起。
 - `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
 - `NoellesRolesShops.java` 负责支付、物品交付、特殊道具瞬发结算和购买回填。
 - `NoellesRolesEconomyBootstrap.java` 负责金币 HUD、任务收入、被动收入和经济类词条接入。
@@ -232,10 +235,22 @@
 - `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
 - `NoellesHudHandlers.java` 是客户端通用屏幕 HUD 总注册入口，只负责调用各职业 / 词条自己的 `register()` 和少量实体名牌 provider。
 - `NoellesHudSupport.java` 负责复用 Wathe `HudOverlayApi` 的存活职业注册、右下角文字绘制和玩家名兜底。
+- `NoellesClientMovementBootstrap.java` 负责客户端移动相关表现的聚合入口，当前主要给双重人格等需要本地提示的规则使用。
 - `NoellesCrosshairHandlers.java` 是客户端准心图标总注册入口，只负责调用各职业自己的 `*Crosshair.register()`。
 - `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
+
+## 玩家体力与移动接入
+
+Wathe 已经把玩家体力和移动速度公开化了。NoellesRoles 侧不需要再 shadow `PlayerEntity` 的 `forwardSpeed` / `sidewaysSpeed`，也不要再自己重写 `travel()`、`jump()` 或 `getMovementSpeed()`。
+
+- 体力读写统一走 `PlayerStaminaApi` / `PlayerStaminaComponent`：清空、回满、增减当前体力、调整体力上限、判断是否还能疾跑 / 自主移动 / 跳跃，都从这里拿。
+- 速度叠加统一走 `PlayerMovementApi.registerSpeedModifier(...)`。它支持 `ADD`、`MULTIPLY`、`OVERRIDE` 和 `PASS`，扩展职业要做加速或减速就注册修正器，不要自己覆盖原版速度。
+- 当前体力基础值、三档消耗、三档恢复、心情阈值和两个默认关闭的惩罚开关都在 Wathe `GameConstants` / `GameWorldComponent` 里，NoellesRoles 只读不复制。
+- 中等心情惩罚开启后，`mood < MID_MOOD_THRESHOLD` 只在疾跑时扣体力；低落心情惩罚开启后，`mood <= DEPRESSIVE_MOOD_THRESHOLD` 会禁跑、走路耗体力，体力归零后无法自主水平移动和跳跃，但外力位移仍保留。
+- 两个惩罚开关默认都关闭，测试时可用 `/wathe:setMood` 和 `/wathe:moodStaminaPenalty`。
+- 如果某个职业或词条需要专属移动分支，按 `roles/<role>/<RoleName>MovementHandler.java` 或 `modifiers/<modifier>/*MovementHandler.java` 拆开，再由 `NoellesRolesMovementBootstrap` 聚合注册。
 
 ## 时停者回溯快照接入
 

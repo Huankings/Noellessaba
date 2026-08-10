@@ -12,6 +12,11 @@ public final class DualPersonalityConstants {
     public static final int DOUBLE_ACTIVE_KILL_BONUS_TICKS = 10 * 20;
     public static final int DOUBLE_ACTIVE_KNIFE_COOLDOWN_TICKS = 20;
     public static final int DOUBLE_ACTIVE_SPEED_PERCENT = 50;
+    /*
+     * 旧客户端 movement mixin 实际写死的是 1.9 倍，而不是上面的 50%。
+     * 迁到 Wathe MovementApi 后继续保留这个倍率，避免双活阶段移动手感突然变化。
+     */
+    public static final float DOUBLE_ACTIVE_SPEED_MULTIPLIER = 1.9F;
     public static final int COLOR = 0x7633db;
     public static final int INITIAL_ROLE_MESSAGE_DELAY_TICKS = 2 * 20;
     public static final int INITIAL_CAMERA_SYNC_TICKS = 5 * 20;

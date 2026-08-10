@@ -77,6 +77,7 @@ public final class NoellesRolesBootstrap {
         NoellesBodyAppearanceHandlers.register();
         NoellesTargetVisibilityHandlers.init();
         NoellesPlayerCollisionHandlers.init();
+        NoellesRolesMovementBootstrap.init();
         NoellesRolesReplayBootstrap.register();
         NoellesRolesPsychoBootstrap.init();
         NoellesRolesMoodTaskBootstrap.init();

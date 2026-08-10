@@ -23,6 +23,15 @@
 - `wathe/src/main/java/dev/doctor4t/wathe/api/Role.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/WatheRoles.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/Faction.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/game/GameConstants.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/cca/GameWorldComponent.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/cca/PlayerStaminaComponent.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/api/stamina/PlayerStaminaApi.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/api/movement/PlayerMovementApi.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/command/SetMoodCommand.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/command/MoodStaminaPenaltyCommand.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/mixin/PlayerEntityMixin.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/mixin/LivingEntityMixin.java`
 - `harpymodloader/src/main/java/org/agmas/harpymodloader/Harpymodloader.java`
 - `harpymodloader/src/main/java/org/agmas/harpymodloader/modded_murder/ModdedMurderGameMode.java`
 
@@ -52,6 +61,7 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`：事件监听、server tick、回合清理、Harpy 禁用职业配置同步。
 - `src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`：Wathe `GunShotApi` 接入总引导，只调用各职业/词条自己的枪击、左轮惩罚和冷却 handler。
 - `src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`：`AllowPlayerDeath` 保护链和 Wathe `DeathApi` 分阶段击杀流程接入总引导。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`：体力与移动速度修正总引导。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPsychoBootstrap.java`：疯魔 API 接入分发器，只调用各职业自己的 `*PsychoHandler.init()`。
@@ -71,6 +81,7 @@
 - `src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
 - `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`：通用屏幕 HUD 总注册入口，只调用各职业自己的 `register()`。
 - `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`：Wathe `HudOverlayApi` 的存活职业过滤、右下角文字和玩家名兜底辅助。
+- `src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`：客户端移动表现总注册入口。
 - `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`：各职业自己的普通屏幕 HUD provider。
 - `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/*Hud.java`：各词条自己的固定屏幕 HUD provider。
 - `src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtons.java`：背包按钮总注册入口，只调用各职业自己的 `register()`。
@@ -112,6 +123,8 @@
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
 - 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
+- 玩家体力：`PlayerStaminaApi`、`PlayerStaminaComponent`
+- 玩家移动速度：`PlayerMovementApi`
 - 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
 - 击杀/死亡分阶段流程、默认击杀奖励、尸体生成回调：`DeathApi`、`DeathContext`、`BodySpawnContext`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
@@ -119,6 +132,17 @@
 - 尸体外观：`BodyAppearanceApi`
 - 托盘/床效果：`TrayEffectRegistry`、`BedEffectRegistry`
 - 死亡保护链：`AllowPlayerDeath`，Noelles 侧还要看 `NoellesRolesDeathBootstrap` 和 `CommonForcedDeathHandler`
+
+### 玩家体力与移动接入
+
+Wathe 已经公开了玩家体力和移动速度。NoellesRoles 侧如果要改这些数值，优先走公开 API，不要再 shadow `forwardSpeed` / `sidewaysSpeed`，也不要再把逻辑塞进 `travel()`、`jump()` 或 `getMovementSpeed()` 的大 mixin。
+
+- 体力读写用 `PlayerStaminaApi` / `PlayerStaminaComponent`；如果要清空、回满、增减体力或调整上限，统一从这里走。
+- 速度叠加用 `PlayerMovementApi.registerSpeedModifier(...)`；它支持 `ADD`、`MULTIPLY`、`OVERRIDE` 和 `PASS`，适合职业 / 词条按优先级叠加加速和减速。
+- 中等和低落心情体力惩罚默认都关闭，开关在 `GameWorldComponent`，测试指令是 `/wathe:setMood` 和 `/wathe:moodStaminaPenalty`。
+- 低落惩罚开启时，`mood <= DEPRESSIVE_MOOD_THRESHOLD` 会禁跑，体力归零后不能自主水平移动和跳跃，但外力位移仍保留。
+- 中等惩罚开启时，`mood < MID_MOOD_THRESHOLD` 只在疾跑时扣体力；如果只开中等惩罚，低落心情也沿用中等规则。
+- 如果某个职业 / 词条真的需要特殊移动分支，就按职业或词条拆到 `roles/<role>/<RoleName>MovementHandler` 或 `modifiers/<modifier>/*MovementHandler`，再由 `NoellesRolesMovementBootstrap` 聚合注册。
 
 ### 疯魔 API 接入
 
@@ -146,9 +170,9 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 
 1. 先把用户需求拆成字段：职业名、英文 id、阵营、职业色、欢迎公告、技能、交互方式、冷却、商店、物品、HUD/UI、回放、死亡/胜利、兼容要求、是否要求先出方案。
 2. 用 `rg` 搜本仓库已有相似实现；跨项目参考时只复制思路，不直接复制映射名。`noellesroles/harpy/kinssaba` 多为 Yarn 命名，`stupidexpress/starryexpress` 有 Mojang 官方命名痕迹。
-3. 判断是否需要改 Wathe 或 Harpy。只要能在 NoellesRoles 侧通过 API 或窄 mixin 解决，就优先不动 Wathe/Harpy。
+3. 判断是否需要改 Wathe 或 Harpy。只要能在 NoellesRoles 侧通过 API 或窄 mixin 解决，就优先不动 Wathe/Harpy。玩家体力和移动速度修正优先走 `PlayerStaminaApi` / `PlayerMovementApi`，不要再自己 shadow `forwardSpeed` / `sidewaysSpeed`。
 4. 如果用户要求“先分析方案”，先给方案，不改文件。否则按需求直接实现。
-5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。
+5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。这里也包括体力、速度和心情惩罚值。
 6. 关键代码写详细中文注释，尤其是：为什么要这么接入 API、为什么要在服务端/客户端判断、为什么要同步组件、为什么要这样处理回合结束/玩家死亡/掉线。
 7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
 8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：应回滚的玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，应回滚的世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
@@ -176,6 +200,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesPlayerCollisionHandlers.java`：新增玩家碰撞规则时，在这里调用对应职业 / 词条的 `*PlayerCollisionHandler.init()`；具体逻辑放在 `roles/<role>/` 或 `modifiers/<modifier>/`。
 - `NoellesRolesCombatBootstrap.java`：新增枪械开火接管、左轮目标覆写、左轮误伤惩罚或冷却修正规则时，在这里调用对应职业/词条 `*GunHandler` 或 `*GunCooldownHandler.init()`。
 - `NoellesRolesDeathBootstrap.java`：新增死亡保护、反噬、击杀奖励、确认死亡后清理或尸体生成回调时，在这里按阶段接入对应 handler。
+- `NoellesRolesMovementBootstrap.java`：新增体力、速度加成 / 减速 / 覆盖规则时，在这里按职业 / 词条接入对应 handler。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
@@ -187,6 +212,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
 - `ModItems.java`：新增物品、数据组件、默认冷却。
 - `NoellesrolesClient.java`：客户端按键、tooltip/model predicate、实体渲染、客户端网络包。
+- `NoellesClientMovementBootstrap.java`：新增客户端移动提示、表现或本地状态时，在这里按职业 / 词条聚合调用。
 - `NoellesHudHandlers.java`：新增普通屏幕 HUD provider 后，在这里调用该职业/词条 HUD 类的 `register()`。
 - `NoellesInventoryButtons.java`：新增背包按钮 provider 后，在这里调用该职业 `*InventoryButtons.register()`。
 - `NoellesInstinctHandlers.java` / `NoellesAppearanceHandlers.java` / `NoellesHeldItemVisibilityHandlers.java`：本能、外观、手持隐藏注册。
