@@ -17,6 +17,8 @@ import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.modifiers.dual_personality.ForcedDualPersonalityManager;
 import org.agmas.noellesroles.modifiers.lovers.ForcedLoversManager;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 /**
  * NoellesRoles 调试/配置指令入口。
@@ -57,6 +59,10 @@ public final class NoellesRolesCommand {
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
                                         .executes(NoellesRolesCommand::setTimeCurrency))))
+                .then(CommandManager.literal("timekeeper")
+                        .then(CommandManager.literal("finish_rift")
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(NoellesRolesCommand::finishTimekeeperRift))))
                 .then(CommandManager.literal("constants")
                         .then(CommandManager.literal("minplayerspawn")
                                 .then(CommandManager.literal("dual_personality")
@@ -104,6 +110,53 @@ public final class NoellesRolesCommand {
                         player.getDisplayName(),
                         amount,
                         Text.literal("§f" + TimekeeperConstants.TIME_CURRENCY_ICON + "§r")
+                ),
+                true
+        );
+        return 1;
+    }
+
+    private static int finishTimekeeperRift(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        TimekeeperPlayerComponent component = TimekeeperPlayerComponent.KEY.get(player);
+        if (!component.isInTimeRift()) {
+            context.getSource().sendError(Text.translatable(
+                    "commands.noellesroles.timekeeper.finish_rift.not_in_rift",
+                    player.getDisplayName()
+            ));
+            return 0;
+        }
+
+        /*
+         * 时间回溯播放会逐帧恢复 TimekeeperPlayerComponent 和 Wathe 的生命状态组件。
+         * 如果此时允许测试指令手动结束狭缝，下一帧快照可能又把 inTimeRift、
+         * aliveOverride、背包和游戏模式覆盖回历史值，导致命令结果和回溯落点互相打架。
+         * 因此回溯期间只拒绝执行，等回溯结束后再按目标快照决定玩家是复活还是继续狭缝。
+         */
+        if (TimekeeperWorldComponent.KEY.get(player.getServerWorld()).isRewinding()) {
+            context.getSource().sendError(Text.translatable(
+                    "commands.noellesroles.timekeeper.finish_rift.rewinding",
+                    player.getDisplayName()
+            ));
+            return 0;
+        }
+
+        /*
+         * 这里必须走 TimekeeperPlayerComponent 的正式“自然结束狭缝”出口，
+         * 不能只手动清 inTimeRift/timeRiftTicksLeft：
+         * - finishTimeRift() 会清掉 Wathe 的特殊存活旁观授权 aliveOverride；
+         * - 会把玩家维持为普通 SPECTATOR，而不是仍被胜利结算当作存活；
+         * - 会把玩家重新加入死亡语音频道并同步组件给客户端 HUD/外观/输入限制。
+         *
+         * 也不能调用 finishTimeRiftAsRewoundAlive()，那条出口只给时间回溯复活使用，
+         * 不会把玩家切回普通死亡旁观。
+         */
+        component.finishTimeRift();
+
+        context.getSource().sendFeedback(
+                () -> Text.translatable(
+                        "commands.noellesroles.timekeeper.finish_rift.success",
+                        player.getDisplayName()
                 ),
                 true
         );
