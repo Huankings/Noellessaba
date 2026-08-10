@@ -4,7 +4,6 @@
   "package": "org.agmas.noellesroles.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "DoNotCollideWithFeatherMixin",
     "modifiers.RoundModifierStateResetMixin",
     "modifiers.lovers.ForcedLoversAssignMixin",
     "modifiers.dual_personality.DualPersonalityAssignMixin",
@@ -51,9 +50,7 @@
     "roles.stalker.StalkerReseterMixin",
     "roles.spiritualist.SpiritualistReseterMixin",
     "roles.spiritualist.SpiritualistProjectionDamageMixin",
-    "roles.spiritualist.SpiritualistBodyCollisionMixin",
-    "roles.spiritualist.SpiritualistEntityCollisionViewMixin",
-    "roles.spiritualist.SpiritualistLivingEntityPushMixin",
+    "roles.spiritualist.SpiritualistBodyProjectileMixin",
     "roles.spiritualist.SpiritualistPossessedMovementBlockMixin",
     "roles.spiritualist.SpiritualistPossessedClientCommandBlockMixin",
     "roles.spiritualist.PlayerEntityPoseInvoker",

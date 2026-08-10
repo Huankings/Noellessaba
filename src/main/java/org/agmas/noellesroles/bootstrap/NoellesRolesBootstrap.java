@@ -5,6 +5,7 @@ import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
 import org.agmas.noellesroles.appearance.NoellesBodyAppearanceHandlers;
 import org.agmas.noellesroles.bed.NoellesRolesBedEffects;
+import org.agmas.noellesroles.collision.NoellesPlayerCollisionHandlers;
 import org.agmas.noellesroles.command.NoellesRolesCommand;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.modifiers.NoellesModifierAssignmentHandler;
@@ -75,6 +76,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesBedEffects.register();
         NoellesBodyAppearanceHandlers.register();
         NoellesTargetVisibilityHandlers.init();
+        NoellesPlayerCollisionHandlers.init();
         NoellesRolesReplayBootstrap.register();
         NoellesRolesPsychoBootstrap.init();
         NoellesRolesMoodTaskBootstrap.init();

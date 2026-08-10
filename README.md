@@ -42,6 +42,7 @@
 - 枪械 / 左轮反火总引导：`src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`
 - 死亡保护 / 击杀流程总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
+- 玩家碰撞总引导：`src/main/java/org/agmas/noellesroles/collision/NoellesPlayerCollisionHandlers.java`
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
@@ -170,7 +171,7 @@
 - 工程师：`ToolboxItem` 负责修门，`CaptureDeviceItem` 负责定点拘束并生成报告，`PowerRestorationItem` 通过 Wathe `BlackoutApi.restorePower` 消除停电；`EngineerShopHandler` 把这三件东西接进商店。
 - 酒保：`BartenderPlayerComponent` 追踪防御瓶充能和护甲，`BartenderDeathProtectionHandler` 把护甲当一次免死，`DefenseVialApplyMixin`、`PoisonToHealsMixin` 和 `CocktailItemMixin` 改酒和毒的处理。
 - 风灵师：`WinderPlayerComponent` 记录已选目标和漂浮状态，`WinderAbility` 开关漂浮，`WinderTargetAbility` 负责选人，`WindMarkPlayerComponent` 负责风印记，`WinderShopHandler` 卖风弹和风印。
-- 灵术师：`SpiritualistAbility` 一枚 G 键分出“出窍 / 附身 / 结束”几种行为，`SpiritualistPlayerComponent` 是主状态中心，`SpiritualistHostComponent` 保存被附身者状态，`SpiritualistManager` 负责控制输入、视角、回写背包、语音转发和结束冷却，`SpiritualistDeathProtectionHandler` 负责免死。
+- 灵术师：`SpiritualistAbility` 一枚 G 键分出“出窍 / 附身 / 结束”几种行为，`SpiritualistPlayerComponent` 是主状态中心，`SpiritualistHostComponent` 保存被附身者状态，`SpiritualistManager` 负责控制输入、视角、回写背包、语音转发和结束冷却，`SpiritualistDeathProtectionHandler` 负责免死；脱体本体的玩家碰撞通过 Wathe `PlayerCollisionApi` 返回 `NO_COLLISION`，附身本体的不可见/不可选中/不可交互通过 `TargetVisibilityApi` 处理，只有原版投射物命中仍保留一个窄 mixin 兜底。
 - 接线员：`OperatorAbility`、`OperatorPlayerComponent` 和 `OperatorCommunicationManager` 负责把两个人接通或把某个人广播出去，持续时间、成功冷却和失败冷却都在 `OperatorConstants`。
 - 大嗓门：`NoisemakerGlowC2SPacket` 点亮目标，`NoisemakerPlayerComponent` 管主动技能冷却，`NoisemakerGlowTargetComponent` 负责追踪发光结束并补回放事件，`NoisemakerBodySpawnHandler` 让自己死亡后的尸体也会发光。
 - 巫毒师：`VoodooTargetAbility` 负责选人，`VoodooDeathHandler` 在 `DeathApi` 死亡流程里把目标一起杀掉；默认配置下只有“有击杀者的死亡”会触发，是否允许自然死亡触发由 `voodooNonKillerDeaths` 控制。
@@ -196,7 +197,7 @@
 - 变色龙：走 `ChameleonPlayerComponent` 和客户端 mixin，重点是外观伪装。
 - 猜测者：`GuessC2SPacket` + `GuesserAbility`，可以猜平民职业，猜错以后按配置走 `none / death / explode`，是否允许平民拿到它由 `allowCivillianGuessers` 决定。
 - 盗墓者：当前主要是给尸体相关 HUD 和验尸视图开权限，尸体提示由演尸官/盗墓者共享的 `RoleNameHudApi` provider 判断权限。
-- 羽化者：只要任意一方带这个词条，就不会和另一名玩家发生实体碰撞，`DoNotCollideWithFeatherMixin` 负责这条规则。
+- 羽化者：只要任意一方带这个词条，就通过 Wathe `PlayerCollisionApi` 返回 `VANILLA_PUSH`，不会吃 Wathe 的实体墙阻挡，但保留原版玩家轻微推挤。
 
 ## 通用系统
 
@@ -212,6 +213,7 @@
 - `NoellesRolesPayloadTypes.java` 负责注册自定义 payload codec。
 - `NoellesRolesPacketReceivers.java` 负责注册服务端 packet receiver，并把旧的按职业能力分发逻辑集中在 packet 层。
 - `NoellesRolesEventBootstrap.java` 负责事件监听、server tick、回合清理和 Harpy 禁用职业配置同步；其中人数相关动态上限包括 `Mimic`、`Vulture`、`Hacker`、`Drugmaker` 和 `Better Vigilante`。
+- `NoellesPlayerCollisionHandlers.java` 负责玩家碰撞 API 总入口，只调用各职业 / 词条自己的碰撞 handler；当前包含灵术师脱体本体和 FEATHER。
 - `NoellesRoleLimitsBootstrap.java` 负责开服时的静态 Harpy 上限，例如 `Conductor`、`Executioner`、`Jester`、`Dreamer`、`Starstruck` 等默认最大生成数。
 - `NoellesRolesComponents.java` 负责把所有 CCA component 和 world component 一次性注册进去。
 - `TimekeeperWorldComponent.java` 负责时停者世界级快照历史、回溯游标、保护名单和回溯播放。

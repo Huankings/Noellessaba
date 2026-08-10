@@ -111,6 +111,7 @@
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
+- 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
 - 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
 - 击杀/死亡分阶段流程、默认击杀奖励、尸体生成回调：`DeathApi`、`DeathContext`、`BodySpawnContext`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
@@ -172,6 +173,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesEconomyBootstrap.java`：新增金币 HUD、任务收入、被动收入或经济词条规则。
 - `NoellesRolesReplayBootstrap.java`：新增回放 formatter 注册。
 - `NoellesRolesPsychoBootstrap.java`：新增疯魔 profile、护盾规则、声音/皮肤规则时，在这里调用对应职业 `*PsychoHandler.init()`；具体逻辑仍留在 `roles/<role>/`。
+- `NoellesPlayerCollisionHandlers.java`：新增玩家碰撞规则时，在这里调用对应职业 / 词条的 `*PlayerCollisionHandler.init()`；具体逻辑放在 `roles/<role>/` 或 `modifiers/<modifier>/`。
 - `NoellesRolesCombatBootstrap.java`：新增枪械开火接管、左轮目标覆写、左轮误伤惩罚或冷却修正规则时，在这里调用对应职业/词条 `*GunHandler` 或 `*GunCooldownHandler.init()`。
 - `NoellesRolesDeathBootstrap.java`：新增死亡保护、反噬、击杀奖励、确认死亡后清理或尸体生成回调时，在这里按阶段接入对应 handler。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
@@ -305,6 +307,7 @@ Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\
 - 准心目标旁边的信息、尸体死因/身份提示和魔术师播放体名字使用 `RoleNameHudApi`；非玩家实体名牌用 `registerEntityName(...)`，不要写 `RoleNameRenderer` mixin。
 - 替换 3x3 准心、武器命中高亮或准心下方 10x7 ready/progress 图标使用 `CrosshairHudApi.registerProvider(...)`；只追加默认准心后的短进度条使用 `registerOverlay(...)`。准心只是客户端提示，服务端仍要重新校验职业、存活、冷却、距离和目标合法性。
 - 隐藏玩家或玩家尸体、让其不可被准心选中 / 不可被职业道具交互时，优先在对应职业包注册 `TargetVisibilityApi` 规则，并在 `visibility/NoellesTargetVisibilityHandlers` 中调用。不要再新增 `PlayerBodyEntityRenderer`、`LivingEntity#canHit`、`RoleNameRenderer` 或 `CrosshairRenderer` 的隐藏类 mixin。
+- 改变玩家之间的物理碰撞时，优先在对应职业或词条包注册 Wathe `PlayerCollisionApi` 规则，并在 `collision/NoellesPlayerCollisionHandlers` 中调用。`SOLID` 是 Wathe/spark 式实体墙，只在已经重叠时保留原版轻微推挤用于解卡；`VANILLA_PUSH` 是 FEATHER 这类原版推挤可穿过，`NO_COLLISION` 是灵术师脱体本体这类完全无碰撞无推挤。
 - 已被 API 替代的 `*HudMixin`、`*ScreenMixin` 和旧 RoleNameRenderer mixin 不要重新加回 `noellesroles.client.mixins.json`。
 
 ## 背包按钮接入

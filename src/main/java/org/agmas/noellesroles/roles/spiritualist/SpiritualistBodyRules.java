@@ -6,11 +6,10 @@ import net.minecraft.entity.player.PlayerEntity;
 /**
  * 灵术师脱体本体的碰撞 / 选中统一规则。
  *
- * <p>Wathe 会在 {@code Entity#collidesWith} 里把局内存活玩家强制当作实体墙处理，
- * 而原版推挤还会走 {@code pushAwayFrom} / {@code LivingEntity#pushAway}。
- * 如果这些入口各自写判断，就很容易出现“碰撞被取消了，但轻微推挤还在”或
- * “服务端能穿过，客户端预测又挡住”的半套状态。因此灵术师本体是否应被当作空气，
- * 统一从这里读取。</p>
+ * <p>玩家物理部分已经通过 Wathe {@code PlayerCollisionApi} 接入；
+ * 可见、选中、交互和攻击部分通过 Wathe {@code TargetVisibilityApi} 接入。
+ * 这些 API 的 handler 都从这里读取同一份“灵术师本体是否处于脱体状态”判断，
+ * 避免服务端能穿过、客户端预测又挡住，或看不见但仍能被推挤的半套状态。</p>
  */
 public final class SpiritualistBodyRules {
     private SpiritualistBodyRules() {

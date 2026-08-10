@@ -1,11 +1,12 @@
 package org.agmas.noellesroles.visibility;
 
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargetVisibilityHandler;
+
 /**
- * 玩家实体隐藏 / 不可选中规则的预留入口。
+ * 玩家实体隐藏 / 不可选中规则的入口。
  *
- * <p>当前 NoellesRoles 还没有职业需要隐藏活玩家，因此这里暂时不注册任何规则。
- * 后续新增职业时，请把具体逻辑写在对应 {@code roles/<role>/} 或词条包里，
- * 然后只在这个入口补一行 {@code XxxTargetVisibilityHandler.init()}。</p>
+ * <p>具体逻辑写在对应 {@code roles/<role>/} 或词条包里，
+ * 这里只补一行 {@code XxxTargetVisibilityHandler.init()}，避免规则堆在公共大类里。</p>
  */
 public final class NoellesPlayerTargetVisibilityHandlers {
     private static boolean initialized = false;
@@ -18,5 +19,7 @@ public final class NoellesPlayerTargetVisibilityHandlers {
             return;
         }
         initialized = true;
+
+        SpiritualistTargetVisibilityHandler.init();
     }
 }
