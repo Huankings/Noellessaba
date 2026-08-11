@@ -4,6 +4,7 @@ import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPsychoHandler;
 import org.agmas.noellesroles.roles.jester.JesterPsychoHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerPsychoHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererPsychoShieldHandler;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapPsychoHandler;
 
 /**
  * NoellesRoles 的疯魔 API 接入分发器。
@@ -28,5 +29,6 @@ public final class NoellesRolesPsychoBootstrap {
         BountyHunterPsychoHandler.init();
         MuzzlerPsychoHandler.init();
         RemembererPsychoShieldHandler.init();
+        SpringTrapPsychoHandler.init();
     }
 }

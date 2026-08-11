@@ -10,6 +10,7 @@ import org.agmas.noellesroles.client.roles.prophet.ProphetCrystalBallCrosshair;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererRecallCrosshair;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererSniperCrosshair;
 import org.agmas.noellesroles.client.roles.robber.RobberGunCrosshair;
+import org.agmas.noellesroles.client.roles.spring_trap.SpringTrapAxeCrosshair;
 import org.agmas.noellesroles.client.roles.thief.ThiefCrosshair;
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperWatchCrosshairOverlay;
 import org.agmas.noellesroles.client.roles.waiter.WaiterCrosshair;
@@ -35,6 +36,7 @@ public final class NoellesCrosshairHandlers {
         WaiterCrosshair.register();
         CookPanCrosshair.register();
         HunterKnifeCrosshair.register();
+        SpringTrapAxeCrosshair.register();
         DrugmakerCrosshair.register();
         ThiefCrosshair.register();
         TimekeeperWatchCrosshairOverlay.register();

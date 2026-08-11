@@ -27,5 +27,10 @@
       "noellesroles:item/tape_apply_2",
       "noellesroles:item/tape_apply_3"
     ]
+  },
+  "ambient.spring_trap": {
+    "sounds": [
+      "noellesroles:ambient/spring_trap"
+    ]
   }
 }

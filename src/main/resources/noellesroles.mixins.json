@@ -66,7 +66,13 @@
     "roles.convener.ItemCooldownManagerAccessor",
     "roles.convener.ItemCooldownEntryAccessor",
     "roles.timekeeper.TimekeeperGameTimePauseMixin",
-    "roles.timekeeper.TimekeeperTrainPauseMixin"
+    "roles.timekeeper.TimekeeperTrainPauseMixin",
+    "roles.spring_trap.SpringTrapEntitySoundMixin",
+    "roles.spring_trap.SpringTrapLivingEntitySoundMixin",
+    "roles.spring_trap.SpringTrapPlayerMoveEffectMixin",
+    "roles.spring_trap.SpringTrapSmallDoorUseMixin",
+    "roles.spring_trap.SpringTrapTrainDoorUseMixin",
+    "roles.spring_trap.SpringTrapDoorWorldSoundMixin"
 
   ],
   "injectors": {

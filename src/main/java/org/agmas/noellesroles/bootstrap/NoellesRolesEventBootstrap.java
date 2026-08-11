@@ -87,6 +87,7 @@ import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperRiftHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
@@ -276,6 +277,7 @@ public final class NoellesRolesEventBootstrap {
             MorphlingReagentService.clearAllReleaseGates();
             MorphBodyDisguiseWorldComponent.KEY.get(serverWorld).reset();
             HiddenBodiesWorldComponent.KEY.get(serverWorld).reset();
+            SpringTrapAuraWorldComponent.KEY.get(serverWorld).reset();
             TimekeeperWorldComponent.KEY.get(serverWorld).reset();
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);
 

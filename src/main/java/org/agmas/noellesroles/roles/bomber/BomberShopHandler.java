@@ -29,7 +29,7 @@ public class BomberShopHandler {
         // 手雷在 Wathe 原价基础上减 65 金币
         entries.add(new ShopEntry(
                 WatheItems.GRENADE.getDefaultStack(),
-                Math.max(0, NoellesRolesShops.getItemPrice(WatheItems.GRENADE, 300) - 65),
+                Math.max(0, NoellesRolesShops.getItemPrice(WatheItems.GRENADE, 300) - 45),
                 ShopEntry.Type.WEAPON
         ));
         // 无声手雷,在原手雷基础上增加15金币

@@ -3,6 +3,7 @@ package org.agmas.noellesroles.bootstrap;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
+import org.agmas.noellesroles.NoellesRolesSounds;
 import org.agmas.noellesroles.appearance.NoellesBodyAppearanceHandlers;
 import org.agmas.noellesroles.bed.NoellesRolesBedEffects;
 import org.agmas.noellesroles.collision.NoellesPlayerCollisionHandlers;
@@ -68,6 +69,7 @@ public final class NoellesRolesBootstrap {
         NoellesRoleGroups.init();
         NoellesRolesConfig.HANDLER.load();
         NoellesRolesCommand.init();
+        NoellesRolesSounds.initialize();
         ModItems.init();
         NoellesFramingShopEntries.init();
         NoellesRolesEntities.init();

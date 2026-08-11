@@ -26,9 +26,12 @@ public final class HunterShopHandler {
             return;
         }
 
-        // 旧追猎者商店没有毒药瓶和蝎子；其它默认杀手工具继续保留。
+        // 追猎者商店没有毒药瓶和蝎子，也没有疯魔模式和手雷；其它默认杀手工具继续保留。
         removeItem(entries, WatheItems.POISON_VIAL);
         removeItem(entries, WatheItems.SCORPION);
+        removeItem(entries, WatheItems.PSYCHO_MODE);
+        removeItem(entries, WatheItems.GRENADE);
+        removeItem(entries, WatheItems.BLACKOUT);
 
         int defaultKnifePrice = NoellesRolesShops.getItemPrice(WatheItems.KNIFE, 100);
         int knifeIndex = indexOfItem(entries, WatheItems.KNIFE);

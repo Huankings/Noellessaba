@@ -54,6 +54,8 @@ import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
@@ -131,6 +133,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, KidnapperComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(KidnapperComponent::new);
         registry.beginRegistration(PlayerEntity.class, RobotPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(RobotPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AllergicPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AllergicPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, SpringTrapPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpringTrapPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, TimekeeperPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(TimekeeperPlayerComponent::new);
     }
 
@@ -144,6 +147,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(LoversPairComponent.KEY, LoversPairComponent::new);
         worldComponentFactoryRegistry.register(DualPersonalityComponent.KEY, DualPersonalityComponent::new);
         worldComponentFactoryRegistry.register(MorphBodyDisguiseWorldComponent.KEY, MorphBodyDisguiseWorldComponent::new);
+        worldComponentFactoryRegistry.register(SpringTrapAuraWorldComponent.KEY, SpringTrapAuraWorldComponent::new);
         worldComponentFactoryRegistry.register(TimekeeperWorldComponent.KEY, TimekeeperWorldComponent::new);
     }
 }

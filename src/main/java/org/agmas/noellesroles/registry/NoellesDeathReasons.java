@@ -13,6 +13,7 @@ public final class NoellesDeathReasons {
     public static final Identifier STALKER_EXECUTION_DEATH = NoellesRolesCore.id("stalker_execution");
     public static final Identifier DEATH_REASON_BOMB = NoellesRolesCore.id("bomb");
     public static final Identifier DEATH_REASON_THROWING_AXE = NoellesRolesCore.id("throwing_axe");
+    public static final Identifier DEATH_REASON_AXE = NoellesRolesCore.id("axe");
     public static final Identifier DEATH_REASON_SEDATIVE_OVERDOSE = NoellesRolesCore.id("sedative_overdose");
     public static final Identifier DEATH_REASON_SNIPER_RIFLE = NoellesRolesCore.id("sniper_rifle");
     public static final Identifier ARSONIST_IGNITED_DEATH_REASON = NoellesRolesCore.id("ignited");

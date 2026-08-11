@@ -74,15 +74,24 @@ public class ThrowingAxeItem extends Item {
             axeEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, velocity, 1.0F);
             world.spawnEntity(axeEntity);
             if (player instanceof ServerPlayerEntity serverPlayer) {
-                GameRecordManager.recordItemUse(serverPlayer, Registries.ITEM.getId(this), null, null);
+                /*
+                 * 投掷事件使用真实物品栈写入 item_name。
+                 * 这样飞斧、增速飞斧、爆炸飞斧可以共用同一个回放模板，同时显示各自物品名。
+                 */
+                GameRecordManager.recordItemUse(
+                        serverPlayer,
+                        Registries.ITEM.getId(this),
+                        null,
+                        dev.doctor4t.wathe.game.GameFunctions.createReplayItemData(serverPlayer.getServerWorld(), stack)
+                );
             }
         }
 
         if (!player.isCreative()) {
             stack.decrement(1);
             player.getItemCooldownManager().set(
-                    ModItems.THROWING_AXE,
-                    GameConstants.ITEM_COOLDOWNS.getOrDefault(ModItems.THROWING_AXE, 0)
+                    this,
+                    GameConstants.ITEM_COOLDOWNS.getOrDefault(this, 0)
             );
         }
 

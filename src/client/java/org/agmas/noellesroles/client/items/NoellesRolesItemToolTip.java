@@ -25,6 +25,8 @@ import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -124,6 +126,19 @@ public class NoellesRolesItemToolTip {
             }
             if (hunter.knifeTicks > 0) {
                 return GameConstants.getInTicks(0, hunter.knifeTicks / 10);
+            }
+            return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.BLOOD_AXE) {
+            /*
+             * 血斧有 30 秒开局冷却和 45 秒暗杀后冷却两种总长。
+             * 原版冷却管理器只给剩余比例，所以这里读取弹簧陷阱组件标记，
+             * 确保开局冷却的 tooltip 不会错误地从 45 秒总长开始换算。
+             */
+            SpringTrapPlayerComponent springTrap = SpringTrapPlayerComponent.KEY.get(client.player);
+            if (springTrap.isUsingStartCooldown(item)) {
+                return SpringTrapConstants.BLOOD_AXE_START_COOLDOWN_TICKS;
             }
             return getItemCooldownTicks(item);
         }

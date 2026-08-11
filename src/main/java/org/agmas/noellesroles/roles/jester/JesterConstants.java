@@ -20,7 +20,7 @@ public final class JesterConstants {
      * false：关闭反制触发，好人击杀狂信者时不再启动疯魔，死亡链会继续执行并让狂信者直接死亡。
      * 这里做成常量，是为了后续只改这一处 true/false 就能切换玩法，不需要碰死亡保护链的具体实现。
      */
-    public static final boolean TRIGGER_PSYCHO_WHEN_KILLED_BY_INNOCENT = false;
+    public static final boolean TRIGGER_PSYCHO_WHEN_KILLED_BY_INNOCENT = true;
 
     /*
      * 狂信者疯魔护盾的动态数据：

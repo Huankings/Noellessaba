@@ -87,6 +87,8 @@ import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapPlayerComponent;
 import org.agmas.noellesroles.roles.voodoo.VoodooPlayerComponent;
 import org.agmas.noellesroles.roles.vulture.VulturePlayerComponent;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
@@ -177,6 +179,11 @@ public final class TimekeeperSnapshots {
             component("noellesroles:allergic", AllergicPlayerComponent.KEY),
             component("noellesroles:magician", MagicianPlayerComponent.KEY),
             /*
+             * 血斧开局冷却来源会影响客户端 tooltip 对剩余秒数的换算。
+             * 物品冷却本身已经被时停者快照保存，这里同步保存来源标记，避免回溯后显示 30/45 秒总长错位。
+             */
+            component("noellesroles:spring_trap", SpringTrapPlayerComponent.KEY),
+            /*
              * 时停者自己的怀表冷却、光阴被动收入计时和时间狭缝剩余时间也属于“运行态”。
              * 因此它们要随快照倒回目标时间点；只有发动本次回溯产生的扣光阴、写冷却、
              * 普通怀表破碎等后置代价，会由 TimekeeperWorldComponent 的 actorPostUseState
@@ -200,7 +207,12 @@ public final class TimekeeperSnapshots {
              * 试剂尸体来源记录要和尸体实体一起回溯。
              * 否则尸体本身虽然能由 TimekeeperSnapshots 恢复，客户端却不知道哪具尸体应该在本能视角显原貌。
              */
-            component("noellesroles:morph_body_disguise_world", MorphBodyDisguiseWorldComponent.KEY)
+            component("noellesroles:morph_body_disguise_world", MorphBodyDisguiseWorldComponent.KEY),
+            /*
+             * 增速飞斧光环是会持续展开、发粒子并刷药水的局内运行态。
+             * 把它纳入世界组件快照后，时停者回溯到 30 秒前时，光环位置、年龄和剩余持续时间都会随时间线倒回。
+             */
+            component("noellesroles:spring_trap_auras", SpringTrapAuraWorldComponent.KEY)
     );
 
     private TimekeeperSnapshots() {

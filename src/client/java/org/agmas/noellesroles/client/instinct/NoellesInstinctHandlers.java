@@ -26,6 +26,7 @@ import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.morphling.MorphlingInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.starstruck.StarstruckInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.spring_trap.SpringTrapInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.thief.ThiefInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.timekeeper.TimekeeperRiftInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.waiter.WaiterInstinctHandler;
@@ -46,6 +47,7 @@ public final class NoellesInstinctHandlers {
 
     public static void register() {
         TimekeeperRiftInstinctHandler.register();
+        SpringTrapInstinctHandler.register();
         JesterInstinctHandler.register();
         WinderInstinctHandler.register();
         BartenderInstinctHandler.register();

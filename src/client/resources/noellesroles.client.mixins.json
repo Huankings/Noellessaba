@@ -56,7 +56,11 @@
     "roles.hunter.HunterFovMixin",
     "roles.hunter.HunterLockSlotMixin",
     "roles.kidnapper.KidnapperKeyControlledMixin",
-    "roles.kidnapper.KidnapperControlledMouseMixin"
+    "roles.kidnapper.KidnapperControlledMouseMixin",
+    "roles.spring_trap.SpringTrapAxeAttackClientMixin",
+    "roles.spring_trap.SpringTrapColorfulAxeRenderPoseMixin",
+    "roles.spring_trap.SpringTrapClientWorldSoundMixin",
+    "roles.spring_trap.SpringTrapPresenceFootstepsVolumeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

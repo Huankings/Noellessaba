@@ -34,6 +34,7 @@ import org.agmas.noellesroles.roles.recaller.RecallerShopHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererShopHandler;
 import org.agmas.noellesroles.roles.robber.RobberShopHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerShopHandler;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapShopHandler;
 import org.agmas.noellesroles.roles.trapper.TrapperShopHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
@@ -151,6 +152,14 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(NoellesRolesCore.MOD_ID, "necromancer_no_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 NecromancerShopHandler::modifyShop
+        );
+        /*
+         * 弹簧陷阱保留默认杀手商店，只把核心武器和疯魔模式替换成自己的斧类套件。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(NoellesRolesCore.MOD_ID, "spring_trap_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                SpringTrapShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。

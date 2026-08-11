@@ -33,6 +33,7 @@ import net.minecraft.text.Text;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
+import org.agmas.noellesroles.NoellesRolesSounds;
 import org.agmas.noellesroles.client.particle.StarstruckSparkleParticle;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceHandlers;
@@ -57,6 +58,7 @@ import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityC
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityKeybinds;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityTimeHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckMoodHud;
+import org.agmas.noellesroles.client.roles.spring_trap.SpringTrapMoodHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
 import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserPlayerWidget;
@@ -125,6 +127,13 @@ public class NoellesrolesClient implements ClientModInitializer {
         RobotMoodHud.register();
         ConvenerMoodHud.register();
         LicensedVillainMoodHud.register();
+        SpringTrapMoodHud.register();
+        /*
+         * 弹簧陷阱疯魔的环境音是 profile 触发的背景音。
+         * 客户端需要先把 SoundEvent 注册进 Wathe 的疯魔音乐表，否则服务端状态同步过来后只能拿到 id，
+         * 本地没有对应播放器就不会真正循环播放 spring_trap.ogg。
+         */
+        dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(NoellesRolesSounds.AMBIENT_SPRING_TRAP, 20);
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
@@ -297,6 +306,12 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.ROLE_MINE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.TIMED_BOMB, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.BLOOD_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.COLORFUL_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_SPEED_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_BOMB_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SPRING_TRAP, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.SPRING_TRAP_ADDTIME, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.CRYSTAL_BALL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ROBBER_PISTOL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_PISTOL, itemStack, list);
@@ -348,6 +363,12 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROLE_MINE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.TIMED_BOMB);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.BLOOD_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.COLORFUL_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_SPEED_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_BOMB_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SPRING_TRAP);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.SPRING_TRAP_ADDTIME);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.CRYSTAL_BALL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROBBER_PISTOL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOUNTY_PISTOL);

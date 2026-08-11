@@ -6,6 +6,9 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
+import dev.doctor4t.wathe.game.GameConstants;
+import dev.doctor4t.wathe.index.WatheParticles;
+import dev.doctor4t.wathe.index.WatheSounds;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,8 +19,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,6 +33,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -181,8 +189,24 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
         Vec3d hitPos = blockHitResult.getPos();
         this.setPosition(hitPos.x, hitPos.y, hitPos.z);
         this.setVelocity(Vec3d.ZERO);
+
+        ItemStack stack = this.getItemStack();
+        if (!this.getWorld().isClient && stack.isOf(ModItems.THROWING_BOMB_AXE)) {
+            explodeBombAxe(stack);
+            this.discard();
+            return;
+        }
+
         this.stuckInBlock = true;
         this.playSound(SoundEvents.ITEM_TRIDENT_HIT_GROUND, 1.0F, 1.0F);
+
+        if (!this.getWorld().isClient && stack.isOf(ModItems.THROWING_SPEED_AXE) && this.getOwner() instanceof ServerPlayerEntity owner) {
+            /*
+             * 增速光环写入世界组件而不是挂在实体字段上。
+             * 飞斧实体可能在回合清理或时停者回溯中被重建，而世界组件 NBT 会随快照精确倒回。
+             */
+            SpringTrapAuraWorldComponent.KEY.get(this.getWorld()).addAura(hitPos, owner.getUuid());
+        }
     }
 
     /**
@@ -282,6 +306,29 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
         this.successfulPenetrationKills++;
         int reward = BONUS_REWARD_PER_PENETRATION * this.successfulPenetrationKills;
         PlayerShopComponent.KEY.get(killer).addToBalance(reward);
+    }
+
+    private void explodeBombAxe(ItemStack stack) {
+        if (!(this.getWorld() instanceof net.minecraft.server.world.ServerWorld world)) {
+            return;
+        }
+
+        world.playSound(null, this.getBlockPos(), WatheSounds.ITEM_GRENADE_EXPLODE, SoundCategory.PLAYERS, 5.0F, 1.0F + this.getRandom().nextFloat() * 0.1F - 0.05F);
+        world.spawnParticles(WatheParticles.BIG_EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        world.spawnParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.1F, this.getZ(), 100, 0.0D, 0.0D, 0.0D, 0.2F);
+        world.spawnParticles(new ItemStackParticleEffect(ParticleTypes.ITEM, stack.copy()), this.getX(), this.getY() + 0.1F, this.getZ(), 100, 0.0D, 0.0D, 0.0D, 1.0F);
+
+        ServerPlayerEntity killer = this.getOwner() instanceof ServerPlayerEntity owner ? owner : null;
+        NbtCompound replayData = GameFunctions.createReplayItemData(world, stack.isEmpty() ? ModItems.THROWING_BOMB_AXE.getDefaultStack() : stack);
+        for (ServerPlayerEntity target : world.getPlayers()) {
+            if (!GameFunctions.isPlayerAliveAndSurvival(target)) {
+                continue;
+            }
+            if (target.squaredDistanceTo(this.getPos()) > SpringTrapConstants.THROWING_BOMB_AXE_EXPLOSION_RADIUS * SpringTrapConstants.THROWING_BOMB_AXE_EXPLOSION_RADIUS) {
+                continue;
+            }
+            GameFunctions.killPlayer(target, true, killer, GameConstants.DeathReasons.GRENADE, replayData.copy());
+        }
     }
 
     @Override

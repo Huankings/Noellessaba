@@ -22,6 +22,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SEDATIVE), NoellesRolesReplayFormatters::formatSedativeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TIMED_BOMB), NoellesRolesReplayFormatters::formatTimedBombUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_SPEED_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_BOMB_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.ROLE_MINE), NoellesRolesReplayFormatters::formatRoleMineUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TOOLBOX), NoellesRolesReplayFormatters::formatToolboxUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.CAPTURE_DEVICE), NoellesRolesReplayFormatters::formatCaptureDeviceUse);
@@ -41,6 +43,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PAN), NoellesRolesReplayFormatters::formatPanHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.HUNTING_KNIFE), NoellesRolesReplayFormatters::formatHuntingKnifeHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOOD_AXE), NoellesRolesReplayFormatters::formatAxeHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.COLORFUL_AXE), NoellesRolesReplayFormatters::formatAxeHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOWGUN), NoellesRolesReplayFormatters::formatBlowgunHit);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.BELLRINGER_REDUCE_TIME_EVENT, NoellesRolesReplayFormatters::formatBellringerReduceTime);
@@ -191,7 +195,11 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_BROKEN_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchBroken);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_REPAIRED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchRepaired);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_UPGRADED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchUpgraded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SPRING_TRAP_ROOTED_EVENT, NoellesRolesReplayFormatters::formatSpringTrapRooted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SPRING_TRAP_UNROOTED_EVENT, NoellesRolesReplayFormatters::formatSpringTrapUnrooted);
 
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_THROWING_AXE, NoellesRolesReplayFormatters::formatThrowingAxeDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_AXE, NoellesRolesReplayFormatters::formatAxeDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ANGEL_SACRIFICE_DEATH_REASON, NoellesRolesReplayFormatters::formatAngelSacrificeDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_SEDATIVE_OVERDOSE, NoellesRolesReplayFormatters::formatSedativeOverdoseDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SPIRITUALIST_SOUL_GUARD_DEATH_REASON, NoellesRolesReplayFormatters::formatSpiritualistSoulGuardDeath);

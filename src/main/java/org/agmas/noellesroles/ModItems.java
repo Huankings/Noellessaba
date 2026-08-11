@@ -27,6 +27,7 @@ import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
@@ -38,6 +39,10 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(POWER_RESTORATION, GameConstants.getInTicks(1, 0));
         // 飞斧使用固定冷却，避免受 Wathe 初始化顺序影响。
         GameConstants.ITEM_COOLDOWNS.put(THROWING_AXE, GameConstants.getInTicks(0, 0));
+        GameConstants.ITEM_COOLDOWNS.put(BLOOD_AXE, SpringTrapConstants.BLOOD_AXE_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_SPEED_AXE, GameConstants.getInTicks(0, 0));
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_BOMB_AXE, GameConstants.getInTicks(0, 0));
+        GameConstants.ITEM_COOLDOWNS.put(SPRING_TRAP, SpringTrapConstants.SPRING_TRAP_COOLDOWN_TICKS);
         // 强盗手枪使用固定冷却，与飞斧分开控制，后续改数值也更直观。
         GameConstants.ITEM_COOLDOWNS.put(ROBBER_PISTOL, GameConstants.getInTicks(0, 35));
         /*
@@ -93,6 +98,10 @@ public class ModItems {
             entries.add(FAKE_GRENADE);
             entries.add(FAKE_REVOLVER);
             entries.add(THROWING_AXE);
+            entries.add(BLOOD_AXE);
+            entries.add(COLORFUL_AXE);
+            entries.add(THROWING_SPEED_AXE);
+            entries.add(THROWING_BOMB_AXE);
             entries.add(CRYSTAL_BALL);
             entries.add(ROBBER_PISTOL);
             entries.add(BOUNTY_PISTOL);
@@ -214,6 +223,26 @@ public class ModItems {
     public static final Item THROWING_AXE = register(
             new ThrowingAxeItem(new Item.Settings().maxCount(1)),
             "throwing_axe"
+    );
+    // 血斧
+    public static final Item BLOOD_AXE = register(
+            new BloodAxeItem(new Item.Settings().maxCount(1)),
+            "blood_axe"
+    );
+    // 彩虹斧
+    public static final Item COLORFUL_AXE = register(
+            new ColorfulAxeItem(new Item.Settings().maxCount(1)),
+            "colorful_axe"
+    );
+    // 增速飞斧
+    public static final Item THROWING_SPEED_AXE = register(
+            new ThrowingAxeItem(new Item.Settings().maxCount(1)),
+            "throwing_speed_axe"
+    );
+    // 爆炸飞斧
+    public static final Item THROWING_BOMB_AXE = register(
+            new ThrowingAxeItem(new Item.Settings().maxCount(1)),
+            "throwing_bomb_axe"
     );
     //水晶球
     public static final Item CRYSTAL_BALL = register(
@@ -420,6 +449,16 @@ public class ModItems {
     public static final Item BOUNTY_MODE = register(
             new Item(new Item.Settings().maxCount(1)),
             "bounty_mode"
+    );
+    // 弹簧陷阱状态图标：购买后立即启动状态，不进入背包。
+    public static final Item SPRING_TRAP = register(
+            new SpringTrapShopIconItem(new Item.Settings().maxCount(1)),
+            "spring_trap"
+    );
+    // 弹簧陷阱续时器图标：购买后直接延长当前状态，不进入背包。
+    public static final Item SPRING_TRAP_ADDTIME = register(
+            new SpringTrapShopIconItem(new Item.Settings().maxCount(1)),
+            "spring_trap_addtime"
     );
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(

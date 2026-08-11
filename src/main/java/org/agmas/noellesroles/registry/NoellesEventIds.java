@@ -146,6 +146,9 @@ public final class NoellesEventIds {
     public static final Identifier TIMEKEEPER_WATCH_BROKEN_EVENT = NoellesRolesCore.id("timekeeper_watch_broken");
     public static final Identifier TIMEKEEPER_WATCH_REPAIRED_EVENT = NoellesRolesCore.id("timekeeper_watch_repaired");
     public static final Identifier TIMEKEEPER_WATCH_UPGRADED_EVENT = NoellesRolesCore.id("timekeeper_watch_upgraded");
+    public static final Identifier SPRING_TRAP_ROOTED_EVENT = NoellesRolesCore.id("spring_trap_rooted");
+    public static final Identifier SPRING_TRAP_UNROOTED_EVENT = NoellesRolesCore.id("spring_trap_unrooted");
+    public static final Identifier SPRING_TRAP_SHIELD_SOURCE = NoellesRolesCore.id("spring_trap_shield");
 
     private NoellesEventIds() {
     }

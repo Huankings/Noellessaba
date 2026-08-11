@@ -10,7 +10,7 @@ import dev.doctor4t.wathe.game.GameConstants;
  */
 public final class CleanerConstants {
     public static final int ROLE_COLOR = 0x16582C;
-    public static final int ABILITY_PRICE = 150;
+    public static final int ABILITY_PRICE = 175;
     public static final int DISSOLVE_REWARD_COINS = 50;
     public static final int ABILITY_COOLDOWN_TICKS = GameConstants.getInTicks(2, 0);
     public static final int SULFURIC_ACID_BARREL_COOLDOWN_TICKS = GameConstants.getInTicks(0, 45);

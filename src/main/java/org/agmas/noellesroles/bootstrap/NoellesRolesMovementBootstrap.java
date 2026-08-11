@@ -3,6 +3,7 @@ package org.agmas.noellesroles.bootstrap;
 import org.agmas.noellesroles.roles.convener.ConvenerMovementHandler;
 import org.agmas.noellesroles.roles.hunter.HunterMovementHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererMovementHandler;
+import org.agmas.noellesroles.roles.spring_trap.SpringTrapMovementHandler;
 import org.agmas.noellesroles.roles.starstruck.StarstruckMovementHandler;
 
 /**
@@ -20,5 +21,6 @@ public final class NoellesRolesMovementBootstrap {
         ConvenerMovementHandler.init();
         StarstruckMovementHandler.init();
         RemembererMovementHandler.init();
+        SpringTrapMovementHandler.init();
     }
 }

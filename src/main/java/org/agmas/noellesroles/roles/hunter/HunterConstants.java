@@ -7,7 +7,7 @@ import dev.doctor4t.wathe.game.GameConstants;
  */
 public final class HunterConstants {
     public static final int ROLE_COLOR = 0x663300;
-    public static final int ABILITY_PRICE = 75;
+    public static final int ABILITY_PRICE = 50;
     public static final int ABILITY_COOLDOWN_TICKS = GameConstants.getInTicks(0, 0);
     public static final int HUNTING_KNIFE_COOLDOWN_TICKS = GameConstants.getInTicks(0, 45);
     public static final int HUNTING_KNIFE_START_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);

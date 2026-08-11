@@ -116,6 +116,19 @@ public final class NoellesRolesReplayFormatters {
         return Text.translatable(translationKey).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));
     }
 
+    private static Text whiteBracketedItem(NbtCompound data, ServerWorld world) {
+        /*
+         * 用户希望飞斧回放变成“[%s]”的通用模板，并且中括号内用白色显示。
+         * 这里不在 lang 里硬塞颜色码，而是把物品名解析出来后统一包一层白色 Text，
+         * 这样普通飞斧、增速飞斧、爆炸飞斧未来继续复用同一个 formatter 时也不会丢本地化名字。
+         */
+        Text item = ReplayGenerator.resolveItemName(data, world);
+        return Text.empty()
+                .append(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFFFF))))
+                .append(item.copy().setStyle(item.getStyle().withColor(TextColor.fromRgb(0xFFFFFF))))
+                .append(Text.literal("]").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFFFF))));
+    }
+
     private static MutableText deathReasonText(@Nullable String rawDeathReasonId) {
         Identifier deathReasonId = rawDeathReasonId == null || rawDeathReasonId.isEmpty() ? null : Identifier.tryParse(rawDeathReasonId);
         if (deathReasonId == null) {
@@ -501,6 +514,21 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatAxeHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.item_hit.noellesroles.axe",
+                actor,
+                ReplayGenerator.resolveItemName(event.data(), world),
+                target
+        );
+    }
+
+    @Nullable
     public static Text formatTapeRemoved(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text remover = actorText(event, match);
         Text victim = targetText(event, match);
@@ -786,7 +814,7 @@ public final class NoellesRolesReplayFormatters {
     @Nullable
     public static Text formatThrowingAxeUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
-        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.throwing_axe", actor);
+        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.throwing_axe", actor, whiteBracketedItem(event.data(), world));
     }
 
     @Nullable
@@ -1872,6 +1900,48 @@ public final class NoellesRolesReplayFormatters {
                 shooter,
                 ReplayGenerator.resolveItemName(event.data(), world)
         );
+    }
+
+    @Nullable
+    public static Text formatThrowingAxeDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text thrower = actorText(event, match);
+        if (victim == null || thrower == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.throwing_axe.killed",
+                victim,
+                thrower,
+                whiteBracketedItem(event.data(), world)
+        );
+    }
+
+    @Nullable
+    public static Text formatAxeDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text killer = actorText(event, match);
+        if (victim == null || killer == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.axe.killed",
+                victim,
+                killer,
+                ReplayGenerator.resolveItemName(event.data(), world)
+        );
+    }
+
+    @Nullable
+    public static Text formatSpringTrapRooted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        return victim == null ? null : Text.translatable("replay.global.noellesroles.spring_trap_rooted", victim);
+    }
+
+    @Nullable
+    public static Text formatSpringTrapUnrooted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        return victim == null ? null : Text.translatable("replay.global.noellesroles.spring_trap_unrooted", victim);
     }
 
     @Nullable
