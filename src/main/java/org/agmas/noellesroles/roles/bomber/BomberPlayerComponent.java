@@ -305,7 +305,12 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
 
     /**
      * 触发炸弹爆炸。
-     * 这里负责声音、粒子和实际击杀；奖励结算与状态清理由死亡流程中的 mixin 统一处理。
+     *
+     * <p>定时炸弹现在被视为“一次性死亡尝试”：
+     * 声音和粒子只播放一次，随后只向 Wathe 死亡流程提交一次炸弹死因。
+     * 如果这次死亡真的成立，{@link BomberDeathHandler} 会在 afterMarkedDead 阶段结算奖励并清理炸弹；
+     * 如果被灵术师附身、本体保护、疯魔护盾或其它更高优先级机制拦住，则这里负责把炸弹清掉，
+     * 避免下一 tick 因为 hasBomb 仍为 true、beepTimer 仍为 0 而继续反复爆炸。</p>
      */
     private void explode() {
         if (!(this.player.getWorld() instanceof ServerWorld serverWorld)) {
@@ -360,11 +365,31 @@ public class BomberPlayerComponent implements AutoSyncedComponent, ServerTicking
         PlayerEntity bomber = this.bomberUuid == null ? null : this.player.getWorld().getPlayerByUuid(this.bomberUuid);
         if (GameFunctions.isPlayerAliveAndSurvival(this.player)) {
             GameFunctions.killPlayer(this.player, true, bomber, NoellesDeathReasons.DEATH_REASON_BOMB);
-        } else {
-            removeBombFromInventory(this.player);
-            clearBombState();
-            this.sync();
         }
+
+        clearBombAfterExplosionAttempt();
+    }
+
+    /**
+     * 爆炸死亡请求结束后的兜底清理。
+     *
+     * <p>如果炸弹成功杀死持有者，死亡流程会同步执行 {@link #handleBombCarrierDeath(PlayerEntity, Identifier)}，
+     * 并在发放炸弹客奖励后把 hasBomb 清为 false。这里看到 hasBomb 已经为 false 时必须直接返回，
+     * 避免重复清理影响已确认死亡的奖励语义。</p>
+     *
+     * <p>如果 hasBomb 仍为 true，说明这次爆炸没有推进到“确认死亡”阶段：
+     * 可能是被死亡保护、疯魔护盾、致死拦截，或玩家在爆炸 tick 前已经不是有效存活目标。
+     * 这种情况下炸弹已经爆过一次，不能再继续追着玩家每 tick 重试，所以只移除物品和组件状态，
+     * 不发放炸弹客金币奖励，也不记录死亡回放。</p>
+     */
+    private void clearBombAfterExplosionAttempt() {
+        if (!this.hasBomb) {
+            return;
+        }
+
+        removeBombFromInventory(this.player);
+        clearBombState();
+        this.sync();
     }
 
     /**
