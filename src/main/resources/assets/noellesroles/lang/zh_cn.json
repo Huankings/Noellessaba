@@ -144,6 +144,8 @@
 
   "announcement.goals.noellesroles.the_insane_damned_paranoid_killer": "我听得到死者的声音！",
   "announcement.role.noellesroles.the_insane_damned_paranoid_killer": "亡语杀手",
+  "hud.noellesroles.the_insane_damned_paranoid_killer.corpse_active": "尸体伪装中（按%s关闭）",
+  "hud.noellesroles.the_insane_damned_paranoid_killer.corpse_hint": "按%s开启尸体伪装",
 
 
   "announcement.goals.noellesroles.engineer": "用技术解决问题！",

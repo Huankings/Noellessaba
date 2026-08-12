@@ -3,6 +3,7 @@ package org.agmas.noellesroles.item;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -38,6 +39,13 @@ public class TapeItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, @NotNull PlayerEntity user, @NotNull LivingEntity entity, @NotNull Hand hand) {
         if (!(entity instanceof PlayerEntity victim)) {
+            return ActionResult.PASS;
+        }
+        /*
+         * 胶带只能贴在真正可交互的活玩家身上。
+         * 亡语杀手躺尸时不应因为胶带右键反馈暴露为玩家实体。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(user, victim)) {
             return ActionResult.PASS;
         }
 

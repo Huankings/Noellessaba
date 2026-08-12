@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.visibility;
 
+import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerTargetVisibilityHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargetVisibilityHandler;
 
 /**
@@ -21,5 +22,6 @@ public final class NoellesPlayerTargetVisibilityHandlers {
         initialized = true;
 
         SpiritualistTargetVisibilityHandler.init();
+        InsaneDamnedKillerTargetVisibilityHandler.init();
     }
 }

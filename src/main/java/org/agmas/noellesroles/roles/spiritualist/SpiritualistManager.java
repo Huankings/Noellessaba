@@ -6,6 +6,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheGameModes;
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
@@ -420,7 +421,13 @@ public final class SpiritualistManager {
     ) {
         HitResult hitResult = getPossessionCrosshairHit(
                 host,
-                entity -> entity.canHit() && entity != host
+                entity -> entity.canHit()
+                        && entity != host
+                        /*
+                         * 附身左键攻击直接由宿主在服务端执行，必须使用 ATTACK 语义过滤目标。
+                         */
+                        && (!(entity instanceof PlayerEntity target)
+                        || TargetVisibilityApi.canAttackPlayer(host, target))
         );
         boolean attacking = component.possessionAttacking;
 
@@ -584,7 +591,14 @@ public final class SpiritualistManager {
 
         HitResult hitResult = getPossessionCrosshairHit(
                 host,
-                entity -> entity != host && !entity.isSpectator()
+                entity -> entity != host
+                        && !entity.isSpectator()
+                        /*
+                         * 附身右键路径会直接调用实体 interact / 物品 useOnEntity，
+                         * 不一定重新进入 Wathe 默认玩家交互过滤。
+                         */
+                        && (!(entity instanceof PlayerEntity target)
+                        || TargetVisibilityApi.canInteractWithPlayer(host, target))
         );
 
         if (hitResult instanceof EntityHitResult entityHitResult) {
@@ -812,9 +826,14 @@ public final class SpiritualistManager {
             }
         }
 
+        /*
+         * 附身开枪是真实击杀入口，不能继续复用 getGunTarget 的准心语义。
+         * 亡语杀手尸体伪装会拒绝 TARGET 来隐藏准心命中态，但 ATTACK 必须放行；
+         * 否则灵术师借宿主开枪时会和旧客户端一样把伪装者误当成“打不到”。
+         */
         HitResult collision = watheDerringer
-                ? DerringerItem.getGunTarget(host)
-                : RevolverItem.getGunTarget(host);
+                ? DerringerItem.getGunAttackTarget(host, heldStack)
+                : RevolverItem.getGunAttackTarget(host, heldStack);
 
         if (collision instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof PlayerEntity target
                 && target.distanceTo(host) < 65.0f) {
@@ -891,7 +910,11 @@ public final class SpiritualistManager {
             return;
         }
 
-        HitResult collision = KnifeItem.getKnifeTarget(host);
+        /*
+         * 这里是服务端补发 Wathe 匕首刺杀，不是 HUD / 准心提示。
+         * 因此必须使用 getKnifeAttackTarget，确保只隐藏 TARGET 的尸体伪装仍可被刺杀。
+         */
+        HitResult collision = KnifeItem.getKnifeAttackTarget(host, releasedStack);
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
             return;
         }
@@ -931,7 +954,12 @@ public final class SpiritualistManager {
         if (!heldStack.isOf(ModItems.BAYONET) || !(hitResult instanceof EntityHitResult entityHitResult)) {
             return false;
         }
-        if (!(entityHitResult.getEntity() instanceof PlayerEntity target) || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+        if (!(entityHitResult.getEntity() instanceof PlayerEntity target)
+                || !GameFunctions.isPlayerAliveAndSurvival(target)
+                /*
+                 * 右键刺刀最终是致死攻击，不能只依赖右键交互射线。
+                 */
+                || !TargetVisibilityApi.canAttackPlayer(host, target)) {
             return false;
         }
         if (host.getItemCooldownManager().isCoolingDown(ModItems.BAYONET) || target.distanceTo(host) > POSSESSION_MELEE_TARGET_RANGE) {
@@ -968,7 +996,9 @@ public final class SpiritualistManager {
         if (!(entityHitResult.getEntity() instanceof PlayerEntity target)) {
             return false;
         }
-        if (!BayonetKnockbackHandler.canKnockback(host, target) || target.distanceTo(host) > POSSESSION_MELEE_TARGET_RANGE) {
+        if (!BayonetKnockbackHandler.canKnockback(host, target)
+                || !TargetVisibilityApi.canAttackPlayer(host, target)
+                || target.distanceTo(host) > POSSESSION_MELEE_TARGET_RANGE) {
             return false;
         }
 
@@ -994,7 +1024,14 @@ public final class SpiritualistManager {
 
         HitResult collision = ProjectileUtil.getCollision(
                 host,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        /*
+                         * 附身状态下没有宿主客户端帮忙发目标包，服务端会代替宿主重新射线。
+                         * 这里使用 ATTACK 语义，保证真正拒绝攻击的隐藏状态仍会被拦下；
+                         * 但只隐藏准心的尸体伪装不会被误当成免疫目标。
+                         */
+                        && TargetVisibilityApi.canAttackPlayer(host, player),
                 POSSESSION_BLOWGUN_TARGET_RANGE
         );
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
@@ -1097,7 +1134,9 @@ public final class SpiritualistManager {
          */
         HitResult collision = ProjectileUtil.getCollision(
                 host,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        && TargetVisibilityApi.canAttackPlayer(host, player),
                 HunterConstants.HUNTING_KNIFE_TARGET_RANGE
         );
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
@@ -1147,7 +1186,9 @@ public final class SpiritualistManager {
 
         HitResult collision = ProjectileUtil.getCollision(
                 host,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        && TargetVisibilityApi.canAttackPlayer(host, player),
                 CookConstants.PAN_TARGET_RANGE
         );
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
@@ -1178,7 +1219,9 @@ public final class SpiritualistManager {
 
         HitResult collision = ProjectileUtil.getCollision(
                 host,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        && TargetVisibilityApi.canAttackPlayer(host, player),
                 POSSESSION_MELEE_TARGET_RANGE
         );
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
@@ -1217,7 +1260,9 @@ public final class SpiritualistManager {
 
         HitResult collision = ProjectileUtil.getCollision(
                 host,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        && TargetVisibilityApi.canAttackPlayer(host, player),
                 POSSESSION_MELEE_TARGET_RANGE
         );
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {

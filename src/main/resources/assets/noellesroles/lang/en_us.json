@@ -94,6 +94,8 @@
 
     "announcement.goals.noellesroles.the_insane_damned_paranoid_killer": "I hear dead people.",
     "announcement.role.noellesroles.the_insane_damned_paranoid_killer": "The Insane Damned Paranoid Killer Of Doom Death Destruction And Waffles",
+    "hud.noellesroles.the_insane_damned_paranoid_killer.corpse_active": "Corpse disguise active (press %s to disable)",
+    "hud.noellesroles.the_insane_damned_paranoid_killer.corpse_hint": "Press %s to play dead",
     "announcement.goals.noellesroles.operator": "Build the bridge of connection!",
     "announcement.role.noellesroles.operator": "Operator",
 

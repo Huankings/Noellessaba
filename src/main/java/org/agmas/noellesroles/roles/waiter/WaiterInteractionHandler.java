@@ -8,6 +8,7 @@ import dev.doctor4t.wathe.api.tray.TrayEffectHandler;
 import dev.doctor4t.wathe.api.tray.TrayEffectRegistry;
 import dev.doctor4t.wathe.api.task.MoodTaskApi;
 import dev.doctor4t.wathe.api.task.TaskCompletionApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -277,7 +278,13 @@ public final class WaiterInteractionHandler {
                 waiter,
                 entity -> entity instanceof ServerPlayerEntity player
                         && !player.equals(waiter)
-                        && GameFunctions.isPlayerAliveAndSurvival(player),
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        /*
+                         * 服务员的右键服务是玩家交互而不是攻击。
+                         * 尸体伪装这类状态会在 TargetVisibilityApi 里声明“不要把我当作活人目标”，
+                         * 所以这里也必须尊重 canInteractWithPlayer，避免准心不高亮但服务端仍然能递东西暴露身份。
+                         */
+                        && TargetVisibilityApi.canInteractWithPlayer(waiter, player),
                 WaiterConstants.INTERACTION_RANGE
         );
         if (hitResult instanceof EntityHitResult entityHitResult

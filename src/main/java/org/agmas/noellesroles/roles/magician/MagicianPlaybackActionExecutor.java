@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.roles.magician;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -112,7 +113,9 @@ public final class MagicianPlaybackActionExecutor {
             return;
         }
         Entity entity = entityHitResult.getEntity();
-        if (!(entity instanceof PlayerEntity target) || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+        if (!(entity instanceof PlayerEntity target)
+                || !GameFunctions.isPlayerAliveAndSurvival(target)
+                || !canPlaybackAttackPlayer(proxy, target)) {
             return;
         }
 
@@ -270,7 +273,9 @@ public final class MagicianPlaybackActionExecutor {
         if (entityHitResult == null || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
             return;
         }
-        if (!GameFunctions.isPlayerAliveAndSurvival(target) || target.distanceTo(proxy) > MELEE_TARGET_RANGE) {
+        if (!GameFunctions.isPlayerAliveAndSurvival(target)
+                || !canPlaybackAttackPlayer(proxy, target)
+                || target.distanceTo(proxy) > MELEE_TARGET_RANGE) {
             return;
         }
 
@@ -300,7 +305,8 @@ public final class MagicianPlaybackActionExecutor {
         java.util.function.Predicate<Entity> predicate = entity -> entity instanceof PlayerEntity player
                 && entity != proxy
                 && !entity.isSpectator()
-                && GameFunctions.isPlayerAliveAndSurvival(player);
+                && GameFunctions.isPlayerAliveAndSurvival(player)
+                && canPlaybackAttackPlayer(proxy, player);
 
         /*
          * Wathe 原版 KnifeItem.getKnifeTarget 使用 ProjectileUtil.getCollision。
@@ -379,7 +385,9 @@ public final class MagicianPlaybackActionExecutor {
             swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);
             return;
         }
-        if (!BayonetKnockbackHandler.canKnockback(proxy, target) || target.distanceTo(proxy) > MELEE_TARGET_RANGE) {
+        if (!BayonetKnockbackHandler.canKnockback(proxy, target)
+                || !canPlaybackAttackPlayer(proxy, target)
+                || target.distanceTo(proxy) > MELEE_TARGET_RANGE) {
             swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);
             return;
         }
@@ -526,7 +534,8 @@ public final class MagicianPlaybackActionExecutor {
                 && !(entity instanceof MagicianPlaybackFakePlayer)
                 && !(entity instanceof MagicianPlaybackEntity)
                 && !entity.isSpectator()
-                && GameFunctions.isPlayerAliveAndSurvival(player);
+                && GameFunctions.isPlayerAliveAndSurvival(player)
+                && canPlaybackAttackPlayer(proxy, player);
 
         /*
          * Wathe 左轮的原逻辑是客户端用 ProjectileUtil.getCollision 算目标再发包。
@@ -602,7 +611,9 @@ public final class MagicianPlaybackActionExecutor {
         if (!heldStack.isOf(ModItems.BAYONET) || !(hitResult instanceof EntityHitResult entityHitResult)) {
             return false;
         }
-        if (!(entityHitResult.getEntity() instanceof PlayerEntity target) || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+        if (!(entityHitResult.getEntity() instanceof PlayerEntity target)
+                || !GameFunctions.isPlayerAliveAndSurvival(target)
+                || !canPlaybackAttackPlayer(proxy, target)) {
             return false;
         }
         if (proxy.getItemCooldownManager().isCoolingDown(ModItems.BAYONET) || target.distanceTo(proxy) > MELEE_TARGET_RANGE) {
@@ -720,7 +731,13 @@ public final class MagicianPlaybackActionExecutor {
                 entity -> entity != proxy
                         && !(entity instanceof MagicianPlaybackFakePlayer)
                         && !(entity instanceof org.agmas.noellesroles.entities.MagicianPlaybackEntity)
-                        && !entity.isSpectator(),
+                        && !entity.isSpectator()
+                        /*
+                         * 播放体的右键交互不会经过玩家本人的客户端准心过滤。
+                         * 对玩家实体仍要询问 TargetVisibilityApi，避免对亡语杀手伪装尸体触发右键类物品/能力。
+                         */
+                        && (!(entity instanceof PlayerEntity target)
+                        || TargetVisibilityApi.canInteractWithPlayer(proxy, target)),
                 (float) range
         );
 
@@ -745,7 +762,8 @@ public final class MagicianPlaybackActionExecutor {
         java.util.function.Predicate<Entity> predicate = entity -> entity != proxy
                 && !(entity instanceof MagicianPlaybackFakePlayer)
                 && !(entity instanceof org.agmas.noellesroles.entities.MagicianPlaybackEntity)
-                && !entity.isSpectator();
+                && !entity.isSpectator()
+                && (!(entity instanceof PlayerEntity target) || canPlaybackAttackPlayer(proxy, target));
 
         /*
          * 攻击动作和开门/按钮交互不同：录制的是“我挥向面前这个人”，
@@ -793,6 +811,15 @@ public final class MagicianPlaybackActionExecutor {
         }
 
         return bestTarget == null ? null : new EntityHitResult(bestTarget);
+    }
+
+    private static boolean canPlaybackAttackPlayer(@NotNull PlayerEntity proxy, @NotNull PlayerEntity target) {
+        /*
+         * 魔术师播放体是服务端代理玩家，很多攻击不会重新进入 Wathe 默认枪/刀/玩家攻击链。
+         * 因此只要播放体自算目标，就必须手动接 TargetVisibilityApi 的 ATTACK 语义；
+         * 亡语杀手尸体伪装只拒绝 TARGET，不拒绝 ATTACK，所以播放体武器仍能正常命中它。
+         */
+        return TargetVisibilityApi.canAttackPlayer(proxy, target);
     }
 
     private static @NotNull NbtCompound replayActorDeathData(

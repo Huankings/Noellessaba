@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.drugmaker;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -56,7 +57,9 @@ public final class DrugmakerCrosshair {
     private static boolean hasTarget(@NotNull PlayerEntity player, float range) {
         HitResult hitResult = ProjectileUtil.getCollision(
                 player,
-                entity -> entity instanceof PlayerEntity targetPlayer && GameFunctions.isPlayerAliveAndSurvival(targetPlayer),
+                entity -> entity instanceof PlayerEntity targetPlayer
+                        && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                        && TargetVisibilityApi.canTargetPlayer(player, targetPlayer),
                 range
         );
         return hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof PlayerEntity;

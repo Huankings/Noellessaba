@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.client.mixin.roles.spring_trap;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -27,7 +28,12 @@ public abstract class SpringTrapAxeAttackClientMixin {
     private void noellesroles$handleSpringTrapAxeAttack(PlayerEntity player, Entity target, CallbackInfo ci) {
         if (!(target instanceof PlayerEntity targetPlayer)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)
-                || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)) {
+                || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                /*
+                 * 这里代表血斧 / 彩虹斧的真实左键攻击发包。
+                 * 只隐藏准心的伪装状态不应该挡住它，但真正拒绝 ATTACK 的目标仍要被拦下。
+                 */
+                || !TargetVisibilityApi.canAttackPlayer(player, targetPlayer)) {
             return;
         }
 

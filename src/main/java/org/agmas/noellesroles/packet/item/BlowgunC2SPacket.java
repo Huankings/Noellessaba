@@ -3,6 +3,7 @@ package org.agmas.noellesroles.packet.item;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -54,7 +55,12 @@ public record BlowgunC2SPacket(int target) implements CustomPayload {
         public void receive(@NotNull BlowgunC2SPacket payload, ServerPlayNetworking.@NotNull Context context) {
             ServerPlayerEntity player = context.player();
             if (!(player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)
-                    || target.distanceTo(player) > DrugmakerConstants.BLOWGUN_TARGET_RANGE) {
+                    || target.distanceTo(player) > DrugmakerConstants.BLOWGUN_TARGET_RANGE
+                    /*
+                     * 客户端准心已经会跳过不可选中的玩家，服务端仍要用 TargetVisibilityApi 做兜底。
+                     * 这样尸体伪装这类“不能被当作活人目标”的状态不会被伪造发包绕过。
+                     */
+                    || !TargetVisibilityApi.canAttackPlayer(player, target)) {
                 return;
             }
 

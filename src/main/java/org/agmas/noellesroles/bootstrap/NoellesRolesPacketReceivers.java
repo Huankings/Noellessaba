@@ -45,6 +45,7 @@ import org.agmas.noellesroles.roles.corpsemaker.CorpsemakerAbility;
 import org.agmas.noellesroles.roles.detective.DetectiveAbility;
 import org.agmas.noellesroles.roles.goddess.GoddessAbility;
 import org.agmas.noellesroles.roles.hunter.HunterAbility;
+import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerAbility;
 import org.agmas.noellesroles.roles.magician.MagicianTargetAbility;
 import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.roles.operator.OperatorAbility;
@@ -261,6 +262,8 @@ public final class NoellesRolesPacketReceivers {
                 HunterAbility.handle(player);
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.ROBOT)) {
                 RobotAbility.handle(player);
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES)) {
+                InsaneDamnedKillerAbility.handle(player);
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.TIMEKEEPER)) {
                 TimekeeperAbility.handleRepairOrUpgrade(player);
             }

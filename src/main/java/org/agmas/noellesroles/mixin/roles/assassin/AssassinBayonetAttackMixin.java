@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.mixin.roles.assassin;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +21,13 @@ public abstract class AssassinBayonetAttackMixin {
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     private void noellesroles$bayonetOnlyKnockback(Entity target, CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
-        if (!BayonetKnockbackHandler.canKnockback(self, target) || !(target instanceof PlayerEntity targetPlayer)) {
+        if (!BayonetKnockbackHandler.canKnockback(self, target)
+                || !(target instanceof PlayerEntity targetPlayer)
+                /*
+                 * 这是服务端 PlayerEntity#attack 的真实攻击入口。
+                 * 继续使用 ATTACK 语义，避免某些直接调用 attack(...) 的路径绕过 TargetVisibilityApi。
+                 */
+                || !TargetVisibilityApi.canAttackPlayer(self, targetPlayer)) {
             return;
         }
 

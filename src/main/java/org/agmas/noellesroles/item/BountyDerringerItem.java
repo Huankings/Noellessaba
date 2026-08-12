@@ -1,12 +1,11 @@
 package org.agmas.noellesroles.item;
 
-import dev.doctor4t.wathe.game.GameFunctions;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.item.DerringerItem;
 import dev.doctor4t.wathe.item.RevolverItem;
 import dev.doctor4t.wathe.util.GunShootPayload;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -15,6 +14,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 
@@ -32,10 +32,11 @@ public class BountyDerringerItem extends RevolverItem {
 
     @Override
     public TypedActionResult<ItemStack> use(@NotNull World world, @NotNull PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
         if (world.isClient) {
-            HitResult collision = getGunTarget(user);
-            if (collision instanceof EntityHitResult entityHitResult) {
-                Entity target = entityHitResult.getEntity();
+            EntityHitResult collision = getGunAttackTarget(user, stack);
+            if (collision != null) {
+                Entity target = collision.getEntity();
                 sendShootPacket(new GunShootPayload(target.getId()));
             } else {
                 sendShootPacket(new GunShootPayload(-1));
@@ -43,15 +44,30 @@ public class BountyDerringerItem extends RevolverItem {
             user.setPitch(user.getPitch() - 4);
             DerringerItem.spawnHandParticle();
         }
-        return TypedActionResult.consume(user.getStackInHand(hand));
+        return TypedActionResult.consume(stack);
     }
 
     public static HitResult getGunTarget(PlayerEntity user) {
-        return ProjectileUtil.getCollision(
-                user,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
-                BountyHunterConstants.BOUNTY_DERRINGER_RANGE_BLOCKS
-        );
+        return getGunTarget(user, user.getMainHandStack());
+    }
+
+    public static HitResult getGunTarget(PlayerEntity user, ItemStack stack) {
+        return WeaponTargetingApi.resolveVisibleGunTarget(user, stack, BountyHunterConstants.BOUNTY_DERRINGER_RANGE_BLOCKS);
+    }
+
+    /**
+     * 只用于开火发包的真实命中目标。
+     *
+     * <p>德林加的准心显示仍然复用 {@link #getGunTarget(PlayerEntity)}，
+     * 这样尸体伪装不会被高亮成可锁定目标；真正开枪时则允许命中伪装尸体。</p>
+     */
+    public static @Nullable EntityHitResult getGunAttackTarget(PlayerEntity user) {
+        return getGunAttackTarget(user, user.getMainHandStack());
+    }
+
+    public static @Nullable EntityHitResult getGunAttackTarget(PlayerEntity user, ItemStack stack) {
+        HitResult hitResult = WeaponTargetingApi.resolveAttackableGunTarget(user, stack, BountyHunterConstants.BOUNTY_DERRINGER_RANGE_BLOCKS);
+        return hitResult instanceof EntityHitResult entityHitResult ? entityHitResult : null;
     }
 
     private static void sendShootPacket(@NotNull GunShootPayload payload) {

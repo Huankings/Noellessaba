@@ -2,6 +2,7 @@ package org.agmas.noellesroles.item;
 
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -37,6 +38,12 @@ public class KnockoutDrugItem extends Item {
         if ((!ignoresCooldown && player.getItemCooldownManager().isCoolingDown(this))
                 || player.isSneaking()
                 || !(entity instanceof PlayerEntity targetPlayer)) {
+            return ActionResult.FAIL;
+        }
+        /*
+         * 迷药是强控制类右键物品，不能绕过尸体伪装的不可交互声明。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(player, targetPlayer)) {
             return ActionResult.FAIL;
         }
         if (player.getWorld().isClient) {

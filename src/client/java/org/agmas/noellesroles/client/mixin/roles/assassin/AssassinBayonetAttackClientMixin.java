@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.client.mixin.roles.assassin;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -28,7 +29,13 @@ public abstract class AssassinBayonetAttackClientMixin {
         if (!player.getMainHandStack().isOf(ModItems.BAYONET)
                 || !(target instanceof PlayerEntity targetPlayer)
                 || !GameFunctions.isPlayerAliveAndSurvival(player)
-                || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)) {
+                || !GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                /*
+                 * 这里是客户端快速发包入口，不走 Wathe 默认 attack 判定。
+                 * 它代表真实攻击动作，所以必须使用 ATTACK 语义；
+                 * 尸体伪装只隐藏 TARGET，不应该顺带免疫刺刀左键击退。
+                 */
+                || !TargetVisibilityApi.canAttackPlayer(player, targetPlayer)) {
             return;
         }
 

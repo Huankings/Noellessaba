@@ -45,6 +45,7 @@
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
 - 玩家碰撞总引导：`src/main/java/org/agmas/noellesroles/collision/NoellesPlayerCollisionHandlers.java`
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
+- Wathe 客户端武器目标 API：`dev.doctor4t.wathe.api.combat.WeaponTargetingApi`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
@@ -294,6 +295,7 @@ Wathe 侧公开入口：
 
 - `dev.doctor4t.wathe.api.combat.GunShotApi`
 - `dev.doctor4t.wathe.api.combat.GunShotContext`
+- `dev.doctor4t.wathe.api.combat.WeaponTargetingApi`
 - `dev.doctor4t.wathe.api.combat.RevolverPenaltyContext`
 - `dev.doctor4t.wathe.api.death.DeathApi`
 - `dev.doctor4t.wathe.api.death.DeathContext`
@@ -314,6 +316,28 @@ NoellesRoles 侧接入入口：
 - `roles/executioner/ExecutionerGunPenaltyHandler.java`：仇杀客目标和配置类左轮惩罚豁免。
 - `roles/licensed_villain/LicensedVillainGunPenaltyHandler.java`：执照恶棍左轮惩罚豁免。
 - `roles/morphling/MorphlingGunPenaltyHandler.java`：变形试剂伪装下的左轮惩罚豁免。
+
+### 武器目标判定
+
+NoellesRoles 的客户端武器目标必须区分“准心显示”和“真实攻击”两种语义，统一使用 Wathe `WeaponTargetingApi`：
+
+```java
+// 准心 / HUD / 玩家名：尸体伪装可以拒绝 TARGET，避免准心变化暴露身份。
+EntityHitResult visibleTarget =
+        WeaponTargetingApi.getVisibleAlivePlayerTarget(player, range);
+
+// 普通近战或物品真实命中：使用 ATTACK 语义，不能因为准心隐藏而造成无敌。
+EntityHitResult attackTarget =
+        WeaponTargetingApi.getAttackableAlivePlayerTarget(player, range);
+
+// 枪械需要继续接入 GunShotApi 的目标覆写链时，使用带 stack 的枪械入口。
+HitResult gunTarget =
+        WeaponTargetingApi.resolveAttackableGunTarget(player, stack, range);
+```
+
+枪械准心对应使用 `resolveVisibleGunTarget(player, stack, range)`，真实发包对应使用 `resolveAttackableGunTarget(player, stack, range)`。枪械 `stack` 应使用当前 `use()` / `onStoppedUsing()` 收到的手持物品，避免副手物品误读主手状态。客户端只负责准备目标实体 id，服务端仍要重新校验目标类型、职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。
+
+扩展武器不要再各自维护 `NoellesItemTargeting` 或重复拼接 `ProjectileUtil` + `TargetVisibilityApi`。具体武器仍按职业 / 词条放在自己的 `item` 或 `roles/<role>/` 包中，公共注册入口只负责调用对应 handler，不要把所有职业目标判定塞进一个大类。
 
 死亡 / 击杀相关逻辑同样按职业或词条拆分，例如：
 
@@ -397,7 +421,7 @@ NoellesInventoryButtonSupport.PagedExtension<MyRolePlayerWidget>
 
 需要动态增删列表时参考 `ConvenerInventoryButtons`：每 tick 比较目标 UUID 列表，变化后重建同一个 group。需要文本输入阶段禁止按 E 关背包时，在自己的 `InventoryButtonExtension.allowInventoryKeyClose(...)` 返回 `false`，并在 `close(...)` 里清掉静态输入状态。
 
-旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD、准心图标、准心名字以及玩家 / 尸体隐藏已经有 Wathe `HudOverlayApi` / `CrosshairHudApi` / `RoleNameHudApi` / `TargetVisibilityApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
+旧的 `LimitedInventoryScreen` / `LimitedHandledScreen` screen mixin 已经迁出或删除。新增背包按钮不要再添加 `*ScreenMixin` 到 `noellesroles.client.mixins.json`；普通屏幕 HUD、准心图标、准心名字、玩家 / 尸体隐藏以及武器目标射线已经有 Wathe `HudOverlayApi` / `CrosshairHudApi` / `RoleNameHudApi` / `TargetVisibilityApi` / `WeaponTargetingApi`，只有相机、输入控制、物品渲染等 Wathe 尚未公开 API 的场景才考虑窄 mixin。
 
 ## HUD 接入方式
 
@@ -407,7 +431,7 @@ NoellesRoles 的普通屏幕 HUD 已经迁移到 Wathe 公开 API，不再通过
 - 词条自己的固定屏幕 HUD：新建 `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/<ModifierName>Hud.java`。
 - 通用注册入口：在 `NoellesHudHandlers.register()` 里调用该职业 `*StatusHud.register()`。
 - 重复布局和存活职业过滤：使用 `NoellesHudSupport.registerAliveRole(...)`、`drawBottomRightLine(...)` 或 `drawBottomRightLines(...)`。
-- 准心图标、武器锁定和准心下方小进度条：新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>Crosshair.java`，并在 `NoellesCrosshairHandlers.register()` 里调用；通过 Wathe `CrosshairHudApi.registerProvider(...)` 或 `registerOverlay(...)` 接入。
+- 准心图标、武器锁定和准心下方小进度条：新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>Crosshair.java`，并在 `NoellesCrosshairHandlers.register()` 里调用；通过 Wathe `CrosshairHudApi.registerProvider(...)` 或 `registerOverlay(...)` 接入，目标选择使用 `WeaponTargetingApi` 的 visible 入口。
 - 准心名字、尸体信息、目标旁边的小提示：使用 Wathe `RoleNameHudApi.registerExtraHud(...)`、`registerName(...)` 或 `registerEntityName(...)`。
 - 狙击镜、黑屏控制、绑架提示这类全屏叠加：使用 `HudOverlayApi.register(...)` 并选择合适的 `HudOverlayLayer`。
 
@@ -589,7 +613,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 背包内玩家选择按钮不是 mixin。它们应通过 `NoellesInventoryButtons` 注册，再由各职业包里的 `*InventoryButtons.java` 接入 Wathe `InventoryButtonApi`。
 普通屏幕 HUD 也不是 mixin。它们应通过 `NoellesHudHandlers` 注册，再由各职业包里的 `*StatusHud.java` 接入 Wathe `HudOverlayApi`；只有相机、输入控制、物品渲染等缺少公开 API 的场景才保留窄 mixin。
-枪击接管、左轮反火、默认击杀收益、确认死亡后清理和尸体生成回调也不是 mixin；它们应通过 `NoellesRolesCombatBootstrap` / `NoellesRolesDeathBootstrap` 调用各职业 handler 接入 Wathe `GunShotApi` / `DeathApi`。
+枪击接管、左轮反火、默认击杀收益、确认死亡后清理和尸体生成回调也不是 mixin；它们应通过 `NoellesRolesCombatBootstrap` / `NoellesRolesDeathBootstrap` 调用各职业 handler 接入 Wathe `GunShotApi` / `WeaponTargetingApi` / `DeathApi`。
 
 ### 10. 需要回放和文本时
 

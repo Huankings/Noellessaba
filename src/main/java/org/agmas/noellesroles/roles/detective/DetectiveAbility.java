@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -52,7 +53,13 @@ public final class DetectiveAbility {
          */
         HitResult hitResult = ProjectileUtil.getCollision(
                 player,
-                entity -> entity instanceof PlayerEntity target && GameFunctions.isPlayerAliveAndSurvival(target),
+                entity -> entity instanceof PlayerEntity target
+                        && GameFunctions.isPlayerAliveAndSurvival(target)
+                        /*
+                         * 调查属于准心选人能力，也必须尊重 TargetVisibilityApi。
+                         * 尸体伪装玩家不应因为“可以被侦探调查”而暴露自己其实是活人。
+                         */
+                        && TargetVisibilityApi.canTargetPlayer(player, target),
                 DetectiveConstants.TARGET_RANGE
         );
         if (!(hitResult instanceof EntityHitResult entityHitResult)

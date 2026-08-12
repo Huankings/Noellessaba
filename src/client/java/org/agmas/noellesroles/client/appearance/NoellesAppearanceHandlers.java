@@ -15,6 +15,7 @@ import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerBodyExamine
 import org.agmas.noellesroles.client.appearance.roles.coroner.CoronerBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.detective.DetectiveTargetHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverAppearanceHandler;
+import org.agmas.noellesroles.client.appearance.roles.insane_damned_paranoid_killer.InsaneDamnedKillerAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.morphling.MorphlingAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.hacker.HackerTargetHudHandler;
 import org.agmas.noellesroles.client.appearance.roles.muzzler.MuzzlerSilencedTipHudHandler;
@@ -35,6 +36,7 @@ public final class NoellesAppearanceHandlers {
     }
 
     public static void register() {
+        InsaneDamnedKillerAppearanceHandler.register();
         TimekeeperRiftAppearanceHandler.register();
         SpiritualistAppearanceHandler.register();
         DualPersonalityAppearanceHandler.register();

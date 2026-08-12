@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.thief;
 
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -143,6 +144,13 @@ public final class ThiefInteractionHandler {
             return false;
         }
         if (ability.cooldown > 0 || !thief.getMainHandStack().isEmpty()) {
+            return false;
+        }
+        /*
+         * 服务端偷取结算也必须尊重 TargetVisibilityApi。
+         * 客户端准心过滤只负责显示；真正的右键交互包仍可能因为延迟或恶意客户端发到服务端。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(thief, target)) {
             return false;
         }
         if (!validateDistance(thief, target)) {

@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.spring_trap;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -32,7 +33,9 @@ public final class SpringTrapAxeCrosshair {
                     && !GameFunctions.isPlayerSpectatingOrCreative(context.player());
             HitResult hitResult = ProjectileUtil.getCollision(
                     context.player(),
-                    entity -> entity instanceof PlayerEntity target && GameFunctions.isPlayerAliveAndSurvival(target),
+                    entity -> entity instanceof PlayerEntity target
+                            && GameFunctions.isPlayerAliveAndSurvival(target)
+                            && TargetVisibilityApi.canTargetPlayer(context.player(), target),
                     SpringTrapConstants.BLOOD_AXE_TARGET_RANGE
             );
             boolean target = !coolingDown && hitResult instanceof EntityHitResult;
@@ -46,7 +49,9 @@ public final class SpringTrapAxeCrosshair {
         if (context.mainHandStack().isOf(ModItems.COLORFUL_AXE)) {
             HitResult hitResult = ProjectileUtil.getCollision(
                     context.player(),
-                    entity -> entity instanceof PlayerEntity target && GameFunctions.isPlayerAliveAndSurvival(target),
+                    entity -> entity instanceof PlayerEntity target
+                            && GameFunctions.isPlayerAliveAndSurvival(target)
+                            && TargetVisibilityApi.canTargetPlayer(context.player(), target),
                     SpringTrapConstants.COLORFUL_AXE_TARGET_RANGE
             );
             boolean target = hitResult instanceof EntityHitResult;

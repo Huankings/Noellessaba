@@ -2,6 +2,7 @@ package org.agmas.noellesroles.packet.item;
 
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheSounds;
@@ -62,7 +63,11 @@ public record HuntingKnifeC2SPacket(int target) implements CustomPayload {
             }
             if (!(player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)
                     || !GameFunctions.isPlayerAliveAndSurvival(target)
-                    || target.distanceTo(player) > HunterConstants.HUNTING_KNIFE_TARGET_RANGE) {
+                    || target.distanceTo(player) > HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                    /*
+                     * 服务端兜底检查目标可攻击性，避免尸体伪装玩家被伪造的猎刀命中包穿透。
+                     */
+                    || !TargetVisibilityApi.canAttackPlayer(player, target)) {
                 return;
             }
 

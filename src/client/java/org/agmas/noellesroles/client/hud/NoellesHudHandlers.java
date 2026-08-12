@@ -14,6 +14,7 @@ import org.agmas.noellesroles.client.roles.detective.DetectiveStatusHud;
 import org.agmas.noellesroles.client.roles.dreamer.DreamerStatusHud;
 import org.agmas.noellesroles.client.roles.executioner.ExecutionerTargetHud;
 import org.agmas.noellesroles.client.roles.hunter.HunterStatusHud;
+import org.agmas.noellesroles.client.roles.insane_damned_paranoid_killer.InsaneDamnedKillerStatusHud;
 import org.agmas.noellesroles.client.roles.kidnapper.KidnapperControlledHud;
 import org.agmas.noellesroles.client.roles.magician.MagicianPlaybackNameHud;
 import org.agmas.noellesroles.client.roles.magician.MagicianStatusHud;
@@ -73,6 +74,7 @@ public final class NoellesHudHandlers {
         RobotStatusHud.register();
         ThiefStatusHud.register();
         DreamerStatusHud.register();
+        InsaneDamnedKillerStatusHud.register();
         TimekeeperStatusHud.register();
     }
 }

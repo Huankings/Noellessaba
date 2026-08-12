@@ -2,6 +2,7 @@ package org.agmas.noellesroles.item;
 
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -36,6 +37,13 @@ public class PoisonInjectorItem extends Item {
     public ActionResult useOnEntity(ItemStack stack, @NotNull PlayerEntity player, @NotNull LivingEntity entity, @NotNull Hand hand) {
         boolean ignoresCooldown = GameFunctions.isPlayerSpectatingOrCreative(player);
         if ((!ignoresCooldown && player.getItemCooldownManager().isCoolingDown(this)) || !(entity instanceof PlayerEntity targetPlayer)) {
+            return ActionResult.FAIL;
+        }
+        /*
+         * 注射器会写毒药状态甚至立即毒杀，必须只允许真正可交互的活玩家目标。
+         * 这也兜住播放体/附身代操直接调用 useOnEntity 时绕过默认交互过滤的情况。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(player, targetPlayer)) {
             return ActionResult.FAIL;
         }
         if (player.getWorld().isClient) {

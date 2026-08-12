@@ -3,6 +3,7 @@ package org.agmas.noellesroles.packet.item;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -55,7 +56,12 @@ public record PanC2SPacket(int target) implements CustomPayload {
             }
             if (!(player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)
                     || !GameFunctions.isPlayerAliveAndSurvival(target)
-                    || target.distanceTo(player) > CookConstants.PAN_TARGET_RANGE) {
+                    || target.distanceTo(player) > CookConstants.PAN_TARGET_RANGE
+                    /*
+                     * 平底锅是控制类命中，也要尊重 TargetVisibilityApi；
+                     * 否则尸体伪装虽然不高亮，仍可能被伪造目标包眩晕。
+                     */
+                    || !TargetVisibilityApi.canAttackPlayer(player, target)) {
                 return;
             }
 

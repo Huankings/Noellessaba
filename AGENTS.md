@@ -118,7 +118,7 @@
 - 通用屏幕 HUD：`HudOverlayApi`、`HudOverlayContext`、`HudOverlayLayer`、`HudOverlayLayout`
 - 准心图标 / 准心下方小进度条：`CrosshairHudApi`
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
-- 玩家 / 尸体隐藏、不可选中和不可交互：`TargetVisibilityApi`
+- 玩家 / 尸体隐藏、不可选中、不可交互和不可攻击：`TargetVisibilityApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
@@ -126,6 +126,7 @@
 - 玩家体力：`PlayerStaminaApi`、`PlayerStaminaComponent`
 - 玩家移动速度：`PlayerMovementApi`
 - 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
+- 客户端武器目标选择：`WeaponTargetingApi`
 - 击杀/死亡分阶段流程、默认击杀奖励、尸体生成回调：`DeathApi`、`DeathContext`、`BodySpawnContext`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
 - 胜利规则：`VictoryApi`
@@ -290,6 +291,15 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 
 枪击接管、左轮反火、客户端目标覆写、左轮冷却修正优先接 Wathe `GunShotApi`，不要再新增 `GunShootPayload`、`RevolverItem` 或 `DerringerItem` mixin。NoellesRoles 侧按职业/词条拆 handler，例如 `roles/robber/RobberGunHandler`、`roles/assassin/AssassinGunHandler`、`roles/coward/CowardGunCooldownHandler`、`roles/jester/JesterGunTargetHandler`、`roles/executioner/ExecutionerGunPenaltyHandler`，然后只在 `NoellesRolesCombatBootstrap` 里调用 `init()`。
 
+客户端武器在准备发送命中包时统一使用 Wathe `dev.doctor4t.wathe.api.combat.WeaponTargetingApi`，不要在 NoellesRoles 里重新组合 `ProjectileUtil`、`GameFunctions.isPlayerAliveAndSurvival(...)` 和 `TargetVisibilityApi`：
+
+- 准心、HUD、玩家名和锁定提示使用 `WeaponTargetingApi.getVisibleAlivePlayerTarget(player, range)`。
+- 普通近战或物品真实命中使用 `WeaponTargetingApi.getAttackableAlivePlayerTarget(player, range)`。
+- 枪械准心使用 `WeaponTargetingApi.resolveVisibleGunTarget(player, stack, range)`。
+- 枪械真实发包使用 `WeaponTargetingApi.resolveAttackableGunTarget(player, stack, range)`。
+
+这四个入口已经分别处理 `TARGET` 和 `ATTACK` 语义，并且枪械入口会继续经过 Wathe `GunShotApi` 的目标覆写链。尸体伪装可以隐藏准心变化，但不会因为隐藏 `TARGET` 而获得攻击免疫。客户端目标只负责准备实体 id，服务端 packet / `GunShotContext` 仍必须重新校验职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。`NoellesItemTargeting` 这类扩展侧重复 helper 不应重新创建。
+
 击杀奖励、重复死亡保护、致死确认前转化、确认死亡后清理、心情重置前处理、尸体生成回调优先接 Wathe `DeathApi`，不要再新增 `GameFunctions.killPlayer(...)` mixin。NoellesRoles 侧按职业或词条拆 handler，例如 `roles/timekeeper/TimekeeperDeathHandler`、`modifiers/dual_personality/DualPersonalityDeathHandler`、`roles/bounty_hunter/BountyHunterDeathHandler`、`roles/coroner/CoronerBodySpawnHandler`，然后只在 `NoellesRolesDeathBootstrap` 里注册。
 
 死亡优先级以 Wathe `DeathApi` 常量为准：重复死亡吞噬最高，其次是特殊存活保护、死亡流程状态、回放上下文、致死确认前拦截、普通逻辑、确认死亡后的奖励/二段机制、最终清理。priority 越大越先执行；同 priority 后注册的规则先执行。新增 handler 时必须在中文注释里说明它选用该阶段和 priority 的原因，避免反火、免死、赏金、时间狭缝和双重人格转化互相抢顺序。
@@ -311,10 +321,10 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 ## 客户端与 mixin
 
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
-- 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，不要 mixin `CrosshairRenderer`。
+- 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，目标射线使用 `WeaponTargetingApi` 的 visible 入口，不要 mixin `CrosshairRenderer`。
 - 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
-- 枪击、左轮反火、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `DeathApi`。
+- 枪击、左轮反火、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `WeaponTargetingApi` / `DeathApi`。
 - 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。

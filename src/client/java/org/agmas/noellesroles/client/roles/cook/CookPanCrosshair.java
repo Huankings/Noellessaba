@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.cook;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +36,9 @@ public final class CookPanCrosshair {
         ClientPlayerEntity player = context.player();
         HitResult hitResult = ProjectileUtil.getCollision(
                 player,
-                entity -> entity instanceof PlayerEntity targetPlayer && GameFunctions.isPlayerAliveAndSurvival(targetPlayer),
+                entity -> entity instanceof PlayerEntity targetPlayer
+                        && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                        && TargetVisibilityApi.canTargetPlayer(player, targetPlayer),
                 CookConstants.PAN_TARGET_RANGE
         );
         boolean target = !player.getItemCooldownManager().isCoolingDown(ModItems.PAN)

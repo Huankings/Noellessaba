@@ -2,6 +2,7 @@ package org.agmas.noellesroles.item;
 
 import org.agmas.noellesroles.registry.NoellesEventIds;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.item.RevolverItem;
 import net.minecraft.entity.Entity;
@@ -110,7 +111,9 @@ public class SniperRifleItem extends Item {
     public static HitResult getVisibleTarget(@NotNull PlayerEntity user) {
         return ProjectileUtil.getCollision(
                 user,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        && TargetVisibilityApi.canTargetPlayer(user, player),
                 (float) RemembererConstants.SNIPER_RANGE_BLOCKS
         );
     }

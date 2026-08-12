@@ -3,6 +3,7 @@ package org.agmas.noellesroles.item;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -34,6 +35,13 @@ public class DreamImprintItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, @NotNull PlayerEntity player, @NotNull LivingEntity entity, @NotNull Hand hand) {
         if (!(entity instanceof PlayerEntity targetPlayer)) {
+            return ActionResult.PASS;
+        }
+        /*
+         * 梦印护盾是对活玩家的右键增益。尸体伪装目标不应被当作可交互玩家，
+         * 否则客户端 SUCCESS 或服务端提示都会暴露伪装。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(player, targetPlayer)) {
             return ActionResult.PASS;
         }
 

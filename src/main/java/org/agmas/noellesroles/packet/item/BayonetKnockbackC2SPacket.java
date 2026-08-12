@@ -2,6 +2,7 @@ package org.agmas.noellesroles.packet.item;
 
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,6 +72,13 @@ public record BayonetKnockbackC2SPacket(int target) implements CustomPayload {
                 return;
             }
             if (!BayonetKnockbackHandler.canKnockback(attacker, target)) {
+                return;
+            }
+            /*
+             * 左键击退虽然不致死，但仍属于“攻击玩家目标”的链路。
+             * 亡语杀手躺尸时应像普通尸体一样不可被玩家准心/攻击锁到，所以这里用 ATTACK 语义兜底。
+             */
+            if (!TargetVisibilityApi.canAttackPlayer(attacker, target)) {
                 return;
             }
             if (!GameFunctions.isPlayerAliveAndSurvival(target) || target.distanceTo(attacker) > 3.0F) {

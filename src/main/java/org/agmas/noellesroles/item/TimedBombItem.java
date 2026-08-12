@@ -2,6 +2,7 @@ package org.agmas.noellesroles.item;
 
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -32,6 +33,13 @@ public class TimedBombItem extends Item {
 
         // 只有玩家才能成为定时炸弹的目标
         if (!(entity instanceof PlayerEntity target)) {
+            return ActionResult.PASS;
+        }
+        /*
+         * 定时炸弹放置/传递都属于对活玩家右键交互。
+         * 若目标正在伪装成尸体，不应被当作可挂载炸弹的玩家。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(user, target)) {
             return ActionResult.PASS;
         }
 

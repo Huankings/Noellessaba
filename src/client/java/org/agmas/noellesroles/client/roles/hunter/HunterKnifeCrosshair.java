@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.hunter;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
@@ -39,7 +40,9 @@ public final class HunterKnifeCrosshair {
         ItemCooldownManager manager = player.getItemCooldownManager();
         HitResult hitResult = ProjectileUtil.getCollision(
                 player,
-                entity -> entity instanceof PlayerEntity targetPlayer && GameFunctions.isPlayerAliveAndSurvival(targetPlayer),
+                entity -> entity instanceof PlayerEntity targetPlayer
+                        && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                        && TargetVisibilityApi.canTargetPlayer(player, targetPlayer),
                 HunterConstants.HUNTING_KNIFE_TARGET_RANGE
         );
         /*

@@ -1,10 +1,10 @@
 package org.agmas.noellesroles.item;
 
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheSounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.CustomPayload;
@@ -12,7 +12,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.packet.item.PanC2SPacket;
 import org.agmas.noellesroles.roles.cook.CookConstants;
@@ -53,13 +52,9 @@ public class PanItem extends Item {
         }
 
         if (world.isClient && remainingUseTicks > CookConstants.PAN_CLIENT_SEND_GRACE_TICKS) {
-            HitResult hitResult = ProjectileUtil.getCollision(
-                    player,
-                    entity -> entity instanceof PlayerEntity target && GameFunctions.isPlayerAliveAndSurvival(target),
-                    CookConstants.PAN_TARGET_RANGE
-            );
-            if (hitResult instanceof EntityHitResult entityHitResult) {
-                sendPacket(new PanC2SPacket(entityHitResult.getEntity().getId()));
+            EntityHitResult hitResult = WeaponTargetingApi.getAttackableAlivePlayerTarget(player, CookConstants.PAN_TARGET_RANGE);
+            if (hitResult != null) {
+                sendPacket(new PanC2SPacket(hitResult.getEntity().getId()));
             }
         }
     }

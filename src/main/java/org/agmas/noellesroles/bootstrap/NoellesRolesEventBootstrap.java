@@ -64,6 +64,7 @@ import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
@@ -168,6 +169,11 @@ public final class NoellesRolesEventBootstrap {
             ConvenerMomentumComponent.KEY.get(playerEntity).reset();
             BountyHunterPlayerComponent.KEY.get(playerEntity).reset();
             MorphMarkPlayerComponent.KEY.get(playerEntity).clear();
+            /*
+             * 尸体伪装是局内临时状态，必须跟随 Harpy 的玩家重置一起清掉。
+             * 这样调试重置、回合切换或其它强制重置入口不会留下“非亡语杀手仍躺尸”的同步残留。
+             */
+            InsaneDamnedKillerPlayerComponent.KEY.get(playerEntity).reset();
             if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
                 MorphlingReagentService.clearReagentReleaseGate(serverPlayer);
             }

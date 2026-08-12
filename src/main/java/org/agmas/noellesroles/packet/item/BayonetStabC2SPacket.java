@@ -2,6 +2,7 @@ package org.agmas.noellesroles.packet.item;
 
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -55,6 +56,13 @@ public record BayonetStabC2SPacket(int target) implements CustomPayload {
             }
             if (!(player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)
                     || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+                return;
+            }
+            /*
+             * 客户端刺刀射线复用 Wathe KnifeItem，理论上已经会跳过不可选中的玩家。
+             * 服务端仍要做权威兜底，避免尸体伪装被延迟包或伪造包刺中并暴露身份。
+             */
+            if (!TargetVisibilityApi.canAttackPlayer(player, target)) {
                 return;
             }
             if (target.distanceTo(player) > 3.0F) {

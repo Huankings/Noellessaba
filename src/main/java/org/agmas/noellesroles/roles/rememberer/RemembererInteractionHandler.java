@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.rememberer;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -100,6 +101,13 @@ public final class RemembererInteractionHandler {
         if (!GameFunctions.isPlayerAliveAndSurvival(rememberer) || !GameFunctions.isPlayerAliveAndSurvival(target)) {
             return false;
         }
+        /*
+         * 追忆者摸取和它的客户端准心提示共用此校验。
+         * 若目标处于尸体伪装，应表现为没有可摸取的活人目标，避免准心/右键反馈暴露。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(rememberer, target)) {
+            return false;
+        }
         if (!rememberer.getMainHandStack().isEmpty()) {
             return false;
         }
@@ -123,6 +131,7 @@ public final class RemembererInteractionHandler {
     public static boolean isRecallTargetEntity(PlayerEntity player, Entity entity) {
         return entity instanceof PlayerEntity target
                 && validateRecallDistance(player, target)
+                && TargetVisibilityApi.canInteractWithPlayer(player, target)
                 && hasClearSight(player, entity);
     }
 

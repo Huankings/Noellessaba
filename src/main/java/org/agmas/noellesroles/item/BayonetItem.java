@@ -12,6 +12,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.packet.item.BayonetStabC2SPacket;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,10 +49,12 @@ public class BayonetItem extends Item {
 
         /*
          * 刺刀不需要像匕首那样进入“举刀蓄力”状态。
-         * 这里客户端只要瞄到了有效目标，就立刻发包给服务端判定。
+         * 这里属于真实刺杀发包入口，必须使用 ATTACK 语义：
+         * 尸体伪装玩家会拒绝 TARGET 来隐藏准心变化，但不能因此免疫刺刀伤害。
+         * 准心 HUD 仍然走 getBayonetTarget，避免玩家通过图标变化识破伪装。
          */
         if (world.isClient) {
-            HitResult collision = getBayonetTarget(user);
+            HitResult collision = getBayonetAttackTarget(user);
             if (collision instanceof EntityHitResult entityHitResult) {
                 sendBayonetPacket(new BayonetStabC2SPacket(entityHitResult.getEntity().getId()));
             }
@@ -64,8 +67,20 @@ public class BayonetItem extends Item {
         return TypedActionResult.success(stack, false);
     }
 
-    public static HitResult getBayonetTarget(@NotNull PlayerEntity user) {
+    public static @Nullable HitResult getBayonetTarget(@NotNull PlayerEntity user) {
+        /*
+         * 准心和 HUD 只应该关心“它看起来是不是一个可锁定目标”。
+         * 因此这里保留 Wathe 匕首的 TARGET 语义，不会暴露亡语杀手的尸体伪装。
+         */
         return KnifeItem.getKnifeTarget(user);
+    }
+
+    public static @Nullable HitResult getBayonetAttackTarget(@NotNull PlayerEntity user) {
+        /*
+         * 右键刺杀是真实伤害入口，必须与 Wathe 匕首一样使用 ATTACK 语义。
+         * 服务端 BayonetStabC2SPacket 仍会再次校验距离、冷却、存活和 canAttackPlayer。
+         */
+        return KnifeItem.getKnifeAttackTarget(user, user.getMainHandStack());
     }
 
     private static void sendBayonetPacket(@NotNull CustomPayload payload) {

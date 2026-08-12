@@ -2,6 +2,7 @@ package org.agmas.noellesroles.item;
 
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.Entity;
@@ -107,7 +108,8 @@ public class CrystalBallItem extends Item {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(user.getWorld());
         return gameWorld.isRunning()
                 && gameWorld.getRole(target) != null
-                && GameFunctions.isPlayerAliveAndSurvival(target);
+                && GameFunctions.isPlayerAliveAndSurvival(target)
+                && TargetVisibilityApi.canTargetPlayer(user, target);
     }
 
     /**

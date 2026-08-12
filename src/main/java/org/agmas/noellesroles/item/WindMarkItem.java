@@ -2,6 +2,7 @@ package org.agmas.noellesroles.item;
 
 import org.agmas.noellesroles.registry.NoellesEventIds;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -37,6 +38,12 @@ public class WindMarkItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!(entity instanceof PlayerEntity target)) {
+            return ActionResult.PASS;
+        }
+        /*
+         * 对玩家直接挂印记属于右键玩家交互。尸体伪装玩家应像普通尸体一样不可被选作活人目标。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(user, target)) {
             return ActionResult.PASS;
         }
 

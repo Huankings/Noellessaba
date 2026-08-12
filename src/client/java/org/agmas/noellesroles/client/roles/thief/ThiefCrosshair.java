@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.thief;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
@@ -66,6 +67,12 @@ public final class ThiefCrosshair {
         HitResult hitResult = client.crosshairTarget;
         if (hitResult instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof PlayerEntity target) {
             return GameFunctions.isPlayerAliveAndSurvival(target)
+                    /*
+                     * 尸体伪装玩家在 TargetVisibilityApi 中声明“不要被当作准心目标”。
+                     * 小偷空手准心直接读取 client.crosshairTarget，如果不补这层过滤，
+                     * 玩家对准伪装尸体时仍会出现偷窃图标，从而暴露这其实是活人。
+                     */
+                    && TargetVisibilityApi.canTargetPlayer(player, target)
                     && player.squaredDistanceTo(target) <= ThiefConstants.CLIENT_STEAL_RANGE * ThiefConstants.CLIENT_STEAL_RANGE
                     && ThiefInteractionHandler.validateDistance(player, target);
         }

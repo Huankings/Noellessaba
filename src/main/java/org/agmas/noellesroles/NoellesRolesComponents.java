@@ -33,6 +33,7 @@ import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
@@ -134,6 +135,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, RobotPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(RobotPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AllergicPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AllergicPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SpringTrapPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpringTrapPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, InsaneDamnedKillerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(InsaneDamnedKillerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, TimekeeperPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(TimekeeperPlayerComponent::new);
     }
 

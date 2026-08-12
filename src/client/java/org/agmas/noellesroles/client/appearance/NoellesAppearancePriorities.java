@@ -20,6 +20,12 @@ public final class NoellesAppearancePriorities {
     public static final int TIMEKEEPER_RIFT = 3000;
 
     /**
+     * 尸体伪装必须压过普通皮肤 / 名字伪装：
+     * 当玩家躺成尸体时，准心名字应直接隐藏，不能再被变形、召集者或精神错乱名字规则改回可读文本。
+     */
+    public static final int CORPSE_MODE = 4000;
+
+    /**
      * 召集者会在全体活人身上强制套尸体皮肤，必须高于普通主动变形。
      */
     public static final int CONVENER = 1000;

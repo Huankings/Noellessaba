@@ -4,6 +4,7 @@ import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -48,6 +49,13 @@ public final class MuzzlerInteractionHandler {
             if (!gameWorld.isRunning()
                     || !GameFunctions.isPlayerAliveAndSurvival(player)
                     || !GameFunctions.isPlayerAliveAndSurvival(victim)) {
+                return ActionResult.PASS;
+            }
+            /*
+             * 撕胶带也是右键玩家交互。尸体伪装玩家不应进入“可协助撕胶带”的交互语义，
+             * 否则对准时的右键反馈会说明它不是一具普通尸体。
+             */
+            if (!TargetVisibilityApi.canInteractWithPlayer(player, victim)) {
                 return ActionResult.PASS;
             }
 

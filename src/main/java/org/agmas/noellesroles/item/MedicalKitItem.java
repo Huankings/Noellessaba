@@ -3,6 +3,7 @@ package org.agmas.noellesroles.item;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -41,6 +42,13 @@ public class MedicalKitItem extends Item {
     public ActionResult useOnEntity(ItemStack stack, @NotNull PlayerEntity player, @NotNull LivingEntity entity, @NotNull Hand hand) {
         boolean ignoresCooldown = GameFunctions.isPlayerSpectatingOrCreative(player);
         if ((!ignoresCooldown && player.getItemCooldownManager().isCoolingDown(this)) || !(entity instanceof PlayerEntity targetPlayer)) {
+            return ActionResult.PASS;
+        }
+        /*
+         * 医疗箱虽然是友方交互，但仍会产生客户端成功反馈和服务端治疗回放。
+         * 尸体伪装玩家应当像普通尸体一样不可被当作活玩家治疗目标。
+         */
+        if (!TargetVisibilityApi.canInteractWithPlayer(player, targetPlayer)) {
             return ActionResult.PASS;
         }
 

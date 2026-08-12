@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.roles.spiritualist;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -46,6 +47,11 @@ public final class SpiritualistTargeting {
                 entity -> entity instanceof PlayerEntity target
                         && !target.getUuid().equals(player.getUuid())
                         && GameFunctions.isPlayerAliveAndSurvival(target)
+                        /*
+                         * 附身技能的 HUD 和服务端 fallback 共用此射线。
+                         * 尸体伪装应表现为“准心没有锁到活玩家”，否则灵术师能力提示会直接暴露伪装。
+                         */
+                        && TargetVisibilityApi.canInteractWithPlayer(player, target)
                         && extraPredicate.test(target),
                 SpiritualistConstants.POSSESSION_RANGE
         );
@@ -64,6 +70,10 @@ public final class SpiritualistTargeting {
     private static boolean isValidPossessionTarget(@NotNull ServerPlayerEntity player, @NotNull ServerPlayerEntity target) {
         return !target.getUuid().equals(player.getUuid())
                 && GameFunctions.isPlayerAliveAndSurvival(target)
+                /*
+                 * 客户端传来的 entity id 不能直接信任，服务端必须再次校验目标是否仍可交互。
+                 */
+                && TargetVisibilityApi.canInteractWithPlayer(player, target)
                 && player.squaredDistanceTo(target) <= SpiritualistConstants.POSSESSION_RANGE_SQUARED;
     }
 }

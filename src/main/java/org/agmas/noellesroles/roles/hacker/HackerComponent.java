@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import dev.doctor4t.wathe.api.Role;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -102,7 +103,13 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
     private boolean isHackerLookingAtTarget(@NotNull PlayerEntity hacker) {
         HitResult hitResult = ProjectileUtil.getCollision(
                 hacker,
-                entity -> entity instanceof PlayerEntity targetPlayer && GameFunctions.isPlayerAliveAndSurvival(targetPlayer),
+                entity -> entity instanceof PlayerEntity targetPlayer
+                        && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                        /*
+                         * 黑客破解依赖“准心持续看着目标”的语义。
+                         * 因此这里也要跳过不可被准心选中的玩家，避免尸体伪装靠破解进度暴露。
+                         */
+                        && TargetVisibilityApi.canTargetPlayer(hacker, targetPlayer),
                 2.0F
         );
         return hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() == this.player;

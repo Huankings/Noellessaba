@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.client.mixin.roles.magician;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -24,7 +25,9 @@ public abstract class MagicianSniperVisibleTargetMixin {
     private static void noellesroles$allowPlaybackTarget(@NotNull PlayerEntity user, CallbackInfoReturnable<HitResult> cir) {
         HitResult hitResult = ProjectileUtil.getCollision(
                 user,
-                entity -> (entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player))
+                entity -> (entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        && TargetVisibilityApi.canTargetPlayer(user, player))
                         || entity instanceof MagicianPlaybackEntity,
                 (float) RemembererConstants.SNIPER_RANGE_BLOCKS
         );

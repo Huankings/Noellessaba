@@ -68,6 +68,7 @@ import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
@@ -178,6 +179,11 @@ public final class TimekeeperSnapshots {
             component("noellesroles:robot", RobotPlayerComponent.KEY),
             component("noellesroles:allergic", AllergicPlayerComponent.KEY),
             component("noellesroles:magician", MagicianPlayerComponent.KEY),
+            /*
+             * 亡语杀手尸体伪装是玩家局内运行态：
+             * 30 秒前如果还没躺尸，回溯后就应该站起来；30 秒前如果已经躺尸，回溯后也应恢复该伪装。
+             */
+            component("noellesroles:insane_damned_paranoid_killer", InsaneDamnedKillerPlayerComponent.KEY),
             /*
              * 血斧开局冷却来源会影响客户端 tooltip 对剩余秒数的换算。
              * 物品冷却本身已经被时停者快照保存，这里同步保存来源标记，避免回溯后显示 30/45 秒总长错位。

@@ -2,6 +2,7 @@ package org.agmas.noellesroles.client.roles.coward;
 
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -178,7 +179,13 @@ public final class CowardClientEffects {
                 start,
                 end,
                 searchBox,
-                entity -> entity instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player),
+                entity -> entity instanceof PlayerEntity player
+                        && GameFunctions.isPlayerAliveAndSurvival(player)
+                        /*
+                         * 胆小鬼会把左轮射线改成“抖动后的射线”，不能只依赖 Wathe 默认左轮目标过滤。
+                         * 这里继续询问 TargetVisibilityApi，确保亡语杀手伪装尸体时不会被偏移射线锁定。
+                         */
+                        && TargetVisibilityApi.canTargetPlayer(user, player),
                 maxDistanceSquared
         );
         return entityHit != null ? entityHit : blockHit;

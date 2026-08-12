@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.angel;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -207,6 +208,11 @@ public final class AngelAbility {
         if (clientTargetId >= 0 && player.getServerWorld().getEntityById(clientTargetId) instanceof ServerPlayerEntity serverTarget) {
             if (!player.getUuid().equals(serverTarget.getUuid())
                     && GameFunctions.isPlayerAliveAndSurvival(serverTarget)
+                    /*
+                     * 客户端传来的目标只代表“它说自己看到了谁”，服务端仍要尊重统一目标隐藏规则。
+                     * 尸体伪装玩家不能让天使 HUD/能力从“安抚模式”切成“守护模式”暴露身份。
+                     */
+                    && TargetVisibilityApi.canInteractWithPlayer(player, serverTarget)
                     && player.squaredDistanceTo(serverTarget) <= AngelConstants.GUARD_RANGE_SQUARED) {
                 return serverTarget;
             }
@@ -219,7 +225,12 @@ public final class AngelAbility {
                 player,
                 entity -> entity instanceof PlayerEntity target
                         && !target.getUuid().equals(player.getUuid())
-                        && GameFunctions.isPlayerAliveAndSurvival(target),
+                        && GameFunctions.isPlayerAliveAndSurvival(target)
+                        /*
+                         * 守护目标判定同时被客户端 HUD 和服务端兜底复用。
+                         * 这里接 TargetVisibilityApi，避免玩家对准亡语杀手伪装尸体时，技能模式/HUD 发生变化。
+                         */
+                        && TargetVisibilityApi.canInteractWithPlayer(player, target),
                 AngelConstants.GUARD_RANGE
         );
         if (hitResult instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof PlayerEntity target) {

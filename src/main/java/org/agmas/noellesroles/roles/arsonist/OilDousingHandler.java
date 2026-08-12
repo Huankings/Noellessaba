@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.arsonist;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -40,6 +41,13 @@ public final class OilDousingHandler {
                 return ActionResult.PASS;
             }
             if (!(entity instanceof ServerPlayerEntity target)) {
+                return ActionResult.PASS;
+            }
+            /*
+             * 浇油是右键玩家交互，必须尊重统一目标隐藏。
+             * 亡语杀手伪装尸体时不应被汽油桶点中，也不应因此暴露“这是活玩家”。
+             */
+            if (!TargetVisibilityApi.canInteractWithPlayer(player, target)) {
                 return ActionResult.PASS;
             }
 

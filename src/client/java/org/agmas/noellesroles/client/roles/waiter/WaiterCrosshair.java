@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.waiter;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -45,7 +46,9 @@ public final class WaiterCrosshair {
         // 同一套原版攻击距离判定，只是拿来判断准星是否已经对准一个活着的玩家。
         HitResult hitResult = ProjectileUtil.getCollision(
                 player,
-                entity -> entity instanceof PlayerEntity targetPlayer && GameFunctions.isPlayerAliveAndSurvival(targetPlayer),
+                entity -> entity instanceof PlayerEntity targetPlayer
+                        && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
+                        && TargetVisibilityApi.canTargetPlayer(player, targetPlayer),
                 WaiterConstants.INTERACTION_RANGE
         );
         boolean target = hitResult instanceof EntityHitResult;
