@@ -32,7 +32,18 @@ public final class GraverobberBodyInfoAccess {
 
     public static boolean canSeeExaminePrompt(@NotNull ClientPlayerEntity viewer) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
-        return gameWorld.isRole(viewer, NoellesRoleRegistry.CORONER) || isGraverobber(viewer);
+        /*
+         * 这里控制的是验尸官“靠近检查尸体并获得金币”的专属提示，
+         * 包括“已检查过此尸体”和“已检查 / 总计金币”等奖励相关字幕。
+         *
+         * 盗墓者只复用 CoronerBodyHudHandler 的基础尸体信息，
+         * 也就是死亡时间、死因和尸体职业；它不拥有验尸官的检查奖励机制，
+         * 因此不能继续通过这个入口显示验尸官专属的金币提示。
+         *
+         * 服务端实际发放金币的逻辑仍然只判断验尸官职业，这里的判断只负责
+         * 客户端 HUD 可见性，不会改变任何实际奖励或尸体信息读取规则。
+         */
+        return gameWorld.isRole(viewer, NoellesRoleRegistry.CORONER);
     }
 
     public static boolean shouldBlockCoronerReadoutForSanity(@NotNull ClientPlayerEntity viewer) {
