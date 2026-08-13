@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.insane_damned_paranoid_killer;
 
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
+import dev.doctor4t.wathe.game.GameFunctions;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 /**
@@ -39,6 +40,18 @@ public final class InsaneDamnedKillerTargetVisibilityHandler {
                     }
 
                     if (context.action() == TargetVisibilityApi.Action.TARGET) {
+                        /*
+                         * 普通存活玩家依旧不能把尸体伪装当作可锁定目标，避免准心、名字和武器图标暴露伪装。
+                         *
+                         * 但旁观/创造玩家本来就承担复盘、导播、管理和调试视角的职责，
+                         * 他们需要沿用 RoleNameRenderer 原本对非存活视角的表现：
+                         * 能把这个尸体伪装当作可读名字的准心目标，从而继续显示名字和职业 HUD。
+                         * 这里仅放开 TARGET，不动 ATTACK / INTERACT 的真实玩法语义。
+                         */
+                        if (GameFunctions.isPlayerSpectatingOrCreative(context.viewer())) {
+                            return TargetVisibilityApi.Decision.ALLOW;
+                        }
+
                         /*
                          * TARGET 只负责“准心射线能不能把它识别成玩家目标”：
                          * - Wathe 默认准心不会变成命中态；

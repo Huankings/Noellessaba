@@ -4,6 +4,7 @@ import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.client.appearance.NoellesAppearancePriorities;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
+import dev.doctor4t.wathe.game.GameFunctions;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 
 /**
@@ -21,9 +22,18 @@ public final class InsaneDamnedKillerAppearanceHandler {
         RoleNameHudApi.registerName(
                 NoellesAppearanceSupport.id("insane_damned_killer/corpse/name"),
                 NoellesAppearancePriorities.CORPSE_MODE,
-                (viewer, target, originalName) -> InsaneDamnedKillerPlayerComponent.isActiveCorpseMode(target)
-                        ? Text.literal("")
-                        : null
+                (viewer, target, originalName) -> {
+                    if (!InsaneDamnedKillerPlayerComponent.isActiveCorpseMode(target)) {
+                        return null;
+                    }
+
+                    /*
+                     * 亡语杀手尸体伪装仍然要对正常存活玩家隐藏真名；
+                     * 但旁观/创造视角属于原版 RoleNameRenderer 会显示名字的观察视角，
+                     * 这里不能再把名字强行抹空，否则导播、复盘和管理员会失去原本能看的信息。
+                     */
+                    return GameFunctions.isPlayerSpectatingOrCreative(viewer) ? originalName : Text.literal("");
+                }
         );
     }
 }
