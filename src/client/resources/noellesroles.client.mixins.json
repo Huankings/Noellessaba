@@ -45,6 +45,8 @@
     "roles.engineer.StunnedKeyBindingMixin",
     "modifiers.violator.ViolatorKeyBindingMixin",
     "roles.engineer.StunnedMouseMixin",
+    "roles.engineer.StunnedMinecraftMixin",
+    "roles.engineer.StunnedKeyboardMixin",
     "roles.bomber.TimedBombBedViewMixin",
     "roles.bomber.TimedBombTrayViewMixin",
     "roles.timekeeper.TimekeeperKeyBindingAccessor",

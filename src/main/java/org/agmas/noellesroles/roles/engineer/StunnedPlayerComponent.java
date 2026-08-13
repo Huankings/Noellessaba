@@ -36,6 +36,17 @@ public class StunnedPlayerComponent implements AutoSyncedComponent, ServerTickin
     public void stun(int ticks, @Nullable Identifier stunEndEvent) {
         this.stunTicks = ticks;
         this.stunEndEvent = ticks > 0 ? stunEndEvent : null;
+        /*
+         * 玩家被定身前可能已经按住右键进入“持续使用物品”状态，例如平底锅、枪械或其它蓄力道具。
+         * 如果服务端保留 active item，定身结束后原版可能把这段旧蓄力当成一次松手释放继续处理。
+         *
+         * 这里用 clearActiveItem() 只清除正在使用的标记，不调用 stopUsingItem()：
+         * stopUsingItem() 会走 onStoppedUsing / finishUsing 链路，可能在定身开始时直接触发开枪、
+         * 投掷或蓄力完成效果，反而制造一次不该发生的操作。
+         */
+        if (ticks > 0 && this.player.isUsingItem()) {
+            this.player.clearActiveItem();
+        }
         KEY.sync(this.player);
     }
 
