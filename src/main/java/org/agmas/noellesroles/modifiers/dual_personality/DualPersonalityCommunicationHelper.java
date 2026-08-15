@@ -6,6 +6,7 @@ import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -46,6 +47,9 @@ public final class DualPersonalityCommunicationHelper {
         if (rawContent == null || rawContent.isBlank()) {
             return;
         }
+        if (JasonCommunicationManager.shouldBlockChatBetween(sender, partner)) {
+            return;
+        }
 
         DualPersonalityManager.sendActionbar(
                 partner,
@@ -70,6 +74,9 @@ public final class DualPersonalityCommunicationHelper {
         UUID activeUuid = pair.active;
         for (ServerPlayerEntity recipient : sender.getServer().getPlayerManager().getPlayerList()) {
             if (recipient == sender) {
+                continue;
+            }
+            if (JasonCommunicationManager.shouldBlockChatBetween(sender, recipient)) {
                 continue;
             }
             if (!recipient.getUuid().equals(activeUuid) && GameFunctions.isPlayerAliveAndSurvival(recipient)) {

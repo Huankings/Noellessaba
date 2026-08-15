@@ -9,6 +9,7 @@ import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,6 +104,13 @@ public final class OperatorCommunicationManager {
             @NotNull ServerPlayerEntity sender,
             @NotNull String rawContent
     ) {
+        /*
+         * 接线员聊天桥是额外旁路，不会被原版聊天广播的取消结果自动收回。
+         * 所以发送 actionbar 前显式复用杰森通信隔离，防止无恶不在期间活人与杰森互相漏字。
+         */
+        if (JasonCommunicationManager.shouldBlockChatBetween(sender, recipient)) {
+            return;
+        }
         MutableText message = Text.translatable("message.noellesroles.operator.chat_bridge", sender.getGameProfile().getName(), rawContent)
                 .withColor(NoellesRoleRegistry.OPERATOR.color());
         recipient.sendMessage(message, true);

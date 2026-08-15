@@ -149,6 +149,16 @@ public final class NoellesEventIds {
     public static final Identifier SPRING_TRAP_ROOTED_EVENT = NoellesRolesCore.id("spring_trap_rooted");
     public static final Identifier SPRING_TRAP_UNROOTED_EVENT = NoellesRolesCore.id("spring_trap_unrooted");
     public static final Identifier SPRING_TRAP_SHIELD_SOURCE = NoellesRolesCore.id("spring_trap_shield");
+    public static final Identifier JASON_WOUNDED_EVENT = NoellesRolesCore.id("jason_wounded");
+    public static final Identifier JASON_RESCUED_EVENT = NoellesRolesCore.id("jason_rescued");
+    public static final Identifier JASON_JERRY_CAN_IGNITED_EVENT = NoellesRolesCore.id("jason_jerry_can_ignited");
+    public static final Identifier JASON_JERRY_CAN_AUTO_IGNITED_EVENT = NoellesRolesCore.id("jason_jerry_can_auto_ignited");
+    public static final Identifier JASON_GASOLINE_DOUSED_EVENT = NoellesRolesCore.id("jason_gasoline_doused");
+    public static final Identifier JASON_ABILITY_STARTED_EVENT = NoellesRolesCore.id("jason_ability_started");
+    public static final Identifier JASON_ABILITY_EXIT_REQUESTED_EVENT = NoellesRolesCore.id("jason_ability_exit_requested");
+    public static final Identifier JASON_ABILITY_EXIT_FINISHED_EVENT = NoellesRolesCore.id("jason_ability_exit_finished");
+    public static final Identifier JASON_ABILITY_SCARED_EVENT = NoellesRolesCore.id("jason_ability_scared");
+    public static final Identifier JASON_ABILITY_SCARE_ENDED_EVENT = NoellesRolesCore.id("jason_ability_scare_ended");
 
     private NoellesEventIds() {
     }

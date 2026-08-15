@@ -32,5 +32,33 @@
     "sounds": [
       "noellesroles:ambient/spring_trap"
     ]
+  },
+  "ambient.jason": {
+    "sounds": [
+      "noellesroles:ambient/jason"
+    ]
+  },
+  "ambient.jason_ability": {
+    "sounds": [
+      "noellesroles:ambient/jason_ability"
+    ]
+  },
+  "ambient.jason_ability_last": {
+    "sounds": [
+      {
+        "name": "noellesroles:ambient/jason_ability_last",
+        "stream": true
+      }
+    ]
+  },
+  "ambient.jason_ability_end": {
+    "sounds": [
+      "noellesroles:ambient/jason_ability_end"
+    ]
+  },
+  "ambient.jason_jump_scare": {
+    "sounds": [
+      "noellesroles:ambient/jason_jump_scare"
+    ]
   }
 }

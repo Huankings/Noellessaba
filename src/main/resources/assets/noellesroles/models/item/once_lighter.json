@@ -1,0 +1,6 @@
+{
+  "parent": "noellesroles:item/lighter",
+  "textures": {
+    "layer0": "noellesroles:item/once_lighter"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.21.11",
+  "parent": "noellesroles:item/throwing_axe",
+  "textures": {
+    "layer0": "noellesroles:item/throwing_blood_axe"
+  }
+}

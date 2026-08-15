@@ -8,6 +8,8 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
+import org.agmas.noellesroles.roles.jason.JasonConstants;
 
 import java.util.List;
 
@@ -47,6 +49,17 @@ public final class NoellesHeldItemVisibilityHandlers {
                 Identifier.of(NoellesRolesCore.MOD_ID, "controlled_player_held_item_invisibility"),
                 HeldItemInvisibilityApi.DEFAULT_PRIORITY,
                 context -> ControlledPlayerComponent.KEY.get(context.holder()).isControlled
+        );
+        HeldItemInvisibilityApi.registerRule(
+                Identifier.of(NoellesRolesCore.MOD_ID, "jason_ability_held_item_invisibility"),
+                JasonConstants.ABILITY_HELD_ITEM_VISIBILITY_PRIORITY,
+                context -> {
+                    /*
+                     * Wathe API 外层已经保证“只对其它局内存活观察者隐藏，本人和旁观/创造可见”。
+                     * 这里仅声明：幽魂杰森手上任何物品都命中动态隐藏规则。
+                     */
+                    return JasonAbilityRules.isAbilityActiveLike(context.holder());
+                }
         );
     }
 }

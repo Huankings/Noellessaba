@@ -2,6 +2,7 @@ package org.agmas.noellesroles.collision;
 
 import org.agmas.noellesroles.modifiers.feather.FeatherPlayerCollisionHandler;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerCollisionHandler;
+import org.agmas.noellesroles.roles.jason.JasonPlayerCollisionHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerCollisionHandler;
 
 /**
@@ -25,5 +26,6 @@ public final class NoellesPlayerCollisionHandlers {
         SpiritualistPlayerCollisionHandler.init();
         FeatherPlayerCollisionHandler.init();
         InsaneDamnedKillerPlayerCollisionHandler.init();
+        JasonPlayerCollisionHandler.init();
     }
 }

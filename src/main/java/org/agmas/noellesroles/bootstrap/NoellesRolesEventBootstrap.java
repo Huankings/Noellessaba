@@ -10,6 +10,7 @@ import dev.doctor4t.wathe.api.event.GameEvents;
 import dev.doctor4t.wathe.api.event.ShouldDropOnDeath;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
+import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -65,6 +66,11 @@ import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityManager;
+import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
+import org.agmas.noellesroles.roles.jason.JasonWoundManager;
+import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
@@ -119,6 +125,8 @@ public final class NoellesRolesEventBootstrap {
 
         NoellesRolesDeathBootstrap.init();
         NoellesRolesCombatBootstrap.init();
+        JasonWoundManager.init();
+        JasonAbilityManager.init();
         AllergicModifierHandler.init();
         registerCombatAndStateEvents();
         NoellesRolesRoleAssignedBootstrap.init();
@@ -174,6 +182,8 @@ public final class NoellesRolesEventBootstrap {
              * 这样调试重置、回合切换或其它强制重置入口不会留下“非亡语杀手仍躺尸”的同步残留。
              */
             InsaneDamnedKillerPlayerComponent.KEY.get(playerEntity).reset();
+            JasonWoundManager.resetPlayer(playerEntity);
+            JasonAbilityManager.resetPlayer(playerEntity);
             if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
                 MorphlingReagentService.clearReagentReleaseGate(serverPlayer);
             }
@@ -196,13 +206,23 @@ public final class NoellesRolesEventBootstrap {
                  */
                 TimekeeperRiftHandler.tickActiveRifts(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
+                    float moodDrainMultiplier;
                     if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
-                        PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(AngelConstants.MOOD_DRAIN_MULTIPLIER);
+                        moodDrainMultiplier = AngelConstants.MOOD_DRAIN_MULTIPLIER;
                     } else if (gameWorld.isRole(player, NoellesRoleRegistry.COWARD)) {
-                        PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(CowardPlayerComponent.KEY.get(player).getCurrentSanMultiplier());
+                        moodDrainMultiplier = CowardPlayerComponent.KEY.get(player).getCurrentSanMultiplier();
                     } else {
-                        PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(1.0f);
+                        moodDrainMultiplier = 1.0f;
                     }
+                    /*
+                     * 无恶不在解除后的惊吓是临时状态，不应该覆盖天使、懦夫等已有职业倍率，
+                     * 而是乘在当前基础倍率之后。这样“掉 san 速度为原来 4 倍”能和其它机制自然叠加。
+                     */
+                    if (GameFunctions.isPlayerAliveAndSurvival(player)
+                            && JasonAbilityPlayerComponent.KEY.get(player).getScaredTicks() > 0) {
+                        moodDrainMultiplier *= org.agmas.noellesroles.roles.jason.JasonConstants.ABILITY_SCARE_MOOD_DRAIN_MULTIPLIER;
+                    }
+                    PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(moodDrainMultiplier);
                 }
 
                 SwapperAbility.tickPendingSwaps(server);
@@ -285,9 +305,15 @@ public final class NoellesRolesEventBootstrap {
             HiddenBodiesWorldComponent.KEY.get(serverWorld).reset();
             SpringTrapAuraWorldComponent.KEY.get(serverWorld).reset();
             TimekeeperWorldComponent.KEY.get(serverWorld).reset();
+            JasonFireWorldComponent.KEY.get(serverWorld).reset();
+            JasonWoundManager.resetRoundTransientState();
+            JasonAbilityManager.resetRoundTransientState(serverWorld);
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);
 
             for (org.agmas.noellesroles.entities.ThrowingAxeEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.ThrowingAxeEntity.class), ignored -> true)) {
+                entity.discard();
+            }
+            for (org.agmas.noellesroles.roles.jason.JasonThrownWeaponEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.roles.jason.JasonThrownWeaponEntity.class), ignored -> true)) {
                 entity.discard();
             }
             for (org.agmas.noellesroles.entities.RoleMineEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.RoleMineEntity.class), ignored -> true)) {

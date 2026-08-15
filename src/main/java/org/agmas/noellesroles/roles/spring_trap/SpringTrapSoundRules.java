@@ -6,11 +6,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
 
 import java.util.regex.Pattern;
 
 /**
- * 弹簧陷阱状态的静音规则。
+ * 弹簧陷阱和杰森幽魂状态的移动静音规则。
  *
  * <p>这里集中判断“哪些声音应该被吞掉”，让服务端脚步 mixin、客户端兜底 mixin、门交互 mixin 共用同一套规则。
  * 这样后续如果要允许/禁止某类声音，只需要改这个类，不必在多个 mixin 里分别改判断。</p>
@@ -24,7 +25,7 @@ public final class SpringTrapSoundRules {
     }
 
     public static boolean shouldSuppressSounds(PlayerEntity player) {
-        return player != null && SpringTrapPsychoHandler.isSpringTrapActive(player);
+        return player != null && (SpringTrapPsychoHandler.isSpringTrapActive(player) || JasonAbilityRules.isAbilityActiveLike(player));
     }
 
     public static boolean shouldSuppressStepSounds(Entity entity) {

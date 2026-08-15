@@ -14,6 +14,11 @@ public interface NoellesRolesSounds {
     SoundEventRegistrar REGISTRAR = new SoundEventRegistrar(NoellesRolesCore.MOD_ID);
 
     SoundEvent AMBIENT_SPRING_TRAP = REGISTRAR.create("ambient.spring_trap");
+    SoundEvent AMBIENT_JASON = REGISTRAR.create("ambient.jason");
+    SoundEvent AMBIENT_JASON_ABILITY = REGISTRAR.create("ambient.jason_ability");
+    SoundEvent AMBIENT_JASON_ABILITY_LAST = REGISTRAR.create("ambient.jason_ability_last");
+    SoundEvent AMBIENT_JASON_ABILITY_END = REGISTRAR.create("ambient.jason_ability_end");
+    SoundEvent AMBIENT_JASON_JUMP_SCARE = REGISTRAR.create("ambient.jason_jump_scare");
 
     static void initialize() {
         REGISTRAR.registerEntries();

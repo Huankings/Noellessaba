@@ -28,6 +28,7 @@ import org.agmas.noellesroles.roles.dreamer.DreamerDelusionHandler;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.initiate.InitiateRoleLimitHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateTransformationHandler;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainVictoryRule;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
 import org.agmas.noellesroles.roles.morphling.MorphlingCommunicationManager;
@@ -113,6 +114,7 @@ public final class NoellesRolesBootstrap {
         DualPersonalityCommunicationManager.init();
         ConvenerCommunicationManager.init();
         MorphlingCommunicationManager.init();
+        JasonCommunicationManager.init();
         ConvenerSummonHandler.init();
         ConvenerTaskShieldHandler.init();
         ConvenerVictoryRule.init();

@@ -1,0 +1,15 @@
+{
+  "format_version": "1.21.11",
+  "parent": "noellesroles:item/jerry_can",
+  "textures": {
+    "layer0": "noellesroles:item/throwing_jerry_can"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "noellesroles:jason_throwing_pose": 1.0
+      },
+      "model": "noellesroles:item/throwing_jerry_can_throwing"
+    }
+  ]
+}

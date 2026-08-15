@@ -1918,6 +1918,49 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatJasonThrowingWeaponDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text thrower = actorText(event, match);
+        if (victim == null || thrower == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.throwing_weapon.killed",
+                victim,
+                thrower,
+                whiteBracketedItem(event.data(), world)
+        );
+    }
+
+    @Nullable
+    public static Text formatJasonBleedingDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text thrower = actorText(event, match);
+        if (victim == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.bleeding_too_much.killed",
+                victim,
+                thrower == null ? Text.translatable("replay.player.unknown") : thrower
+        );
+    }
+
+    @Nullable
+    public static Text formatJasonBurnDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text thrower = actorText(event, match);
+        if (victim == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.burn.killed",
+                victim,
+                thrower == null ? Text.translatable("replay.player.unknown") : thrower
+        );
+    }
+
+    @Nullable
     public static Text formatAxeDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = targetText(event, match);
         Text killer = actorText(event, match);
@@ -1942,6 +1985,104 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatSpringTrapUnrooted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = victimFromGlobal(event, match);
         return victim == null ? null : Text.translatable("replay.global.noellesroles.spring_trap_unrooted", victim);
+    }
+
+    @Nullable
+    public static Text formatJasonWounded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        Text thrower = actorText(event, match);
+        if (victim == null || thrower == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.jason_wounded",
+                victim,
+                thrower,
+                whiteBracketedItem(event.data(), world)
+        );
+    }
+
+    @Nullable
+    public static Text formatJasonRescued(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        Text rescuer = actorText(event, match);
+        if (victim == null || rescuer == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.jason_rescued", victim, rescuer);
+    }
+
+    @Nullable
+    public static Text formatJasonJerryCanIgnited(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.jason_jerry_can_ignited", actor);
+    }
+
+    @Nullable
+    public static Text formatJasonJerryCanAutoIgnited(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        /*
+         * 自动燃烧优先读 owner 字段，因为这个事件可能在投掷者离线后触发；
+         * 旧回放或异常数据没有 owner 时，再退回 actor / unknown，保证事件本身还能显示。
+         */
+        Text owner = ownerFromGlobal(event, match);
+        if (owner == null) {
+            owner = actorText(event, match);
+        }
+        if (owner == null) {
+            owner = Text.translatable("replay.player.unknown");
+        }
+        return Text.translatable("replay.global.noellesroles.jason_jerry_can_auto_ignited", owner);
+    }
+
+    @Nullable
+    public static Text formatJasonGasolineDoused(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        if (victim == null) {
+            return null;
+        }
+
+        Text owner = ownerFromGlobal(event, match);
+        if (owner == null) {
+            owner = actorText(event, match);
+        }
+        if (owner == null) {
+            owner = Text.translatable("replay.player.unknown");
+        }
+        return Text.translatable("replay.global.noellesroles.jason_gasoline_doused", victim, owner);
+    }
+
+    @Nullable
+    public static Text formatJasonAbilityStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.jason_ability_started", actor);
+    }
+
+    @Nullable
+    public static Text formatJasonAbilityExitRequested(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.jason_ability_exit_requested", actor);
+    }
+
+    @Nullable
+    public static Text formatJasonAbilityExitFinished(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.jason_ability_exit_finished", actor);
+    }
+
+    @Nullable
+    public static Text formatJasonAbilityScared(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        Text actor = actorText(event, match);
+        if (victim == null || actor == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.jason_ability_scared", victim, actor);
+    }
+
+    @Nullable
+    public static Text formatJasonAbilityScareEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = victimFromGlobal(event, match);
+        return victim == null ? null : Text.translatable("replay.global.noellesroles.jason_ability_scare_ended", victim);
     }
 
     @Nullable

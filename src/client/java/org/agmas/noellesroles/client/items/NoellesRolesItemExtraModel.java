@@ -37,6 +37,10 @@ public class NoellesRolesItemExtraModel {
         return Identifier.of(NoellesRolesCore.MOD_ID, "timekeeper_watch_elegant");
     }
 
+    public static Identifier getJasonThrowingPoseId() {
+        return Identifier.of(NoellesRolesCore.MOD_ID, "jason_throwing_pose");
+    }
+
     /**
      * 注册物品的额外模型（当前仅注册冷却模型，方便后续扩展）
      */
@@ -75,6 +79,22 @@ public class NoellesRolesItemExtraModel {
         ModelPredicateProviderRegistry.register(item, getKillerGroupId(), (itemStack, world, entity, seed) -> {
             if (MinecraftClient.getInstance().player == null) return 0.0F;
             return HackerPhoneComponent.KEY.get(MinecraftClient.getInstance().player).groupKiller ? 1.0F : 0.0F;
+        });
+    }
+
+    /**
+     * 投掷油桶的双姿势模型谓词。
+     *
+     * <p>平时油桶按 jerry_can 的手持姿势显示；玩家正在右键蓄力时，切到飞斧投掷姿势。
+     * 这里只做客户端显示切换，真实投掷速度、重力和点火逻辑仍全部以服务端为准。</p>
+     */
+    public static void registerJasonJerryCanModel(@NotNull Item item) {
+        registerExtraModel(item);
+        ModelPredicateProviderRegistry.register(item, getJasonThrowingPoseId(), (itemStack, world, entity, seed) -> {
+            if (entity == null) {
+                return 0.0F;
+            }
+            return entity.isUsingItem() && entity.getActiveItem().isOf(item) ? 1.0F : 0.0F;
         });
     }
 

@@ -23,6 +23,7 @@ import org.agmas.noellesroles.roles.engineer.EngineerShopHandler;
 import org.agmas.noellesroles.roles.hacker.HackerShopHandler;
 import org.agmas.noellesroles.roles.hunter.HunterShopHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateShopHandler;
+import org.agmas.noellesroles.roles.jason.JasonShopHandler;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperShopHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
@@ -160,6 +161,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(NoellesRolesCore.MOD_ID, "spring_trap_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 SpringTrapShopHandler::modifyShop
+        );
+        /*
+         * 杰森保留默认杀手商店，只移除毒物并替换左轮、手雷、疯魔四个指定格子。
+         * 使用 modifier 能和 Wathe 后续默认商品保持兼容，也避免复制一套会逐渐过期的商店列表。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(NoellesRolesCore.MOD_ID, "jason_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                JasonShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。

@@ -25,6 +25,7 @@ import org.agmas.noellesroles.roles.goddess.GoddessRoleAssignedHandler;
 import org.agmas.noellesroles.roles.hacker.HackerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.hunter.HunterRoleAssignedHandler;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerRoleAssignedHandler;
+import org.agmas.noellesroles.roles.jason.JasonRoleAssignedHandler;
 import org.agmas.noellesroles.roles.jester.JesterRoleAssignedHandler;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperRoleAssignedHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainRoleAssignedHandler;
@@ -129,6 +130,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             TimekeeperRoleAssignedHandler.onRoleAssigned(player, role);
             SpringTrapRoleAssignedHandler.onRoleAssigned(player, role);
             InsaneDamnedKillerRoleAssignedHandler.onRoleAssigned(player, role);
+            JasonRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

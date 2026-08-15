@@ -3,6 +3,7 @@ package org.agmas.noellesroles.bootstrap;
 import org.agmas.noellesroles.roles.convener.ConvenerMovementHandler;
 import org.agmas.noellesroles.roles.hunter.HunterMovementHandler;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerMovementHandler;
+import org.agmas.noellesroles.roles.jason.JasonMovementHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererMovementHandler;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapMovementHandler;
 import org.agmas.noellesroles.roles.starstruck.StarstruckMovementHandler;
@@ -24,5 +25,6 @@ public final class NoellesRolesMovementBootstrap {
         RemembererMovementHandler.init();
         SpringTrapMovementHandler.init();
         InsaneDamnedKillerMovementHandler.init();
+        JasonMovementHandler.init();
     }
 }

@@ -27,6 +27,9 @@ import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
+import org.agmas.noellesroles.roles.jason.JasonConstants;
+import org.agmas.noellesroles.roles.jason.JasonOnceLighterItem;
+import org.agmas.noellesroles.roles.jason.JasonThrownWeaponItem;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
@@ -43,6 +46,19 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(THROWING_SPEED_AXE, GameConstants.getInTicks(0, 0));
         GameConstants.ITEM_COOLDOWNS.put(THROWING_BOMB_AXE, GameConstants.getInTicks(0, 0));
         GameConstants.ITEM_COOLDOWNS.put(SPRING_TRAP, SpringTrapConstants.SPRING_TRAP_COOLDOWN_TICKS);
+        // 杰森普通投掷武器购买后一次性使用，不额外走物品冷却。
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_BLOOD_AXE, GameConstants.getInTicks(0, 0));
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_MACHETE, GameConstants.getInTicks(0, 0));
+        GameConstants.ITEM_COOLDOWNS.put(TOMAHAWK, GameConstants.getInTicks(0, 0));
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_TOYS_AXE, GameConstants.getInTicks(0, 0));
+        // 杰森模式飞镐按需求不消耗且无冷却；真正限制由杰森模式持续时间控制。
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_PICKAXE, GameConstants.getInTicks(0, 0));
+        // 投掷油桶是一件一次性大件，购买限制走商店价格，不再叠加物品冷却。
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_JERRY_CAN, GameConstants.getInTicks(0, 0));
+        // 一次性打火机只在油桶投出后临时获得，使用后消耗，不需要冷却。
+        GameConstants.ITEM_COOLDOWNS.put(ONCE_LIGHTER, GameConstants.getInTicks(0, 0));
+        // 杰森模式商店图标的冷却按用户指定 4 分 15 秒，方便 tooltip 显示真实剩余时间。
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_JASON, JasonConstants.PSYCHO_COOLDOWN_TICKS);
         // 强盗手枪使用固定冷却，与飞斧分开控制，后续改数值也更直观。
         GameConstants.ITEM_COOLDOWNS.put(ROBBER_PISTOL, GameConstants.getInTicks(0, 35));
         /*
@@ -102,6 +118,13 @@ public class ModItems {
             entries.add(COLORFUL_AXE);
             entries.add(THROWING_SPEED_AXE);
             entries.add(THROWING_BOMB_AXE);
+            entries.add(THROWING_BLOOD_AXE);
+            entries.add(THROWING_MACHETE);
+            entries.add(TOMAHAWK);
+            entries.add(THROWING_TOYS_AXE);
+            entries.add(THROWING_PICKAXE);
+            entries.add(THROWING_JERRY_CAN);
+            entries.add(ONCE_LIGHTER);
             entries.add(CRYSTAL_BALL);
             entries.add(ROBBER_PISTOL);
             entries.add(BOUNTY_PISTOL);
@@ -243,6 +266,41 @@ public class ModItems {
     public static final Item THROWING_BOMB_AXE = register(
             new ThrowingAxeItem(new Item.Settings().maxCount(1)),
             "throwing_bomb_axe"
+    );
+    // 杰森沾血飞斧：蓄力投掷后造成重伤倒地。
+    public static final Item THROWING_BLOOD_AXE = register(
+            new JasonThrownWeaponItem(new Item.Settings().maxCount(1)),
+            "throwing_blood_axe"
+    );
+    // 杰森投掷砍刀：蓄力投掷后造成重伤倒地。
+    public static final Item THROWING_MACHETE = register(
+            new JasonThrownWeaponItem(new Item.Settings().maxCount(1)),
+            "throwing_machete"
+    );
+    // 杰森战斧：蓄力投掷后造成重伤倒地。
+    public static final Item TOMAHAWK = register(
+            new JasonThrownWeaponItem(new Item.Settings().maxCount(1)),
+            "tomahawk"
+    );
+    // 杰森玩具飞斧：蓄力投掷后造成重伤倒地。
+    public static final Item THROWING_TOYS_AXE = register(
+            new JasonThrownWeaponItem(new Item.Settings().maxCount(1)),
+            "throwing_toys_axe"
+    );
+    // 杰森模式飞镐：疯魔期间授予，投掷不消耗且无冷却。
+    public static final Item THROWING_PICKAXE = register(
+            new JasonThrownWeaponItem(new Item.Settings().maxCount(1)),
+            "throwing_pickaxe"
+    );
+    // 杰森投掷油桶：落地后给范围内玩家沾油，并等待打火机或自动点燃。
+    public static final Item THROWING_JERRY_CAN = register(
+            new JasonThrownWeaponItem(new Item.Settings().maxCount(1)),
+            "throwing_jerry_can"
+    );
+    // 杰森一次性打火机：只用于点燃自己已经落地的投掷油桶。
+    public static final Item ONCE_LIGHTER = register(
+            new JasonOnceLighterItem(new Item.Settings().maxCount(1)),
+            "once_lighter"
     );
     //水晶球
     public static final Item CRYSTAL_BALL = register(
@@ -459,6 +517,16 @@ public class ModItems {
     public static final Item SPRING_TRAP_ADDTIME = register(
             new SpringTrapShopIconItem(new Item.Settings().maxCount(1)),
             "spring_trap_addtime"
+    );
+    // 杰森随机投掷武器商店图标：购买后随机交付四种普通投掷武器之一。
+    public static final Item RANDOM_THROWING_WEAPON = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "random_throwing_weapon"
+    );
+    // 杰森模式商店图标：购买后启动杰森专属疯魔 profile，不进入背包。
+    public static final Item PSYCHO_JASON = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "psycho_jason"
     );
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(

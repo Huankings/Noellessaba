@@ -46,6 +46,8 @@ import org.agmas.noellesroles.roles.detective.DetectiveAbility;
 import org.agmas.noellesroles.roles.goddess.GoddessAbility;
 import org.agmas.noellesroles.roles.hunter.HunterAbility;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerAbility;
+import org.agmas.noellesroles.roles.jason.JasonAbilityManager;
+import org.agmas.noellesroles.roles.jason.JasonWoundManager;
 import org.agmas.noellesroles.roles.magician.MagicianTargetAbility;
 import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.roles.operator.OperatorAbility;
@@ -266,6 +268,8 @@ public final class NoellesRolesPacketReceivers {
                 InsaneDamnedKillerAbility.handle(player);
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.TIMEKEEPER)) {
                 TimekeeperAbility.handleRepairOrUpgrade(player);
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.JASON)) {
+                JasonAbilityManager.handleAbilityKey(player);
             }
         }));
     }
@@ -280,6 +284,7 @@ public final class NoellesRolesPacketReceivers {
          *
          * 这里只拦 NoellesRoles 的职业/词条能力包，不影响聊天指令、语音隔离和 Wathe 自己的旁观移动。
          */
-        return TimekeeperPlayerComponent.KEY.get(player).isInTimeRift();
+        return TimekeeperPlayerComponent.KEY.get(player).isInTimeRift()
+                || JasonWoundManager.isWoundedActionLocked(player);
     }
 }

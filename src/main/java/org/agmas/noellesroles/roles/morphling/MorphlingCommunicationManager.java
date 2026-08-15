@@ -6,6 +6,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -90,7 +91,8 @@ public final class MorphlingCommunicationManager {
          */
         return GameFunctions.isPlayerSpectatingOrCreative(recipient)
                 && !TimekeeperWorldComponent.KEY.get(sender.getServerWorld()).shouldBlockCommunication(sender)
-                && !TimekeeperWorldComponent.KEY.get(recipient.getServerWorld()).shouldBlockCommunication(recipient);
+                && !TimekeeperWorldComponent.KEY.get(recipient.getServerWorld()).shouldBlockCommunication(recipient)
+                && !JasonCommunicationManager.shouldBlockChatBetween(sender, recipient);
     }
 
     private static void relayChatAsDisguisedPlayer(
@@ -112,6 +114,10 @@ public final class MorphlingCommunicationManager {
              * 这里不跳过原说话者：和语音一样，如果样本玩家在伪装者附近/同聊天范围内，
              * 他也应该看到自己这句话被伪装者“复读”出来。
              */
+            if (JasonCommunicationManager.shouldBlockChatBetween(originalSpeaker, recipient)
+                    || JasonCommunicationManager.shouldBlockChatBetween(disguisedPlayer, recipient)) {
+                continue;
+            }
             outgoing.send(recipient, disguisedPlayer.shouldFilterMessagesSentTo(recipient), outgoingParams);
         }
     }

@@ -21,6 +21,7 @@ import org.agmas.noellesroles.packet.role.controller.ControllerReleaseC2SPacket;
 import org.agmas.noellesroles.packet.role.convener.ConvenerMorphC2SPacket;
 import org.agmas.noellesroles.packet.role.corpsemaker.CorpsemakerC2SPacket;
 import org.agmas.noellesroles.packet.role.goddess.GoddessC2SPacket;
+import org.agmas.noellesroles.packet.role.jason.JasonAbilitySoundS2CPacket;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 import org.agmas.noellesroles.packet.role.noisemaker.NoisemakerGlowC2SPacket;
 import org.agmas.noellesroles.packet.role.operator.OperatorC2SPacket;
@@ -70,5 +71,6 @@ public final class NoellesRolesPayloadTypes {
         PayloadTypeRegistry.playC2S().register(ConvenerMorphC2SPacket.ID, ConvenerMorphC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(TimekeeperWatchModeC2SPacket.ID, TimekeeperWatchModeC2SPacket.CODEC);
         PayloadTypeRegistry.playS2C().register(SpiritualistPossessionViewS2CPacket.ID, SpiritualistPossessionViewS2CPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(JasonAbilitySoundS2CPacket.ID, JasonAbilitySoundS2CPacket.CODEC);
     }
 }

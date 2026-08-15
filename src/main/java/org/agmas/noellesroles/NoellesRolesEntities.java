@@ -12,6 +12,7 @@ import org.agmas.noellesroles.entities.CaptureDeviceEntity;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.agmas.noellesroles.entities.RoleMineEntity;
 import org.agmas.noellesroles.entities.ThrowingAxeEntity;
+import org.agmas.noellesroles.roles.jason.JasonThrownWeaponEntity;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 
 public class NoellesRolesEntities {
@@ -29,6 +30,11 @@ public class NoellesRolesEntities {
             Registries.ENTITY_TYPE,
             Identifier.of(NoellesRolesCore.MOD_ID, "throwing_axe"),
             EntityType.Builder.<ThrowingAxeEntity>create(ThrowingAxeEntity::new, SpawnGroup.MISC).dimensions(0.5f, 0.5f).build("throwing_axe")
+    );
+    public static final EntityType<JasonThrownWeaponEntity> JASON_THROWN_WEAPON_ENTITY_TYPE = Registry.register(
+            Registries.ENTITY_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "jason_thrown_weapon"),
+            EntityType.Builder.<JasonThrownWeaponEntity>create(JasonThrownWeaponEntity::new, SpawnGroup.MISC).dimensions(0.5f, 0.5f).build("jason_thrown_weapon")
     );
     public static final EntityType<MagicianPlaybackEntity> MAGICIAN_PLAYBACK_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,

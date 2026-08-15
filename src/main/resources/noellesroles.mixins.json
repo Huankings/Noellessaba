@@ -72,7 +72,17 @@
     "roles.spring_trap.SpringTrapPlayerMoveEffectMixin",
     "roles.spring_trap.SpringTrapSmallDoorUseMixin",
     "roles.spring_trap.SpringTrapTrainDoorUseMixin",
-    "roles.spring_trap.SpringTrapDoorWorldSoundMixin"
+    "roles.spring_trap.SpringTrapDoorWorldSoundMixin",
+    "roles.jason.JasonWoundedJumpMixin",
+    "roles.jason.JasonWoundedAttackMixin",
+    "roles.jason.JasonAbilityDamageMixin",
+    "roles.jason.JasonAbilityLivingEntitySoundMixin",
+    "roles.jason.JasonAbilityFireMixin",
+    "roles.jason.JasonAbilityDoorCollisionMixin",
+    "roles.jason.JasonAbilityMovementParticleMixin",
+    "roles.jason.JasonAbilityEntitySoundMixin",
+    "roles.jason.JasonKnifeExecutionCooldownMixin",
+    "roles.jason.JasonWoundedRevolverPickupMixin"
 
   ],
   "injectors": {

@@ -6,6 +6,7 @@ import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -104,7 +105,8 @@ public final class TimekeeperCommunicationManager {
          */
         SentMessage outgoing = SentMessage.of(message);
         for (ServerPlayerEntity recipient : sender.getServer().getPlayerManager().getPlayerList()) {
-            if (shouldHideMessageFromRecipient(recipient)) {
+            if (shouldHideMessageFromRecipient(recipient)
+                    || JasonCommunicationManager.shouldBlockChatBetween(sender, recipient)) {
                 continue;
             }
             outgoing.send(recipient, sender.shouldFilterMessagesSentTo(recipient), params);

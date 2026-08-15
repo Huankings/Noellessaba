@@ -17,6 +17,7 @@ import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.initiate.InitiateConstants;
+import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
@@ -145,6 +146,8 @@ public final class NoellesRoleRegistry {
     public static final Role STALKER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.STALKER_ID, new Color(186, 85, 211).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //弹簧陷阱(杀手)：通过专属斧类武器和弹簧陷阱状态持续压制目标。
     public static final Role SPRING_TRAP = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.SPRING_TRAP_ID, SpringTrapConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
+    //杰森(杀手)：通过蓄力投掷武器造成重伤倒地，并在杰森模式下连续投掷飞镐压制全场。
+    public static final Role JASON = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.JASON_ID, JasonConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //交换者(杀手)：交换任意两个玩家的位置
     public static final Role SWAPPER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.SWAPPER_ID, new Color(57, 4, 170).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //亡语杀手(杀手)：能听到死者说话的声音

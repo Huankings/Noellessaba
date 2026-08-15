@@ -30,6 +30,9 @@ public final class NoellesDeathReasons {
     public static final Identifier BROKEN_HEART_DEATH_REASON = NoellesRolesCore.id("broken_heart");
     public static final Identifier DUAL_ACTIVE_TIMEOUT_DEATH_REASON = NoellesRolesCore.id("dual_active_timeout");
     public static final Identifier FAILED_INITIATION_DEATH_REASON = NoellesRolesCore.id("failed_initiation");
+    public static final Identifier JASON_THROWING_WEAPON_DEATH_REASON = NoellesRolesCore.id("throwing_weapon");
+    public static final Identifier JASON_BLEEDING_TOO_MUCH_DEATH_REASON = NoellesRolesCore.id("bleeding_too_much");
+    public static final Identifier JASON_BURN_DEATH_REASON = NoellesRolesCore.id("burn");
 
     private NoellesDeathReasons() {
     }

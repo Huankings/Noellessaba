@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.bootstrap;
 
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPsychoHandler;
+import org.agmas.noellesroles.roles.jason.JasonPsychoHandler;
 import org.agmas.noellesroles.roles.jester.JesterPsychoHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerPsychoHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererPsychoShieldHandler;
@@ -30,5 +31,6 @@ public final class NoellesRolesPsychoBootstrap {
         MuzzlerPsychoHandler.init();
         RemembererPsychoShieldHandler.init();
         SpringTrapPsychoHandler.init();
+        JasonPsychoHandler.init();
     }
 }

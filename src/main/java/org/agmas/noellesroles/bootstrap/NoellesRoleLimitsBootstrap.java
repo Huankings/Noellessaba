@@ -4,6 +4,7 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.noellesroles.modifiers.lovers.LoversConstants;
 import org.agmas.noellesroles.registry.NoellesRoleIds;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
+import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 
 /**
@@ -35,6 +36,7 @@ public final class NoellesRoleLimitsBootstrap {
         Harpymodloader.setRoleMaximum(NoellesRoleIds.LICENSED_VILLAIN_ID, 0);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.TIMEKEEPER_ID, org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.SPRING_TRAP_ID, SpringTrapConstants.MAX_ROLE_COUNT);
+        Harpymodloader.setRoleMaximum(NoellesRoleIds.JASON_ID, JasonConstants.MAX_ROLE_COUNT);
         Harpymodloader.MODIFIER_MAX.put(NoellesRoleIds.LOVERS_ID, LoversConstants.MAX_RANDOM_PAIRS);
         /*
          * 双重人格的随机上限不是固定值：

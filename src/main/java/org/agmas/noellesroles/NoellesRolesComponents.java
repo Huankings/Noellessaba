@@ -34,6 +34,9 @@ import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
+import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
@@ -137,6 +140,12 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, SpringTrapPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SpringTrapPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, InsaneDamnedKillerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(InsaneDamnedKillerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, TimekeeperPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(TimekeeperPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, JasonWoundedPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonWoundedPlayerComponent::new);
+        /*
+         * 无恶不在包含冷却、幽魂阶段和惊吓状态，全部都是局内运行态。
+         * 复活 / 下一局不能复制，真正需要保留或回滚时由时停者快照系统读取 NBT。
+         */
+        registry.beginRegistration(PlayerEntity.class, JasonAbilityPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonAbilityPlayerComponent::new);
     }
 
     @Override
@@ -151,5 +160,6 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(MorphBodyDisguiseWorldComponent.KEY, MorphBodyDisguiseWorldComponent::new);
         worldComponentFactoryRegistry.register(SpringTrapAuraWorldComponent.KEY, SpringTrapAuraWorldComponent::new);
         worldComponentFactoryRegistry.register(TimekeeperWorldComponent.KEY, TimekeeperWorldComponent::new);
+        worldComponentFactoryRegistry.register(JasonFireWorldComponent.KEY, JasonFireWorldComponent::new);
     }
 }

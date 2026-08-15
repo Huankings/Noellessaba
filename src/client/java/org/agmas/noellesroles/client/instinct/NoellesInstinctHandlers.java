@@ -20,6 +20,7 @@ import org.agmas.noellesroles.client.instinct.roles.dreamer.DreamerInstinctHandl
 import org.agmas.noellesroles.client.instinct.roles.executioner.ExecutionerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.hacker.HackerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.initiate.InitiateInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.jason.JasonInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.insane_damned_paranoid_killer.InsaneDamnedKillerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.jester.JesterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.licensed_villain.LicensedVillainInstinctHandler;
@@ -51,6 +52,7 @@ public final class NoellesInstinctHandlers {
         TimekeeperRiftInstinctHandler.register();
         InsaneDamnedKillerInstinctHandler.register();
         SpringTrapInstinctHandler.register();
+        JasonInstinctHandler.register();
         JesterInstinctHandler.register();
         WinderInstinctHandler.register();
         BartenderInstinctHandler.register();

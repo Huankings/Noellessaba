@@ -42,12 +42,16 @@ import org.agmas.noellesroles.client.hud.NoellesHudHandlers;
 import org.agmas.noellesroles.client.movement.NoellesClientMovementBootstrap;
 import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
+import org.agmas.noellesroles.client.renderer.JasonThrownWeaponEntityRenderer;
 import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
 import org.agmas.noellesroles.client.roles.executioner.ExecutionerMoodHud;
 import org.agmas.noellesroles.client.roles.dreamer.DreamerMoodHud;
 import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
+import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientEffects;
+import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientSoundController;
+import org.agmas.noellesroles.client.roles.jason.JasonMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
@@ -67,6 +71,7 @@ import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.swapper.SwapperPlayerWidget;
 import org.agmas.noellesroles.client.visibility.NoellesHeldItemVisibilityHandlers;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
+import org.agmas.noellesroles.packet.role.jason.JasonAbilitySoundS2CPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
@@ -128,12 +133,18 @@ public class NoellesrolesClient implements ClientModInitializer {
         ConvenerMoodHud.register();
         LicensedVillainMoodHud.register();
         SpringTrapMoodHud.register();
+        JasonMoodHud.register();
         /*
          * 弹簧陷阱疯魔的环境音是 profile 触发的背景音。
          * 客户端需要先把 SoundEvent 注册进 Wathe 的疯魔音乐表，否则服务端状态同步过来后只能拿到 id，
          * 本地没有对应播放器就不会真正循环播放 spring_trap.ogg。
          */
         dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(NoellesRolesSounds.AMBIENT_SPRING_TRAP, 20);
+        /*
+         * 杰森模式同样使用 Wathe 疯魔背景音乐播放器；这里只注册本地 SoundEvent，
+         * 真正何时播放/停止由服务端同步的 Jason profile 决定。
+         */
+        dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(NoellesRolesSounds.AMBIENT_JASON, 20);
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
@@ -144,6 +155,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         SpiritualistClientController.init();
         ClientPlayNetworking.registerGlobalReceiver(SpiritualistPossessionViewS2CPacket.ID, (payload, context) ->
                 context.client().execute(() -> SpiritualistClientController.handlePossessionViewPacket(payload)));
+        ClientPlayNetworking.registerGlobalReceiver(JasonAbilitySoundS2CPacket.ID, (payload, context) ->
+                context.client().execute(() -> JasonAbilityClientSoundController.handle(context.client(), payload.action())));
 
         ClientPreAttackCallback.EVENT.register((client, player, clickCount) -> noellesroles$handlePreAttack(player));
 
@@ -152,6 +165,13 @@ public class NoellesrolesClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             RemembererClientEffects.tick(client);
             CowardClientEffects.tick(client);
+            JasonAbilityClientEffects.tick(client);
+            /*
+             * 无恶不在持续音需要由所有客户端本地播放。
+             * 服务端仍会发 START/STOP 包作为即时控制，但这里按同步组件做一层补偿，
+             * 避免网络包顺序或初始 0 音量声音实例导致 jason_ability_last 没有真正进入播放队列。
+             */
+            JasonAbilityClientSoundController.tick(client);
             // 在 ClientTickEvents.END_CLIENT_TICK.register(client -> { ... } 中：
             if (abilityBind.isPressed()) {
                 if (!wasGazingPressed) {
@@ -276,6 +296,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         EntityRendererRegistry.register(NoellesRolesEntities.ROLE_MINE_ENTITY_ENTITY_TYPE, RoleMineEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.CAPTURE_DEVICE_ENTITY_TYPE, CaptureDeviceEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.THROWING_AXE_ENTITY_TYPE, ThrowingAxeEntityRenderer::new);
+        EntityRendererRegistry.register(NoellesRolesEntities.JASON_THROWN_WEAPON_ENTITY_TYPE, JasonThrownWeaponEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE, MagicianPlaybackEntityRenderer::new);
     }
 
@@ -312,6 +333,15 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_BOMB_AXE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SPRING_TRAP, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.SPRING_TRAP_ADDTIME, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_BLOOD_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_MACHETE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.TOMAHAWK, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_TOYS_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_PICKAXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_JERRY_CAN, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.ONCE_LIGHTER, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_THROWING_WEAPON, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_JASON, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.CRYSTAL_BALL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ROBBER_PISTOL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_PISTOL, itemStack, list);
@@ -369,6 +399,15 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_BOMB_AXE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SPRING_TRAP);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SPRING_TRAP_ADDTIME);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_BLOOD_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_MACHETE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.TOMAHAWK);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_TOYS_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_PICKAXE);
+        NoellesRolesItemExtraModel.registerJasonJerryCanModel(ModItems.THROWING_JERRY_CAN);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.ONCE_LIGHTER);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_THROWING_WEAPON);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.PSYCHO_JASON);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.CRYSTAL_BALL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROBBER_PISTOL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOUNTY_PISTOL);
@@ -604,6 +643,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         CorpsemakerState.reset();
         SpiritualistClientController.reset();
         RemembererClientEffects.reset();
+        JasonAbilityClientEffects.reset();
+        JasonAbilityClientSoundController.reset(MinecraftClient.getInstance());
         DualPersonalityClientState.resetTransientRenderState();
         DualPersonalityKeybinds.resetSyncedState();
         ExecutionerMoodHud.reset();

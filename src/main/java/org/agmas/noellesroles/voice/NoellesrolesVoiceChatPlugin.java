@@ -14,16 +14,22 @@ import de.maxhenkel.voicechat.api.events.LocationalSoundPacketEvent;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.events.SoundPacketEvent;
 import de.maxhenkel.voicechat.api.events.StaticSoundPacketEvent;
+import de.maxhenkel.voicechat.api.events.VoiceDistanceEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
 import de.maxhenkel.voicechat.api.packets.EntitySoundPacket;
 import de.maxhenkel.voicechat.api.packets.StaticSoundPacket;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.compat.TrainVoicePlugin;
 import dev.doctor4t.wathe.game.GameFunctions;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerCommunicationHelper;
+import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
+import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityCommunicationHelper;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
@@ -37,6 +43,7 @@ import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
@@ -196,6 +203,31 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         }
     }
 
+    private void handleVoiceDistance(VoiceDistanceEvent event) {
+        ServerPlayerEntity sender = resolveServerPlayer(event.getSenderConnection());
+        if (sender == null) {
+            return;
+        }
+
+        float dampenProgress = JasonCommunicationManager.getVoiceDampenProgressInWorld(sender.getServerWorld());
+        if (!shouldDampenSurvivalVoice(sender, dampenProgress)) {
+            return;
+        }
+
+        /*
+         * VoiceDistanceEvent 是 Simple Voice Chat 暴露的服务端距离入口。
+         * 它按“发送者这一包语音”统一修改传播距离，所以这里只在说话者是普通存活玩家时生效。
+         * 进入 / 退出无恶不在时，用阶段进度在原始距离和压制距离之间插值，避免突然缩短或突然恢复。
+         */
+        float originalDistance = event.getDistance();
+        float fullyReducedDistance = Math.min(
+                originalDistance * JasonConstants.ABILITY_VOICE_DISTANCE_MULTIPLIER,
+                JasonConstants.ABILITY_VOICE_MAX_DISTANCE_BLOCKS
+        );
+        float transitionedDistance = lerp(originalDistance, fullyReducedDistance, dampenProgress);
+        event.setDistance(Math.max(0.1F, transitionedDistance));
+    }
+
     private void relayPossessionVoice(
             VoicechatServerApi api,
             MicrophonePacketEvent event,
@@ -236,6 +268,10 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             }
 
             if (!canHearPossessingSpiritualist(recipient)) {
+                continue;
+            }
+            if (shouldBlockVoiceBetween(spiritualist, recipient)
+                    || shouldBlockVoiceBetween(host, recipient)) {
                 continue;
             }
 
@@ -398,6 +434,14 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             return true;
         }
 
+        /*
+         * 杰森无恶不在期间，幽魂杰森和其他存活玩家之间完全隔音。
+         * 这条规则放在中心过滤里，默认 proximity voice、group/static/entity 包和职业手动重发包都会经过同一判断。
+         */
+        if (JasonCommunicationManager.shouldBlockVoiceBetween(sender, receiver)) {
+            return true;
+        }
+
         if (DualPersonalityCommunicationHelper.shouldBlockVoiceBetween(sender, receiver)) {
             return true;
         }
@@ -433,6 +477,21 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         return false;
     }
 
+    private boolean shouldDampenSurvivalVoice(ServerPlayerEntity sender, float dampenProgress) {
+        /*
+         * 该弱化只针对“非杰森的存活玩家之间”的普通语音环境。
+         * 杰森本人、旁观/创造调试视角不在这里处理；杰森与活人的双向隔音由 shouldBlockVoiceBetween 负责。
+         */
+        return dampenProgress > 0.0F
+                && GameFunctions.isPlayerAliveAndSurvival(sender)
+                && !JasonAbilityRules.isAliveJason(sender);
+    }
+
+    private float lerp(float from, float to, float progress) {
+        float clampedProgress = Math.max(0.0F, Math.min(1.0F, progress));
+        return from + (to - from) * clampedProgress;
+    }
+
     private void relayDualPersonalityVoice(
             VoicechatServerApi api,
             MicrophonePacketEvent event,
@@ -440,6 +499,9 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
     ) {
         ServerPlayerEntity recipient = DualPersonalityCommunicationHelper.getStaticVoiceRecipient(sender);
         if (recipient == null) {
+            return;
+        }
+        if (shouldBlockVoiceBetween(sender, recipient)) {
             return;
         }
 
@@ -510,6 +572,9 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             if (!OperatorCommunicationManager.isLiveConnectionEndpoint(recipient)) {
                 continue;
             }
+            if (shouldBlockVoiceBetween(sender, recipient)) {
+                continue;
+            }
 
             VoicechatConnection connection = api.getConnectionOf(recipientUuid);
             if (connection != null) {
@@ -539,6 +604,9 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
                 if (!OperatorCommunicationManager.isLiveConnectionEndpoint(recipient)) {
                     continue;
                 }
+                if (shouldBlockVoiceBetween(sender, recipient)) {
+                    continue;
+                }
                 VoicechatConnection connection = api.getConnectionOf(recipient.getUuid());
                 if (connection != null) {
                     api.sendStaticSoundPacketTo(connection, redirectedPacket);
@@ -559,10 +627,34 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
     @Override
     public void registerEvents(EventRegistration registration) {
         registration.registerEvent(MicrophonePacketEvent.class, this::paranoidEvent);
+        registration.registerEvent(VoiceDistanceEvent.class, this::handleVoiceDistance);
         registration.registerEvent(LocationalSoundPacketEvent.class, this::handleSoundPacket);
         registration.registerEvent(EntitySoundPacketEvent.class, this::handleSoundPacket);
         registration.registerEvent(StaticSoundPacketEvent.class, this::handleSoundPacket);
         registration.registerEvent(VoicechatServerStartedEvent.class, event -> TrainVoicePlugin.SERVER_API = event.getVoicechat());
+        registerClientAudioEvents(registration);
         VoicechatPlugin.super.registerEvents(registration);
+    }
+
+    private void registerClientAudioEvents(EventRegistration registration) {
+        /*
+         * voicechat 插件入口是 common 类，但“接收音频压低音量”属于纯客户端逻辑。
+         * 这里先判断运行环境，再用反射调用 client source 里的注册器，避免服务端加载到
+         * net.minecraft.client.* 类时出现 NoClassDefFoundError。
+         */
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+            return;
+        }
+
+        try {
+            Class<?> handlerClass = Class.forName("org.agmas.noellesroles.client.roles.jason.JasonVoiceChatClientAudioHandler");
+            Method registerMethod = handlerClass.getDeclaredMethod("register", EventRegistration.class);
+            registerMethod.invoke(null, registration);
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            /*
+             * 客户端音量压低属于增强表现，不影响基础可玩性。
+             * 如果客户端类因为缺包或版本差异没能注册，这里不直接让整包启动失败。
+             */
+        }
     }
 }

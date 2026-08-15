@@ -340,8 +340,12 @@ public final class DualPersonalityManager {
         // 休眠人格每 tick 都压技能/物品冷却，属于服务端防绕过兜底。
         DualPersonalityActionGuard.maintainDormantLock(dormant);
 
-        if (pair.paused) {
-            // 暂停时仍维持 active/dormant 的模式和相机，但不继续扣轮换倒计时。
+        if (pair.paused || pair.jasonWoundedPaused) {
+            /*
+             * 暂停时仍维持 active/dormant 的模式和相机，但不继续扣轮换倒计时。
+             * jasonWoundedPaused 是杰森重伤倒地造成的独立暂停，不复用掉线 paused，
+             * 避免重连逻辑把“倒地暂停”误处理成某个人格离线。
+             */
             return;
         }
 
@@ -450,6 +454,7 @@ public final class DualPersonalityManager {
         pair.switchTicks = DualPersonalityConstants.SWITCH_INTERVAL_TICKS;
         pair.paused = false;
         pair.pauseReason = DualPersonalityComponent.PauseReason.NONE;
+        pair.jasonWoundedPaused = false;
 
         ServerPlayerEntity active = world.getServer().getPlayerManager().getPlayer(pair.active);
         ServerPlayerEntity dormant = world.getServer().getPlayerManager().getPlayer(pair.dormant);
@@ -478,6 +483,7 @@ public final class DualPersonalityManager {
         pair.doubleActive = true;
         pair.paused = false;
         pair.pauseReason = DualPersonalityComponent.PauseReason.NONE;
+        pair.jasonWoundedPaused = false;
         pair.doubleActiveTicks = DualPersonalityConstants.DOUBLE_ACTIVE_BASE_TICKS;
         DISSOCIATION_GRACE_PLAYERS.add(oldDormant);
 

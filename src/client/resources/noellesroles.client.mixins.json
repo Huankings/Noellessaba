@@ -68,6 +68,15 @@
     "roles.spring_trap.SpringTrapColorfulAxeRenderPoseMixin",
     "roles.spring_trap.SpringTrapClientWorldSoundMixin",
     "roles.spring_trap.SpringTrapPresenceFootstepsVolumeMixin"
+    ,
+    "roles.jason.JasonWoundedKeyBindingMixin",
+    "roles.jason.JasonWoundedMouseMixin",
+    "roles.jason.JasonWoundedKeyboardMixin",
+    "roles.jason.JasonWoundedMinecraftMixin",
+    "roles.jason.JasonWoundedPoseMixin",
+    "roles.jason.JasonAbilityWorldRendererMixin",
+    "roles.jason.JasonAbilityHeldItemRendererMixin",
+    "roles.jason.JasonAbilityClientWorldSoundMixin"
   ],
   "injectors": {
     "defaultRequire": 1

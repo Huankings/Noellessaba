@@ -6,6 +6,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,6 +90,14 @@ public final class SpiritualistCommunicationManager {
             boolean senderPossessing,
             boolean senderIsPossessedHost
     ) {
+        /*
+         * 灵术师会取消原聊天并手动重发，因此这里必须先套杰森的无恶不在通信隔离。
+         * 否则“附身伪装成宿主说话”会绕过默认聊天事件，让幽魂杰森仍能读到活人信息。
+         */
+        if (JasonCommunicationManager.shouldBlockChatBetween(sender, recipient)) {
+            return false;
+        }
+
         if (senderProjecting) {
             return isOutOfGameAudience(recipient);
         }

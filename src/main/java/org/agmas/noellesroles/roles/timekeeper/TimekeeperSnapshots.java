@@ -69,6 +69,9 @@ import org.agmas.noellesroles.roles.hacker.HackerPhoneComponent;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
+import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
@@ -190,6 +193,16 @@ public final class TimekeeperSnapshots {
              */
             component("noellesroles:spring_trap", SpringTrapPlayerComponent.KEY),
             /*
+             * 杰森的倒地次数、失血/救治进度、汽油标记都属于局内运行态。
+             * 回溯到命中前时必须清掉倒地/汽油；回溯到倒地中时也必须恢复暂停倒计时的状态。
+             */
+            component("noellesroles:jason_wounded", JasonWoundedPlayerComponent.KEY),
+            /*
+             * 无恶不在的冷却、进入/退出阶段、持续 tick 和惊吓状态都会改变局内信息与追逐节奏。
+             * 时停者回溯到技能发动前时应清掉幽魂和惊吓；回溯到技能持续中时也应恢复当时的阶段进度。
+             */
+            component("noellesroles:jason_ability", JasonAbilityPlayerComponent.KEY),
+            /*
              * 时停者自己的怀表冷却、光阴被动收入计时和时间狭缝剩余时间也属于“运行态”。
              * 因此它们要随快照倒回目标时间点；只有发动本次回溯产生的扣光阴、写冷却、
              * 普通怀表破碎等后置代价，会由 TimekeeperWorldComponent 的 actorPostUseState
@@ -219,6 +232,12 @@ public final class TimekeeperSnapshots {
              * 把它纳入世界组件快照后，时停者回溯到 30 秒前时，光环位置、年龄和剩余持续时间都会随时间线倒回。
              */
             component("noellesroles:spring_trap_auras", SpringTrapAuraWorldComponent.KEY)
+            ,
+            /*
+             * 投掷油桶落点、自动点火倒计时和火焰区域的年龄/位置都由该世界组件保存。
+             * 纳入快照后能保证回溯不会留下未来时间线的火焰或汽油标记来源。
+             */
+            component("noellesroles:jason_fire", JasonFireWorldComponent.KEY)
     );
 
     private TimekeeperSnapshots() {

@@ -43,6 +43,7 @@ public class DualPersonalityComponent implements AutoSyncedComponent {
     private static final String DOUBLE_ACTIVE_TICKS_KEY = "double_active_ticks";
     private static final String PAUSED_KEY = "paused";
     private static final String PAUSE_REASON_KEY = "pause_reason";
+    private static final String JASON_WOUNDED_PAUSED_KEY = "jason_wounded_paused";
     private static final String INITIAL_MESSAGE_SENT_KEY = "initial_message_sent";
     private static final String INITIAL_MESSAGE_DELAY_TICKS_KEY = "initial_message_delay_ticks";
 
@@ -200,6 +201,7 @@ public class DualPersonalityComponent implements AutoSyncedComponent {
             state.doubleActiveTicks = pairTag.getInt(DOUBLE_ACTIVE_TICKS_KEY);
             state.paused = pairTag.getBoolean(PAUSED_KEY);
             state.pauseReason = PauseReason.fromSerialized(pairTag.getString(PAUSE_REASON_KEY));
+            state.jasonWoundedPaused = pairTag.getBoolean(JASON_WOUNDED_PAUSED_KEY);
             state.initialMessageSent = pairTag.getBoolean(INITIAL_MESSAGE_SENT_KEY);
             if (pairTag.contains(INITIAL_MESSAGE_DELAY_TICKS_KEY)) {
                 state.initialMessageDelayTicks = pairTag.getInt(INITIAL_MESSAGE_DELAY_TICKS_KEY);
@@ -224,6 +226,7 @@ public class DualPersonalityComponent implements AutoSyncedComponent {
             pairTag.putInt(DOUBLE_ACTIVE_TICKS_KEY, pair.doubleActiveTicks);
             pairTag.putBoolean(PAUSED_KEY, pair.paused);
             pairTag.putString(PAUSE_REASON_KEY, pair.pauseReason.serialized);
+            pairTag.putBoolean(JASON_WOUNDED_PAUSED_KEY, pair.jasonWoundedPaused);
             pairTag.putBoolean(INITIAL_MESSAGE_SENT_KEY, pair.initialMessageSent);
             pairTag.putInt(INITIAL_MESSAGE_DELAY_TICKS_KEY, pair.initialMessageDelayTicks);
             pairList.add(pairTag);
@@ -258,6 +261,8 @@ public class DualPersonalityComponent implements AutoSyncedComponent {
         public boolean paused;
         // 暂停原因要区分“休眠掉线”和“活跃掉线”，因为恢复时处理方式不同。
         public PauseReason pauseReason = PauseReason.NONE;
+        // 杰森重伤倒地期间暂停普通轮换倒计时，但不改变 active/dormant 控制权和掉线暂停原因。
+        public boolean jasonWoundedPaused;
         // 开局身份提示只发送一次，避免每 tick 都刷 actionbar。
         public boolean initialMessageSent;
         // 开局身份提示延后发送的剩余 tick，避免和词条/阵营开局 actionbar 挤在同一瞬间。
