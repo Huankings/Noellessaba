@@ -34,7 +34,7 @@ public final class HackerShopHandler {
             ));
             entries.add(new ShopEntry(
                     WatheItems.BLACKOUT.getDefaultStack(),
-                    NoellesRolesShops.getItemPrice(WatheItems.BLACKOUT, 250),
+                    NoellesRolesShops.getItemPrice(WatheItems.BLACKOUT, 250) + 100,
                     ShopEntry.Type.TOOL
             ));
             entries.add(new ShopEntry(ModItems.ICON_WEAPON_COOLDOWN_REFRESH.getDefaultStack(), HackerConstants.REFRESH_WEAPON_COOLDOWN_PRICE, ShopEntry.Type.TOOL));
