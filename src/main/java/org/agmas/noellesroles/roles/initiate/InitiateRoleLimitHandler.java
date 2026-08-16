@@ -9,7 +9,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 /**
  * 初学者随机生成上限。
  *
- * <p>Harpy 只随机分配一个初学者名额，第二个初学者由配对 mixin 从另一名中立玩家补齐。
+ * <p>Harpy 只随机分配一个初学者名额，第二个初学者由 Harpy 职业分配阶段 API 从另一名中立玩家补齐。
  * 这样可以保持原 StupidExpress 的“只有杀手位足够多时才出现一对初学者”的节奏。</p>
  */
 public final class InitiateRoleLimitHandler {

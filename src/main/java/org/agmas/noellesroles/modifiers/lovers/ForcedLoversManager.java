@@ -22,7 +22,7 @@ public final class ForcedLoversManager {
     /*
      * pendingPartners 保存“下一局开局时要强制指定的恋人”。
      * 这和 HarpyModLoader 的 /forceRole、/forceModifier 一样，是运行时调试队列：
-     * 指令执行时不立刻影响当前局，而是在下一次 Wathe 初始化职业/词条时消费。
+     * 指令执行时不立刻影响当前局，而是在下一次 Harpy 词条分配公告前 API 回调中消费。
      */
     private static final Map<UUID, UUID> pendingPartners = new LinkedHashMap<>();
     private static final Map<UUID, String> pendingNames = new HashMap<>();

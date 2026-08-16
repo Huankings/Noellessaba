@@ -216,6 +216,9 @@
 - `NoellesRolesPayloadTypes.java` 负责注册自定义 payload codec。
 - `NoellesRolesPacketReceivers.java` 负责注册服务端 packet receiver，并把旧的按职业能力分发逻辑集中在 packet 层。
 - `NoellesRolesEventBootstrap.java` 负责事件监听、server tick、回合清理和 Harpy 禁用职业配置同步；其中人数相关动态上限包括 `Mimic`、`Vulture`、`Hacker`、`Drugmaker` 和 `Better Vigilante`。
+- `HackerRoleAssignmentRules.java` 通过 Harpy `RoleAssignmentApi` 注册 Hacker / Mimic 同局互斥，不再使用 Harpy 分配方法 mixin。
+- `InitiateRoleAssignmentRules.java` 通过 Harpy 阶段结束回调补齐第二名初学者，保留“随机只抽一个名额、成对落地”的旧玩法。
+- `LoversModifierAssignmentRules.java` 和 `DualPersonalityModifierAssignmentRules.java` 通过 Harpy 词条公告前生命周期回调消费强制配对，并在公告显示前清理随机残留。
 - `NoellesPlayerCollisionHandlers.java` 负责玩家碰撞 API 总入口，只调用各职业 / 词条自己的碰撞 handler；当前包含灵术师脱体本体和 FEATHER。
 - `NoellesRoleLimitsBootstrap.java` 负责开服时的静态 Harpy 上限，例如 `Conductor`、`Executioner`、`Jester`、`Dreamer`、`Starstruck` 等默认最大生成数。
 - `NoellesRolesComponents.java` 负责把所有 CCA component 和 world component 一次性注册进去。
@@ -241,6 +244,30 @@
 - `NoellesInventoryButtons.java` 是客户端背包按钮总注册入口，只负责调用各职业自己的 `*InventoryButtons.register()`。
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
+
+## Harpy 分配 API 接入方式
+
+NoellesRoles 现在不再通过 mixin Harpy 私有分配方法来做同局互斥、绑定生成或强制词条配对。相关逻辑统一走 `org.agmas.harpymodloader.api.assignment`，并按职业 / 词条拆到自己的小类里，再由 `NoellesRolesBootstrap.init()` 调用。
+
+当前已经迁移的入口：
+
+- `roles/hacker/HackerRoleAssignmentRules.java`：`RoleAssignmentApi.registerMutualExclusion(...)`，在 `CIVILIAN_REPLACEMENT` 阶段阻止 Hacker 和 Mimic 同局随机生成。
+- `roles/initiate/InitiateRoleAssignmentRules.java`：`RoleAssignmentApi.registerAfterPhaseHandler(...)`，平民 / 中立替换阶段结束后，如果只出现 1 名初学者，就从另一名中立玩家中补第 2 名，并清理旧中立职业物品。
+- `modifiers/lovers/LoversModifierAssignmentRules.java`：`ModifierAssignmentApi.registerBeforeAnnouncementHandler(...)`，在 Harpy 词条公告前消费 `/noellesroles setlovers` 的强制配对，清掉随机恋人残留后写入最终配对。
+- `modifiers/dual_personality/DualPersonalityModifierAssignmentRules.java`：分配开始前刷新双重人格动态上限，公告前消费强制主 / 副人格配对。
+
+新增同类规则时按这个格式放文件：
+
+```text
+src/main/java/org/agmas/noellesroles/roles/<role>/<RoleName>RoleAssignmentRules.java
+src/main/java/org/agmas/noellesroles/modifiers/<modifier>/<ModifierName>ModifierAssignmentRules.java
+```
+
+职业规则常用 `RoleAssignmentApi.registerMutualExclusion(...)`、`registerOneWayExclusion(...)`、`registerBeforePhaseHandler(...)`、`registerAfterPhaseHandler(...)`。阶段回调里需要补职业时用 `RoleAssignmentPhaseContext.assignRole(...)`，不要自己拼 `gameWorldComponent.addRole(...) + ModdedRoleAssigned`。
+
+词条规则常用 `ModifierAssignmentApi.registerModifierExcludesRole(...)`、`registerModifierRequiresRole(...)`、`registerModifierMutualExclusion(...)`、`registerModifierOneWayExclusion(...)`。如果要替代旧 `assignModifiers` 的 HEAD / 公告前 / TAIL mixin，用 `registerBeforeAssignmentHandler(...)`、`registerBeforeAnnouncementHandler(...)`、`registerAfterAssignmentHandler(...)`。
+
+已经删除并不应加回的 Harpy 分配类 mixin 包括 Hacker / Mimic 排斥、初学者配对、强制恋人、强制双重人格。后续只有在 Harpy API 无法表达需求时才考虑新增窄 mixin，并且要先评估是否应该把 Harpy API 继续补强。
 
 ## 玩家体力与移动接入
 
@@ -614,6 +641,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 背包内玩家选择按钮不是 mixin。它们应通过 `NoellesInventoryButtons` 注册，再由各职业包里的 `*InventoryButtons.java` 接入 Wathe `InventoryButtonApi`。
 普通屏幕 HUD 也不是 mixin。它们应通过 `NoellesHudHandlers` 注册，再由各职业包里的 `*StatusHud.java` 接入 Wathe `HudOverlayApi`；只有相机、输入控制、物品渲染等缺少公开 API 的场景才保留窄 mixin。
 枪击接管、左轮反火、默认击杀收益、确认死亡后清理和尸体生成回调也不是 mixin；它们应通过 `NoellesRolesCombatBootstrap` / `NoellesRolesDeathBootstrap` 调用各职业 handler 接入 Wathe `GunShotApi` / `WeaponTargetingApi` / `DeathApi`。
+Harpy 开局职业 / 词条分配规则也不是 mixin；同局互斥、绑定生成、词条公告前强制配对应通过 `HackerRoleAssignmentRules`、`InitiateRoleAssignmentRules`、`LoversModifierAssignmentRules`、`DualPersonalityModifierAssignmentRules` 这类小类接入 Harpy assignment API。
 
 ### 10. 需要回放和文本时
 

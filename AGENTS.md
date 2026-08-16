@@ -68,6 +68,10 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMoodTaskBootstrap.java`：Wathe 心情任务 API 接入分发器，只调用各职业 / 词条自己的 `*MoodTaskHandler.init()`。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesBlackoutBootstrap.java`：Wathe 停电 API 接入分发器，只放分组规则和各职业 `*BlackoutHandler.init()` 调用。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`：Harpy 静态角色上限初始化；人数相关动态上限在 `NoellesRolesEventBootstrap`。
+- `src/main/java/org/agmas/noellesroles/roles/hacker/HackerRoleAssignmentRules.java`：Harpy 职业分配 API 接入，阻止 Hacker / Mimic 同局随机生成。
+- `src/main/java/org/agmas/noellesroles/roles/initiate/InitiateRoleAssignmentRules.java`：Harpy 阶段回调接入，补齐第二名初学者。
+- `src/main/java/org/agmas/noellesroles/modifiers/lovers/LoversModifierAssignmentRules.java`：Harpy 词条公告前回调接入，消费强制恋人配对。
+- `src/main/java/org/agmas/noellesroles/modifiers/dual_personality/DualPersonalityModifierAssignmentRules.java`：Harpy 词条分配生命周期接入，刷新双重人格上限并消费强制配对。
 - `src/main/java/org/agmas/noellesroles/NoellesRolesComponents.java`
 - `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperWorldComponent.java`：时停者世界级快照历史、回溯播放游标、保护名单。
 - `src/main/java/org/agmas/noellesroles/roles/timekeeper/TimekeeperRiftHandler.java`：时间狭缝入口、动态失效检测、以及排除狭缝玩家后的胜利收束判断。
@@ -134,6 +138,16 @@
 - 托盘/床效果：`TrayEffectRegistry`、`BedEffectRegistry`
 - 死亡保护链：`AllowPlayerDeath`，Noelles 侧还要看 `NoellesRolesDeathBootstrap` 和 `CommonForcedDeathHandler`
 
+Harpy 分配规则也优先走公开 API，不要再 mixin `ModdedMurderGameMode#findAndAssignPlayers` 或 `assignModifiers`：
+
+- 职业互斥 / 单向排斥：`RoleAssignmentApi.registerMutualExclusion(...)`、`registerOneWayExclusion(...)`。
+- 职业绑定生成或阶段补位：`registerBeforePhaseHandler(...)`、`registerAfterPhaseHandler(...)`，补最终职业用 `RoleAssignmentPhaseContext.assignRole(...)`。
+- 词条与职业绑定 / 排斥：`ModifierAssignmentApi.registerModifierRequiresRole(...)`、`registerModifierExcludesRole(...)`。
+- 同玩家词条互斥：`registerModifierMutualExclusion(...)`、`registerModifierOneWayExclusion(...)`。
+- 强制恋人、强制双重人格、动态词条上限：用 `registerBeforeAssignmentHandler(...)` / `registerBeforeAnnouncementHandler(...)` / `registerAfterAssignmentHandler(...)` 替代词条分配 mixin。
+
+NoellesRoles 接入格式必须按职业或词条拆文件：`roles/<role>/<RoleName>RoleAssignmentRules`、`modifiers/<modifier>/<ModifierName>ModifierAssignmentRules`，再由 `NoellesRolesBootstrap.init()` 调用。不要把多个职业/词条的 Harpy 规则塞进一个公共大类。
+
 ### 玩家体力与移动接入
 
 Wathe 已经公开了玩家体力和移动速度。NoellesRoles 侧如果要改这些数值，优先走公开 API，不要再 shadow `forwardSpeed` / `sidewaysSpeed`，也不要再把逻辑塞进 `travel()`、`jump()` 或 `getMovementSpeed()` 的大 mixin。
@@ -178,7 +192,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
 8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：应回滚的玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，应回滚的世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
 9. 只要新增或改动 `VictoryApi` 胜利规则，尤其是独立阵营胜利、共胜、或活着时返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算的职业/词条，就必须评估时间狭缝：把“排除狭缝玩家后仍真正存活且仍应阻拦结算”的条件补进 `TimekeeperRiftHandler`，避免死者处于特殊存活旁观时继续卡住胜利。
-10. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
+10. 只要新增或改动 Harpy 开局生成限制、同局互斥、绑定生成、词条与职业绑定/排斥，按 `*RoleAssignmentRules` / `*ModifierAssignmentRules` 拆小类并接 Harpy assignment API，不要新增分配 mixin。
+11. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
 
 ## 注册点检查清单
 
@@ -203,6 +218,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesDeathBootstrap.java`：新增死亡保护、反噬、击杀奖励、确认死亡后清理或尸体生成回调时，在这里按阶段接入对应 handler。
 - `NoellesRolesMovementBootstrap.java`：新增体力、速度加成 / 减速 / 覆盖规则时，在这里按职业 / 词条接入对应 handler。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
+- `roles/<role>/<RoleName>RoleAssignmentRules.java`：新增 Harpy 职业分配互斥、单向排斥、绑定生成或阶段补位规则。
+- `modifiers/<modifier>/<ModifierName>ModifierAssignmentRules.java`：新增 Harpy 词条分配规则、词条与职业绑定/排斥、词条公告前强制配对或动态上限。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
 - `TimekeeperSnapshots.java`：新增 CCA 运行态组件后同步加入 `PLAYER_COMPONENTS` / `WORLD_COMPONENTS`，或明确说明该组件不应被时间回溯。

@@ -21,7 +21,7 @@ import java.util.UUID;
  * 管理 `/noellesroles setdual_personality <主人格> <副人格>` 指令产生的下一局强制配对。
  *
  * <p>指令是在对局外或开局前执行的，但真正写入词条要等 Harpy 分配词条时才能拿到本局玩家列表。
- * 所以这里先缓存 UUID，等 assignModifiers 运行到合适注入点时再消费。</p>
+ * 所以这里先缓存 UUID，等 Harpy 词条分配公告前 API 回调再消费。</p>
  */
 public final class ForcedDualPersonalityManager {
 
