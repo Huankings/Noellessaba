@@ -38,6 +38,7 @@ public final class ThiefItemRules {
         list.add(getId(ModItems.HUNTING_KNIFE)); // Hunting Knife from Hunter role in noellesroles
         list.add(getId(ModItems.THROWING_AXE)); // noellesroles throwing_axe
         list.add(getId(ModItems.ROBBER_PISTOL));
+        list.add(getId(ModItems.DELUSION_SYRINGE));
         return list;
     }
 

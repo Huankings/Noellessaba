@@ -15,11 +15,13 @@ import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.util.AnnounceWelcomePayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import org.agmas.noellesroles.ModItems;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
@@ -46,6 +48,13 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
 
     private final PlayerEntity player;
     private boolean hasBecomeKiller = false;
+    /**
+     * 记录幻觉注剂当前是否仍属于梦者开局 30 秒冷却。
+     *
+     * <p>ItemCooldownManager 只会同步剩余比例，客户端无法仅凭比例判断
+     * 当前是 30 秒开局冷却还是 45 秒普通冷却，因此这里单独同步来源状态。</p>
+     */
+    private int delusionSyringeStartCooldownTicks = 0;
     public int dreamerRequired = 0;
     public int dreamerCounts = 0;
 
@@ -55,7 +64,16 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
 
     @Override
     public void serverTick() {
+        boolean startCooldownExpired = false;
+        if (this.delusionSyringeStartCooldownTicks > 0) {
+            this.delusionSyringeStartCooldownTicks--;
+            startCooldownExpired = this.delusionSyringeStartCooldownTicks == 0;
+        }
+
         if (this.hasBecomeKiller || this.dreamerCounts <= 0) {
+            if (startCooldownExpired) {
+                sync();
+            }
             return;
         }
 
@@ -66,11 +84,44 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
 
         if (this.dreamerRequired > 0 && this.dreamerCounts >= this.dreamerRequired) {
             triggerBecomeKiller();
+        } else if (startCooldownExpired) {
+            sync();
         }
     }
 
     public boolean hasBecomeKiller() {
         return this.hasBecomeKiller;
+    }
+
+    /**
+     * 梦者分配身份时启动幻觉注剂的 30 秒开局冷却来源标记。
+     *
+     * <p>真正的物品禁止使用仍由 DreamerRoleAssignedHandler 写入
+     * ItemCooldownManager；本方法只负责让客户端 tooltip 知道应显示 30 秒总长。</p>
+     */
+    public void startDelusionSyringeRoundCooldown() {
+        this.delusionSyringeStartCooldownTicks = DreamerConstants.DELUSION_SYRINGE_START_COOLDOWN_TICKS;
+        sync();
+    }
+
+    /**
+     * 判断幻觉注剂当前是否仍处于梦者开局冷却来源。
+     */
+    public boolean isUsingDelusionSyringeStartCooldown(@NotNull Item item) {
+        return item == ModItems.DELUSION_SYRINGE && this.delusionSyringeStartCooldownTicks > 0;
+    }
+
+    /**
+     * 正常注射会把开局 30 秒冷却替换为普通 45 秒冷却。
+     * 在写入普通冷却前必须清掉来源标记，否则客户端会继续按 30 秒换算倒计时。
+     */
+    public void clearDelusionSyringeStartCooldown() {
+        if (this.delusionSyringeStartCooldownTicks <= 0) {
+            return;
+        }
+
+        this.delusionSyringeStartCooldownTicks = 0;
+        sync();
     }
 
     public void setDreamerRequired() {
@@ -131,6 +182,7 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         ModdedRoleAssigned.EVENT.invoker().assignModdedRole(serverPlayer, newRole);
         PlayerShopComponent.KEY.get(serverPlayer).addToBalance(DreamerConstants.BECOME_KILLER_REWARD_COINS);
         PlayerPoisonComponent.KEY.get(serverPlayer).reset();
+        clearDreamerStartSyringe(serverPlayer);
 
         /*
          * 角色中途转化后需要重新发送欢迎文本。
@@ -154,6 +206,23 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         clearCounts();
     }
 
+    private void clearDreamerStartSyringe(@NotNull ServerPlayerEntity serverPlayer) {
+        /*
+         * 幻觉注剂是梦者开局发放的推进道具；梦者达标转成杀手职业后，
+         * 这件道具已经完成它的职业阶段使命，继续留在原玩家背包里只会占格子。
+         *
+         * 这里只清理“转职成功的梦者本人”背包内的幻觉注剂，不影响其它玩家通过偷取、
+         * 指令或创造模式获得的同款物品；这些物品仍按通用针剂规则正常可用。
+         */
+        serverPlayer.getInventory().remove(
+                stack -> stack.isOf(ModItems.DELUSION_SYRINGE),
+                Integer.MAX_VALUE,
+                serverPlayer.getInventory()
+        );
+        serverPlayer.getItemCooldownManager().remove(ModItems.DELUSION_SYRINGE);
+        serverPlayer.getInventory().markDirty();
+    }
+
     private void clearCounts() {
         this.hasBecomeKiller = true;
         this.dreamerCounts = 0;
@@ -162,8 +231,10 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
 
     public void reset() {
         this.hasBecomeKiller = false;
+        this.delusionSyringeStartCooldownTicks = 0;
         this.dreamerRequired = 0;
         this.dreamerCounts = 0;
+        this.player.getItemCooldownManager().remove(ModItems.DELUSION_SYRINGE);
         sync();
     }
 
@@ -181,6 +252,7 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         buf.writeBoolean(this.hasBecomeKiller);
         buf.writeInt(this.dreamerRequired);
         buf.writeInt(this.dreamerCounts);
+        buf.writeBoolean(this.delusionSyringeStartCooldownTicks > 0);
     }
 
     @Override
@@ -188,6 +260,7 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         this.hasBecomeKiller = buf.readBoolean();
         this.dreamerRequired = buf.readInt();
         this.dreamerCounts = buf.readInt();
+        this.delusionSyringeStartCooldownTicks = buf.readBoolean() ? 1 : 0;
     }
 
     @Override
@@ -195,6 +268,7 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         tag.putBoolean("hasBecomeKiller", this.hasBecomeKiller);
         tag.putInt("dreamerRequired", this.dreamerRequired);
         tag.putInt("dreamerCounts", this.dreamerCounts);
+        tag.putInt("delusionSyringeStartCooldownTicks", this.delusionSyringeStartCooldownTicks);
     }
 
     @Override
@@ -202,5 +276,8 @@ public class DreamerKillerComponent implements AutoSyncedComponent, ServerTickin
         this.hasBecomeKiller = tag.contains("hasBecomeKiller") && tag.getBoolean("hasBecomeKiller");
         this.dreamerRequired = tag.contains("dreamerRequired") ? tag.getInt("dreamerRequired") : 0;
         this.dreamerCounts = tag.contains("dreamerCounts") ? tag.getInt("dreamerCounts") : 0;
+        this.delusionSyringeStartCooldownTicks = tag.contains("delusionSyringeStartCooldownTicks")
+                ? tag.getInt("delusionSyringeStartCooldownTicks")
+                : 0;
     }
 }

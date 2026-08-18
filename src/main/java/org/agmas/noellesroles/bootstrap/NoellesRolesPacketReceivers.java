@@ -12,6 +12,7 @@ import org.agmas.noellesroles.packet.item.BlowgunC2SPacket;
 import org.agmas.noellesroles.packet.item.BloodAxeKnockbackC2SPacket;
 import org.agmas.noellesroles.packet.item.BloodAxeStabC2SPacket;
 import org.agmas.noellesroles.packet.item.ColorfulAxeAttackC2SPacket;
+import org.agmas.noellesroles.packet.item.DelusionSyringeC2SPacket;
 import org.agmas.noellesroles.packet.item.CrystalBallMarkC2SPacket;
 import org.agmas.noellesroles.packet.item.HuntingKnifeC2SPacket;
 import org.agmas.noellesroles.packet.item.PanC2SPacket;
@@ -106,6 +107,7 @@ public final class NoellesRolesPacketReceivers {
         ServerPlayNetworking.registerGlobalReceiver(BloodAxeKnockbackC2SPacket.ID, new BloodAxeKnockbackC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(BloodAxeStabC2SPacket.ID, new BloodAxeStabC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(ColorfulAxeAttackC2SPacket.ID, new ColorfulAxeAttackC2SPacket.Receiver());
+        ServerPlayNetworking.registerGlobalReceiver(DelusionSyringeC2SPacket.ID, new DelusionSyringeC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(HuntingKnifeC2SPacket.ID, new HuntingKnifeC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(PanC2SPacket.ID, new PanC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(SniperRifleShootC2SPacket.ID, SniperRifleShootC2SPacket::handle);

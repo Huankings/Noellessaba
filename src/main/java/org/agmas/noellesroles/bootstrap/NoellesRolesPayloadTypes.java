@@ -8,6 +8,7 @@ import org.agmas.noellesroles.packet.item.BlowgunC2SPacket;
 import org.agmas.noellesroles.packet.item.BloodAxeKnockbackC2SPacket;
 import org.agmas.noellesroles.packet.item.BloodAxeStabC2SPacket;
 import org.agmas.noellesroles.packet.item.ColorfulAxeAttackC2SPacket;
+import org.agmas.noellesroles.packet.item.DelusionSyringeC2SPacket;
 import org.agmas.noellesroles.packet.item.CrystalBallMarkC2SPacket;
 import org.agmas.noellesroles.packet.item.HuntingKnifeC2SPacket;
 import org.agmas.noellesroles.packet.item.PanC2SPacket;
@@ -63,6 +64,7 @@ public final class NoellesRolesPayloadTypes {
         PayloadTypeRegistry.playC2S().register(BloodAxeKnockbackC2SPacket.ID, BloodAxeKnockbackC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(BloodAxeStabC2SPacket.ID, BloodAxeStabC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ColorfulAxeAttackC2SPacket.ID, ColorfulAxeAttackC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(DelusionSyringeC2SPacket.ID, DelusionSyringeC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(HuntingKnifeC2SPacket.ID, HuntingKnifeC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(BlowgunC2SPacket.ID, BlowgunC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(PanC2SPacket.ID, PanC2SPacket.CODEC);

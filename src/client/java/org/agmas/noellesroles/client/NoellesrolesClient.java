@@ -381,6 +381,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.SULFURIC_ACID_BARREL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BLOWGUN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.POISON_INJECTOR, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.DELUSION_SYRINGE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.KNOCKOUT_DRUG, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.JERRY_CAN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.LIGHTER, itemStack, list);
@@ -446,6 +447,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.SULFURIC_ACID_BARREL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BLOWGUN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.POISON_INJECTOR);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.DELUSION_SYRINGE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.KNOCKOUT_DRUG);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.JERRY_CAN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.LIGHTER);

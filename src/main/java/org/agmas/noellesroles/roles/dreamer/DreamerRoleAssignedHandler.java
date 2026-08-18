@@ -23,6 +23,17 @@ public final class DreamerRoleAssignedHandler {
         DreamerKillerComponent dreamerProgress = DreamerKillerComponent.KEY.get(player);
         dreamerProgress.reset();
         dreamerProgress.setDreamerRequired();
+        /*
+         * 幻觉注剂是梦者开局自带的可重复使用道具。
+         * 真实冷却写入 ItemCooldownManager，来源标记单独写入梦者组件，
+         * 这样客户端 tooltip 能把开局 30 秒和普通注射后的 45 秒区分开。
+         */
+        player.giveItemStack(new ItemStack(ModItems.DELUSION_SYRINGE));
+        dreamerProgress.startDelusionSyringeRoundCooldown();
+        player.getItemCooldownManager().set(
+                ModItems.DELUSION_SYRINGE,
+                DreamerConstants.DELUSION_SYRINGE_START_COOLDOWN_TICKS
+        );
 
         /*
          * 梦之印记的开局数量现在跟本局杀手人数动态挂钩：

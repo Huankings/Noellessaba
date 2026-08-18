@@ -19,6 +19,7 @@ public final class NoellesRolesReplayBootstrap {
     public static void register() {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DEFENSE_VIAL), NoellesRolesReplayFormatters::formatDefenseVialUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DELUSION_VIAL), NoellesRolesReplayFormatters::formatDelusionVialUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DELUSION_SYRINGE), NoellesRolesReplayFormatters::formatSyringeInjectionUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SEDATIVE), NoellesRolesReplayFormatters::formatSedativeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TIMED_BOMB), NoellesRolesReplayFormatters::formatTimedBombUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);

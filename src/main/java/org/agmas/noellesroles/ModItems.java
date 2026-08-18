@@ -93,6 +93,7 @@ public class ModItems {
         // 制毒师/绑匪三件迁移物品的数值全部落在各自职业常量中，不再依赖 kinssaba config。
         GameConstants.ITEM_COOLDOWNS.put(BLOWGUN, DrugmakerConstants.BLOWGUN_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(POISON_INJECTOR, DrugmakerConstants.POISON_INJECTOR_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(DELUSION_SYRINGE, DreamerConstants.DELUSION_SYRINGE_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(KNOCKOUT_DRUG, KidnapperConstants.KNOCKOUT_DRUG_COOLDOWN_TICKS);
         // 纵火犯道具的真实冷却会根据存活人数动态写入，这里登记默认值只用于客户端物品说明。
         GameConstants.ITEM_COOLDOWNS.put(JERRY_CAN, ArsonistConstants.getDouseCooldownTicks(0));
@@ -136,6 +137,7 @@ public class ModItems {
             // 角色机制与功能道具
             entries.add(MASTER_KEY);
             entries.add(DELUSION_VIAL);
+            entries.add(DELUSION_SYRINGE);
             entries.add(WIND_MARK);
             entries.add(DREAM_IMPRINT);
             entries.add(MEDICAL_KIT);
@@ -346,6 +348,11 @@ public class ModItems {
     public static final Item DELUSION_VIAL = register(
             new Item(new Item.Settings().maxCount(1)),
             "delusion_vial"
+    );
+    // 幻觉注剂：蓄力瞄准 3 格内玩家，成功后直接复用幻觉组件。
+    public static final Item DELUSION_SYRINGE = register(
+            new DelusionSyringeItem(new Item.Settings().maxCount(1)),
+            "delusion_syringe"
     );
     //风之印记
     public static final Item WIND_MARK = register(

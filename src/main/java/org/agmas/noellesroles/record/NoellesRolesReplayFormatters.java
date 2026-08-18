@@ -420,6 +420,26 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatSyringeInjectionUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        /*
+         * 针剂类回放使用统一模板：玩家 -> 白色 [物品名] -> 目标。
+         * 这样后续新增其它针剂时，只要记录物品快照并注册同一个 formatter，
+         * 就能直接得到一致且醒目的回放文案。
+         */
+        return Text.translatable(
+                "replay.item_use.noellesroles.syringe_injection",
+                actor,
+                whiteBracketedItem(event.data(), world),
+                target
+        );
+    }
+
+    @Nullable
     public static Text formatBlowgunHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         Text target = targetText(event, match);

@@ -28,6 +28,12 @@
       "noellesroles:item/tape_apply_3"
     ]
   },
+  "item.syringe_stab": {
+    "subtitle": "subtitles.noellesroles.item.syringe_stab",
+    "sounds": [
+      "noellesroles:item/syringe_stab"
+    ]
+  },
   "ambient.spring_trap": {
     "sounds": [
       "noellesroles:ambient/spring_trap"

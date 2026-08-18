@@ -17,6 +17,8 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
+import org.agmas.noellesroles.roles.dreamer.DreamerConstants;
+import org.agmas.noellesroles.roles.dreamer.DreamerKillerComponent;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants;
 import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
@@ -77,6 +79,18 @@ public class NoellesRolesItemToolTip {
             DrugmakerPlayerComponent drugmakerComponent = DrugmakerPlayerComponent.KEY.get(client.player);
             if (drugmakerComponent.isUsingStartCooldown(item)) {
                 return DrugmakerConstants.START_COOLDOWN_TICKS;
+            }
+            return getItemCooldownTicks(item);
+        }
+
+        if (item == ModItems.DELUSION_SYRINGE) {
+            /*
+             * 幻觉注剂普通注射后冷却 45 秒，但梦者开局拿到时只先锁 30 秒。
+             * 客户端只能从原版冷却管理器拿剩余比例，所以需要读取梦者组件同步来的来源标记。
+             */
+            DreamerKillerComponent dreamerComponent = DreamerKillerComponent.KEY.get(client.player);
+            if (dreamerComponent.isUsingDelusionSyringeStartCooldown(item)) {
+                return DreamerConstants.DELUSION_SYRINGE_START_COOLDOWN_TICKS;
             }
             return getItemCooldownTicks(item);
         }
@@ -231,6 +245,7 @@ public class NoellesRolesItemToolTip {
         return item == ModItems.HUNTING_KNIFE
                 || item == ModItems.BLOWGUN
                 || item == ModItems.POISON_INJECTOR
+                || item == ModItems.DELUSION_SYRINGE
                 || item == ModItems.KNOCKOUT_DRUG
                 || item == ModItems.JERRY_CAN
                 || item == ModItems.LIGHTER;

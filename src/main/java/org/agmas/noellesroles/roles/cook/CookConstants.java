@@ -18,8 +18,8 @@ public final class CookConstants {
     public static final int PAN_MAX_USE_TICKS = 100;
     public static final int PAN_MAX_USE_TICKS_FOR_HIT = PAN_MAX_USE_TICKS - PAN_CLIENT_SEND_GRACE_TICKS - 1;
     public static final float PAN_TARGET_RANGE = 3.0F;
-    public static final int PAN_SHOP_PRICE = 120;
-    public static final int COOKED_FOOD_SHOP_PRICE = 25;
+    public static final int PAN_SHOP_PRICE = 85;
+    public static final int COOKED_FOOD_SHOP_PRICE = 15;
     public static final int TASK_INCOME = 50;
 
     private CookConstants() {

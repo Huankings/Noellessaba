@@ -64,6 +64,7 @@ public class NoellesRolesItemExtraModel {
          */
         return item == ModItems.BLOWGUN
                 || item == ModItems.POISON_INJECTOR
+                || item == ModItems.DELUSION_SYRINGE
                 || item == ModItems.KNOCKOUT_DRUG
                 || item == ModItems.JERRY_CAN
                 || item == ModItems.LIGHTER;
