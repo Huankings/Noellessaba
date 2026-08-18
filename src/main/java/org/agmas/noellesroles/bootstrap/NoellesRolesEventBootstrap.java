@@ -89,6 +89,9 @@ import org.agmas.noellesroles.roles.physician.PhysicianStatusAlertHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
 import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
@@ -205,6 +208,7 @@ public final class NoellesRolesEventBootstrap {
                  * 时停者自己在窗口内死亡时，狭缝玩家也会马上回到普通死亡旁观和死亡语音频道。
                  */
                 TimekeeperRiftHandler.tickActiveRifts(world);
+                ShadowJesterManager.tickWorld(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     float moodDrainMultiplier;
                     if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
@@ -282,6 +286,7 @@ public final class NoellesRolesEventBootstrap {
             ServerWorld overworld = server.getOverworld();
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(overworld);
             int killerSlots = (int) Math.floor((float) dev.doctor4t.wathe.game.GameFunctions.getReadyPlayerCount(overworld) / (float) gameWorld.getKillerDividend());
+            Harpymodloader.setRoleMaximum(NoellesRoleRegistry.SHADOW_JESTER, killerSlots >= ShadowJesterConstants.MIN_KILLER_SLOTS_FOR_PAIR ? ShadowJesterConstants.MAX_RANDOM_PRIMARY_COUNT : 0);
             Harpymodloader.setRoleMaximum(NoellesRoleRegistry.DRUGMAKER, killerSlots >= org.agmas.noellesroles.roles.drugmaker.DrugmakerConstants.MIN_KILLER_COUNT ? 1 : 0);
             Harpymodloader.setRoleMaximum(NoellesRoleRegistry.MIMIC, killerSlots >= MimicConstants.MIMIC_MIN_KILLER_COUNT ? 1 : 0);
 
@@ -306,6 +311,7 @@ public final class NoellesRolesEventBootstrap {
             SpringTrapAuraWorldComponent.KEY.get(serverWorld).reset();
             TimekeeperWorldComponent.KEY.get(serverWorld).reset();
             JasonFireWorldComponent.KEY.get(serverWorld).reset();
+            ShadowJesterComponent.KEY.get(serverWorld).clear();
             JasonWoundManager.resetRoundTransientState();
             JasonAbilityManager.resetRoundTransientState(serverWorld);
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);

@@ -60,5 +60,21 @@
     "sounds": [
       "noellesroles:ambient/jason_jump_scare"
     ]
+  },
+  "ambient.shadow_jester_king": {
+    "sounds": [
+      {
+        "name": "noellesroles:ambient/shadow_jester_king",
+        "stream": true
+      }
+    ]
+  },
+  "ambient.shadow_jester_queen": {
+    "sounds": [
+      {
+        "name": "noellesroles:ambient/shadow_jester_queen",
+        "stream": true
+      }
+    ]
   }
 }

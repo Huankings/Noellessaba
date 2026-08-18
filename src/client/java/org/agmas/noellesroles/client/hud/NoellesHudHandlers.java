@@ -28,6 +28,8 @@ import org.agmas.noellesroles.client.roles.recaller.RecallerStatusHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererSniperScopeHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererStatusHud;
 import org.agmas.noellesroles.client.roles.robot.RobotStatusHud;
+import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterPartnerHud;
+import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterStatusHud;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistStatusHud;
 import org.agmas.noellesroles.client.roles.stalker.StalkerStatusHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckStatusHud;
@@ -49,6 +51,7 @@ public final class NoellesHudHandlers {
     public static void register() {
         LoversPartnerHud.register();
         DualPersonalityPartnerHud.register();
+        ShadowJesterPartnerHud.register();
         ControlledStatusHud.register();
         KidnapperControlledHud.register();
         BellringerStatusHud.register();
@@ -75,6 +78,7 @@ public final class NoellesHudHandlers {
         ExecutionerTargetHud.register();
         ConvenerStatusHud.register();
         RobotStatusHud.register();
+        ShadowJesterStatusHud.register();
         ThiefStatusHud.register();
         DreamerStatusHud.register();
         InsaneDamnedKillerStatusHud.register();

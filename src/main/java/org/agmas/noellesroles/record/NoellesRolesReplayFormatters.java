@@ -13,6 +13,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,6 +115,17 @@ public final class NoellesRolesReplayFormatters {
 
     private static Text formatStage(String translationKey, int color) {
         return Text.translatable(translationKey).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));
+    }
+
+    @Nullable
+    public static Text formatShadowJesterStage(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        Text phase = formatStage(event.data().getString("phase"), ShadowJesterConstants.ROLE_COLOR);
+        Text definition = formatStage(event.data().getString("definition"), ShadowJesterConstants.ROLE_COLOR);
+        return Text.translatable("replay.global.noellesroles.shadow_jester_stage", actor, phase, definition);
     }
 
     private static Text whiteBracketedItem(NbtCompound data, ServerWorld world) {
@@ -2161,6 +2173,18 @@ public final class NoellesRolesReplayFormatters {
             return Text.translatable("replay.death.noellesroles.broken_heart.died", victim);
         }
         return Text.translatable("replay.death.noellesroles.broken_heart.died_with_partner", victim, partner);
+    }
+
+    @Nullable
+    public static Text formatModdedBackfireDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.modded_backfire.died", victim);
+    }
+
+    @Nullable
+    public static Text formatMentalBreakdownDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.mental_breakdown.died", victim);
     }
 
     @Nullable

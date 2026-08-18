@@ -213,6 +213,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JASON_ABILITY_EXIT_FINISHED_EVENT, NoellesRolesReplayFormatters::formatJasonAbilityExitFinished);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JASON_ABILITY_SCARED_EVENT, NoellesRolesReplayFormatters::formatJasonAbilityScared);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JASON_ABILITY_SCARE_ENDED_EVENT, NoellesRolesReplayFormatters::formatJasonAbilityScareEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SHADOW_JESTER_STAGE_EVENT, NoellesRolesReplayFormatters::formatShadowJesterStage);
 
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_THROWING_AXE, NoellesRolesReplayFormatters::formatThrowingAxeDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_AXE, NoellesRolesReplayFormatters::formatAxeDeath);
@@ -227,6 +228,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ARSONIST_FAILED_IGNITE_DEATH_REASON, NoellesRolesReplayFormatters::formatArsonistFailedIgniteDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.ALLERGIES_DEATH_REASON, NoellesRolesReplayFormatters::formatAllergiesDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.BROKEN_HEART_DEATH_REASON, NoellesRolesReplayFormatters::formatBrokenHeartDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.MODDED_BACKFIRE_DEATH_REASON, NoellesRolesReplayFormatters::formatModdedBackfireDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.MENTAL_BREAKDOWN_DEATH_REASON, NoellesRolesReplayFormatters::formatMentalBreakdownDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DUAL_ACTIVE_TIMEOUT_DEATH_REASON, NoellesRolesReplayFormatters::formatDualActiveTimeoutDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.FAILED_INITIATION_DEATH_REASON, NoellesRolesReplayFormatters::formatFailedInitiationDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_THROWING_WEAPON_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonThrowingWeaponDeath);

@@ -11,14 +11,14 @@ import dev.doctor4t.wathe.game.GameConstants;
 public final class CookConstants {
     public static final int ROLE_COLOR = 0xCCFF99;
     public static final int EAT_MARK_TICKS = GameConstants.getInTicks(0, 40);
-    public static final int PAN_COOLDOWN_TICKS = GameConstants.getInTicks(0, 45);
+    public static final int PAN_COOLDOWN_TICKS = GameConstants.getInTicks(0, 35);
     public static final int PAN_STUN_TICKS = GameConstants.getInTicks(0, 5);
     public static final int PAN_MIN_USE_TICKS = 10;
     public static final int PAN_CLIENT_SEND_GRACE_TICKS = 5;
     public static final int PAN_MAX_USE_TICKS = 100;
     public static final int PAN_MAX_USE_TICKS_FOR_HIT = PAN_MAX_USE_TICKS - PAN_CLIENT_SEND_GRACE_TICKS - 1;
     public static final float PAN_TARGET_RANGE = 3.0F;
-    public static final int PAN_SHOP_PRICE = 170;
+    public static final int PAN_SHOP_PRICE = 120;
     public static final int COOKED_FOOD_SHOP_PRICE = 25;
     public static final int TASK_INCOME = 50;
 

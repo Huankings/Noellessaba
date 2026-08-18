@@ -54,6 +54,7 @@ import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
 import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
@@ -161,5 +162,10 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(SpringTrapAuraWorldComponent.KEY, SpringTrapAuraWorldComponent::new);
         worldComponentFactoryRegistry.register(TimekeeperWorldComponent.KEY, TimekeeperWorldComponent::new);
         worldComponentFactoryRegistry.register(JasonFireWorldComponent.KEY, JasonFireWorldComponent::new);
+        /*
+         * 影子小丑的配对、双方阶段、任务计数、缔结申请和谢幕音乐都属于整局共享状态。
+         * 注册成世界组件后，服务端只维护一份权威数据，客户端 HUD/透视/音乐通过同步组件读取。
+         */
+        worldComponentFactoryRegistry.register(ShadowJesterComponent.KEY, ShadowJesterComponent::new);
     }
 }

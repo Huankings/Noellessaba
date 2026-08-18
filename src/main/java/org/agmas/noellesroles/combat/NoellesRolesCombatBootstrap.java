@@ -9,6 +9,7 @@ import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainGunPenaltyHa
 import org.agmas.noellesroles.roles.magician.MagicianGunHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingGunPenaltyHandler;
 import org.agmas.noellesroles.roles.robber.RobberGunHandler;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterGunHandler;
 
 /**
  * NoellesRoles 枪械 API 接入总引导器。
@@ -41,6 +42,7 @@ public final class NoellesRolesCombatBootstrap {
         JesterGunTargetHandler.init();
         ExecutionerGunPenaltyHandler.init();
         LicensedVillainGunPenaltyHandler.init();
+        ShadowJesterGunHandler.init();
         MorphlingGunPenaltyHandler.init();
     }
 }

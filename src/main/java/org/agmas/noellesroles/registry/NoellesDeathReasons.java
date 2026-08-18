@@ -28,6 +28,8 @@ public final class NoellesDeathReasons {
     public static final Identifier GUESS_EXPLODE_NEARBY_DEATH_REASON = NoellesRolesCore.id("guess_explode_nearby");
     public static final Identifier ALLERGIES_DEATH_REASON = NoellesRolesCore.id("allergies");
     public static final Identifier BROKEN_HEART_DEATH_REASON = NoellesRolesCore.id("broken_heart");
+    public static final Identifier MODDED_BACKFIRE_DEATH_REASON = NoellesRolesCore.id("modded_backfire");
+    public static final Identifier MENTAL_BREAKDOWN_DEATH_REASON = NoellesRolesCore.id("mental_breakdown");
     public static final Identifier DUAL_ACTIVE_TIMEOUT_DEATH_REASON = NoellesRolesCore.id("dual_active_timeout");
     public static final Identifier FAILED_INITIATION_DEATH_REASON = NoellesRolesCore.id("failed_initiation");
     public static final Identifier JASON_THROWING_WEAPON_DEATH_REASON = NoellesRolesCore.id("throwing_weapon");

@@ -5,6 +5,7 @@ import org.agmas.noellesroles.modifiers.lovers.LoversConstants;
 import org.agmas.noellesroles.registry.NoellesRoleIds;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 
 /**
@@ -34,6 +35,7 @@ public final class NoellesRoleLimitsBootstrap {
         Harpymodloader.setRoleMaximum(NoellesRoleIds.CONVENER_ID, 1);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.THIEF_ID, 1);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.LICENSED_VILLAIN_ID, 0);
+        Harpymodloader.setRoleMaximum(NoellesRoleIds.SHADOW_JESTER_ID, ShadowJesterConstants.MAX_RANDOM_PRIMARY_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.TIMEKEEPER_ID, org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.SPRING_TRAP_ID, SpringTrapConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.JASON_ID, JasonConstants.MAX_ROLE_COUNT);

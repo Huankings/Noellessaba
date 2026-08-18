@@ -55,6 +55,7 @@ import org.agmas.noellesroles.roles.phantom.PhantomAbility;
 import org.agmas.noellesroles.roles.prophet.ProphetAbility;
 import org.agmas.noellesroles.roles.recaller.RecallerAbility;
 import org.agmas.noellesroles.roles.robot.RobotAbility;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistAbility;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistManager;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
@@ -270,6 +271,8 @@ public final class NoellesRolesPacketReceivers {
                 TimekeeperAbility.handleRepairOrUpgrade(player);
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.JASON)) {
                 JasonAbilityManager.handleAbilityKey(player);
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.SHADOW_JESTER)) {
+                ShadowJesterManager.handleAbilityKey(player, payload.targetId());
             }
         }));
     }

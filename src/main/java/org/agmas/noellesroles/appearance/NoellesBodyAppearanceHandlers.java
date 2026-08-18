@@ -2,6 +2,7 @@ package org.agmas.noellesroles.appearance;
 
 import org.agmas.noellesroles.appearance.modifiers.dual_personality.DualPersonalityBodyAppearanceHandler;
 import org.agmas.noellesroles.appearance.roles.morphling.MorphlingBodyAppearanceHandler;
+import org.agmas.noellesroles.appearance.roles.shadow_jester.ShadowJesterBodyAppearanceHandler;
 
 /**
  * NoellesRoles 服务端尸体外观 API 注册入口。
@@ -13,5 +14,6 @@ public final class NoellesBodyAppearanceHandlers {
     public static void register() {
         MorphlingBodyAppearanceHandler.register();
         DualPersonalityBodyAppearanceHandler.register();
+        ShadowJesterBodyAppearanceHandler.register();
     }
 }

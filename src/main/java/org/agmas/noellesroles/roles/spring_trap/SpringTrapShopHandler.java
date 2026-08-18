@@ -35,7 +35,7 @@ public final class SpringTrapShopHandler {
         ));
         replaceItem(entries, WatheItems.REVOLVER, new ShopEntry(
                 ModItems.THROWING_SPEED_AXE.getDefaultStack(),
-                NoellesRolesShops.getItemPrice(WatheItems.REVOLVER, 250),
+                Math.max(0, NoellesRolesShops.getItemPrice(WatheItems.REVOLVER, 250) - 75),
                 ShopEntry.Type.WEAPON
         ));
         replaceItem(entries, WatheItems.GRENADE, new ShopEntry(

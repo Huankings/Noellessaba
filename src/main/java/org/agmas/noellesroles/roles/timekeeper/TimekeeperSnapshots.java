@@ -87,6 +87,7 @@ import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
@@ -237,7 +238,12 @@ public final class TimekeeperSnapshots {
              * 投掷油桶落点、自动点火倒计时和火焰区域的年龄/位置都由该世界组件保存。
              * 纳入快照后能保证回溯不会留下未来时间线的火焰或汽油标记来源。
              */
-            component("noellesroles:jason_fire", JasonFireWorldComponent.KEY)
+            component("noellesroles:jason_fire", JasonFireWorldComponent.KEY),
+            /*
+             * 影子小丑的配对、双方阶段、任务计数、缔结申请和谢幕音乐主题都属于局内时间线。
+             * 如果不纳入快照，时停者回溯后可能出现“玩家回到第三阶段前，组件仍停在第四阶段”的错位。
+             */
+            component("noellesroles:shadow_jester", ShadowJesterComponent.KEY)
     );
 
     private TimekeeperSnapshots() {

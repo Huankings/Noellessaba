@@ -113,7 +113,7 @@
 
 - 商店：`ShopApi.registerRoleShop`、`ShopApi.registerShopModifier`
 - 金币 HUD / 被动收入：`EconomyApi`
-- 心情任务注册、指定发放、完成拦截：`MoodTaskApi`
+- 心情任务注册、指定发放、发放前拦截、完成拦截：`MoodTaskApi`
 - 心情任务点透视：`MoodTaskPointApi`
 - 任务收入和任务完成后效果：`TaskCompletionApi`
 - 回放：`GameRecordManager` + `ReplayRegistry`
@@ -333,6 +333,7 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 任务金币走 `TaskCompletionApi.registerTaskIncomeProvider`；需要“任务完成后的特殊效果”走 `TaskCompletionApi.AFTER_TASK_COMPLETE`。
 - 需要“任务完成但跳过 Wathe 默认收入”的窄场景，例如服务员帮别人完成任务，用 `TaskCompletionApi.registerTaskIncomeRule(...)`，不要再 mixin `TaskCompletionApi`。
 - 需要阻止任务完成确认的职业状态，例如灵术师附身，用 `MoodTaskApi.registerCompletionRule(...)`，不要再 mixin `PlayerMoodComponent#completeTask(...)`。
+- 需要阻止 Wathe 自动刷任务、低心情补槽、外部随机发放或指定发放时，用 `MoodTaskApi.registerAssignmentRule(...)` 并按 `AssignmentSource` 判断来源；不要在 server tick 里等任务出现后再 `removeTask`，否则客户端 HUD 会看到任务闪现。
 - 新增 Noelles 自定义心情任务时，按职业或词条拆到 `roles/<role>/<RoleName>MoodTaskHandler` 或 `modifiers/<modifier>/*MoodTaskHandler`，再由 `NoellesRolesMoodTaskBootstrap` 聚合调用；不要塞进总入口或经济 bootstrap。
 
 ## 客户端与 mixin

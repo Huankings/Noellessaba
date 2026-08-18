@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.bootstrap;
 
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistMoodTaskHandler;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterTaskHandler;
 
 /**
  * NoellesRoles 的 Wathe 心情任务 API 接入分发器。
@@ -25,5 +26,6 @@ public final class NoellesRolesMoodTaskBootstrap {
         initialized = true;
 
         SpiritualistMoodTaskHandler.init();
+        ShadowJesterTaskHandler.init();
     }
 }

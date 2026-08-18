@@ -19,6 +19,8 @@ public interface NoellesRolesSounds {
     SoundEvent AMBIENT_JASON_ABILITY_LAST = REGISTRAR.create("ambient.jason_ability_last");
     SoundEvent AMBIENT_JASON_ABILITY_END = REGISTRAR.create("ambient.jason_ability_end");
     SoundEvent AMBIENT_JASON_JUMP_SCARE = REGISTRAR.create("ambient.jason_jump_scare");
+    SoundEvent AMBIENT_SHADOW_JESTER_KING = REGISTRAR.create("ambient.shadow_jester_king");
+    SoundEvent AMBIENT_SHADOW_JESTER_QUEEN = REGISTRAR.create("ambient.shadow_jester_queen");
 
     static void initialize() {
         REGISTRAR.registerEntries();

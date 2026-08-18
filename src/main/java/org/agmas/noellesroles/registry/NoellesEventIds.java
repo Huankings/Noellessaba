@@ -159,6 +159,7 @@ public final class NoellesEventIds {
     public static final Identifier JASON_ABILITY_EXIT_FINISHED_EVENT = NoellesRolesCore.id("jason_ability_exit_finished");
     public static final Identifier JASON_ABILITY_SCARED_EVENT = NoellesRolesCore.id("jason_ability_scared");
     public static final Identifier JASON_ABILITY_SCARE_ENDED_EVENT = NoellesRolesCore.id("jason_ability_scare_ended");
+    public static final Identifier SHADOW_JESTER_STAGE_EVENT = NoellesRolesCore.id("shadow_jester_stage");
 
     private NoellesEventIds() {
     }

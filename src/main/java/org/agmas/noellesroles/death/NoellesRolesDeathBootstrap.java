@@ -29,6 +29,7 @@ import org.agmas.noellesroles.roles.noisemaker.NoisemakerBodySpawnHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianDeathProtectionHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetDeathCleanupHandler;
 import org.agmas.noellesroles.roles.prophet.ProphetDeathProtectionHandler;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterDeathHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistDeathProtectionHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerDeathHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
@@ -109,6 +110,7 @@ public final class NoellesRolesDeathBootstrap {
         NoisemakerBodySpawnHandler.init();
         MagicianPlaybackDeathHandler.init();
         JasonDeathHandler.init();
+        ShadowJesterDeathHandler.init();
     }
 
     /**

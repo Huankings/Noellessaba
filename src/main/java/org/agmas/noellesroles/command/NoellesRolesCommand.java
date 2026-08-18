@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.modifiers.dual_personality.ForcedDualPersonalityManager;
 import org.agmas.noellesroles.modifiers.lovers.ForcedLoversManager;
+import org.agmas.noellesroles.roles.shadow_jester.ForcedShadowJesterManager;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
@@ -29,6 +30,8 @@ public final class NoellesRolesCommand {
             new SimpleCommandExceptionType(Text.translatable("commands.noellesroles.set_lovers.same_player"));
     private static final SimpleCommandExceptionType SAME_DUAL_PERSONALITY_PLAYER_EXCEPTION =
             new SimpleCommandExceptionType(Text.translatable("commands.noellesroles.set_dual_personality.same_player"));
+    private static final SimpleCommandExceptionType SAME_SHADOW_JESTER_PLAYER_EXCEPTION =
+            new SimpleCommandExceptionType(Text.translatable("commands.noellesroles.set_shadow_jester.same_player"));
 
     private NoellesRolesCommand() {
     }
@@ -55,6 +58,10 @@ public final class NoellesRolesCommand {
                                 .then(CommandManager.argument("sub", EntityArgumentType.player())
                                         // main/sub 的顺序有意义：main 是开局活跃的主人格，sub 是开局休眠的副人格。
                                         .executes(NoellesRolesCommand::setDualPersonality))))
+                .then(CommandManager.literal("setshadow_jester")
+                        .then(CommandManager.argument("first", EntityArgumentType.player())
+                                .then(CommandManager.argument("second", EntityArgumentType.player())
+                                        .executes(NoellesRolesCommand::setShadowJester))))
                 .then(CommandManager.literal("setTime")
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
@@ -71,7 +78,10 @@ public final class NoellesRolesCommand {
                 .then(CommandManager.literal("remove")
                         .then(CommandManager.literal("lovers")
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
-                                        .executes(NoellesRolesCommand::removeLovers)))));
+                                        .executes(NoellesRolesCommand::removeLovers)))
+                        .then(CommandManager.literal("shadow_jester")
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(NoellesRolesCommand::removeShadowJester)))));
     }
 
     private static int setLovers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -186,6 +196,29 @@ public final class NoellesRolesCommand {
         return 1;
     }
 
+    private static int setShadowJester(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity first = EntityArgumentType.getPlayer(context, "first");
+        ServerPlayerEntity second = EntityArgumentType.getPlayer(context, "second");
+        if (first.getUuid().equals(second.getUuid())) {
+            throw SAME_SHADOW_JESTER_PLAYER_EXCEPTION.create();
+        }
+
+        /*
+         * 指令只写下一局 pending 队列。
+         * 真正覆盖职业、建立配对和发任务都在 Harpy 职业分配阶段完成，避免当前局半路改身份破坏状态机。
+         */
+        ForcedShadowJesterManager.setPendingPair(first, second);
+        context.getSource().sendFeedback(
+                () -> Text.translatable(
+                        "commands.noellesroles.set_shadow_jester.success",
+                        first.getDisplayName(),
+                        second.getDisplayName()
+                ),
+                true
+        );
+        return 1;
+    }
+
     private static int setDualPersonalityMinPlayerSpawn(CommandContext<ServerCommandSource> context) {
         int amount = IntegerArgumentType.getInteger(context, "amount");
         // 这个配置会在每局 assignModifiers 开始时重新读取，立即影响之后开的新局。
@@ -222,6 +255,35 @@ public final class NoellesRolesCommand {
                         removedPair.pending()
                                 ? "commands.noellesroles.remove_lovers.pending_success"
                                 : "commands.noellesroles.remove_lovers.active_success",
+                        player.getDisplayName(),
+                        partnerName
+                ),
+                true
+        );
+        return 1;
+    }
+
+    private static int removeShadowJester(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        ForcedShadowJesterManager.RemovedPair removedPair = ForcedShadowJesterManager.removePendingPair(player);
+        if (removedPair == null) {
+            context.getSource().sendError(Text.translatable(
+                    "commands.noellesroles.remove_shadow_jester.not_found",
+                    player.getDisplayName()
+            ));
+            return 0;
+        }
+
+        Text resolvedPartnerName = Text.literal(ForcedShadowJesterManager.describePlayer(removedPair.partner()));
+        ServerPlayerEntity onlinePartner = context.getSource().getServer().getPlayerManager().getPlayer(removedPair.partner());
+        if (onlinePartner != null) {
+            resolvedPartnerName = onlinePartner.getDisplayName();
+        }
+        Text partnerName = resolvedPartnerName;
+
+        context.getSource().sendFeedback(
+                () -> Text.translatable(
+                        "commands.noellesroles.remove_shadow_jester.pending_success",
                         player.getDisplayName(),
                         partnerName
                 ),

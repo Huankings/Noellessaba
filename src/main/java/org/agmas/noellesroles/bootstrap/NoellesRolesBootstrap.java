@@ -43,6 +43,8 @@ import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
 import org.agmas.noellesroles.roles.physician.PhysicianStatusAlertHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterRoleAssignmentRules;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterVictoryRule;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManager;
 import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.thief.ThiefInteractionHandler;
@@ -106,6 +108,7 @@ public final class NoellesRolesBootstrap {
         InitiateRoleLimitHandler.init();
         InitiateRoleAssignmentRules.init();
         InitiateTransformationHandler.init();
+        ShadowJesterRoleAssignmentRules.init();
         ThiefInteractionHandler.init();
         ThiefItemTracker.init();
         MagicianPlaybackManager.init();
@@ -128,6 +131,7 @@ public final class NoellesRolesBootstrap {
         ConvenerVictoryRule.init();
         ThiefVictoryRule.init();
         LicensedVillainVictoryRule.init();
+        ShadowJesterVictoryRule.init();
         NoellesRoleLimitsBootstrap.initStaticLimits();
         NoellesRolesPayloadTypes.register();
         NoellesRolesShopBootstrap.init();

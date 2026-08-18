@@ -46,7 +46,8 @@ public final class NoellesRoleGroups {
             NoellesRoleRegistry.ARSONIST,
             NoellesRoleRegistry.CONVENER,
             NoellesRoleRegistry.THIEF,
-            NoellesRoleRegistry.LICENSED_VILLAIN
+            NoellesRoleRegistry.LICENSED_VILLAIN,
+            NoellesRoleRegistry.SHADOW_JESTER
     ));
 
     private NoellesRoleGroups() {

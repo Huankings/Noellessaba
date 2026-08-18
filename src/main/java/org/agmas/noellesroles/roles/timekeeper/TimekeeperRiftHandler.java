@@ -16,9 +16,12 @@ import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesModifierRegistry;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterPhase;
 import org.agmas.noellesroles.roles.arsonist.ArsonistConstants;
 import org.agmas.noellesroles.roles.thief.ThiefItemTracker;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -331,6 +334,9 @@ public final class TimekeeperRiftHandler {
         if (hasLoversVictoryBlocker(alivePlayers, gameWorld, modifiers, vanillaWinStatus)) {
             return true;
         }
+        if (hasShadowJesterVictoryBlocker(alivePlayers, gameWorld)) {
+            return true;
+        }
 
         /*
          * 双重人格当前配置为不与杀手/乘客共胜。只要排除狭缝后仍有非狭缝双重人格玩家，
@@ -362,6 +368,58 @@ public final class TimekeeperRiftHandler {
         }
 
         return false;
+    }
+
+    private static boolean hasShadowJesterVictoryBlocker(
+            @NotNull List<ServerPlayerEntity> alivePlayers,
+            @NotNull GameWorldComponent gameWorld
+    ) {
+        if (alivePlayers.isEmpty()) {
+            return false;
+        }
+
+        ShadowJesterComponent component = ShadowJesterComponent.KEY.get(alivePlayers.getFirst().getServerWorld());
+        UUID first = component.first();
+        UUID second = component.second();
+        if (!component.hasPair()
+                || first == null
+                || second == null
+                || !component.getPhase(first).atLeast(ShadowJesterPhase.VOW_BOUND)
+                || !component.getPhase(second).atLeast(ShadowJesterPhase.VOW_BOUND)) {
+            return false;
+        }
+        if (component.areBothPairMembersConfirmedOrPendingDeath()
+                || !gameWorld.isRole(first, NoellesRoleRegistry.SHADOW_JESTER)
+                || !gameWorld.isRole(second, NoellesRoleRegistry.SHADOW_JESTER)) {
+            return false;
+        }
+
+        /*
+         * 影子小丑第三阶段后的 VictoryApi 行为是：
+         * - 排除狭缝后只剩影子小丑阵营，直接触发影子小丑独立胜利；
+         * - 排除狭缝后仍有其它阵营，普通杀手/乘客结算会被 KEEP_RUNNING 拦住。
+         *
+         * 因此时间狭缝预演也必须同样区分这两种情况。
+         * 如果全场真实活人都属于这对影子小丑，狭缝不该继续保留；
+         * 如果仍有非影子小丑真实活人，则他们确实还在阻拦普通结算。
+         *
+         * 这里刻意只计算 ShadowJesterComponent 登记的这一对，并且不再要求两名影子小丑都在
+         * alivePlayers 里：管理员调试时切 creative / spectator 会让 Wathe 的存活列表缺人，
+         * 但只要没有 DeathApi 确认双方死亡，胜利规则仍会阻拦普通阵营结算。
+         */
+        return alivePlayers.stream().anyMatch(player -> !component.contains(player.getUuid()));
+    }
+
+    private static @Nullable ServerPlayerEntity findAlivePlayer(
+            @NotNull List<ServerPlayerEntity> alivePlayers,
+            @NotNull UUID uuid
+    ) {
+        for (ServerPlayerEntity player : alivePlayers) {
+            if (player.getUuid().equals(uuid)) {
+                return player;
+            }
+        }
+        return null;
     }
 
     private static boolean hasLoversVictoryBlocker(

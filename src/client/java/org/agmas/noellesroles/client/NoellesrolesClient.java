@@ -6,6 +6,7 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 import com.google.common.collect.Maps;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
@@ -30,6 +31,7 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.hit.EntityHitResult;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
@@ -58,6 +60,8 @@ import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
 import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
 import org.agmas.noellesroles.client.roles.convener.ConvenerMoodHud;
+import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterMoodHud;
+import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterMusicController;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityClientState;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityKeybinds;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityTimeHud;
@@ -81,6 +85,7 @@ import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
@@ -134,6 +139,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         LicensedVillainMoodHud.register();
         SpringTrapMoodHud.register();
         JasonMoodHud.register();
+        ShadowJesterMoodHud.register();
         /*
          * 弹簧陷阱疯魔的环境音是 profile 触发的背景音。
          * 客户端需要先把 SoundEvent 注册进 Wathe 的疯魔音乐表，否则服务端状态同步过来后只能拿到 id，
@@ -166,6 +172,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             RemembererClientEffects.tick(client);
             CowardClientEffects.tick(client);
             JasonAbilityClientEffects.tick(client);
+            ShadowJesterMusicController.tick(client);
             /*
              * 无恶不在持续音需要由所有客户端本地播放。
              * 服务端仍会发 START/STOP 包作为即时控制，但这里按同步组件做一层补偿，
@@ -287,6 +294,18 @@ public class NoellesrolesClient implements ClientModInitializer {
                         PlayerEntity spiritualistTarget = SpiritualistTargeting.getPossessionTarget(MinecraftClient.getInstance().player);
                         if (spiritualistTarget != null) {
                             targetId = spiritualistTarget.getId();
+                        }
+                    } else if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.SHADOW_JESTER)) {
+                        /*
+                         * 影子小丑的缔结申请依赖准心目标。
+                         * 客户端只把“这一帧看见的实体 id”发给服务端；服务端仍会重新校验职业、阶段、距离和伴侣关系。
+                         */
+                        EntityHitResult shadowJesterTarget = WeaponTargetingApi.getVisibleAlivePlayerTarget(
+                                MinecraftClient.getInstance().player,
+                                ShadowJesterConstants.VOW_TARGET_RANGE_BLOCKS
+                        );
+                        if (shadowJesterTarget != null && shadowJesterTarget.getEntity() instanceof PlayerEntity targetPlayer) {
+                            targetId = targetPlayer.getId();
                         }
                     }
                     ClientPlayNetworking.send(new AbilityC2SPacket(targetId));
@@ -645,6 +664,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         RemembererClientEffects.reset();
         JasonAbilityClientEffects.reset();
         JasonAbilityClientSoundController.reset(MinecraftClient.getInstance());
+        ShadowJesterMusicController.reset(MinecraftClient.getInstance());
         DualPersonalityClientState.resetTransientRenderState();
         DualPersonalityKeybinds.resetSyncedState();
         ExecutionerMoodHud.reset();

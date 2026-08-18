@@ -269,15 +269,15 @@ public final class JasonConstants {
 
     /**
      * 投掷油桶商店价格。
-     * 用户指定为 325 金币。
+     * 用户指定为 275 金币。
      */
-    public static final int THROWING_JERRY_CAN_PRICE = 325;
+    public static final int THROWING_JERRY_CAN_PRICE = 275;
 
     /**
      * 杰森模式相对 Wathe 默认疯魔模式的额外加价。
-     * 用户指定比原疯魔模式贵 50 金币。
+     * 用户指定比原疯魔模式贵 25 金币。
      */
-    public static final int PSYCHO_PRICE_BONUS = 50;
+    public static final int PSYCHO_PRICE_BONUS = 25;
 
     /**
      * 无恶不在开局冷却。

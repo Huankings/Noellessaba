@@ -23,9 +23,9 @@ public final class SpringTrapConstants {
 
     /**
      * 血斧右键蓄力暗杀所需的最低使用时间。
-     * 10 tick = 0.5 秒；客户端松开右键后会按这个值判断是否允许发送暗杀请求，服务端也会再次校验。
+     * 5 tick = 0.25 秒；客户端松开右键后会按这个值判断是否允许发送暗杀请求，服务端也会再次校验。
      */
-    public static final int BLOOD_AXE_MIN_USE_TICKS = GameConstants.getInTicks(0, 0) + 10;
+    public static final int BLOOD_AXE_MIN_USE_TICKS = GameConstants.getInTicks(0, 0) + 5;
 
     /**
      * 血斧右键使用动作的最大持续 tick。
@@ -37,7 +37,7 @@ public final class SpringTrapConstants {
      * 血斧成功发动暗杀后的冷却时间。
      * 当前为 45 秒；只影响右键暗杀，左键击退不使用这个冷却。
      */
-    public static final int BLOOD_AXE_COOLDOWN_TICKS = GameConstants.getInTicks(0, 45);
+    public static final int BLOOD_AXE_COOLDOWN_TICKS = GameConstants.getInTicks(0, 35);
 
     /**
      * 弹簧陷阱开局后血斧需要等待的初始冷却时间。
@@ -175,19 +175,19 @@ public final class SpringTrapConstants {
      * 弹簧陷阱商店主动技能相对原疯魔模式条目的额外加价。
      * 最终价格 = Wathe 原疯魔模式价格 + 这个加价。
      */
-    public static final int SPRING_TRAP_SHOP_PRICE_BONUS = 100;
+    public static final int SPRING_TRAP_SHOP_PRICE_BONUS = 65;
 
     /**
      * 弹簧陷阱续时器的固定商店价格。
      * 这是一个购买即触发的工具型条目，不会真正把图标物品发给玩家。
      */
-    public static final int SPRING_TRAP_ADDTIME_PRICE = 175;
+    public static final int SPRING_TRAP_ADDTIME_PRICE = 135;
 
     /**
      * 爆炸飞斧相对 Wathe 手雷条目的额外加价。
      * 最终价格 = 原手雷价格 + 这个加价，用来体现它兼具飞斧贯穿和落地爆炸。
      */
-    public static final int THROWING_BOMB_AXE_GRENADE_PRICE_BONUS = 25;
+    public static final int THROWING_BOMB_AXE_GRENADE_PRICE_BONUS = 15;
 
     private SpringTrapConstants() {
     }

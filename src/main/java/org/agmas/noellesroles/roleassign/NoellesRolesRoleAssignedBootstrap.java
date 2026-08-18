@@ -40,6 +40,7 @@ import org.agmas.noellesroles.roles.rememberer.RemembererRoleAssignedHandler;
 import org.agmas.noellesroles.roles.robber.RobberRoleAssignedHandler;
 import org.agmas.noellesroles.roles.robot.RobotRoleAssignedHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerRoleAssignedHandler;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterRoleAssignedHandler;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapRoleAssignedHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.starstruck.StarstruckRoleAssignedHandler;
@@ -127,6 +128,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             ConvenerRoleAssignedHandler.onRoleAssigned(player, role);
             ThiefRoleAssignedHandler.onRoleAssigned(player, role);
             LicensedVillainRoleAssignedHandler.onRoleAssigned(player, role);
+            ShadowJesterRoleAssignedHandler.onRoleAssigned(player, role);
             TimekeeperRoleAssignedHandler.onRoleAssigned(player, role);
             SpringTrapRoleAssignedHandler.onRoleAssigned(player, role);
             InsaneDamnedKillerRoleAssignedHandler.onRoleAssigned(player, role);

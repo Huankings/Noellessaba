@@ -27,6 +27,7 @@ import org.agmas.noellesroles.client.instinct.roles.licensed_villain.LicensedVil
 import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.morphling.MorphlingInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.shadow_jester.ShadowJesterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.starstruck.StarstruckInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.spring_trap.SpringTrapInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.thief.ThiefInstinctHandler;
@@ -75,6 +76,7 @@ public final class NoellesInstinctHandlers {
         InitiateInstinctHandler.register();
         ThiefInstinctHandler.register();
         LicensedVillainInstinctHandler.register();
+        ShadowJesterInstinctHandler.register();
         AllergicInstinctHandler.register();
         LoversInstinctHandler.register();
         DualPersonalityInstinctHandler.register();

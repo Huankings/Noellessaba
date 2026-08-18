@@ -245,6 +245,16 @@
 - `NoellesInventoryButtonSupport.java` 负责复用 Wathe `InventoryButtonApi` 的注册、分页、在线玩家和头像列表辅助。
 - `GameEvents.ON_FINISH_FINALIZE` 会在回合结束时清理交换者延迟交换、隐藏尸体、魔术师播放实体、飞斧、角色装置和捕捉装置，防止影响下一局。
 
+## Wathe 心情任务 API 接入方式
+
+NoellesRoles 的心情任务逻辑应优先使用 Wathe `MoodTaskApi`，不要直接 mixin `PlayerMoodComponent`。
+
+- 新增任务定义用 `MoodTaskApi.registerTask(...)`，再由 `NoellesRolesMoodTaskBootstrap` 调用对应职业或词条自己的 `*MoodTaskHandler.init()`。
+- 主动发放随机任务用 `assignRandomTask` / `assignRandomTasks`，指定任务用 `assignTask(player, taskId)`。
+- 如果职业要阻止 Wathe 自动刷任务、低心情补槽、外部随机发放或指定发放，用 `MoodTaskApi.registerAssignmentRule(...)`，并按 `AssignmentSource` 判断来源。
+- 不要在 server tick 里等任务出现在 HUD 后再 `removeTask`。这种做法会让客户端看到任务闪现。影子小丑的第一阶段任务节奏见 `roles/shadow_jester/ShadowJesterTaskHandler.java`：它只允许自己 guard 包住的随机发放，其余发放在进入任务栏前就被拒绝。
+- 任务完成后的收益和副作用用 `TaskCompletionApi.AFTER_TASK_COMPLETE`、任务收入 provider、任务收入规则或 `MoodTaskApi.registerCompletionRule(...)`。
+
 ## Harpy 分配 API 接入方式
 
 NoellesRoles 现在不再通过 mixin Harpy 私有分配方法来做同局互斥、绑定生成或强制词条配对。相关逻辑统一走 `org.agmas.harpymodloader.api.assignment`，并按职业 / 词条拆到自己的小类里，再由 `NoellesRolesBootstrap.init()` 调用。
