@@ -212,7 +212,7 @@ public final class WaiterInteractionHandler {
             sendFailure(waiter, target, serviceType.failureTranslationKey());
             return true;
         }
-        applyDeliveredStackEffects(target, replaySnapshot, serviceType);
+        WaiterDeliveryEffects.applyDeliveredStackEffects(target, replaySnapshot, serviceType);
         if (serviceType == WaiterServiceItems.ServiceType.SLEEPING_BAG) {
             blind(target);
         }
@@ -468,7 +468,7 @@ public final class WaiterInteractionHandler {
                 .put("item_name", Text.Serialization.toJsonString(replaySnapshot.getName(), waiter.getRegistryManager()))
                 .put("task", serviceType.taskTranslationKey());
 
-        EffectReplayInfo effectInfo = getEffectReplayInfo(replaySnapshot);
+        WaiterDeliveryEffects.EffectReplayInfo effectInfo = WaiterDeliveryEffects.getEffectReplayInfo(replaySnapshot);
         if (effectInfo != null) {
             event.put("effect_translation_key", effectInfo.translationKey());
             event.put("effect_fallback", effectInfo.fallback());

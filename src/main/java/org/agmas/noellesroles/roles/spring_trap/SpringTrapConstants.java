@@ -145,7 +145,7 @@ public final class SpringTrapConstants {
      * 弹簧陷阱疯魔状态的基础持续时间。
      * 商店购买弹簧陷阱图标后启动该状态，状态期间锁定彩虹斧并启用专属皮肤、HUD 和环境音。
      */
-    public static final int SPRING_TRAP_DURATION_TICKS = GameConstants.getInTicks(0, 30);
+    public static final int SPRING_TRAP_DURATION_TICKS = GameConstants.getInTicks(0, 45);
 
     /**
      * 弹簧陷阱续时器每次购买增加的疯魔状态时间。

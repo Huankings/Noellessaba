@@ -19,11 +19,11 @@ public final class EngineerShopHandler {
         List<ShopEntry> entries = new ArrayList<>();
 
         // 工具箱：修门、解卡门。
-        entries.add(new ShopEntry(ModItems.TOOLBOX.getDefaultStack(), 65, ShopEntry.Type.TOOL));
+        entries.add(new ShopEntry(ModItems.TOOLBOX.getDefaultStack(), 45, ShopEntry.Type.TOOL));
         // 捕捉装置：用于范围控制与生成报告。
-        entries.add(new ShopEntry(ModItems.CAPTURE_DEVICE.getDefaultStack(), 150, ShopEntry.Type.TOOL));
+        entries.add(new ShopEntry(ModItems.CAPTURE_DEVICE.getDefaultStack(), 125, ShopEntry.Type.TOOL));
         // 电力恢复系统：恢复停电并给予夜视。
-        entries.add(new ShopEntry(ModItems.POWER_RESTORATION.getDefaultStack(), 225, ShopEntry.Type.TOOL));
+        entries.add(new ShopEntry(ModItems.POWER_RESTORATION.getDefaultStack(), 175, ShopEntry.Type.TOOL));
 
         return entries;
     }

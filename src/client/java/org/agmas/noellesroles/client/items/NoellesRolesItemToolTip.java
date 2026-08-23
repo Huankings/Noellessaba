@@ -243,6 +243,9 @@ public class NoellesRolesItemToolTip {
 
     private static boolean isIgnoredForSpectatorOrCreative(@NotNull Item item) {
         return item == ModItems.HUNTING_KNIFE
+                || item == ModItems.THROWING_PAN
+                || item == ModItems.PSYCHO_THROWING_PAN
+                || item == ModItems.PSYCHO_COOK
                 || item == ModItems.BLOWGUN
                 || item == ModItems.POISON_INJECTOR
                 || item == ModItems.DELUSION_SYRINGE

@@ -11,7 +11,7 @@ import dev.doctor4t.wathe.api.WatheRoles;
 public final class LicensedVillainConstants {
     public static final int ROLE_COLOR = 0x404040;
     public static final int MIN_PLAYER_COUNT = 10;
-    public static final int REVOLVER_PRICE = 150;
+    public static final int REVOLVER_PRICE = 100;
     public static final int TASK_INCOME_COINS = 50;
 
     private LicensedVillainConstants() {

@@ -59,10 +59,13 @@ public class NoellesRolesItemExtraModel {
 
     private static boolean isIgnoredForSpectatorOrCreative(@NotNull Item item) {
         /*
-         * 这些迁移物品在旁观/创造/非存活视角下不受冷却限制。
+         * 这些迁移物品或新调试道具在旁观/创造/非存活视角下不受冷却限制。
          * 谓词也必须同步忽略冷却，否则客户端模型会误切到冷却贴图。
          */
-        return item == ModItems.BLOWGUN
+        return item == ModItems.THROWING_PAN
+                || item == ModItems.PSYCHO_THROWING_PAN
+                || item == ModItems.PSYCHO_COOK
+                || item == ModItems.BLOWGUN
                 || item == ModItems.POISON_INJECTOR
                 || item == ModItems.DELUSION_SYRINGE
                 || item == ModItems.KNOCKOUT_DRUG

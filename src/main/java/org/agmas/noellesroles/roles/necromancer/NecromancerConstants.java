@@ -13,8 +13,8 @@ public final class NecromancerConstants {
     }
 
     public static final int ROLE_COLOR = 0x9457ff;
-    public static final int REVIVE_COOLDOWN_TICKS = GameConstants.getInTicks(3, 0);
-    public static final int REVIVE_COOLDOWN_SECONDS = 180;
+    public static final int REVIVE_COOLDOWN_TICKS = GameConstants.getInTicks(2, 30);
+    public static final int REVIVE_COOLDOWN_SECONDS = 150;
     public static final int REVIVED_BALANCE = 200;
     public static final boolean HAS_KILLER_SHOP = true;
 

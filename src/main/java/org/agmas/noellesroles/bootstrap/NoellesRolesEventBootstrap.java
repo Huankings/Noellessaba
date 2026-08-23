@@ -54,6 +54,8 @@ import org.agmas.noellesroles.roles.convener.ConvenerPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerSummonHandler;
 import org.agmas.noellesroles.roles.convener.ConvenerTaskShieldHandler;
 import org.agmas.noellesroles.roles.convener.ConvenerVictoryRule;
+import org.agmas.noellesroles.roles.cook.CookConstants;
+import org.agmas.noellesroles.roles.cook.CookPsychoHandler;
 import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
@@ -226,7 +228,16 @@ public final class NoellesRolesEventBootstrap {
                             && JasonAbilityPlayerComponent.KEY.get(player).getScaredTicks() > 0) {
                         moodDrainMultiplier *= org.agmas.noellesroles.roles.jason.JasonConstants.ABILITY_SCARE_MOOD_DRAIN_MULTIPLIER;
                     }
+                    /*
+                     * 厨师疯魔期间用户要求不掉心情。
+                     * 这里乘以 0 而不是直接写死 0 前面的分支，是为了保留天使/懦夫/惊吓等机制的组合顺序：
+                     * 只要厨师疯魔存在，最终掉心情倍率就归零。
+                     */
+                    if (CookPsychoHandler.isCookPsychoActive(player)) {
+                        moodDrainMultiplier *= CookConstants.PSYCHO_COOK_MOOD_DRAIN_MULTIPLIER;
+                    }
                     PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(moodDrainMultiplier);
+                    CookPsychoHandler.tickPsychoState(player);
                 }
 
                 SwapperAbility.tickPendingSwaps(server);
@@ -317,6 +328,9 @@ public final class NoellesRolesEventBootstrap {
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);
 
             for (org.agmas.noellesroles.entities.ThrowingAxeEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.ThrowingAxeEntity.class), ignored -> true)) {
+                entity.discard();
+            }
+            for (org.agmas.noellesroles.entities.ThrowingPanEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.entities.ThrowingPanEntity.class), ignored -> true)) {
                 entity.discard();
             }
             for (org.agmas.noellesroles.roles.jason.JasonThrownWeaponEntity entity : serverWorld.getEntitiesByType(TypeFilter.equals(org.agmas.noellesroles.roles.jason.JasonThrownWeaponEntity.class), ignored -> true)) {

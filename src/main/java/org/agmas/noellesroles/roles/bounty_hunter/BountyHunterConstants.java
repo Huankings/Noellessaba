@@ -19,7 +19,7 @@ public final class BountyHunterConstants {
     public static final int BOUNTY_PISTOL_TARGET_COOLDOWN_TICKS = GameConstants.getInTicks(0, 15);
     public static final int BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS = GameConstants.getInTicks(0, 35);
     public static final int BOUNTY_DERRINGER_COOLDOWN_TICKS = GameConstants.getInTicks(0, 1);
-    public static final int BOUNTY_MODE_DURATION_TICKS = GameConstants.getInTicks(0, 22);
+    public static final int BOUNTY_MODE_DURATION_TICKS = GameConstants.getInTicks(0, 30);
     public static final int BOUNTY_MODE_COOLDOWN_TICKS = GameConstants.getInTicks(3, 40);
     /*
      * 赏金模式复用 Wathe 的疯魔状态来获得皮肤、心情图标和死亡保护链，

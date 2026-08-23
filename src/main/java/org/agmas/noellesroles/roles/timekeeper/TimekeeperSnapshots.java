@@ -11,6 +11,7 @@ import dev.doctor4t.wathe.cca.PlayerNoteComponent;
 import dev.doctor4t.wathe.cca.PlayerPoisonComponent;
 import dev.doctor4t.wathe.cca.PlayerPsychoComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
+import dev.doctor4t.wathe.cca.PlayerStaminaComponent;
 import dev.doctor4t.wathe.cca.TrainWorldComponent;
 import dev.doctor4t.wathe.cca.WorldBlackoutComponent;
 import dev.doctor4t.wathe.compat.TrainVoicePlugin;
@@ -123,6 +124,11 @@ import java.util.UUID;
 public final class TimekeeperSnapshots {
     private static final List<ComponentEntry> PLAYER_COMPONENTS = List.of(
             component("wathe:mood", PlayerMoodComponent.KEY),
+            /*
+             * 厨师疯魔会临时提高体力上限并每 tick 回满体力。
+             * 体力本身是局内运行态，回溯到疯魔前/中/后都应该恢复当时的 stamina 和 maxStaminaBonus。
+             */
+            component("wathe:stamina", PlayerStaminaComponent.KEY),
             component("wathe:shop", PlayerShopComponent.KEY),
             component("wathe:poison", PlayerPoisonComponent.KEY),
             component("wathe:psycho", PlayerPsychoComponent.KEY),

@@ -48,9 +48,11 @@ import org.agmas.noellesroles.client.renderer.JasonThrownWeaponEntityRenderer;
 import org.agmas.noellesroles.client.renderer.MagicianPlaybackEntityRenderer;
 import org.agmas.noellesroles.client.renderer.RoleMineEntityRenderer;
 import org.agmas.noellesroles.client.renderer.ThrowingAxeEntityRenderer;
+import org.agmas.noellesroles.client.renderer.ThrowingPanEntityRenderer;
 import org.agmas.noellesroles.client.roles.executioner.ExecutionerMoodHud;
 import org.agmas.noellesroles.client.roles.dreamer.DreamerMoodHud;
 import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
+import org.agmas.noellesroles.client.roles.cook.CookMoodHud;
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientEffects;
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientSoundController;
 import org.agmas.noellesroles.client.roles.jason.JasonMoodHud;
@@ -133,6 +135,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         RemembererMoodHud.register();
         DreamerMoodHud.register();
         HackerMoodHud.register();
+        CookMoodHud.register();
         StarstruckMoodHud.register();
         RobotMoodHud.register();
         ConvenerMoodHud.register();
@@ -315,6 +318,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         EntityRendererRegistry.register(NoellesRolesEntities.ROLE_MINE_ENTITY_ENTITY_TYPE, RoleMineEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.CAPTURE_DEVICE_ENTITY_TYPE, CaptureDeviceEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.THROWING_AXE_ENTITY_TYPE, ThrowingAxeEntityRenderer::new);
+        EntityRendererRegistry.register(NoellesRolesEntities.THROWING_PAN_ENTITY_TYPE, ThrowingPanEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.JASON_THROWN_WEAPON_ENTITY_TYPE, JasonThrownWeaponEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE, MagicianPlaybackEntityRenderer::new);
     }
@@ -346,6 +350,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.ROLE_MINE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.TIMED_BOMB, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_AXE, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_PAN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BLOOD_AXE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.COLORFUL_AXE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_SPEED_AXE, itemStack, list);
@@ -361,6 +366,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.ONCE_LIGHTER, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_THROWING_WEAPON, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_JASON, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_COOK, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.CRYSTAL_BALL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ROBBER_PISTOL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_PISTOL, itemStack, list);
@@ -375,6 +381,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.DREAM_IMPRINT, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.MEDICAL_KIT, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PAN, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_THROWING_PAN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PILL, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.TAPE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.HUNTING_KNIFE, itemStack, list);
@@ -413,6 +420,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROLE_MINE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.TIMED_BOMB);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_AXE);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_PAN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BLOOD_AXE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.COLORFUL_AXE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.THROWING_SPEED_AXE);
@@ -428,6 +436,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ONCE_LIGHTER);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_THROWING_WEAPON);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.PSYCHO_JASON);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.PSYCHO_COOK);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.CRYSTAL_BALL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ROBBER_PISTOL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.BOUNTY_PISTOL);
@@ -441,6 +450,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.DREAM_IMPRINT);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.MEDICAL_KIT);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.PAN);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.PSYCHO_THROWING_PAN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.PILL);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.TAPE);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.HUNTING_KNIFE);

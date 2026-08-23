@@ -14,9 +14,9 @@ public final class WaiterConstants {
     // 职业色按需求固定为 RGB(225, 170, 40)，actionbar、透视和职业注册都复用这一份。
     public static final int ROLE_COLOR = new Color(225, 170, 40).getRGB();
 
-    // Wathe/Noelles 的普通任务金币是 50；服务员帮别人完成任务时给 25。
+    // Wathe/Noelles 的普通任务金币是 50；服务员帮别人完成任务时给 60。
     public static final int TASK_INCOME = 50;
-    public static final int HELP_BONUS = 25;
+    public static final int HELP_BONUS = 60;
     public static final int SERVE_OTHER_INCOME = HELP_BONUS;
 
     // 完成心情任务后的服务员被动透视、睡袋失明和服务交互距离。

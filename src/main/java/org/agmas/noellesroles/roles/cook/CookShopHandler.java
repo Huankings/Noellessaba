@@ -1,7 +1,6 @@
 package org.agmas.noellesroles.roles.cook;
 
 import dev.doctor4t.wathe.util.ShopEntry;
-import net.minecraft.item.Items;
 import net.minecraft.util.Util;
 import org.agmas.noellesroles.ModItems;
 import org.jetbrains.annotations.NotNull;
@@ -18,10 +17,10 @@ public final class CookShopHandler {
 
     public static @NotNull List<ShopEntry> getShopEntries() {
         return Util.make(new ArrayList<>(), entries -> {
+            entries.add(new ShopEntry(ModItems.RANDOM_FOOD.getDefaultStack(), CookConstants.COOKED_FOOD_SHOP_PRICE, ShopEntry.Type.TOOL));
             entries.add(new ShopEntry(ModItems.PAN.getDefaultStack(), CookConstants.PAN_SHOP_PRICE, ShopEntry.Type.WEAPON));
-            entries.add(new ShopEntry(Items.COOKED_BEEF.getDefaultStack(), CookConstants.COOKED_FOOD_SHOP_PRICE, ShopEntry.Type.POISON));
-            entries.add(new ShopEntry(Items.COOKED_CHICKEN.getDefaultStack(), CookConstants.COOKED_FOOD_SHOP_PRICE, ShopEntry.Type.POISON));
-            entries.add(new ShopEntry(Items.COOKED_PORKCHOP.getDefaultStack(), CookConstants.COOKED_FOOD_SHOP_PRICE, ShopEntry.Type.POISON));
+            entries.add(new ShopEntry(ModItems.THROWING_PAN.getDefaultStack(), CookConstants.THROWING_PAN_SHOP_PRICE, ShopEntry.Type.WEAPON));
+            entries.add(new ShopEntry(ModItems.PSYCHO_COOK.getDefaultStack(), CookConstants.PSYCHO_COOK_SHOP_PRICE, ShopEntry.Type.WEAPON));
         });
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.jetbrains.annotations.Nullable;
@@ -134,11 +135,26 @@ public final class NoellesRolesReplayFormatters {
          * 这里不在 lang 里硬塞颜色码，而是把物品名解析出来后统一包一层白色 Text，
          * 这样普通飞斧、增速飞斧、爆炸飞斧未来继续复用同一个 formatter 时也不会丢本地化名字。
          */
-        Text item = ReplayGenerator.resolveItemName(data, world);
+        return whiteBracketed(ReplayGenerator.resolveItemName(data, world));
+    }
+
+    private static Text whiteBracketed(Text inner) {
+        /*
+         * 回放里多个新事件都要求“[%s]”本体显示为白色。
+         * 把括号和内部文字统一封装在这里，避免每个 formatter 都复制一遍颜色拼接逻辑。
+         */
         return Text.empty()
                 .append(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFFFF))))
-                .append(item.copy().setStyle(item.getStyle().withColor(TextColor.fromRgb(0xFFFFFF))))
+                .append(inner.copy().setStyle(inner.getStyle().withColor(TextColor.fromRgb(0xFFFFFF))))
                 .append(Text.literal("]").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFFFF))));
+    }
+
+    private static Text whiteBracketedThrowingPan() {
+        /*
+         * 普通飞锅和疯魔飞锅的回放都要显示“厨师通用飞锅物品名”。
+         * 因此这里不读取事件里的 item_name，而是固定解析 throwing_pan 的本地化名。
+         */
+        return whiteBracketed(Text.translatable(ModItems.THROWING_PAN.getTranslationKey()));
     }
 
     private static MutableText deathReasonText(@Nullable String rawDeathReasonId) {
@@ -629,6 +645,21 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatThrowingPanHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text thrower = actorText(event, match);
+        Text target = targetText(event, match);
+        if (thrower == null || target == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.item_hit.noellesroles.throwing_pan",
+                target,
+                thrower,
+                whiteBracketedThrowingPan()
+        );
+    }
+
+    @Nullable
     public static Text formatPanStunEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = victimFromGlobal(event, match);
         return victim == null ? null : Text.translatable("replay.global.noellesroles.pan_stun_end", victim);
@@ -847,6 +878,12 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatThrowingAxeUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.item_use.noellesroles.throwing_axe", actor, whiteBracketedItem(event.data(), world));
+    }
+
+    @Nullable
+    public static Text formatThrowingPanUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.throwing_pan", actor, whiteBracketedThrowingPan());
     }
 
     @Nullable
@@ -1109,6 +1146,54 @@ public final class NoellesRolesReplayFormatters {
             return Text.translatable("replay.global.noellesroles.waiter_serve.effect", actor, effectText(event), itemName, target, target, taskName);
         }
         return Text.translatable("replay.global.noellesroles.waiter_serve", actor, itemName, target, target, taskName);
+    }
+
+    @Nullable
+    public static Text formatCookFeed(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+
+        /*
+         * 厨师投喂回放明确要求食物名以白色“[%s]”展示。
+         * 这里直接用通用白色括号 helper，保留物品名解析，同时不把颜色控制塞进 lang。
+         */
+        Text itemName = whiteBracketedItem(event.data(), world);
+        boolean completedTask = event.data().getBoolean("completed_task");
+        boolean hasEffect = event.data().contains("effect_translation_key");
+        if (hasEffect && completedTask) {
+            return Text.translatable(
+                    "replay.global.noellesroles.cook_feed.effect_task",
+                    actor,
+                    whiteBracketed(effectText(event)),
+                    itemName,
+                    target,
+                    target,
+                    taskText(event)
+            );
+        }
+        if (hasEffect) {
+            return Text.translatable(
+                    "replay.global.noellesroles.cook_feed.effect",
+                    actor,
+                    whiteBracketed(effectText(event)),
+                    itemName,
+                    target
+            );
+        }
+        if (completedTask) {
+            return Text.translatable(
+                    "replay.global.noellesroles.cook_feed.task",
+                    actor,
+                    itemName,
+                    target,
+                    target,
+                    taskText(event)
+            );
+        }
+        return Text.translatable("replay.global.noellesroles.cook_feed", actor, itemName, target);
     }
 
     @Nullable

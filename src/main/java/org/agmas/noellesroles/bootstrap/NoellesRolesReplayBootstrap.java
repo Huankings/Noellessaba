@@ -23,6 +23,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SEDATIVE), NoellesRolesReplayFormatters::formatSedativeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TIMED_BOMB), NoellesRolesReplayFormatters::formatTimedBombUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_PAN), NoellesRolesReplayFormatters::formatThrowingPanUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PSYCHO_THROWING_PAN), NoellesRolesReplayFormatters::formatThrowingPanUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_SPEED_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_BOMB_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_BLOOD_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
@@ -49,6 +51,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemUseFormatter(NoellesEventIds.PILL_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPillUse);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SNIPER_RIFLE), NoellesRolesReplayFormatters::formatSniperRifleHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PAN), NoellesRolesReplayFormatters::formatPanHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_PAN), NoellesRolesReplayFormatters::formatThrowingPanHit);
+        ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PSYCHO_THROWING_PAN), NoellesRolesReplayFormatters::formatThrowingPanHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.HUNTING_KNIFE), NoellesRolesReplayFormatters::formatHuntingKnifeHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOOD_AXE), NoellesRolesReplayFormatters::formatAxeHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.COLORFUL_AXE), NoellesRolesReplayFormatters::formatAxeHit);
@@ -182,6 +186,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.REMEMBERER_SNIPER_RELOADED_EVENT, NoellesRolesReplayFormatters::formatRemembererSniperReloaded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WAITER_SERVE_EVENT, NoellesRolesReplayFormatters::formatWaiterServe);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WAITER_SELF_USE_EVENT, NoellesRolesReplayFormatters::formatWaiterSelfUse);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.COOK_FEED_EVENT, NoellesRolesReplayFormatters::formatCookFeed);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DREAMER_COUNTS_EVENT, NoellesRolesReplayFormatters::formatDreamerCounts);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_RECORDING_STARTED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MAGICIAN_RECORDING_FINISHED_EVENT, NoellesRolesReplayFormatters::formatMagicianRecordingFinished);

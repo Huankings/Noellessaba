@@ -84,6 +84,12 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(ICON_POTION_EFFECT_REFRESH, HackerConstants.REFRESH_POTION_EFFECT_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(MEDICAL_KIT, PhysicianConstants.MEDICAL_KIT_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PAN, CookConstants.PAN_COOLDOWN_TICKS);
+        // 飞锅和飞斧一样是购买后一次性投掷物，不额外叠加使用冷却。
+        GameConstants.ITEM_COOLDOWNS.put(THROWING_PAN, GameConstants.getInTicks(0, 0));
+        // 疯魔飞锅的使用限制来自厨师疯魔状态本身，不消耗也不需要额外冷却。
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_THROWING_PAN, GameConstants.getInTicks(0, 0));
+        // 厨师疯魔商店图标使用独立 3 分 45 秒冷却，方便 tooltip 显示真实剩余时间。
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_COOK, CookConstants.PSYCHO_COOK_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PILL, PhysicianConstants.PILL_COOLDOWN_TICKS);
         // 静语者胶带冷却来自原 StarryExpress Muzzler 配置，现固定为 NoellesRoles 常量。
         GameConstants.ITEM_COOLDOWNS.put(TAPE, MuzzlerConstants.TAPE_COOLDOWN_TICKS);
@@ -142,6 +148,8 @@ public class ModItems {
             entries.add(DREAM_IMPRINT);
             entries.add(MEDICAL_KIT);
             entries.add(PAN);
+            entries.add(THROWING_PAN);
+            entries.add(PSYCHO_THROWING_PAN);
             entries.add(PILL);
             entries.add(TAPE);
             entries.add(HUNTING_KNIFE);
@@ -375,6 +383,16 @@ public class ModItems {
             new PanItem(new Item.Settings().maxCount(1)),
             "pan"
     );
+    // 飞锅：蓄力投掷后贯穿路径上的玩家并造成平底锅眩晕效果。
+    public static final Item THROWING_PAN = register(
+            new ThrowingPanItem(new Item.Settings().maxCount(1)),
+            "throwing_pan"
+    );
+    // 疯魔飞锅：厨师疯魔期间授予，投掷不消耗且落地后短时间清理。
+    public static final Item PSYCHO_THROWING_PAN = register(
+            new ThrowingPanItem(new Item.Settings().maxCount(1)),
+            "psycho_throwing_pan"
+    );
     //药丸
     public static final Item PILL = register(
             new PillItem(new Item.Settings().maxCount(1)),
@@ -534,6 +552,11 @@ public class ModItems {
     public static final Item PSYCHO_JASON = register(
             new Item(new Item.Settings().maxCount(1)),
             "psycho_jason"
+    );
+    // 厨师疯魔商店图标：购买后直接启动厨师专属疯魔，不作为普通物品进入背包。
+    public static final Item PSYCHO_COOK = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "psycho_cook"
     );
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(

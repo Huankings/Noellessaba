@@ -26,6 +26,7 @@ import org.agmas.noellesroles.roles.convener.ConvenerCommunicationManager;
 import org.agmas.noellesroles.roles.convener.ConvenerSummonHandler;
 import org.agmas.noellesroles.roles.convener.ConvenerTaskShieldHandler;
 import org.agmas.noellesroles.roles.convener.ConvenerVictoryRule;
+import org.agmas.noellesroles.roles.cook.CookFeedingHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerDelusionHandler;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hacker.HackerRoleAssignmentRules;
@@ -101,6 +102,7 @@ public final class NoellesRolesBootstrap {
         HackerSafeTimeComponent.init();
         HackerRoleAssignmentRules.init();
         WaiterInteractionHandler.init();
+        CookFeedingHandler.init();
         StarstruckAbility.registerTaskCompletionApi();
         MuzzlerInteractionHandler.init();
         NecromancerRevivalHandler.init();

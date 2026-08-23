@@ -7,6 +7,7 @@ import dev.doctor4t.wathe.api.shop.ShopPurchaseResult;
 import dev.doctor4t.wathe.api.shop.ShopPrice;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
+import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.record.ShopPurchaseTracker;
 import dev.doctor4t.wathe.util.ShopEntry;
@@ -19,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
+import org.agmas.noellesroles.roles.cook.CookPsychoHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
@@ -94,7 +96,7 @@ public class NoellesRolesShops {
          * 这样 NoellesRoles 的职业商店以后如果也开始使用任务币或多方案价格，
          * 购买判定会自动生效，不会被旧的 int 金额逻辑截断。
          */
-        if (!context.canAffordEntry() || player.getItemCooldownManager().isCoolingDown(item)) {
+        if (!context.canAffordEntry() || (!ignoresShopCooldown(player, item) && player.getItemCooldownManager().isCoolingDown(item))) {
             return ShopPurchaseResult.FAIL_SHOW_MESSAGE;
         }
 
@@ -125,7 +127,7 @@ public class NoellesRolesShops {
      */
     public static boolean handlePurchase(@NotNull PlayerEntity player, int balance, @NotNull ItemStack stack, int price) {
         Item item = stack.getItem();
-        if (balance >= price && !player.getItemCooldownManager().isCoolingDown(item)) {
+        if (balance >= price && (ignoresShopCooldown(player, item) || !player.getItemCooldownManager().isCoolingDown(item))) {
             boolean success = deliverPurchasedStack(player, stack);
 
             if (success) {
@@ -169,6 +171,13 @@ public class NoellesRolesShops {
              * 不把图标物品放进背包，避免玩家把“按钮”当作普通物品移动或丢弃。
              */
             return BountyHunterPlayerComponent.KEY.get(player).tryStartBountyMode();
+        }
+        if (item == ModItems.PSYCHO_COOK) {
+            /*
+             * 厨师疯魔是即时商店按钮：
+             * 购买成功后直接启动 Wathe psycho profile 并授予疯魔飞锅，不把图标塞进背包。
+             */
+            return CookPsychoHandler.startCookPsycho(player);
         }
         if (item == ModItems.POWER_RESTORATION) {
             return EngineerPlayerComponent.tryRestorePower(player);
@@ -216,6 +225,14 @@ public class NoellesRolesShops {
         }
 
         return player.giveItemStack(deliveredStack);
+    }
+
+    private static boolean ignoresShopCooldown(@NotNull PlayerEntity player, @NotNull Item item) {
+        /*
+         * 用户要求新物品方便调试：旁观/创造调试玩家不受冷却影响。
+         * 这里先只对厨师疯魔图标开放商店冷却绕过，避免影响其它既有职业商品的正式平衡。
+         */
+        return item == ModItems.PSYCHO_COOK && GameFunctions.isPlayerSpectatingOrCreative(player);
     }
 
     /**

@@ -108,6 +108,7 @@ public final class NoellesEventIds {
     public static final Identifier REMEMBERER_SNIPER_RELOADED_EVENT = NoellesRolesCore.id("rememberer_sniper_reloaded");
     public static final Identifier WAITER_SERVE_EVENT = NoellesRolesCore.id("waiter_serve");
     public static final Identifier WAITER_SELF_USE_EVENT = NoellesRolesCore.id("waiter_self_use");
+    public static final Identifier COOK_FEED_EVENT = NoellesRolesCore.id("cook_feed");
     public static final Identifier DREAMER_COUNTS_EVENT = NoellesRolesCore.id("dreamer_counts");
     public static final Identifier DREAM_IMPRINT_SHIELD_SOURCE = NoellesRolesCore.id("dream_imprint");
     public static final Identifier HACKER_REVEAL_EVENT = NoellesRolesCore.id("hacker_reveal");
