@@ -358,6 +358,12 @@ public final class JasonConstants {
     public static final float ABILITY_FOG_NON_SURVIVAL_END = 10.0F;
 
     /**
+     * 无恶不在雾效 provider 的优先级。
+     * 数值高于普通地图/默认雾 provider，确保杰森能力的最终雾距不会被其它扩展覆盖。
+     */
+    public static final int ABILITY_FOG_PRIORITY = 25000;
+
+    /**
      * 无恶不在完全解除后的惊吓半径。
      * 用户指定为 4 格，只影响解除瞬间范围内的存活玩家。
      */

@@ -55,6 +55,7 @@ import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
 import org.agmas.noellesroles.client.roles.cook.CookMoodHud;
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientEffects;
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientSoundController;
+import org.agmas.noellesroles.client.roles.jason.JasonAbilityFogHandler;
 import org.agmas.noellesroles.client.roles.jason.JasonMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMoodHud;
@@ -142,6 +143,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         LicensedVillainMoodHud.register();
         SpringTrapMoodHud.register();
         JasonMoodHud.register();
+        JasonAbilityFogHandler.register();
         ShadowJesterMoodHud.register();
         /*
          * 弹簧陷阱疯魔的环境音是 profile 触发的背景音。

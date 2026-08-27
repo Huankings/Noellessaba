@@ -83,6 +83,7 @@
 - `src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
 - `src/main/java/org/agmas/noellesroles/record/NoellesRolesReplayFormatters.java`
 - `src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+- `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`：按职业拆分的客户端雾效 provider，例如杰森的 `JasonAbilityFogHandler`。
 - `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`：通用屏幕 HUD 总注册入口，只调用各职业自己的 `register()`。
 - `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`：Wathe `HudOverlayApi` 的存活职业过滤、右下角文字和玩家名兜底辅助。
 - `src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`：客户端移动表现总注册入口。
@@ -120,6 +121,7 @@
 - 本能透视：`InstinctApi`
 - 心情 HUD：`MoodHudApi`
 - 通用屏幕 HUD：`HudOverlayApi`、`HudOverlayContext`、`HudOverlayLayer`、`HudOverlayLayout`
+- 客户端最终雾效 / Iris 兼容：`FogOverrideApi`
 - 准心图标 / 准心下方小进度条：`CrosshairHudApi`
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
 - 玩家 / 尸体隐藏、不可选中、不可交互和不可攻击：`TargetVisibilityApi`
@@ -230,6 +232,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
 - `ModItems.java`：新增物品、数据组件、默认冷却。
 - `NoellesrolesClient.java`：客户端按键、tooltip/model predicate、实体渲染、客户端网络包。
+- `client/roles/<role>/*FogHandler.java`：职业专属雾效 provider；在 `NoellesrolesClient` 注册，不新增 WorldRenderer 雾效 mixin。
 - `NoellesClientMovementBootstrap.java`：新增客户端移动提示、表现或本地状态时，在这里按职业 / 词条聚合调用。
 - `NoellesHudHandlers.java`：新增普通屏幕 HUD provider 后，在这里调用该职业/词条 HUD 类的 `register()`。
 - `NoellesInventoryButtons.java`：新增背包按钮 provider 后，在这里调用该职业 `*InventoryButtons.register()`。
@@ -339,6 +342,7 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 ## 客户端与 mixin
 
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
+- 职业专属雾效放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`，通过 Wathe `FogOverrideApi` 在 `NoellesrolesClient` 注册；不要在 NoellesRoles 再直接注入 `WorldRenderer.render` 覆盖雾距。
 - 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，目标射线使用 `WeaponTargetingApi` 的 visible 入口，不要 mixin `CrosshairRenderer`。
 - 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
@@ -346,6 +350,24 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。
+
+### 客户端雾效与 Iris 兼容
+
+NoellesRoles 只消费 Wathe 的雾效 API，不复制 Wathe 的 RenderSystem / Iris 兼容实现：
+
+- Wathe API：`dev.doctor4t.wathe.api.client.fog.FogOverrideApi`
+- 职业 provider：`src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>FogHandler.java`
+- 客户端注册入口：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+
+provider 只描述当前职业状态下的目标雾距，基础雾值由 Wathe 先计算并通过 `FogOverrideApi.FogContext` 提供。进入 / 退出状态需要平滑过渡时，使用组件状态和 `context.tickDelta()` 插值；过渡时间、start/end、优先级必须放在对应职业 `*Constants`。
+
+Iris 兼容边界：
+
+- 不要在 NoellesRoles 直接引用 Iris 私有类或把 Iris 写进 NoellesRoles 的必需依赖。
+- 不要重新添加已经删除的 `JasonAbilityWorldRendererMixin` 这类职业直接雾效 mixin；Iris shaderpack 会通过 Wathe 的最终 RenderSystem 雾状态读取雾距。
+- 世界渲染结束后的 GUI 阶段由 Wathe 统一调用原版 `BackgroundRenderer.clearFog()` 切换到无雾状态；不要把世界基础雾值继续留给聊天、tab 或 HUD，否则 1.21.1 文字 shader 会受到白天/夜晚 `FogColor` 影响而异常变色。
+- provider 必须同时判断有效职业、局内存活状态和观察者类型，避免上一局同步残留影响旁观 / 创造调试视角。
+- 如果改动 Wathe 的 `FogOverrideApi`，必须先编译 Wathe、复制新 jar 到当前工程 `libs`，再编译 NoellesRoles。
 
 ## HUD 接入
 

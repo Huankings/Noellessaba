@@ -48,6 +48,7 @@
 - Wathe 客户端武器目标 API：`dev.doctor4t.wathe.api.combat.WeaponTargetingApi`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
+- 杰森客户端雾效 provider：`src/client/java/org/agmas/noellesroles/client/roles/jason/JasonAbilityFogHandler.java`
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
 - 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
 - 客户端移动表现总引导：`src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`
@@ -98,6 +99,7 @@
 - 刺客（`assassin`）
 - 变形怪（`morphling`）
 - 魔术师（`magician`）
+- 杰森（`jason`）
 - 交换者（`swapper`）
 - 幻灵（`phantom`）
 - 洗脑师（`brainwasher`）
@@ -160,6 +162,7 @@
 - 幻灵：`PhantomAbility` 提供短时隐身，`PhantomPlayerComponent` 管倒计时，`PhantomConstants` 控制 35 秒隐身和 90 秒冷却。
 - 洗脑师：`BrainwasherAbility` 能把目标平民洗成随机杀手角色，成功后清商店并广播；`BrainwasherRoleAssignedHandler` 只负责开局冷却初始化。
 - 亡语杀手：默认被 `shitpostRoles` 关闭时自动禁用；源码上主要接语音聊天和疯狂观察视觉表现，核心入口是 `NoellesrolesVoiceChatPlugin`、`InsaneObserverAppearanceHandler` 和 `NoellesRolesConfig.insanePlayersSeeMorphs`。
+- 杰森：核心状态由 `JasonWoundManager`、`JasonAbilityManager`、`JasonAbilityPlayerComponent` 和 `JasonPsychoHandler` 管理；投掷武器、倒地救治、油桶燃烧、杰森模式和“无恶不在”能力分别按职业包拆分。无恶不在的客户端雾效通过 `JasonAbilityFogHandler` 接入 Wathe `FogOverrideApi`，兼容 Sodium + Iris shaderpack。
 
 ### 杀手侧中立
 
@@ -237,6 +240,7 @@
 - `NoellesRolesReplayBootstrap.java` 负责把 NoellesRoles 的事件 id 注册到 Wathe 回放系统。
 - `NoellesRolesReplayFormatters.java` 负责把 NoellesRoles 的专属事件翻译成回放文本。
 - `NoellesrolesVoiceChatPlugin.java` 负责语音聊天桥接，主要给接线员、附身和亡语杀手这类职业用。
+- `JasonAbilityManager.java` 负责无恶不在服务端状态机、冷却、退出过渡、惊吓和回合清理；`JasonAbilityFogHandler.java` 负责客户端三类雾距和进入/退出过渡。
 - `NoellesHudHandlers.java` 是客户端通用屏幕 HUD 总注册入口，只负责调用各职业 / 词条自己的 `register()` 和少量实体名牌 provider。
 - `NoellesHudSupport.java` 负责复用 Wathe `HudOverlayApi` 的存活职业注册、右下角文字绘制和玩家名兜底。
 - `NoellesClientMovementBootstrap.java` 负责客户端移动相关表现的聚合入口，当前主要给双重人格等需要本地提示的规则使用。
@@ -493,6 +497,38 @@ public static void register() {
 `registerAliveRole(...)` 会统一检查“本地玩家是该职业”以及 Wathe 的 `GameFunctions.isPlayerAliveAndSurvival(...)` 存活定义，所以死亡、旁观、创造和非局内状态不会继续显示职业 HUD。不是职业独占的 provider，例如被附体者、被绑架者或狙击镜遮罩，必须在自己的 lambda 里显式判断 `context.aliveAndSurvival()`。
 
 不要把多个职业/词条 HUD 合并到一个巨大的 renderer。`NoellesHudHandlers` / `NoellesCrosshairHandlers` 只负责注册顺序，具体状态、文本、颜色和准心判定仍然放在各职业或词条自己的客户端包里；旧的 `*HudMixin` / `*CrosshairMixin` 被 API 替代后，也不要重新加回 `noellesroles.client.mixins.json`。
+
+## 客户端雾效与 Iris 兼容
+
+NoellesRoles 的职业雾效统一接入 Wathe：
+
+- API：`dev.doctor4t.wathe.api.client.fog.FogOverrideApi`
+- 杰森 provider：`src/client/java/org/agmas/noellesroles/client/roles/jason/JasonAbilityFogHandler.java`
+- 注册入口：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+
+工作顺序是：原版、液体状态和 Wathe 地图雾先计算基础值，职业 provider 再通过 `FogOverrideApi.FogContext` 读取基础值并返回目标 start/end/shape，Wathe 最后把最终值写回 RenderSystem。Iris 的标准 `FogUniforms` 会从 RenderSystem getter 读取该最终值，因此 Sodium + Iris shaderpack 不应把 Wathe 地图雾或杰森雾恢复成普通视频设置视距。世界渲染结束后 Wathe 会调用原版 `BackgroundRenderer.clearFog()` 切换到 GUI 无雾状态，避免 1.21.1 文字 shader 继续使用世界的 `FogColor`，导致聊天栏、tab 和 HUD 在白天变白、夜晚变黑。
+
+新增职业需要雾效时：
+
+1. 在 `client/roles/<role>/` 新建 `<RoleName>FogHandler.java`。
+2. 把视距、优先级和过渡时间放入对应 `*Constants`。
+3. 在 `NoellesrolesClient.onInitializeClient()` 注册 provider。
+4. provider 返回 `FogOverride.pass()` 表示当前状态不接管雾效。
+5. 不要新增职业自己的 `WorldRenderer.render` 雾效 mixin，也不要直接依赖 Iris 私有类。
+
+如果修改 Wathe 的 Fog API，联调顺序必须是：
+
+```powershell
+cd "D:\哈比快车最新源码\wathe\Wathe - 副本1"
+.\gradlew.bat build
+
+Copy-Item "build\libs\wathe-1.3.3-1.21.1.jar" `
+  "D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\libs\wathe-1.3.3-1.21.1.jar" `
+  -Force
+
+cd "D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1"
+.\gradlew.bat build
+```
 
 ## 新职业注册流程
 

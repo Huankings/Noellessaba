@@ -74,7 +74,6 @@
     "roles.jason.JasonWoundedKeyboardMixin",
     "roles.jason.JasonWoundedMinecraftMixin",
     "roles.jason.JasonWoundedPoseMixin",
-    "roles.jason.JasonAbilityWorldRendererMixin",
     "roles.jason.JasonAbilityHeldItemRendererMixin",
     "roles.jason.JasonAbilityClientWorldSoundMixin"
   ],
