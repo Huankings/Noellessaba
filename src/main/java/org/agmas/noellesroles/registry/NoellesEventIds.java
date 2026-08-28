@@ -161,6 +161,18 @@ public final class NoellesEventIds {
     public static final Identifier JASON_ABILITY_SCARED_EVENT = NoellesRolesCore.id("jason_ability_scared");
     public static final Identifier JASON_ABILITY_SCARE_ENDED_EVENT = NoellesRolesCore.id("jason_ability_scare_ended");
     public static final Identifier SHADOW_JESTER_STAGE_EVENT = NoellesRolesCore.id("shadow_jester_stage");
+    /** 巫妖骷髅命中玩家时的全局回放事件，用于显示“谁发射的哪类骷髅命中了谁”。 */
+    public static final Identifier LICH_SKELETON_HIT_EVENT = NoellesRolesCore.id("lich_skeleton_hit");
+    /** 巫妖成功释放魔法屏障后的全局回放事件，只在屏障实体成功生成后记录。 */
+    public static final Identifier LICH_MAGIC_BARRIER_CAST_EVENT = NoellesRolesCore.id("lich_magic_barrier_cast");
+    /** 巫妖魔法屏障到达最大飞行距离并自然消失时的全局回放事件。 */
+    public static final Identifier LICH_MAGIC_BARRIER_DISAPPEAR_EVENT = NoellesRolesCore.id("lich_magic_barrier_disappear");
+    /** 受屏障影响的玩家第一次进入屏障范围时的全局回放事件。 */
+    public static final Identifier LICH_MAGIC_BARRIER_ENTER_EVENT = NoellesRolesCore.id("lich_magic_barrier_enter");
+    /** 受屏障影响的玩家离开屏障范围或屏障自然消失导致范围闭合时的全局回放事件。 */
+    public static final Identifier LICH_MAGIC_BARRIER_EXIT_EVENT = NoellesRolesCore.id("lich_magic_barrier_exit");
+    /** 巫妖控门术能力的技能回放事件，用于记录锁门和修门数量。 */
+    public static final Identifier LICH_DOOR_CONTROL_EVENT = NoellesRolesCore.id("lich_door_control");
 
     private NoellesEventIds() {
     }

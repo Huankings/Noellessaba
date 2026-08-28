@@ -70,7 +70,11 @@ public class NoellesRolesItemExtraModel {
                 || item == ModItems.DELUSION_SYRINGE
                 || item == ModItems.KNOCKOUT_DRUG
                 || item == ModItems.JERRY_CAN
-                || item == ModItems.LIGHTER;
+                || item == ModItems.LIGHTER
+                || item == ModItems.ONCE_STAFF
+                || item == ModItems.PSYCHO_STAFF
+                || item == ModItems.MAGIC_BARRIER
+                || item == ModItems.PSYCHO_LICH;
     }
 
     /**

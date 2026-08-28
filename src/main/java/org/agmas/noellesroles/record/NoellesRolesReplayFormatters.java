@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.roles.lich.LichSkeletonKind;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.jetbrains.annotations.Nullable;
@@ -147,6 +148,18 @@ public final class NoellesRolesReplayFormatters {
                 .append(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFFFF))))
                 .append(inner.copy().setStyle(inner.getStyle().withColor(TextColor.fromRgb(0xFFFFFF))))
                 .append(Text.literal("]").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFFFFF))));
+    }
+
+    private static Text lichSkeletonName(NbtCompound data) {
+        /*
+         * 巫妖骷髅回放保存的是稳定翻译 key。
+         * 旧数据或异常数据没有字段时，用简易法杖的“法术骷髅”兜底，确保回放不丢行。
+         */
+        String key = data.getString(LichSkeletonKind.REPLAY_NAME_KEY);
+        if (key == null || key.isEmpty()) {
+            key = LichSkeletonKind.SPELL.replayNameKey();
+        }
+        return Text.translatable(key);
     }
 
     private static Text whiteBracketedThrowingPan() {
@@ -878,6 +891,78 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatThrowingAxeUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.item_use.noellesroles.throwing_axe", actor, whiteBracketedItem(event.data(), world));
+    }
+
+    @Nullable
+    public static Text formatLichStaffUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.item_use.noellesroles.lich_staff",
+                actor,
+                whiteBracketedItem(event.data(), world),
+                lichSkeletonName(event.data())
+        );
+    }
+
+    @Nullable
+    public static Text formatLichSkeletonHit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.global.noellesroles.lich_skeleton_hit",
+                actor,
+                lichSkeletonName(event.data()),
+                target
+        );
+    }
+
+    @Nullable
+    public static Text formatLichMagicBarrierCast(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.lich_magic_barrier_cast", actor);
+    }
+
+    @Nullable
+    public static Text formatLichMagicBarrierDisappear(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text owner = ownerFromGlobal(event, match);
+        return Text.translatable(
+                "replay.global.noellesroles.lich_magic_barrier_disappear",
+                owner == null ? Text.translatable("replay.player.unknown") : owner
+        );
+    }
+
+    @Nullable
+    public static Text formatLichMagicBarrierEnter(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text player = playerFromKey(event, match, "player");
+        return player == null ? null : Text.translatable("replay.global.noellesroles.lich_magic_barrier_enter", player);
+    }
+
+    @Nullable
+    public static Text formatLichMagicBarrierExit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text player = playerFromKey(event, match, "player");
+        return player == null ? null : Text.translatable("replay.global.noellesroles.lich_magic_barrier_exit", player);
+    }
+
+    @Nullable
+    public static Text formatLichDoorControl(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        if (actor == null) {
+            return null;
+        }
+        return Text.translatable(
+                "replay.skill_use.noellesroles.lich_door_control",
+                actor,
+                event.data().getInt("radius"),
+                event.data().getInt("door_count"),
+                event.data().getInt("locked_count"),
+                event.data().getInt("repaired_count")
+        );
     }
 
     @Nullable
@@ -2074,6 +2159,24 @@ public final class NoellesRolesReplayFormatters {
                 "replay.death.noellesroles.burn.killed",
                 victim,
                 thrower == null ? Text.translatable("replay.player.unknown") : thrower
+        );
+    }
+
+    @Nullable
+    public static Text formatLichSkeletonDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text caster = actorText(event, match);
+        if (victim == null) {
+            return null;
+        }
+        if (caster == null) {
+            return Text.translatable("replay.death.unknown.died", victim);
+        }
+        return Text.translatable(
+                "replay.death.noellesroles.skeleton.killed",
+                victim,
+                caster,
+                lichSkeletonName(event.data())
         );
     }
 

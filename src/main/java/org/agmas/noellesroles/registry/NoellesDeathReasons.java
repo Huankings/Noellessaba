@@ -35,6 +35,7 @@ public final class NoellesDeathReasons {
     public static final Identifier JASON_THROWING_WEAPON_DEATH_REASON = NoellesRolesCore.id("throwing_weapon");
     public static final Identifier JASON_BLEEDING_TOO_MUCH_DEATH_REASON = NoellesRolesCore.id("bleeding_too_much");
     public static final Identifier JASON_BURN_DEATH_REASON = NoellesRolesCore.id("burn");
+    public static final Identifier SKELETON_DEATH_REASON = NoellesRolesCore.id("skeleton");
 
     private NoellesDeathReasons() {
     }

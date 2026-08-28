@@ -82,5 +82,13 @@
         "stream": true
       }
     ]
+  },
+  "ambient.lich": {
+    "sounds": [
+      {
+        "name": "noellesroles:ambient/lich",
+        "stream": true
+      }
+    ]
   }
 }

@@ -23,6 +23,7 @@ import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.cook.CookPsychoHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
+import org.agmas.noellesroles.roles.lich.LichPsychoHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
@@ -179,6 +180,13 @@ public class NoellesRolesShops {
              */
             return CookPsychoHandler.startCookPsycho(player);
         }
+        if (item == ModItems.PSYCHO_LICH) {
+            /*
+             * 巫妖疯魔同样是即时商店按钮：购买成功后启动巫妖 profile 并授予疯魔法杖。
+             * 不把图标塞进背包，避免玩家把商店按钮移动、丢弃或带出疯魔流程。
+             */
+            return LichPsychoHandler.startLichPsycho(player);
+        }
         if (item == ModItems.POWER_RESTORATION) {
             return EngineerPlayerComponent.tryRestorePower(player);
         }
@@ -230,9 +238,14 @@ public class NoellesRolesShops {
     private static boolean ignoresShopCooldown(@NotNull PlayerEntity player, @NotNull Item item) {
         /*
          * 用户要求新物品方便调试：旁观/创造调试玩家不受冷却影响。
-         * 这里先只对厨师疯魔图标开放商店冷却绕过，避免影响其它既有职业商品的正式平衡。
+         * 这里只对已明确要求的调试友好物品开放商店冷却绕过，避免影响其它既有职业商品的正式平衡。
          */
-        return item == ModItems.PSYCHO_COOK && GameFunctions.isPlayerSpectatingOrCreative(player);
+        return (item == ModItems.PSYCHO_COOK
+                || item == ModItems.ONCE_STAFF
+                || item == ModItems.PSYCHO_STAFF
+                || item == ModItems.MAGIC_BARRIER
+                || item == ModItems.PSYCHO_LICH)
+                && GameFunctions.isPlayerSpectatingOrCreative(player);
     }
 
     /**

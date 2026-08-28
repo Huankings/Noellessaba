@@ -25,6 +25,10 @@ import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
+import org.agmas.noellesroles.roles.lich.LichConstants;
+import org.agmas.noellesroles.roles.lich.LichMagicBarrierItem;
+import org.agmas.noellesroles.roles.lich.LichPsychoStaffItem;
+import org.agmas.noellesroles.roles.lich.LichStaffItem;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.physician.PhysicianConstants;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
@@ -104,6 +108,14 @@ public class ModItems {
         // 纵火犯道具的真实冷却会根据存活人数动态写入，这里登记默认值只用于客户端物品说明。
         GameConstants.ITEM_COOLDOWNS.put(JERRY_CAN, ArsonistConstants.getDouseCooldownTicks(0));
         GameConstants.ITEM_COOLDOWNS.put(LIGHTER, ArsonistConstants.getDouseCooldownTicks(0));
+        // 巫妖简易法杖是一次性远程击杀武器，正式玩家使用后进入 10 秒物品冷却。
+        GameConstants.ITEM_COOLDOWNS.put(ONCE_STAFF, LichConstants.ONCE_STAFF_COOLDOWN_TICKS);
+        // 巫妖疯魔法杖右键瞬发亡灵骷髅，右键冷却按用户要求独立为 2 秒。
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_STAFF, LichConstants.PSYCHO_STAFF_COOLDOWN_TICKS);
+        // 魔法屏障使用后消耗，并刷新正式玩家 10 秒物品冷却。
+        GameConstants.ITEM_COOLDOWNS.put(MAGIC_BARRIER, LichConstants.MAGIC_BARRIER_ITEM_COOLDOWN_TICKS);
+        // 巫妖疯魔商店图标走即时购买逻辑，不进入背包，但仍登记冷却以便 tooltip 显示。
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_LICH, LichConstants.PSYCHO_LICH_COOLDOWN_TICKS);
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -161,6 +173,9 @@ public class ModItems {
             entries.add(MORPH_DEVICE);
             entries.add(JERRY_CAN);
             entries.add(LIGHTER);
+            entries.add(ONCE_STAFF);
+            entries.add(PSYCHO_STAFF);
+            entries.add(MAGIC_BARRIER);
             entries.add(PHONE);
             entries.add(DEFENSE_VIAL);
             entries.add(SEDATIVE);
@@ -511,6 +526,24 @@ public class ModItems {
                     .component(TIMEKEEPER_WATCH_MODE, TimekeeperWatchMode.ITEM_ACCELERATE.ordinal())),
             "dying_watch"
     );
+    // 简易法杖：巫妖默认商店替代左轮的一次性扇形骷髅发射物。
+    public static final Item ONCE_STAFF = register(
+            new LichStaffItem(new Item.Settings().maxCount(1)),
+            "once_staff"
+    );
+    // 疯魔法杖：巫妖疯魔 profile 授予，左键走 Wathe 疯魔近战击杀链，右键释放亡灵骷髅。
+    public static final Item PSYCHO_STAFF = register(
+            new LichPsychoStaffItem(new Item.Settings()
+                    .maxCount(1)
+                    // 主手攻击速度必须写入物品属性，否则 Wathe 的满力球棒击杀会按空手速度触发。
+                    .attributeModifiers(LichPsychoStaffItem.createAttributeModifiers())),
+            "psycho_staff"
+    );
+    // 魔法屏障：蓄力后生成前飞粒子球，压制好人/义警/独立中立的武器与能力冷却。
+    public static final Item MAGIC_BARRIER = register(
+            new LichMagicBarrierItem(new Item.Settings().maxCount(1)),
+            "magic_barrier"
+    );
     
     ///添加noellesroles的商店图标
     //服务员随机食物图标
@@ -557,6 +590,11 @@ public class ModItems {
     public static final Item PSYCHO_COOK = register(
             new Item(new Item.Settings().maxCount(1)),
             "psycho_cook"
+    );
+    // 巫妖疯魔商店图标：购买时立即启动巫妖专属疯魔，不作为普通物品交付。
+    public static final Item PSYCHO_LICH = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "psycho_lich"
     );
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(

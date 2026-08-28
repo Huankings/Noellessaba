@@ -25,6 +25,7 @@ import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
+import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
@@ -200,6 +201,16 @@ public class NoellesRolesItemToolTip {
     public static void addTooltip(@NotNull Item item, @NotNull ItemStack itemStack, @NotNull List<Text> list) {
         if (itemStack.isOf(item)) {
             list.addAll(TextUtils.getTooltipForItem(item, Style.EMPTY.withColor(WatheItemTooltips.REGULAR_TOOLTIP_COLOR)));
+            if (item == ModItems.PSYCHO_STAFF) {
+                /*
+                 * 疯魔法杖的实际左键节奏由物品主手攻击速度属性决定。
+                 * 这里额外给一行普通说明，并从 LichConstants 读取数值，避免 tooltip 和真实属性以后调参时脱节。
+                 */
+                list.add(Text.translatable(
+                        "item.noellesroles.psycho_staff.tooltip.attack_speed",
+                        LichConstants.PSYCHO_STAFF_ATTACK_SPEED
+                ).setStyle(Style.EMPTY.withColor(WatheItemTooltips.REGULAR_TOOLTIP_COLOR)));
+            }
         }
     }
 
@@ -251,6 +262,10 @@ public class NoellesRolesItemToolTip {
                 || item == ModItems.DELUSION_SYRINGE
                 || item == ModItems.KNOCKOUT_DRUG
                 || item == ModItems.JERRY_CAN
-                || item == ModItems.LIGHTER;
+                || item == ModItems.LIGHTER
+                || item == ModItems.ONCE_STAFF
+                || item == ModItems.PSYCHO_STAFF
+                || item == ModItems.MAGIC_BARRIER
+                || item == ModItems.PSYCHO_LICH;
     }
 }

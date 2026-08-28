@@ -6,6 +6,7 @@ import org.agmas.noellesroles.client.roles.cook.CookPanCrosshair;
 import org.agmas.noellesroles.client.roles.drugmaker.DrugmakerCrosshair;
 import org.agmas.noellesroles.client.roles.dreamer.DreamerSyringeCrosshair;
 import org.agmas.noellesroles.client.roles.hunter.HunterKnifeCrosshair;
+import org.agmas.noellesroles.client.roles.lich.LichStaffCrosshair;
 import org.agmas.noellesroles.client.roles.morphling.MorphlingReagentCrosshair;
 import org.agmas.noellesroles.client.roles.prophet.ProphetCrystalBallCrosshair;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererRecallCrosshair;
@@ -42,5 +43,6 @@ public final class NoellesCrosshairHandlers {
         DreamerSyringeCrosshair.register();
         ThiefCrosshair.register();
         TimekeeperWatchCrosshairOverlay.register();
+        LichStaffCrosshair.register();
     }
 }

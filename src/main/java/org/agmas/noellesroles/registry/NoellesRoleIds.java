@@ -81,6 +81,7 @@ public final class NoellesRoleIds {
     public static final Identifier TIMEKEEPER_ID = NoellesRolesCore.id("timekeeper");
     public static final Identifier SPRING_TRAP_ID = NoellesRolesCore.id("spring_trap");
     public static final Identifier JASON_ID = NoellesRolesCore.id("jason");
+    public static final Identifier LICH_ID = NoellesRolesCore.id("lich");
 
     private NoellesRoleIds() {
     }

@@ -84,7 +84,7 @@ public final class WaiterInteractionHandler {
 
         /*
          * 服务员帮别人完成任务时，目标仍会正常触发 AFTER_TASK_COMPLETE，
-         * 但 Wathe 默认任务收入会被这里跳过；服务员自己的 25 金币在服务成功后单独发放。
+         * 但 Wathe 默认任务收入会被这里跳过；服务员自己的 60 金币在服务成功后单独发放。
          */
         TaskCompletionApi.registerTaskIncomeRule(
                 NoellesRolesCore.id("waiter/suppress_served_task_income"),
@@ -217,7 +217,7 @@ public final class WaiterInteractionHandler {
             blind(target);
         }
 
-        // 帮别人完成任务时，目标收入被 suppress，服务员本人一次性拿 25。
+        // 帮别人完成任务时，目标收入被 suppress，服务员本人一次性拿 60。
         PlayerShopComponent.KEY.get(waiter).addToBalance(WaiterConstants.SERVE_OTHER_INCOME);
         decrementServedStack(waiter, hand);
         sendServeSuccess(waiter, target, replaySnapshot.getName());

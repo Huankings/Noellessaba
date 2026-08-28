@@ -14,6 +14,9 @@ import org.agmas.noellesroles.entities.RoleMineEntity;
 import org.agmas.noellesroles.entities.ThrowingAxeEntity;
 import org.agmas.noellesroles.entities.ThrowingPanEntity;
 import org.agmas.noellesroles.roles.jason.JasonThrownWeaponEntity;
+import org.agmas.noellesroles.roles.lich.LichConstants;
+import org.agmas.noellesroles.roles.lich.LichMagicBarrierEntity;
+import org.agmas.noellesroles.roles.lich.LichSkeletonSkullEntity;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 
 public class NoellesRolesEntities {
@@ -51,6 +54,27 @@ public class NoellesRolesEntities {
                     .trackingTickInterval(1)
                     .disableSaving()
                     .build("magician_playback")
+    );
+    public static final EntityType<LichSkeletonSkullEntity> LICH_SKELETON_SKULL_ENTITY_TYPE = Registry.register(
+            Registries.ENTITY_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "lich_skeleton_skull"),
+            EntityType.Builder.<LichSkeletonSkullEntity>create(LichSkeletonSkullEntity::new, SpawnGroup.MISC)
+                    // 巫妖骷髅是高速远程投射物，尺寸/追踪参数集中在 LichConstants 里方便后续调参。
+                    .dimensions(LichConstants.SKELETON_ENTITY_WIDTH_BLOCKS, LichConstants.SKELETON_ENTITY_HEIGHT_BLOCKS)
+                    .maxTrackingRange(LichConstants.SKELETON_ENTITY_TRACKING_RANGE_BLOCKS)
+                    .trackingTickInterval(LichConstants.SKELETON_ENTITY_TRACKING_INTERVAL_TICKS)
+                    .build("lich_skeleton_skull")
+    );
+    public static final EntityType<LichMagicBarrierEntity> LICH_MAGIC_BARRIER_ENTITY_TYPE = Registry.register(
+            Registries.ENTITY_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "lich_magic_barrier"),
+            EntityType.Builder.<LichMagicBarrierEntity>create(LichMagicBarrierEntity::new, SpawnGroup.MISC)
+                    // 屏障实体只作为移动锚点，真实机制半径和可视半径都在 LichConstants 中统一维护。
+                    .dimensions(LichConstants.MAGIC_BARRIER_ENTITY_WIDTH_BLOCKS, LichConstants.MAGIC_BARRIER_ENTITY_HEIGHT_BLOCKS)
+                    .maxTrackingRange(LichConstants.MAGIC_BARRIER_ENTITY_TRACKING_RANGE_BLOCKS)
+                    .trackingTickInterval(LichConstants.MAGIC_BARRIER_ENTITY_TRACKING_INTERVAL_TICKS)
+                    .disableSaving()
+                    .build("lich_magic_barrier")
     );
 
     public static void init() {

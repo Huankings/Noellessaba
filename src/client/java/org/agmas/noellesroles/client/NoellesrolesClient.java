@@ -27,6 +27,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.entity.EmptyEntityRenderer;
+import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,6 +60,7 @@ import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientSoundControll
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityFogHandler;
 import org.agmas.noellesroles.client.roles.jason.JasonMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
+import org.agmas.noellesroles.client.roles.lich.LichMoodHud;
 import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
@@ -89,6 +92,7 @@ import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
+import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
@@ -143,6 +147,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         LicensedVillainMoodHud.register();
         SpringTrapMoodHud.register();
         JasonMoodHud.register();
+        LichMoodHud.register();
         JasonAbilityFogHandler.register();
         ShadowJesterMoodHud.register();
         /*
@@ -156,6 +161,14 @@ public class NoellesrolesClient implements ClientModInitializer {
          * 真正何时播放/停止由服务端同步的 Jason profile 决定。
          */
         dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(NoellesRolesSounds.AMBIENT_JASON, 20);
+        /*
+         * 巫妖疯魔音乐也走 Wathe 的统一疯魔背景音播放器。
+         * 服务端 profile 只同步 SoundEvent id，客户端必须先注册可循环播放的本地播放器。
+         */
+        dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(
+                NoellesRolesSounds.AMBIENT_LICH,
+                LichConstants.PSYCHO_LICH_BACKGROUND_FADE_TICKS
+        );
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
@@ -323,6 +336,8 @@ public class NoellesrolesClient implements ClientModInitializer {
         EntityRendererRegistry.register(NoellesRolesEntities.THROWING_PAN_ENTITY_TYPE, ThrowingPanEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.JASON_THROWN_WEAPON_ENTITY_TYPE, JasonThrownWeaponEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE, MagicianPlaybackEntityRenderer::new);
+        EntityRendererRegistry.register(NoellesRolesEntities.LICH_SKELETON_SKULL_ENTITY_TYPE, WitherSkullEntityRenderer::new);
+        EntityRendererRegistry.register(NoellesRolesEntities.LICH_MAGIC_BARRIER_ENTITY_TYPE, EmptyEntityRenderer::new);
     }
 
     private static void registerItemColors() {
@@ -394,6 +409,10 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.KNOCKOUT_DRUG, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.JERRY_CAN, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.LIGHTER, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.ONCE_STAFF, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_STAFF, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.MAGIC_BARRIER, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_LICH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.PHONE, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
@@ -463,6 +482,10 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.KNOCKOUT_DRUG);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.JERRY_CAN);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.LIGHTER);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.ONCE_STAFF);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.PSYCHO_STAFF);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.MAGIC_BARRIER);
+        NoellesRolesItemExtraModel.registerExtraModel(ModItems.PSYCHO_LICH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_WEAPON_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_ABILITY_COOLDOWN_REFRESH);
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.ICON_POTION_EFFECT_REFRESH);

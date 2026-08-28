@@ -26,6 +26,7 @@ import org.agmas.noellesroles.roles.initiate.InitiateShopHandler;
 import org.agmas.noellesroles.roles.jason.JasonShopHandler;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperShopHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainShopHandler;
+import org.agmas.noellesroles.roles.lich.LichShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingShopHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
@@ -170,6 +171,15 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(NoellesRolesCore.MOD_ID, "jason_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 JasonShopHandler::modifyShop
+        );
+        /*
+         * 巫妖保留默认杀手商店，只删除毒药/蝎子并替换左轮、手雷、疯魔图标。
+         * 放在默认优先级即可和其它杀手职业一样按当前角色过滤，不会互相改到非巫妖商店。
+         */
+        ShopApi.registerShopModifier(
+                Identifier.of(NoellesRolesCore.MOD_ID, "lich_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                LichShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。

@@ -49,6 +49,7 @@ import org.agmas.noellesroles.roles.hunter.HunterAbility;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerAbility;
 import org.agmas.noellesroles.roles.jason.JasonAbilityManager;
 import org.agmas.noellesroles.roles.jason.JasonWoundManager;
+import org.agmas.noellesroles.roles.lich.LichAbility;
 import org.agmas.noellesroles.roles.magician.MagicianTargetAbility;
 import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.roles.operator.OperatorAbility;
@@ -275,6 +276,8 @@ public final class NoellesRolesPacketReceivers {
                 JasonAbilityManager.handleAbilityKey(player);
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.SHADOW_JESTER)) {
                 ShadowJesterManager.handleAbilityKey(player, payload.targetId());
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.LICH)) {
+                LichAbility.handle(player);
             }
         }));
     }

@@ -33,6 +33,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_TOYS_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_PICKAXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_JERRY_CAN), NoellesRolesReplayFormatters::formatThrowingAxeUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.ONCE_STAFF), NoellesRolesReplayFormatters::formatLichStaffUse);
+        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.PSYCHO_STAFF), NoellesRolesReplayFormatters::formatLichStaffUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.ROLE_MINE), NoellesRolesReplayFormatters::formatRoleMineUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TOOLBOX), NoellesRolesReplayFormatters::formatToolboxUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.CAPTURE_DEVICE), NoellesRolesReplayFormatters::formatCaptureDeviceUse);
@@ -220,6 +222,12 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JASON_ABILITY_SCARED_EVENT, NoellesRolesReplayFormatters::formatJasonAbilityScared);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.JASON_ABILITY_SCARE_ENDED_EVENT, NoellesRolesReplayFormatters::formatJasonAbilityScareEnded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SHADOW_JESTER_STAGE_EVENT, NoellesRolesReplayFormatters::formatShadowJesterStage);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_SKELETON_HIT_EVENT, NoellesRolesReplayFormatters::formatLichSkeletonHit);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_CAST_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierCast);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_DISAPPEAR_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierDisappear);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_ENTER_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierEnter);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_EXIT_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierExit);
+        ReplayRegistry.registerSkillFormatter(NoellesEventIds.LICH_DOOR_CONTROL_EVENT, NoellesRolesReplayFormatters::formatLichDoorControl);
 
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_THROWING_AXE, NoellesRolesReplayFormatters::formatThrowingAxeDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_AXE, NoellesRolesReplayFormatters::formatAxeDeath);
@@ -241,5 +249,6 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_THROWING_WEAPON_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonThrowingWeaponDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_BLEEDING_TOO_MUCH_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonBleedingDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_BURN_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonBurnDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SKELETON_DEATH_REASON, NoellesRolesReplayFormatters::formatLichSkeletonDeath);
     }
 }
