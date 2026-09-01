@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.jester;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -30,6 +31,7 @@ public final class JesterPsychoHandler {
     public static void init() {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.jester")
+                .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(JesterConstants.PSYCHO_DURATION_TICKS)
                 /*
                  * 注册表里的 profile 保存“只有 1 个杀手时”的默认护盾。

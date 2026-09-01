@@ -216,6 +216,7 @@ public final class TimekeeperSnapshots {
              * 在每帧恢复后重新压回，避免时停者通过自己的回溯把发动成本抹掉。
              */
             component("noellesroles:timekeeper", TimekeeperPlayerComponent.KEY)
+            ,component("noellesroles:vecna", org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent.KEY)
     );
 
     private static final List<ComponentEntry> WORLD_COMPONENTS = List.of(

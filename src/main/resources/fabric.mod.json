@@ -100,6 +100,7 @@
       "noellesroles:timekeeper",
       "noellesroles:timekeeper_world",
       "noellesroles:shadow_jester"
+      ,"noellesroles:vecna"
     ]
   },
   "mixins": [

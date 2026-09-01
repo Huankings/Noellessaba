@@ -61,6 +61,7 @@ import org.agmas.noellesroles.client.roles.jason.JasonAbilityFogHandler;
 import org.agmas.noellesroles.client.roles.jason.JasonMoodHud;
 import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.lich.LichMoodHud;
+import org.agmas.noellesroles.client.roles.vecna.VecnaMoodHud;
 import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMoodHud;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
@@ -148,6 +149,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         SpringTrapMoodHud.register();
         JasonMoodHud.register();
         LichMoodHud.register();
+        VecnaMoodHud.register();
         JasonAbilityFogHandler.register();
         ShadowJesterMoodHud.register();
         /*
@@ -169,6 +171,7 @@ public class NoellesrolesClient implements ClientModInitializer {
                 NoellesRolesSounds.AMBIENT_LICH,
                 LichConstants.PSYCHO_LICH_BACKGROUND_FADE_TICKS
         );
+        dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(NoellesRolesSounds.AMBIENT_VECNA, 20);
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
@@ -325,6 +328,9 @@ public class NoellesrolesClient implements ClientModInitializer {
                         if (shadowJesterTarget != null && shadowJesterTarget.getEntity() instanceof PlayerEntity targetPlayer) {
                             targetId = targetPlayer.getId();
                         }
+                    } else if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.VECNA)) {
+                        EntityHitResult target = WeaponTargetingApi.getVisibleAlivePlayerTarget(MinecraftClient.getInstance().player, 2.0F);
+                        if (target != null) targetId = target.getEntity().getId();
                     }
                     ClientPlayNetworking.send(new AbilityC2SPacket(targetId));
                 });
@@ -423,6 +429,8 @@ public class NoellesrolesClient implements ClientModInitializer {
             NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_FOOD, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_DRINK, itemStack, list);
             NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_POTION, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_VECNA, itemStack, list);
+            NoellesRolesItemToolTip.addItemtip(ModItems.VECNA_ADDTIME, itemStack, list);
         }));
 
         // 为需要额外模型的物品注册（目前所有物品都注册冷却模型，方便未来扩展）

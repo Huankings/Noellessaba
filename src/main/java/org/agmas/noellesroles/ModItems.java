@@ -116,6 +116,7 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(MAGIC_BARRIER, LichConstants.MAGIC_BARRIER_ITEM_COOLDOWN_TICKS);
         // 巫妖疯魔商店图标走即时购买逻辑，不进入背包，但仍登记冷却以便 tooltip 显示。
         GameConstants.ITEM_COOLDOWNS.put(PSYCHO_LICH, LichConstants.PSYCHO_LICH_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_VECNA, org.agmas.noellesroles.roles.vecna.VecnaConstants.PSYCHO_COOLDOWN_TICKS);
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -596,6 +597,10 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1)),
             "psycho_lich"
     );
+    // 维克那颠倒疯魔商店图标：购买后立即启动专属疯魔 profile。
+    public static final Item PSYCHO_VECNA = register(new Item(new Item.Settings().maxCount(1)), "psycho_vecna");
+    // 维克那游戏时间增加商店图标：购买后立即增加 30 秒，不进入背包。
+    public static final Item VECNA_ADDTIME = register(new Item(new Item.Settings().maxCount(1)), "vecna_addtime");
     //电力恢复装置
     public static final Item POWER_RESTORATION = register(
             new PowerRestorationItem(new Item.Settings().maxCount(1)),

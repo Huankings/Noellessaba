@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.spring_trap;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.api.psycho.PsychoShieldResult;
 import dev.doctor4t.wathe.api.psycho.PsychoVisualSettings;
@@ -39,6 +40,7 @@ public final class SpringTrapPsychoHandler {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.spring_trap")
                 .shieldNameTranslationKey("psycho_shield.noellesroles.spring_trap")
+                .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(SpringTrapConstants.SPRING_TRAP_DURATION_TICKS)
                 .armour(SpringTrapConstants.SPRING_TRAP_SHIELD_LAYERS)
                 .grantedItems(java.util.List.of(colorfulAxe))

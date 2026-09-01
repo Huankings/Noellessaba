@@ -20,6 +20,7 @@ import org.agmas.noellesroles.client.roles.jason.JasonWoundedSelfHud;
 import org.agmas.noellesroles.client.roles.jason.JasonWoundedTargetHud;
 import org.agmas.noellesroles.client.roles.kidnapper.KidnapperControlledHud;
 import org.agmas.noellesroles.client.roles.lich.LichStatusHud;
+import org.agmas.noellesroles.client.roles.vecna.VecnaStatusHud;
 import org.agmas.noellesroles.client.roles.magician.MagicianPlaybackNameHud;
 import org.agmas.noellesroles.client.roles.magician.MagicianStatusHud;
 import org.agmas.noellesroles.client.roles.morphling.MorphlingStatusHud;
@@ -88,5 +89,6 @@ public final class NoellesHudHandlers {
         JasonWoundedSelfHud.register();
         JasonWoundedTargetHud.register();
         LichStatusHud.register();
+        VecnaStatusHud.register();
     }
 }

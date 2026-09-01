@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.cook;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.api.psycho.PsychoVisualSettings;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -40,6 +41,7 @@ public final class CookPsychoHandler {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.cook")
                 .shieldNameTranslationKey("psycho_shield.noellesroles.cook")
+                .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(CookConstants.PSYCHO_COOK_DURATION_TICKS)
                 /*
                  * 厨师疯魔只授予疯魔飞锅。

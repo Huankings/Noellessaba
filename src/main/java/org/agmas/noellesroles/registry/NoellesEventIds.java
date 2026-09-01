@@ -173,6 +173,8 @@ public final class NoellesEventIds {
     public static final Identifier LICH_MAGIC_BARRIER_EXIT_EVENT = NoellesRolesCore.id("lich_magic_barrier_exit");
     /** 巫妖控门术能力的技能回放事件，用于记录锁门和修门数量。 */
     public static final Identifier LICH_DOOR_CONTROL_EVENT = NoellesRolesCore.id("lich_door_control");
+    public static final Identifier VECNA_MARK_APPLIED_EVENT = NoellesRolesCore.id("vecna_mark_applied");
+    public static final Identifier VECNA_MARK_ENDED_EVENT = NoellesRolesCore.id("vecna_mark_ended");
 
     private NoellesEventIds() {
     }

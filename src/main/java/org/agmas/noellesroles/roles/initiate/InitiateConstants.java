@@ -9,7 +9,7 @@ public final class InitiateConstants {
     public static final int ROLE_COLOR = 0xffd154;
     public static final int TASK_INCOME_COINS = 50;
     public static final int KNIFE_PRICE_FALLBACK = 100;
-    public static final int KNIFE_PRICE_BONUS = 100;
+    public static final int KNIFE_PRICE_BONUS = 50;
     public static final int MIN_KILLER_SLOTS_FOR_PAIR = 2;
 
     /**

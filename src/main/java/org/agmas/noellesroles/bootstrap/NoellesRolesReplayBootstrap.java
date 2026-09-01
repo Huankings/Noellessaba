@@ -227,6 +227,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_DISAPPEAR_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierDisappear);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_ENTER_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierEnter);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_EXIT_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierExit);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VECNA_MARK_APPLIED_EVENT, NoellesRolesReplayFormatters::formatVecnaMarkApplied);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VECNA_MARK_ENDED_EVENT, NoellesRolesReplayFormatters::formatVecnaMarkEnded);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.LICH_DOOR_CONTROL_EVENT, NoellesRolesReplayFormatters::formatLichDoorControl);
 
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_THROWING_AXE, NoellesRolesReplayFormatters::formatThrowingAxeDeath);
@@ -250,5 +252,6 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_BLEEDING_TOO_MUCH_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonBleedingDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_BURN_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonBurnDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SKELETON_DEATH_REASON, NoellesRolesReplayFormatters::formatLichSkeletonDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.REVERSE_DEATH_REASON, NoellesRolesReplayFormatters::formatVecnaReverseDeath);
     }
 }

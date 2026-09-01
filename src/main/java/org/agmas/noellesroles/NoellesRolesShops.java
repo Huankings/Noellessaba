@@ -24,6 +24,7 @@ import org.agmas.noellesroles.roles.cook.CookPsychoHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.lich.LichPsychoHandler;
+import org.agmas.noellesroles.roles.vecna.VecnaPsychoHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
@@ -186,6 +187,13 @@ public class NoellesRolesShops {
              * 不把图标塞进背包，避免玩家把商店按钮移动、丢弃或带出疯魔流程。
              */
             return LichPsychoHandler.startLichPsycho(player);
+        }
+        if (item == ModItems.PSYCHO_VECNA) {
+            return VecnaPsychoHandler.start(player);
+        }
+        if (item == ModItems.VECNA_ADDTIME) {
+            dev.doctor4t.wathe.cca.GameTimeComponent.KEY.get(player.getWorld()).addTime(org.agmas.noellesroles.roles.vecna.VecnaConstants.ADD_TIME_TICKS);
+            return true;
         }
         if (item == ModItems.POWER_RESTORATION) {
             return EngineerPlayerComponent.tryRestorePower(player);

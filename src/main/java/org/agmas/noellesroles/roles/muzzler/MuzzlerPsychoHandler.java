@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.muzzler;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.index.WatheSounds;
@@ -25,6 +26,7 @@ public final class MuzzlerPsychoHandler {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.muzzler")
                 .shieldNameTranslationKey("psycho_shield.noellesroles.muzzler")
+                .endEventId(Wathe.id("psycho_mode_end"))
                 .hitSound(null)
                 .backgroundSound(WatheSounds.AMBIENT_PSYCHO_DRONE, false)
                 .build();

@@ -107,6 +107,7 @@ import org.agmas.noellesroles.roles.swapper.SwapperAbility;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
+import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -175,6 +176,7 @@ public final class NoellesRolesEventBootstrap {
             KidnapperComponent.KEY.get(playerEntity).resetAll();
             RobotPlayerComponent.KEY.get(playerEntity).reset();
             TimekeeperPlayerComponent.KEY.get(playerEntity).reset();
+            VecnaPlayerComponent.KEY.get(playerEntity).reset();
             DousedPlayerComponent.KEY.get(playerEntity).reset();
             DousedPlayerComponent.KEY.get(playerEntity).sync();
             ConvenerPlayerComponent.KEY.get(playerEntity).reset();

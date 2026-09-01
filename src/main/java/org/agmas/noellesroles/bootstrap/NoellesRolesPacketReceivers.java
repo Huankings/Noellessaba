@@ -70,6 +70,7 @@ import org.agmas.noellesroles.roles.vulture.VultureAbility;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderAbility;
 import org.agmas.noellesroles.roles.winder.WinderTargetAbility;
+import org.agmas.noellesroles.roles.vecna.VecnaAbility;
 import org.agmas.noellesroles.roles.voodoo.VoodooTargetAbility;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityManager;
 
@@ -278,6 +279,8 @@ public final class NoellesRolesPacketReceivers {
                 ShadowJesterManager.handleAbilityKey(player, payload.targetId());
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.LICH)) {
                 LichAbility.handle(player);
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.VECNA)) {
+                VecnaAbility.handle(player, payload.targetId());
             }
         }));
     }

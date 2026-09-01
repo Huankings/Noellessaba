@@ -35,6 +35,7 @@ import org.agmas.noellesroles.roles.stalker.StalkerDeathHandler;
 import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperDeathHandler;
 import org.agmas.noellesroles.roles.voodoo.VoodooDeathHandler;
+import org.agmas.noellesroles.roles.vecna.VecnaDeathHandler;
 
 /**
  * noellesroles 的死亡事件总引导器。
@@ -111,6 +112,7 @@ public final class NoellesRolesDeathBootstrap {
         MagicianPlaybackDeathHandler.init();
         JasonDeathHandler.init();
         ShadowJesterDeathHandler.init();
+        VecnaDeathHandler.init();
     }
 
     /**

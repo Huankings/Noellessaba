@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.bounty_hunter;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.item.ItemStack;
@@ -28,6 +29,7 @@ public final class BountyHunterPsychoHandler {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.bounty_hunter")
                 .shieldNameTranslationKey("psycho_shield.noellesroles.bounty_hunter")
+                .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(BountyHunterConstants.BOUNTY_MODE_DURATION_TICKS)
                 .armour(BountyHunterConstants.BOUNTY_MODE_SHIELD_LAYERS)
                 .grantedItems(java.util.List.of(derringer))

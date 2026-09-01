@@ -2180,6 +2180,26 @@ public final class NoellesRolesReplayFormatters {
         );
     }
 
+    public static Text formatVecnaReverseDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text actor = actorText(event, match);
+        if (victim == null) return null;
+        return Text.translatable("replay.death.noellesroles.reverse.killed", victim,
+                actor == null ? Text.translatable("replay.player.unknown") : actor);
+    }
+
+    public static Text formatVecnaMarkApplied(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.vecna_mark_applied", actor, target);
+    }
+
+    public static Text formatVecnaMarkEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "target_player");
+        // 结束事件的目标 UUID 已写入 payload；不依赖 actorText，避免目标掉线后回放显示未知玩家。
+        return target == null ? null : Text.translatable("replay.global.noellesroles.vecna_mark_ended", target);
+    }
+
     @Nullable
     public static Text formatAxeDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = targetText(event, match);

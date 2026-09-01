@@ -36,6 +36,10 @@ public final class ConvenerSummonLockdownHelper {
     public static void applySummonLockdown(ServerPlayerEntity player) {
         applyWeaponCooldowns(player);
         setItemCooldown(player, WatheItems.PSYCHO_MODE, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
+        setItemCooldown(player, ModItems.PSYCHO_VECNA, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
+        setItemCooldown(player, ModItems.BOUNTY_MODE, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
+        setItemCooldown(player, ModItems.PSYCHO_JASON, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
+        setItemCooldown(player, ModItems.PSYCHO_LICH, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
         setItemCooldown(player, WatheItems.BLACKOUT, ConvenerConstants.BLACKOUT_COOLDOWN_TICKS);
         applyAbilityCooldowns(player);
         applySpecialEventCooldowns(player);

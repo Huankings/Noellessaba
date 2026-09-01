@@ -22,6 +22,7 @@ public interface NoellesRolesSounds {
     SoundEvent AMBIENT_SHADOW_JESTER_KING = REGISTRAR.create("ambient.shadow_jester_king");
     SoundEvent AMBIENT_SHADOW_JESTER_QUEEN = REGISTRAR.create("ambient.shadow_jester_queen");
     SoundEvent AMBIENT_LICH = REGISTRAR.create("ambient.lich");
+    SoundEvent AMBIENT_VECNA = REGISTRAR.create("ambient.vecna");
     SoundEvent ITEM_SYRINGE_STAB = REGISTRAR.create("item.syringe_stab");
 
     static void initialize() {

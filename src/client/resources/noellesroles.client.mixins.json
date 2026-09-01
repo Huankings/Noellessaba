@@ -76,6 +76,9 @@
     "roles.jason.JasonWoundedPoseMixin",
     "roles.jason.JasonAbilityHeldItemRendererMixin",
     "roles.jason.JasonAbilityClientWorldSoundMixin"
+    ,"roles.vecna.VecnaKeyboardInputMixin"
+    ,"roles.vecna.VecnaVisionMixin"
+    ,"roles.vecna.VecnaLookMixin"
   ],
   "injectors": {
     "defaultRequire": 1

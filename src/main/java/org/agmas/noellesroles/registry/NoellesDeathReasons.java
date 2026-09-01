@@ -36,6 +36,8 @@ public final class NoellesDeathReasons {
     public static final Identifier JASON_BLEEDING_TOO_MUCH_DEATH_REASON = NoellesRolesCore.id("bleeding_too_much");
     public static final Identifier JASON_BURN_DEATH_REASON = NoellesRolesCore.id("burn");
     public static final Identifier SKELETON_DEATH_REASON = NoellesRolesCore.id("skeleton");
+    /** 颠倒标记反噬造成的致死伤害。 */
+    public static final Identifier REVERSE_DEATH_REASON = NoellesRolesCore.id("reverse");
 
     private NoellesDeathReasons() {
     }

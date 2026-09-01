@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.jason;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.api.psycho.PsychoVisualSettings;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -37,6 +38,7 @@ public final class JasonPsychoHandler {
         PsychoModeProfile profile = PsychoModeProfile.copyOf(PsychoModeApi.createDefaultProfile(), PROFILE_ID)
                 .nameTranslationKey("psycho_mode.noellesroles.jason")
                 .shieldNameTranslationKey("psycho_shield.noellesroles.jason")
+                .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(JasonConstants.PSYCHO_DURATION_TICKS)
                 /*
                  * 杰森模式只授予飞镐。复制默认 profile 后必须覆盖球棒列表，
