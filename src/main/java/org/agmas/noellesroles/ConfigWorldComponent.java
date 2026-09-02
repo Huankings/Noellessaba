@@ -26,6 +26,10 @@ public class ConfigWorldComponent implements AutoSyncedComponent, ServerTickingC
     public boolean naturalVoodoosAllowed = false;
     public int masterKeyVisibleCount = 0;
     public boolean masterKeyIsVisible = false;
+    /** 客户端可读取的配置快照；这些字段不属于时停者回溯运行态。 */
+    public boolean conductorDroppedItemInstinct = false;
+    public boolean coronerBodyInstinct = false;
+    public boolean jesterPsychoCannotAttackKiller = false;
     private final World world;
 
     public void reset() {
@@ -44,10 +48,16 @@ public class ConfigWorldComponent implements AutoSyncedComponent, ServerTickingC
         insaneSeesMorphs = NoellesRolesConfig.HANDLER.instance().insanePlayersSeeMorphs;
         naturalVoodoosAllowed = NoellesRolesConfig.HANDLER.instance().voodooNonKillerDeaths;
         masterKeyVisibleCount = NoellesRolesConfig.HANDLER.instance().playerCountToMakeConducterKeyVisible;
+        conductorDroppedItemInstinct = NoellesRolesConfig.HANDLER.instance().conductorDroppedItemInstinct;
+        coronerBodyInstinct = NoellesRolesConfig.HANDLER.instance().coronerBodyInstinct;
+        jesterPsychoCannotAttackKiller = NoellesRolesConfig.HANDLER.instance().jesterPsychoCannotAttackKiller;
         tag.putBoolean("insaneSeesMorphs", this.insaneSeesMorphs);
         tag.putBoolean("naturalVoodoosAllowed", this.naturalVoodoosAllowed);
         tag.putBoolean("masterKeyIsVisible", this.masterKeyIsVisible);
         tag.putInt("masterKeyVisibleCount", this.masterKeyVisibleCount);
+        tag.putBoolean("conductorDroppedItemInstinct", this.conductorDroppedItemInstinct);
+        tag.putBoolean("coronerBodyInstinct", this.coronerBodyInstinct);
+        tag.putBoolean("jesterPsychoCannotAttackKiller", this.jesterPsychoCannotAttackKiller);
     }
 
 
@@ -57,6 +67,9 @@ public class ConfigWorldComponent implements AutoSyncedComponent, ServerTickingC
         if (tag.contains("naturalVoodoosAllowed"))   this.naturalVoodoosAllowed = tag.getBoolean("naturalVoodoosAllowed");
         if (tag.contains("masterKeyIsVisible"))   this.masterKeyIsVisible = tag.getBoolean("masterKeyIsVisible");
         if (tag.contains("masterKeyVisibleCount"))   this.masterKeyVisibleCount = tag.getInt("masterKeyVisibleCount");
+        if (tag.contains("conductorDroppedItemInstinct"))   this.conductorDroppedItemInstinct = tag.getBoolean("conductorDroppedItemInstinct");
+        if (tag.contains("coronerBodyInstinct"))   this.coronerBodyInstinct = tag.getBoolean("coronerBodyInstinct");
+        if (tag.contains("jesterPsychoCannotAttackKiller"))   this.jesterPsychoCannotAttackKiller = tag.getBoolean("jesterPsychoCannotAttackKiller");
     }
 
     @Override
