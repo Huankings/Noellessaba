@@ -126,6 +126,7 @@
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
 - 玩家 / 尸体隐藏、不可选中、不可交互和不可攻击：`TargetVisibilityApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
+- 低心情幻觉手持物：`PsychosisItemApi`；当前由 `client/mood/NoellesPsychosisHandlers` 预留空注册入口，后续职业/词条按 provider 与 priority 接入。
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
 - 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
@@ -237,6 +238,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesHudHandlers.java`：新增普通屏幕 HUD provider 后，在这里调用该职业/词条 HUD 类的 `register()`。
 - `NoellesInventoryButtons.java`：新增背包按钮 provider 后，在这里调用该职业 `*InventoryButtons.register()`。
 - `NoellesInstinctHandlers.java` / `NoellesAppearanceHandlers.java` / `NoellesHeldItemVisibilityHandlers.java`：本能、外观、手持隐藏注册。
+- `client/mood/NoellesPsychosisHandlers.java`：低心情幻觉手持物/手臂姿势 provider 的客户端聚合注册入口。
 - `noellesroles.mixins.json` / `noellesroles.client.mixins.json`：服务端和客户端 mixin 分开注册，环境要正确。
 - `zh_cn.json` / `en_us.json`：职业名、欢迎公告、物品名、tooltip、HUD、actionbar、回放、死亡原因。
 - `assets/noellesroles/models/item/*.json`、`textures/item/*.png`、`textures/gui/sprites/hud/*`：物品模型和 HUD 图标。

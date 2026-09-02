@@ -51,6 +51,7 @@
 - 杰森客户端雾效 provider：`src/client/java/org/agmas/noellesroles/client/roles/jason/JasonAbilityFogHandler.java`
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
 - 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
+- 低心情幻觉手持物预留注册：`src/client/java/org/agmas/noellesroles/client/mood/NoellesPsychosisHandlers.java`
 - 客户端移动表现总引导：`src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`
 - 准心图标注册入口：`src/client/java/org/agmas/noellesroles/client/crosshair/NoellesCrosshairHandlers.java`
 - 职业状态 HUD：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`
@@ -61,6 +62,8 @@
 - 职业背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`
 - 词条背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/*InventoryButtons.java`
 - mixin：`src/main/java/org/agmas/noellesroles/mixin/` 和 `src/client/java/org/agmas/noellesroles/client/mixin/`
+
+NoellesRoles 的职业或词条如果需要让本地观察者脑补目标手持指定/随机物品或手臂姿势，应使用 Wathe 的 `dev.doctor4t.wathe.api.client.mood.PsychosisItemApi`。当前 `NoellesPsychosisHandlers` 仅提供空注册入口，后续按职业/词条拆分 provider，并通过 priority 控制覆盖：高于 Wathe 默认 priority 0 的规则优先，低于或等于 0 的规则只在默认幻觉未处理时生效。该能力仅改变客户端视觉，不改变真实物品、服务端交互或攻击判定；特殊存活授权的 spectator/creative 仍会看到幻觉，普通死亡旁观则由 Wathe 自动清理。
 
 ## 阵营规则
 

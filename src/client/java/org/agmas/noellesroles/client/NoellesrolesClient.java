@@ -81,6 +81,7 @@ import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerState;
 import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.swapper.SwapperPlayerWidget;
 import org.agmas.noellesroles.client.visibility.NoellesHeldItemVisibilityHandlers;
+import org.agmas.noellesroles.client.mood.NoellesPsychosisHandlers;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.packet.role.jason.JasonAbilitySoundS2CPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
@@ -135,6 +136,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         DualPersonalityTimeHud.register();
         DualPersonalityKeybinds.init();
         NoellesHeldItemVisibilityHandlers.register();
+        NoellesPsychosisHandlers.register();
         NoellesInventoryButtons.register();
         ExecutionerMoodHud.register();
         JesterMoodHud.register();
