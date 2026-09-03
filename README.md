@@ -719,3 +719,8 @@ Harpy 开局职业 / 词条分配规则也不是 mixin；同局互斥、绑定�
 - `StarryExpress1.3.2`：更精简的中央注册 + 商店改写模板。
 
 如果你打算继续加职业，建议先顺着这几个模组的写法看一遍，再决定是新建一个大包，还是直接复用现有 `roles/<role>/` 结构。
+
+## Wathe 托盘 API 接入（1.3.3）
+
+托盘效果在 `NoellesRolesTrayEffects` 中实现 `TrayEffectHandler#replayDisplay` 即可复用 Wathe 的通用 `[效果名]` 回放。职业取物限制分别由 `WaiterTrayTakeRules`、`BartenderTrayTakeRules` 和 `CookTrayTakeRules` 注册到 `TrayTakeRegistry`：服务员同类最多 2 份，酒保鸡尾酒和厨师普通食物同类最多 3 份（均为背包+主手总数）。托盘粒子使用 `TrayParticleRegistry.registerProvider` 注册，禁止新增托盘方块实体 mixin。
+客户端粒子由 `client/tray/NoellesRolesTrayParticles` 聚合，具体按职业拆分到 `client/roles/bartender/BartenderTrayParticleHandler`、`client/roles/coward/CowardTrayParticleHandler` 和 `client/roles/bomber/BomberTrayParticleHandler`；`NoellesrolesClient` 只调用聚合入口的 `init()`。

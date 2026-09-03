@@ -39,6 +39,7 @@ import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.NoellesRolesParticles;
 import org.agmas.noellesroles.NoellesRolesSounds;
 import org.agmas.noellesroles.client.particle.StarstruckSparkleParticle;
+import org.agmas.noellesroles.client.tray.NoellesRolesTrayParticles;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceHandlers;
 import org.agmas.noellesroles.client.crosshair.NoellesCrosshairHandlers;
@@ -175,6 +176,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         );
         dev.doctor4t.wathe.api.client.psycho.PsychoModeClientApi.registerBackgroundAmbience(NoellesRolesSounds.AMBIENT_VECNA, 20);
         ParticleFactoryRegistry.getInstance().register(NoellesRolesParticles.STARSTRUCK_SPARKLE, StarstruckSparkleParticle.Provider::new);
+        NoellesRolesTrayParticles.init();
         // 服务员商店图标和可服务物品的客户端外观/提示都在这里统一注册。
         registerItemColors();
         registerItemTooltipsAndModels();

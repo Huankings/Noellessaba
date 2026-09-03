@@ -201,96 +201,6 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
-    public static Text formatDefenseVialUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.defense_vial", actor);
-    }
-
-    @Nullable
-    public static Text formatDelusionVialUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.delusion_vial", actor);
-    }
-
-    @Nullable
-    public static Text formatSedativeUse(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.sedative", actor);
-    }
-
-    @Nullable
-    public static Text formatDefensePlatterTake(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        return Text.translatable("replay.platter_take.noellesroles.defense_vial", actor, ReplayGenerator.formatItemName(event.data(), world));
-    }
-
-    @Nullable
-    public static Text formatDelusionPlatterTake(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        return Text.translatable("replay.platter_take.noellesroles.delusion_vial", actor, ReplayGenerator.formatItemName(event.data(), world));
-    }
-
-    @Nullable
-    public static Text formatSedativePlatterTake(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        return Text.translatable("replay.platter_take.noellesroles.sedative", actor, ReplayGenerator.formatItemName(event.data(), world));
-    }
-
-    @Nullable
-    public static Text formatDefenseConsume(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        Text itemName = ReplayGenerator.formatItemName(event.data(), world);
-        String key = switch (event.data().getString("consume_type")) {
-            case "drink_cocktail" -> "replay.consume.noellesroles.defense_vial.drink_cocktail";
-            case "drink_potion" -> "replay.consume.noellesroles.defense_vial.drink_potion";
-            default -> "replay.consume.noellesroles.defense_vial.eat_food";
-        };
-        return Text.translatable(key, actor, itemName);
-    }
-
-    @Nullable
-    public static Text formatDelusionConsume(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        Text itemName = ReplayGenerator.formatItemName(event.data(), world);
-        String key = switch (event.data().getString("consume_type")) {
-            case "drink_cocktail" -> "replay.consume.noellesroles.delusion_vial.drink_cocktail";
-            case "drink_potion" -> "replay.consume.noellesroles.delusion_vial.drink_potion";
-            default -> "replay.consume.noellesroles.delusion_vial.eat_food";
-        };
-        return Text.translatable(key, actor, itemName);
-    }
-
-    @Nullable
-    public static Text formatSedativeConsume(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        Text itemName = ReplayGenerator.formatItemName(event.data(), world);
-        String key = switch (event.data().getString("consume_type")) {
-            case "drink_cocktail" -> "replay.consume.noellesroles.sedative.drink_cocktail";
-            case "drink_potion" -> "replay.consume.noellesroles.sedative.drink_potion";
-            default -> "replay.consume.noellesroles.sedative.eat_food";
-        };
-        return Text.translatable(key, actor, itemName);
-    }
-
-    @Nullable
     public static Text formatDefenseShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text victim = targetText(event, match);
         if (victim == null) {
@@ -1018,16 +928,6 @@ public final class NoellesRolesReplayFormatters {
     public static Text formatTimedBombTrayEmbedded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.timed_bomb_tray_embedded", actor);
-    }
-
-    @Nullable
-    public static Text formatTimedBombTrayTake(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
-        Text actor = actorText(event, match);
-        if (actor == null) {
-            return null;
-        }
-        Text itemName = ReplayGenerator.formatItemName(event.data(), world);
-        return Text.translatable("replay.platter_take.noellesroles.timed_bomb", actor, itemName);
     }
 
     @Nullable

@@ -4,6 +4,7 @@ import org.agmas.noellesroles.registry.NoellesEventIds;
 
 import dev.doctor4t.wathe.api.tray.TrayEffectHandler;
 import dev.doctor4t.wathe.api.tray.TrayEffectRegistry;
+import dev.doctor4t.wathe.api.tray.TrayEffectReplayInfo;
 import dev.doctor4t.wathe.block_entity.BeveragePlateBlockEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheDataComponentTypes;
@@ -43,6 +44,11 @@ public final class NoellesRolesTrayEffects {
             }
 
             @Override
+            public TrayEffectReplayInfo replayDisplay() {
+                return new TrayEffectReplayInfo("item.noellesroles.defense_vial", "Defense Vial");
+            }
+
+            @Override
             public boolean canApply(BeveragePlateBlockEntity plate, ServerPlayerEntity player, ItemStack heldStack) {
                 return true;
             }
@@ -73,6 +79,11 @@ public final class NoellesRolesTrayEffects {
             }
 
             @Override
+            public TrayEffectReplayInfo replayDisplay() {
+                return new TrayEffectReplayInfo("item.noellesroles.delusion_vial", "Delusion Vial");
+            }
+
+            @Override
             public void applyToTray(BeveragePlateBlockEntity plate, ServerPlayerEntity player, ItemStack heldStack, BlockPos pos) {
                 TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, NoellesEventIds.DELUSION_TRAY_EFFECT, false, false);
             }
@@ -95,6 +106,11 @@ public final class NoellesRolesTrayEffects {
             }
 
             @Override
+            public TrayEffectReplayInfo replayDisplay() {
+                return new TrayEffectReplayInfo("item.noellesroles.sedative", "Sedative");
+            }
+
+            @Override
             public void applyToTray(BeveragePlateBlockEntity plate, ServerPlayerEntity player, ItemStack heldStack, BlockPos pos) {
                 TrayEffectRegistry.applyStandardEffect(player, heldStack, plate, pos, NoellesEventIds.SEDATIVE_TRAY_EFFECT, false, false);
             }
@@ -114,6 +130,11 @@ public final class NoellesRolesTrayEffects {
             @Override
             public net.minecraft.item.Item additiveItem() {
                 return ModItems.TIMED_BOMB;
+            }
+
+            @Override
+            public TrayEffectReplayInfo replayDisplay() {
+                return new TrayEffectReplayInfo("item.noellesroles.timed_bomb", "Timed Bomb");
             }
 
             @Override

@@ -17,10 +17,7 @@ public final class NoellesRolesReplayBootstrap {
     }
 
     public static void register() {
-        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DEFENSE_VIAL), NoellesRolesReplayFormatters::formatDefenseVialUse);
-        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DELUSION_VIAL), NoellesRolesReplayFormatters::formatDelusionVialUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.DELUSION_SYRINGE), NoellesRolesReplayFormatters::formatSyringeInjectionUse);
-        ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.SEDATIVE), NoellesRolesReplayFormatters::formatSedativeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.TIMED_BOMB), NoellesRolesReplayFormatters::formatTimedBombUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_AXE), NoellesRolesReplayFormatters::formatThrowingAxeUse);
         ReplayRegistry.registerItemUseFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.THROWING_PAN), NoellesRolesReplayFormatters::formatThrowingPanUse);
@@ -68,20 +65,8 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.ROBOT_NIGHT_VISION_EVENT, NoellesRolesReplayFormatters::formatRobotNightVision);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.KIDNAPPER_RELEASE_EVENT, NoellesRolesReplayFormatters::formatKidnapperRelease);
 
-        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseVialUse);
-        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.DELUSION_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDelusionVialUse);
-        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.SEDATIVE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatSedativeUse);
-        ReplayRegistry.registerTrayEffectPlacementFormatter(NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombTrayEmbedded);
         ReplayRegistry.registerBedEffectPlacementFormatter(NoellesEventIds.TIMED_BOMB_BED_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombBedEmbedded);
 
-        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefensePlatterTake);
-        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.DELUSION_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDelusionPlatterTake);
-        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.SEDATIVE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatSedativePlatterTake);
-        ReplayRegistry.registerTrayEffectTakeFormatter(NoellesEventIds.TIMED_BOMB_TRAY_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombTrayTake);
-
-        ReplayRegistry.registerTrayEffectConsumeFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseConsume);
-        ReplayRegistry.registerTrayEffectConsumeFormatter(NoellesEventIds.DELUSION_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDelusionConsume);
-        ReplayRegistry.registerTrayEffectConsumeFormatter(NoellesEventIds.SEDATIVE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatSedativeConsume);
 
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.ANGEL_GUARD_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatAngelGuardShieldBlocked);

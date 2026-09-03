@@ -50,7 +50,6 @@
     "roles.spiritualist.SpiritualistPossessedMovementBlockMixin",
     "roles.spiritualist.SpiritualistPossessedClientCommandBlockMixin",
     "roles.spiritualist.PlayerEntityPoseInvoker",
-    "roles.waiter.FoodPlatterWaiterTakeMixin",
     "roles.cook.CookFinishEatMixin",
     "roles.physician.PhysicianTipPoisonMixin",
     "modifiers.allergic.AllergicFinishUsingMixin",

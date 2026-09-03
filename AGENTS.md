@@ -487,3 +487,8 @@ HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`�
 ```
 
 如果是修 bug，写“请按 AGENTS.md 先定位相关源码，再修复：现象、复现步骤、期望结果、是否只改 NoellesRoles、编译要求”即可。
+
+## 托盘接口更新（Wathe 1.3.3）
+
+托盘效果实现 `TrayEffectHandler#replayDisplay` 后即可使用 Wathe 的通用白色 `[效果名]` 回放，不再注册专用 tray placement/take/consume formatter。取物数量通过 `TrayTakeRegistry` 注册：服务员最多 2 份，酒保鸡尾酒与厨师普通食物最多 3 份，均按背包加主手同类总数计算。托盘粒子必须使用 `TrayParticleRegistry.registerProvider`，不要再新增 `BeveragePlateBlockEntity` 或 `FoodPlatterBlock` mixin。
+客户端粒子由 `client/tray/NoellesRolesTrayParticles` 聚合，具体实现按职业放在 `client/roles/bartender`、`client/roles/coward`、`client/roles/bomber` 的独立 handler 中；新增效果应放入对应职业类，`NoellesrolesClient` 只负责调用聚合入口 `init()`。

@@ -8,7 +8,6 @@
     "roles.coward.CowardFovMixin",
     "roles.coward.CowardCameraMixin",
     "roles.coward.CowardRevolverTargetMixin",
-    "roles.coward.SedativeTrayViewMixin",
     "modifiers.chameleon.ChameleonCapeMixin",
     "modifiers.chameleon.ChameleonShadowMixin",
     "modifiers.chameleon.ChameleonSkinArmMixin",
@@ -48,7 +47,6 @@
     "roles.engineer.StunnedMinecraftMixin",
     "roles.engineer.StunnedKeyboardMixin",
     "roles.bomber.TimedBombBedViewMixin",
-    "roles.bomber.TimedBombTrayViewMixin",
     "roles.timekeeper.TimekeeperKeyBindingAccessor",
     "roles.timekeeper.TimekeeperRewindKeyBindingMixin",
     "roles.timekeeper.TimekeeperRewindMouseMixin",
@@ -87,7 +85,6 @@
     "requireAnnotations": true
   },
   "mixins": [
-    "roles.bartender.DefenseVialViewMixin",
     "roles.rememberer.SniperRifleScopeFovMixin",
     "roles.rememberer.SniperRifleLookInertiaMixin",
     "roles.rememberer.SniperRifleArmPoseMixin",
