@@ -102,7 +102,6 @@ public final class BountyHunterGunHandler {
              * 真正发放赏金金币不在这里做，而是在 BountyHunterDeathHandler 里监听任意击杀来源，
              * 避免只有赏金手枪击杀才有奖励。
              */
-            bountyHunter.setBountyPistolCooldownTotalTicks(BountyHunterConstants.BOUNTY_PISTOL_TARGET_COOLDOWN_TICKS);
             context.applyCooldown(BountyHunterConstants.BOUNTY_PISTOL_TARGET_COOLDOWN_TICKS);
             return;
         }
@@ -111,7 +110,6 @@ public final class BountyHunterGunHandler {
          * 未命中、护盾挡住或击杀非悬赏目标都使用失败冷却。
          * 只有“确实击杀非悬赏目标”才吞掉赏金手枪，避免空枪也丢武器。
          */
-        bountyHunter.setBountyPistolCooldownTotalTicks(BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS);
         context.applyCooldown(BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS);
         if (outcome.killed()) {
             player.getInventory().remove(itemStack -> itemStack.isOf(ModItems.BOUNTY_PISTOL), 1, player.getInventory());

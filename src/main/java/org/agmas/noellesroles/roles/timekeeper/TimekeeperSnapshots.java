@@ -44,7 +44,6 @@ import org.agmas.noellesroles.roles.noisemaker.NoisemakerGlowTargetComponent;
 import org.agmas.noellesroles.roles.noisemaker.NoisemakerPlayerComponent;
 import org.agmas.noellesroles.roles.angel.AngelPlayerComponent;
 import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
-import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
 import org.agmas.noellesroles.roles.avaricious.AvariciousPayoutComponent;
 import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
@@ -61,7 +60,6 @@ import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.dreamer.DreamerComponent;
 import org.agmas.noellesroles.roles.dreamer.DreamerKillerComponent;
-import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.executioner.ExecutionerPlayerComponent;
@@ -87,14 +85,12 @@ import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
 import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
-import org.agmas.noellesroles.roles.robber.RobberPlayerComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
 import org.agmas.noellesroles.roles.starstruck.StarstruckPlayerComponent;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
-import org.agmas.noellesroles.roles.spring_trap.SpringTrapPlayerComponent;
 import org.agmas.noellesroles.roles.voodoo.VoodooPlayerComponent;
 import org.agmas.noellesroles.roles.vulture.VulturePlayerComponent;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
@@ -162,9 +158,7 @@ public final class TimekeeperSnapshots {
             component("noellesroles:stalker", StalkerPlayerComponent.KEY),
             component("noellesroles:bomber", BomberPlayerComponent.KEY),
             component("noellesroles:bounty_hunter", BountyHunterPlayerComponent.KEY),
-            component("noellesroles:robber", RobberPlayerComponent.KEY),
             component("noellesroles:engineer", EngineerPlayerComponent.KEY),
-            component("noellesroles:assassin", AssassinPlayerComponent.KEY),
             component("noellesroles:winder", WinderPlayerComponent.KEY),
             component("noellesroles:wind_mark", WindMarkPlayerComponent.KEY),
             component("noellesroles:operator", OperatorPlayerComponent.KEY),
@@ -184,7 +178,6 @@ public final class TimekeeperSnapshots {
             component("noellesroles:starstruck", StarstruckPlayerComponent.KEY),
             component("noellesroles:silence", SilencePlayerComponent.KEY),
             component("noellesroles:hunter", HunterPlayerComponent.KEY),
-            component("noellesroles:drugmaker", DrugmakerPlayerComponent.KEY),
             component("noellesroles:kidnapper", KidnapperComponent.KEY),
             component("noellesroles:robot", RobotPlayerComponent.KEY),
             component("noellesroles:allergic", AllergicPlayerComponent.KEY),
@@ -194,11 +187,6 @@ public final class TimekeeperSnapshots {
              * 30 秒前如果还没躺尸，回溯后就应该站起来；30 秒前如果已经躺尸，回溯后也应恢复该伪装。
              */
             component("noellesroles:insane_damned_paranoid_killer", InsaneDamnedKillerPlayerComponent.KEY),
-            /*
-             * 血斧开局冷却来源会影响客户端 tooltip 对剩余秒数的换算。
-             * 物品冷却本身已经被时停者快照保存，这里同步保存来源标记，避免回溯后显示 30/45 秒总长错位。
-             */
-            component("noellesroles:spring_trap", SpringTrapPlayerComponent.KEY),
             /*
              * 杰森的倒地次数、失血/救治进度、汽油标记都属于局内运行态。
              * 回溯到命中前时必须清掉倒地/汽油；回溯到倒地中时也必须恢复暂停倒计时的状态。

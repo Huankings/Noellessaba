@@ -4,12 +4,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -21,8 +17,6 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
  * 时停者的濒毁怀表。
  *
@@ -31,22 +25,8 @@ import java.util.List;
  * 精致怀表和损坏怀表只是同一件物品的不同运行态。</p>
  */
 public class TimekeeperWatchItem extends Item {
-    private static CooldownTooltipProvider cooldownTooltipProvider = null;
-
     public TimekeeperWatchItem(Settings settings) {
         super(settings);
-    }
-
-    /**
-     * 注册客户端冷却文本提供器。
-     *
-     * <p>{@link #appendTooltip(ItemStack, TooltipContext, List, TooltipType)} 位于 main 源集，
-     * 这份类会同时被服务端加载，因此这里不能直接引用 {@code MinecraftClient}。
-     * 客户端启动时会把“读取本地玩家时停者组件”的逻辑塞进这个 provider，
-     * 服务端或主菜单等没有本地玩家的场景则自然走就绪兜底。</p>
-     */
-    public static void setCooldownTooltipProvider(CooldownTooltipProvider provider) {
-        cooldownTooltipProvider = provider;
     }
 
     public static @NotNull ItemStack createStack(TimekeeperWatchState state) {
@@ -139,47 +119,4 @@ public class TimekeeperWatchItem extends Item {
         return UseAction.BOW;
     }
 
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        TimekeeperWatchState state = getState(stack);
-        TimekeeperWatchMode mode = getMode(stack);
-        Style roleStyle = Style.EMPTY.withColor(TextColor.fromRgb(TimekeeperConstants.ROLE_COLOR));
-
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.state", state.text()).setStyle(roleStyle));
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.mode", mode.text()).setStyle(roleStyle));
-        MutableText cost = Text.translatable("item.noellesroles.dying_watch.tooltip.cost", mode.getTimeCost())
-                .setStyle(roleStyle)
-                .append(Text.literal("§f" + TimekeeperConstants.TIME_CURRENCY_ICON + "§r"));
-        tooltip.add(cost);
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown", getCooldownStatusText(stack, mode)).setStyle(roleStyle));
-        tooltip.add(Text.empty());
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.description").setStyle(roleStyle));
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.item_accelerate").setStyle(roleStyle));
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.ability_accelerate").setStyle(roleStyle));
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.rewind").setStyle(roleStyle));
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.breaks").setStyle(roleStyle));
-        tooltip.add(Text.translatable("item.noellesroles.dying_watch.tooltip.elegant").setStyle(roleStyle));
-    }
-
-    private static Text getCooldownStatusText(ItemStack stack, TimekeeperWatchMode mode) {
-        CooldownTooltipProvider provider = cooldownTooltipProvider;
-        if (provider != null) {
-            Text provided = provider.getCooldownStatus(stack, mode);
-            if (provided != null) {
-                return provided;
-            }
-        }
-        return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.ready");
-    }
-
-    @FunctionalInterface
-    public interface CooldownTooltipProvider {
-        /**
-         * 返回当前怀表模式对应的冷却展示文本。
-         *
-         * <p>这里传入物品栈和模式，是为了后续如果要按怀表状态、模式或物品组件展示不同格式，
-         * 不需要再改公共物品类的调用入口。</p>
-         */
-        Text getCooldownStatus(ItemStack stack, TimekeeperWatchMode mode);
-    }
 }

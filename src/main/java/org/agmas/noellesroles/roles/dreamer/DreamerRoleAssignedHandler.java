@@ -25,11 +25,9 @@ public final class DreamerRoleAssignedHandler {
         dreamerProgress.setDreamerRequired();
         /*
          * 幻觉注剂是梦者开局自带的可重复使用道具。
-         * 真实冷却写入 ItemCooldownManager，来源标记单独写入梦者组件，
-         * 这样客户端 tooltip 能把开局 30 秒和普通注射后的 45 秒区分开。
+         * 真实冷却写入 ItemCooldownManager；Wathe tooltip API 会直接读取该条目的准确剩余 tick。
          */
         player.giveItemStack(new ItemStack(ModItems.DELUSION_SYRINGE));
-        dreamerProgress.startDelusionSyringeRoundCooldown();
         player.getItemCooldownManager().set(
                 ModItems.DELUSION_SYRINGE,
                 DreamerConstants.DELUSION_SYRINGE_START_COOLDOWN_TICKS

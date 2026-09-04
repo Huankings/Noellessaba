@@ -26,12 +26,14 @@ public final class RobberRoleAssignedHandler {
             return;
         }
 
-        RobberPlayerComponent robberComponent = RobberPlayerComponent.KEY.get(player);
-        robberComponent.reset();
-        robberComponent.startRoundCooldowns();
-
-        player.getItemCooldownManager().set(ModItems.THROWING_AXE, RobberPlayerComponent.ROBBER_START_COOLDOWN_TICKS);
-        player.getItemCooldownManager().set(ModItems.ROBBER_PISTOL, RobberPlayerComponent.ROBBER_START_COOLDOWN_TICKS);
+        /*
+         * 先移除中途转职前可能残留的旧冷却，再写入本职业开局冷却。
+         * tooltip 直接读取这里建立的真实条目，不再需要额外的强盗玩家组件同步来源。
+         */
+        player.getItemCooldownManager().remove(ModItems.THROWING_AXE);
+        player.getItemCooldownManager().remove(ModItems.ROBBER_PISTOL);
+        player.getItemCooldownManager().set(ModItems.THROWING_AXE, RobberConstants.START_COOLDOWN_TICKS);
+        player.getItemCooldownManager().set(ModItems.ROBBER_PISTOL, RobberConstants.START_COOLDOWN_TICKS);
         player.giveItemStack(ModItems.ROBBER_PISTOL.getDefaultStack());
         player.giveItemStack(WatheItems.CROWBAR.getDefaultStack());
     }

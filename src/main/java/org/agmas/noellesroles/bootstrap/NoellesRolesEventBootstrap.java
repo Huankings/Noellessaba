@@ -172,7 +172,9 @@ public final class NoellesRolesEventBootstrap {
             StarstruckPlayerComponent.KEY.get(playerEntity).reset();
             SilencePlayerComponent.KEY.get(playerEntity).reset();
             HunterPlayerComponent.KEY.get(playerEntity).reset();
-            org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent.KEY.get(playerEntity).reset();
+            /* 制毒师没有额外冷却来源组件；回合重置只清真实物品冷却。 */
+            playerEntity.getItemCooldownManager().remove(ModItems.BLOWGUN);
+            playerEntity.getItemCooldownManager().remove(ModItems.POISON_INJECTOR);
             KidnapperComponent.KEY.get(playerEntity).resetAll();
             RobotPlayerComponent.KEY.get(playerEntity).reset();
             TimekeeperPlayerComponent.KEY.get(playerEntity).reset();

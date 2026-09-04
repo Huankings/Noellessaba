@@ -54,6 +54,7 @@
 - 低心情幻觉手持物预留注册：`src/client/java/org/agmas/noellesroles/client/mood/NoellesPsychosisHandlers.java`
 - 客户端移动表现总引导：`src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`
 - 准心图标注册入口：`src/client/java/org/agmas/noellesroles/client/crosshair/NoellesCrosshairHandlers.java`
+- 物品描述与冷却注册：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java` 中的 `registerItemTooltipsAndModels()`，接入 Wathe `ItemTooltipApi`
 - 职业状态 HUD：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`
 - 职业准心图标：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`
 - 词条固定 HUD：`src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/*Hud.java`
@@ -64,6 +65,23 @@
 - mixin：`src/main/java/org/agmas/noellesroles/mixin/` 和 `src/client/java/org/agmas/noellesroles/client/mixin/`
 
 NoellesRoles 的职业或词条如果需要让本地观察者脑补目标手持指定/随机物品或手臂姿势，应使用 Wathe 的 `dev.doctor4t.wathe.api.client.mood.PsychosisItemApi`。当前 `NoellesPsychosisHandlers` 仅提供空注册入口，后续按职业/词条拆分 provider，并通过 priority 控制覆盖：高于 Wathe 默认 priority 0 的规则优先，低于或等于 0 的规则只在默认幻觉未处理时生效。该能力仅改变客户端视觉，不改变真实物品、服务端交互或攻击判定；特殊存活授权的 spectator/creative 仍会看到幻觉，普通死亡旁观则由 Wathe 自动清理。
+
+## 物品描述与冷却 Tooltip
+
+NoellesRoles 的普通物品已经统一接入 Wathe
+`dev.doctor4t.wathe.api.client.tooltip.ItemTooltipApi`。`NoellesrolesClient#registerItemTooltipsAndModels()`
+使用 `registerItems(...)` 批量登记物品；API 自动读取 `item.noellesroles.<path>.tooltip`，保留翻译中的
+`\n` 多行说明，并在存在原版物品冷却时添加标准红色读秒。
+
+读秒取当前客户端冷却条目的 `endTick - tick`，不再用 `GameConstants.ITEM_COOLDOWNS` 中的默认总时长
+乘 `getCooldownProgress()`。因此赏金手枪的 30/15/45 秒、狙击枪的 30/2/4 秒、职业开局冷却、
+`GunShotApi` 修正和猎刀临时冷却都会按本次真实时长显示。默认冷却表仍用于服务端施加玩法冷却，不能
+删除，但不得再用它推算 tooltip。
+
+疯魔法杖攻击速度和时停者怀表使用 `ItemTooltipApi.registerAppender(...)`：前者追加动态数值，后者
+因为三种模式冷却不走原版 `ItemCooldownManager`，才读取 `TimekeeperPlayerComponent`。不要重新创建
+`NoellesRolesItemToolTip`、扩展自己的全局 `ItemTooltipCallback`，也不要为了区分冷却来源恢复已经删除的
+强盗、刺客、制毒师、弹簧陷阱 tooltip 组件或在其他职业组件中增加 `*CooldownSource` 字段。
 
 ## 阵营规则
 
@@ -641,6 +659,9 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 - 物品贴图放 `src/main/resources/assets/noellesroles/textures/item/`
 - 物品模型放 `src/main/resources/assets/noellesroles/models/item/`
 - 文本放 `src/main/resources/assets/noellesroles/lang/`
+
+在客户端 `registerItemTooltipsAndModels()` 中用 `ItemTooltipApi.registerItem(...)` 注册物品描述；不要新增
+扩展自己的 tooltip callback。只有物品需要额外动态行时才注册 appender。
 
 如果你要让物品有默认冷却，记得在 `ModItems.init()` 里补 `GameConstants.ITEM_COOLDOWNS.put(...)`。
 

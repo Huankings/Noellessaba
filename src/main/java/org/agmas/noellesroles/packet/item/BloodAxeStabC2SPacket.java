@@ -20,7 +20,6 @@ import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
-import org.agmas.noellesroles.roles.spring_trap.SpringTrapPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -65,7 +64,6 @@ public record BloodAxeStabC2SPacket(int target) implements CustomPayload {
                     MagicianServerHooks.getWeaponName(stack)
             )) {
                 player.swingHand(Hand.MAIN_HAND, true);
-                SpringTrapPlayerComponent.KEY.get(player).clearBloodAxeStartCooldown();
                 player.getItemCooldownManager().set(ModItems.BLOOD_AXE, SpringTrapConstants.BLOOD_AXE_COOLDOWN_TICKS);
                 return;
             }
@@ -87,7 +85,6 @@ public record BloodAxeStabC2SPacket(int target) implements CustomPayload {
             player.getWorld().playSound(null, target.getX(), target.getEyeY(), target.getZ(), WatheSounds.ITEM_KNIFE_STAB, SoundCategory.PLAYERS, 1.0F, 1.0F);
             player.swingHand(Hand.MAIN_HAND, true);
             if (!player.isCreative()) {
-                SpringTrapPlayerComponent.KEY.get(player).clearBloodAxeStartCooldown();
                 player.getItemCooldownManager().set(ModItems.BLOOD_AXE, SpringTrapConstants.BLOOD_AXE_COOLDOWN_TICKS);
             }
         }

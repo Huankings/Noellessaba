@@ -67,7 +67,7 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(ROBBER_PISTOL, GameConstants.getInTicks(0, 35));
         /*
          * 赏金手枪有 30 秒开局冷却、15 秒目标击杀冷却、45 秒失败/非目标冷却三种来源。
-         * 这里登记最长的失败冷却作为默认值，客户端 tooltip 会按组件同步的来源动态修正。
+         * 这里登记最长的失败冷却作为服务端默认值；客户端 tooltip 直接读取每次实际写入的冷却条目。
          */
         GameConstants.ITEM_COOLDOWNS.put(BOUNTY_PISTOL, BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(BOUNTY_DERRINGER, BountyHunterConstants.BOUNTY_DERRINGER_COOLDOWN_TICKS);

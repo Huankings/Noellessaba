@@ -36,7 +36,6 @@ import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
-import org.agmas.noellesroles.roles.drugmaker.DrugmakerPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -194,14 +193,6 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
                     ModItems.KNOCKOUT_DRUG,
                     ModItems.TAPE
             );
-            /*
-             * 这三件迁移物品存在“开局 30 秒 / 普通 45 秒”两种冷却来源。
-             * 黑客提前刷新武器冷却后，如果不把来源标记一起清掉，
-             * 玩家立刻使用道具写入的 45 秒普通冷却会继续被 tooltip 误按 30 秒显示。
-             */
-            DrugmakerPlayerComponent.KEY.get(serverPlayer).clearStartCooldowns();
-            KidnapperComponent.KEY.get(serverPlayer).clearKnockoutDrugStartCooldown();
-
             if (FabricLoader.getInstance().isModLoaded("harpysimpleroles")) {
                 clearCooldowns(serverPlayer,
                         Registries.ITEM.get(Identifier.of("harpysimpleroles", "toxin")),

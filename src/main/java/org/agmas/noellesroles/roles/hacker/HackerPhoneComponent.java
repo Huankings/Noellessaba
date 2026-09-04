@@ -4,7 +4,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.client.util.WatheItemTooltips;
+import dev.doctor4t.wathe.api.client.tooltip.ItemTooltipApi;
 import dev.doctor4t.wathe.compat.TrainVoicePlugin;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -66,7 +66,7 @@ public class HackerPhoneComponent implements AutoSyncedComponent, ServerTickingC
     public ItemStack createPhoneStack() {
         ItemStack stack = ModItems.PHONE.getDefaultStack();
         Text tooltipText = Text.translatable("item.noellesroles.phone.tooltip")
-                .setStyle(Style.EMPTY.withColor(WatheItemTooltips.REGULAR_TOOLTIP_COLOR).withItalic(false));
+                .setStyle(Style.EMPTY.withColor(ItemTooltipApi.REGULAR_TOOLTIP_COLOR).withItalic(false));
         List<Text> loreLines = new ArrayList<>();
         loreLines.add(tooltipText);
         stack.set(DataComponentTypes.LORE, new LoreComponent(loreLines));

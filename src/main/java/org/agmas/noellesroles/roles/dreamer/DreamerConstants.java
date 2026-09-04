@@ -43,7 +43,7 @@ public final class DreamerConstants {
      * 梦者开局拿到幻觉注剂时的初始冷却。
      *
      * <p>它和普通注射冷却的实际时长不同，因此还需要由 DreamerKillerComponent
-     * 同步“当前冷却来源”给客户端，供 tooltip 正确显示 30 秒。</p>
+     * 实际冷却条目会同步到客户端，Wathe tooltip API 可直接显示正确的 30 秒。</p>
      */
     public static final int DELUSION_SYRINGE_START_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);
 

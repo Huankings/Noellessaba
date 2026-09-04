@@ -92,9 +92,8 @@ public record DelusionSyringeC2SPacket(int target) implements CustomPayload {
             if (!ignoresCooldown) {
                 /*
                  * 只有正式成功注射才进入 45 秒冷却。
-                 * 开局 30 秒来源标记在写入普通冷却前清除，避免 tooltip 继续按 30 秒换算。
+                 * 直接覆盖为普通使用冷却；Wathe tooltip API 会读取这次新写入的真实时长。
                  */
-                DreamerKillerComponent.KEY.get(player).clearDelusionSyringeStartCooldown();
                 player.getItemCooldownManager().set(
                         ModItems.DELUSION_SYRINGE,
                         DreamerConstants.DELUSION_SYRINGE_COOLDOWN_TICKS

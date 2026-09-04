@@ -7,7 +7,6 @@ import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
@@ -42,7 +41,6 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
     private final PlayerEntity player;
     public UUID controllerUUID = null;
     public int controlTicks = 0;
-    private int knockoutDrugStartCooldownTicks = 0;
 
     public KidnapperComponent(@NotNull PlayerEntity player) {
         this.player = player;
@@ -50,8 +48,6 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
 
     @Override
     public void serverTick() {
-        this.tickKnockoutDrugStartCooldown();
-
         if (this.controlTicks <= 0) {
             return;
         }
@@ -82,49 +78,6 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
     private void resetWhenOutOfGame() {
         if (GameWorldComponent.KEY.get(this.player.getWorld()).getRole(this.player) == null) {
             this.resetAll();
-        }
-    }
-
-    /**
-     * 绑匪开局迷药是 30 秒初始冷却，普通使用后是 45 秒冷却。
-     * 这里单独保存来源标记，让客户端 tooltip 可以按真正的 30 秒总长显示开局倒计时。
-     */
-    public void startRoundCooldowns() {
-        this.knockoutDrugStartCooldownTicks = KidnapperConstants.START_COOLDOWN_TICKS;
-        this.sync();
-    }
-
-    /**
-     * 提供给 tooltip 使用，判断迷药当前是否仍处于“开局 30 秒冷却”阶段。
-     */
-    public boolean isUsingStartCooldown(@NotNull Item item) {
-        return item == ModItems.KNOCKOUT_DRUG && this.knockoutDrugStartCooldownTicks > 0;
-    }
-
-    /**
-     * 外部效果提前清掉迷药冷却时，也要清掉来源标记，避免后续 45 秒普通冷却被误显示成 30 秒。
-     */
-    public void clearKnockoutDrugStartCooldown() {
-        if (this.knockoutDrugStartCooldownTicks <= 0) {
-            return;
-        }
-
-        this.knockoutDrugStartCooldownTicks = 0;
-        this.sync();
-    }
-
-    private void tickKnockoutDrugStartCooldown() {
-        if (this.knockoutDrugStartCooldownTicks <= 0) {
-            return;
-        }
-
-        this.knockoutDrugStartCooldownTicks--;
-        if (this.knockoutDrugStartCooldownTicks == 0) {
-            /*
-             * 来源标记只需要在消失边界同步一次。
-             * controlTicks 的黑屏倒计时仍在下面原有逻辑里每 tick 同步，不混在这里。
-             */
-            this.sync();
         }
     }
 
@@ -238,14 +191,13 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
     }
 
     /**
-     * 回合重置或重新分配绑匪身份时，才清掉迷药开局冷却状态。
+     * 回合重置或重新分配绑匪身份时，清掉控制状态与迷药的实际冷却。
      *
      * <p>普通劫持结束只应该清 controlTicks，不应该顺手移除目标玩家身上的迷药冷却；
      * 因为目标自己也可能是绑匪，释放控制时误清冷却会破坏职业物品节奏。</p>
      */
     public void resetAll() {
         this.resetControlState();
-        this.knockoutDrugStartCooldownTicks = 0;
         this.player.getItemCooldownManager().remove(ModItems.KNOCKOUT_DRUG);
         this.sync();
     }
@@ -262,7 +214,6 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
     @Override
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.@NotNull WrapperLookup registryLookup) {
         tag.putInt("controlTicks", this.controlTicks);
-        tag.putInt("knockoutDrugStartCooldownTicks", this.knockoutDrugStartCooldownTicks);
         if (this.controllerUUID != null) {
             tag.putUuid("controllerUUID", this.controllerUUID);
         }
@@ -271,9 +222,6 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
     @Override
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.@NotNull WrapperLookup registryLookup) {
         this.controlTicks = tag.contains("controlTicks") ? tag.getInt("controlTicks") : 0;
-        this.knockoutDrugStartCooldownTicks = tag.contains("knockoutDrugStartCooldownTicks")
-                ? tag.getInt("knockoutDrugStartCooldownTicks")
-                : 0;
         this.controllerUUID = tag.contains("controllerUUID") ? tag.getUuid("controllerUUID") : null;
     }
 
@@ -284,14 +232,12 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
             buf.writeUuid(this.controllerUUID);
         }
         buf.writeInt(this.controlTicks);
-        buf.writeBoolean(this.knockoutDrugStartCooldownTicks > 0);
     }
 
     @Override
     public void applySyncPacket(RegistryByteBuf buf) {
         this.controllerUUID = buf.readBoolean() ? buf.readUuid() : null;
         this.controlTicks = buf.readInt();
-        this.knockoutDrugStartCooldownTicks = buf.readBoolean() ? 1 : 0;
     }
 
     @Override

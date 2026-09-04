@@ -25,8 +25,6 @@ public final class HunterRoleAssignedHandler {
          */
         HunterPlayerComponent hunterComponent = HunterPlayerComponent.KEY.get(player);
         hunterComponent.reset();
-        hunterComponent.startRoundCooldowns();
-
         player.getItemCooldownManager().set(ModItems.HUNTING_KNIFE, HunterConstants.HUNTING_KNIFE_START_COOLDOWN_TICKS);
     }
 }

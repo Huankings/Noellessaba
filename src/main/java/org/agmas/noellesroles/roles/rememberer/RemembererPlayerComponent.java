@@ -19,13 +19,8 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 /**
  * 追忆者组件。
  *
- * <p>它主要负责两件事：</p>
- * <p>1. 记住“追忆技能当前是否仍处于开局 30 秒冷却”，供客户端准心进度条判断总时长；</p>
- * <p>2. 管理狙击枪的三种冷却来源：开局冷却、部署冷却、开火冷却。</p>
- *
- * <p>之所以不只依赖 ItemCooldownManager，是因为客户端 tooltip / HUD 只能拿到“还剩多少比例”，
- * 但用户要求部署 2 秒、开局 30 秒、开火 4 秒都要能区分开来。
- * 所以这里额外同步一个“当前冷却来源”的轻量状态给客户端。</p>
+ * <p>它负责追忆技能开局状态，以及狙击枪开局、部署、开火三段会互相覆盖的服务端玩法计时。
+ * tooltip 不再依赖这里的来源枚举，而是直接读取每次写入 ItemCooldownManager 的真实条目。</p>
  */
 public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTickingComponent {
 
@@ -34,17 +29,11 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
             RemembererPlayerComponent.class
     );
 
-    public static final byte SNIPER_COOLDOWN_NONE = 0;
-    public static final byte SNIPER_COOLDOWN_START = 1;
-    public static final byte SNIPER_COOLDOWN_DEPLOY = 2;
-    public static final byte SNIPER_COOLDOWN_SHOT = 3;
-
     private final PlayerEntity player;
     private int abilityStartCooldownTicks = 0;
     private int sniperStartCooldownTicks = 0;
     private int sniperDeployCooldownTicks = 0;
     private int sniperShotCooldownTicks = 0;
-    private byte sniperCooldownSource = SNIPER_COOLDOWN_NONE;
     private int lastSelectedSniperSlot = -1;
 
     public RemembererPlayerComponent(PlayerEntity player) {
@@ -65,13 +54,12 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         this.sniperStartCooldownTicks = RemembererConstants.SNIPER_START_COOLDOWN_TICKS;
         this.sniperDeployCooldownTicks = 0;
         this.sniperShotCooldownTicks = 0;
-        this.sniperCooldownSource = SNIPER_COOLDOWN_START;
         this.lastSelectedSniperSlot = -1;
         sync();
     }
 
     /**
-     * 追忆技能一旦真正成功发动，就不再处于“开局冷却来源”。
+     * 追忆技能一旦真正成功发动，就清除能力自己的开局限制。
      */
     public void clearAbilityStartCooldown() {
         if (this.abilityStartCooldownTicks <= 0) {
@@ -87,28 +75,11 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
     public void startSniperShotCooldown() {
         this.sniperShotCooldownTicks = RemembererConstants.SNIPER_SHOT_COOLDOWN_TICKS;
         this.sniperDeployCooldownTicks = 0;
-        this.sniperCooldownSource = SNIPER_COOLDOWN_SHOT;
         sync();
     }
 
     public boolean isUsingAbilityStartCooldown() {
         return this.abilityStartCooldownTicks > 0;
-    }
-
-    public byte getSniperCooldownSource() {
-        return this.sniperCooldownSource;
-    }
-
-    /**
-     * 当前客户端应该把这次狙击枪冷却视作哪一种总时长。
-     */
-    public int getDisplayedSniperCooldownTotalTicks() {
-        return switch (this.sniperCooldownSource) {
-            case SNIPER_COOLDOWN_START -> RemembererConstants.SNIPER_START_COOLDOWN_TICKS;
-            case SNIPER_COOLDOWN_DEPLOY -> RemembererConstants.SNIPER_DEPLOY_COOLDOWN_TICKS;
-            case SNIPER_COOLDOWN_SHOT -> RemembererConstants.SNIPER_SHOT_COOLDOWN_TICKS;
-            default -> 0;
-        };
     }
 
     /**
@@ -119,7 +90,6 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         this.sniperStartCooldownTicks = 0;
         this.sniperDeployCooldownTicks = 0;
         this.sniperShotCooldownTicks = 0;
-        this.sniperCooldownSource = SNIPER_COOLDOWN_NONE;
         this.lastSelectedSniperSlot = -1;
         this.player.getItemCooldownManager().remove(ModItems.SNIPER_RIFLE);
         sync();
@@ -141,7 +111,6 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         }
 
         boolean changed = updateSniperSelectionState(serverPlayer, selectedSlot);
-        changed |= refreshSniperCooldownSource();
         if (changed) {
             sync();
         }
@@ -174,21 +143,21 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
 
         if (this.sniperStartCooldownTicks > 0) {
             this.sniperStartCooldownTicks--;
-            if (this.sniperStartCooldownTicks == 0 && this.sniperCooldownSource == SNIPER_COOLDOWN_START) {
+            if (this.sniperStartCooldownTicks == 0) {
                 changed = true;
             }
         }
 
         if (this.sniperShotCooldownTicks > 0) {
             this.sniperShotCooldownTicks--;
-            if (this.sniperShotCooldownTicks == 0 && this.sniperCooldownSource == SNIPER_COOLDOWN_SHOT) {
+            if (this.sniperShotCooldownTicks == 0) {
                 changed = true;
             }
         }
 
         if (this.sniperDeployCooldownTicks > 0) {
             this.sniperDeployCooldownTicks--;
-            if (this.sniperDeployCooldownTicks == 0 && this.sniperCooldownSource == SNIPER_COOLDOWN_DEPLOY) {
+            if (this.sniperDeployCooldownTicks == 0) {
                 changed = true;
             }
         }
@@ -196,8 +165,6 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             changed |= updateSniperSelectionState(serverPlayer, serverPlayer.getInventory().selectedSlot);
         }
-        changed |= refreshSniperCooldownSource();
-
         if (changed) {
             sync();
         }
@@ -208,7 +175,7 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
      *
      * <p>这里刻意把“切到狙击枪这一瞬间”的逻辑统一放在组件里做，
      * 这样：</p>
-     * <p>1. 服务端真正禁止使用的时机和客户端 tooltip/准心来源保持一致；</p>
+     * <p>1. 服务端真正禁止使用的时机和客户端冷却条目保持一致；</p>
      * <p>2. 开火冷却如果还长于部署冷却，就继续保留更长那段；</p>
      * <p>3. 开火冷却如果已经比部署更短，重新切回时则会按用户要求重新走部署 2 秒。</p>
      */
@@ -251,7 +218,7 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         }
 
         this.lastSelectedSniperSlot = selectedSlot;
-        int selectionCooldown = applySelectionCooldownSource();
+        int selectionCooldown = applySelectionCooldown();
         if (selectionCooldown > 0) {
             serverPlayer.getItemCooldownManager().set(ModItems.SNIPER_RIFLE, selectionCooldown);
         }
@@ -259,38 +226,17 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
     }
 
     /**
-     * 根据“重新切到狙击枪这一刻”剩余的冷却长度，选择本次真正应该生效的来源。
+     * 根据“重新切到狙击枪这一刻”剩余的冷却长度，选择本次真正应该写入的时长。
      */
-    private int applySelectionCooldownSource() {
+    private int applySelectionCooldown() {
         int persistentCooldown = Math.max(this.sniperStartCooldownTicks, this.sniperShotCooldownTicks);
         if (persistentCooldown > RemembererConstants.SNIPER_DEPLOY_COOLDOWN_TICKS) {
             this.sniperDeployCooldownTicks = 0;
-            this.sniperCooldownSource = this.sniperStartCooldownTicks >= this.sniperShotCooldownTicks
-                    ? SNIPER_COOLDOWN_START
-                    : SNIPER_COOLDOWN_SHOT;
             return persistentCooldown;
         }
 
         this.sniperDeployCooldownTicks = RemembererConstants.SNIPER_DEPLOY_COOLDOWN_TICKS;
-        this.sniperCooldownSource = SNIPER_COOLDOWN_DEPLOY;
         return this.sniperDeployCooldownTicks;
-    }
-
-    /**
-     * 当倒计时自然结束后，刷新给客户端看的“当前冷却来源”。
-     */
-    private boolean refreshSniperCooldownSource() {
-        byte oldSource = this.sniperCooldownSource;
-
-        if (this.sniperCooldownSource == SNIPER_COOLDOWN_START && this.sniperStartCooldownTicks <= 0) {
-            this.sniperCooldownSource = SNIPER_COOLDOWN_NONE;
-        } else if (this.sniperCooldownSource == SNIPER_COOLDOWN_SHOT && this.sniperShotCooldownTicks <= 0) {
-            this.sniperCooldownSource = SNIPER_COOLDOWN_NONE;
-        } else if (this.sniperCooldownSource == SNIPER_COOLDOWN_DEPLOY && this.sniperDeployCooldownTicks <= 0) {
-            this.sniperCooldownSource = SNIPER_COOLDOWN_NONE;
-        }
-
-        return oldSource != this.sniperCooldownSource;
     }
 
     @Override
@@ -301,13 +247,11 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
     @Override
     public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient) {
         buf.writeBoolean(this.abilityStartCooldownTicks > 0);
-        buf.writeByte(this.sniperCooldownSource);
     }
 
     @Override
     public void applySyncPacket(RegistryByteBuf buf) {
         this.abilityStartCooldownTicks = buf.readBoolean() ? 1 : 0;
-        this.sniperCooldownSource = buf.readByte();
     }
 
     @Override
@@ -316,7 +260,6 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         tag.putInt("sniperStartCooldownTicks", this.sniperStartCooldownTicks);
         tag.putInt("sniperDeployCooldownTicks", this.sniperDeployCooldownTicks);
         tag.putInt("sniperShotCooldownTicks", this.sniperShotCooldownTicks);
-        tag.putByte("sniperCooldownSource", this.sniperCooldownSource);
     }
 
     @Override
@@ -325,6 +268,5 @@ public class RemembererPlayerComponent implements AutoSyncedComponent, ServerTic
         this.sniperStartCooldownTicks = tag.getInt("sniperStartCooldownTicks");
         this.sniperDeployCooldownTicks = tag.getInt("sniperDeployCooldownTicks");
         this.sniperShotCooldownTicks = tag.getInt("sniperShotCooldownTicks");
-        this.sniperCooldownSource = tag.getByte("sniperCooldownSource");
     }
 }

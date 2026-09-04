@@ -28,6 +28,8 @@
 - `wathe/src/main/java/dev/doctor4t/wathe/cca/PlayerStaminaComponent.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/stamina/PlayerStaminaApi.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/movement/PlayerMovementApi.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/api/client/tooltip/ItemTooltipApi.java`
+- `wathe/README_ITEM_TOOLTIP_API.md`
 - `wathe/src/main/java/dev/doctor4t/wathe/command/SetMoodCommand.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/command/MoodStaminaPenaltyCommand.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/mixin/PlayerEntityMixin.java`
@@ -232,7 +234,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesShopBootstrap.java`：注册静态/动态职业商店，或 ShopModifier。
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
 - `ModItems.java`：新增物品、数据组件、默认冷却。
-- `NoellesrolesClient.java`：客户端按键、tooltip/model predicate、实体渲染、客户端网络包。
+- `NoellesrolesClient.java`：客户端按键、Wathe `ItemTooltipApi` 物品注册、model predicate、实体渲染、客户端网络包。
 - `client/roles/<role>/*FogHandler.java`：职业专属雾效 provider；在 `NoellesrolesClient` 注册，不新增 WorldRenderer 雾效 mixin。
 - `NoellesClientMovementBootstrap.java`：新增客户端移动提示、表现或本地状态时，在这里按职业 / 词条聚合调用。
 - `NoellesHudHandlers.java`：新增普通屏幕 HUD provider 后，在这里调用该职业/词条 HUD 类的 `register()`。
@@ -343,6 +345,7 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 
 ## 客户端与 mixin
 
+- 普通物品描述和原版物品冷却读秒统一通过 Wathe `ItemTooltipApi.registerItem(...)` / `registerItems(...)` 注册，不要新增扩展自己的 `ItemTooltipCallback`。
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
 - 职业专属雾效放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`，通过 Wathe `FogOverrideApi` 在 `NoellesrolesClient` 注册；不要在 NoellesRoles 再直接注入 `WorldRenderer.render` 覆盖雾距。
 - 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，目标射线使用 `WeaponTargetingApi` 的 visible 入口，不要 mixin `CrosshairRenderer`。
@@ -352,6 +355,15 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。
+
+### 物品 Tooltip API
+
+- 当前注册入口是 `NoellesrolesClient#registerItemTooltipsAndModels()`；普通物品用 `ItemTooltipApi.registerItems(...)` 批量登记，`.tooltip` 翻译中的 `\n` 由 Wathe 统一拆行。
+- 冷却读秒由 Wathe 读取当前 `ItemCooldownManager.Entry.endTick - tick`。禁止再从 `GameConstants.ITEM_COOLDOWNS` 取固定总时长并乘 `getCooldownProgress()`，否则枪械 modifier、多来源冷却和临时冷却会错误。
+- `GameConstants.ITEM_COOLDOWNS` 仍是服务端默认玩法数值；“保留默认冷却表”和“tooltip 不读取默认总时长”是两个不同职责。
+- 额外动态文本用 `ItemTooltipApi.registerAppender(...)`。疯魔法杖是普通动态数值示例；时停者怀表是不走原版物品冷却、读取职业同步组件的例外示例。
+- 已删除 `NoellesRolesItemToolTip`，并删除强盗、刺客、制毒师、弹簧陷阱的纯 tooltip 冷却组件，以及赏金手枪、梦者注剂、绑匪迷药、追猎者猎刀、狙击枪的显示来源字段。不要重新引入这些状态。
+- tooltip 只负责客户端显示。服务端物品 use、枪击、购买和能力 packet 必须继续独立校验真实冷却与玩家状态。
 
 ### 客户端雾效与 Iris 兼容
 

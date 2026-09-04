@@ -25,11 +25,8 @@ public final class AssassinRoleAssignedHandler {
             return;
         }
 
-        AssassinPlayerComponent assassinComponent = AssassinPlayerComponent.KEY.get(player);
-        assassinComponent.reset();
-        assassinComponent.startRoundCooldowns();
-
-        player.getItemCooldownManager().set(ModItems.BAYONET, AssassinPlayerComponent.ASSASSIN_START_COOLDOWN_TICKS);
-        player.getItemCooldownManager().set(ModItems.SILENCED_REVOLVER, AssassinPlayerComponent.ASSASSIN_START_COOLDOWN_TICKS);
+        AssassinCooldownHelper.reset(player);
+        player.getItemCooldownManager().set(ModItems.BAYONET, AssassinCooldownHelper.START_COOLDOWN_TICKS);
+        player.getItemCooldownManager().set(ModItems.SILENCED_REVOLVER, AssassinCooldownHelper.START_COOLDOWN_TICKS);
     }
 }

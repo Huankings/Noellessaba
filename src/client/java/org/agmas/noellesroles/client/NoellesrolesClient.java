@@ -8,6 +8,7 @@ import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerGrenadeComponent;
 import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
+import dev.doctor4t.wathe.api.client.tooltip.ItemTooltipApi;
 import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -19,7 +20,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -32,7 +32,10 @@ import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.hit.EntityHitResult;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.NoellesRolesEntities;
@@ -99,10 +102,10 @@ import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.lwjgl.glfw.GLFW;
 
-import org.agmas.noellesroles.client.items.NoellesRolesItemToolTip;
 import org.agmas.noellesroles.client.items.NoellesRolesItemExtraModel;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtons;
 
@@ -359,83 +362,46 @@ public class NoellesrolesClient implements ClientModInitializer {
     }
 
     private void registerItemTooltipsAndModels() {
-        registerTimekeeperWatchCooldownTooltip();
+        /*
+         * NoellesRoles 不再注册自己的全局 callback，也不再按默认总时长乘冷却比例反推秒数。
+         * Wathe API 会读取服务端同步后的当前冷却条目，因此开局冷却、枪械 modifier、部署冷却和临时冷却
+         * 即使共用同一个物品 id，也会自动显示这一次真正生效的剩余时长。
+         */
+        ItemTooltipApi.registerItems(
+                ModItems.TOOLBOX, ModItems.CAPTURE_DEVICE, ModItems.POWER_RESTORATION,
+                ModItems.FAKE_KNIFE, ModItems.FAKE_GRENADE, ModItems.FAKE_REVOLVER, ModItems.MASTER_KEY,
+                ModItems.DELUSION_VIAL, ModItems.WIND_MARK, ModItems.DEFENSE_VIAL, ModItems.SEDATIVE,
+                ModItems.ROLE_MINE, ModItems.TIMED_BOMB, ModItems.THROWING_AXE, ModItems.THROWING_PAN,
+                ModItems.BLOOD_AXE, ModItems.COLORFUL_AXE, ModItems.THROWING_SPEED_AXE,
+                ModItems.THROWING_BOMB_AXE, ModItems.SPRING_TRAP, ModItems.SPRING_TRAP_ADDTIME,
+                ModItems.THROWING_BLOOD_AXE, ModItems.THROWING_MACHETE, ModItems.TOMAHAWK,
+                ModItems.THROWING_TOYS_AXE, ModItems.THROWING_PICKAXE, ModItems.THROWING_JERRY_CAN,
+                ModItems.ONCE_LIGHTER, ModItems.RANDOM_THROWING_WEAPON, ModItems.PSYCHO_JASON,
+                ModItems.PSYCHO_COOK, ModItems.CRYSTAL_BALL, ModItems.ROBBER_PISTOL,
+                ModItems.BOUNTY_PISTOL, ModItems.BOUNTY_DERRINGER, ModItems.BOUNTY_MODE, ModItems.BAYONET,
+                ModItems.SILENCED_REVOLVER, ModItems.SILENT_GRENADE, ModItems.SNIPER_RIFLE,
+                ModItems.SNIPER_RIFLE_BULLET, ModItems.BAYONET_COLDOWN_REFRESH, ModItems.DREAM_IMPRINT,
+                ModItems.MEDICAL_KIT, ModItems.PAN, ModItems.PSYCHO_THROWING_PAN, ModItems.PILL,
+                ModItems.TAPE, ModItems.HUNTING_KNIFE, ModItems.SULFURIC_ACID_BARREL, ModItems.BLOWGUN,
+                ModItems.POISON_INJECTOR, ModItems.DELUSION_SYRINGE, ModItems.KNOCKOUT_DRUG,
+                ModItems.JERRY_CAN, ModItems.LIGHTER, ModItems.ONCE_STAFF, ModItems.PSYCHO_STAFF,
+                ModItems.MAGIC_BARRIER, ModItems.PSYCHO_LICH, ModItems.PHONE,
+                ModItems.ICON_WEAPON_COOLDOWN_REFRESH, ModItems.ICON_ABILITY_COOLDOWN_REFRESH,
+                ModItems.ICON_POTION_EFFECT_REFRESH, ModItems.DYING_WATCH_PROTECT, ModItems.SLEEPING_BAG,
+                ModItems.BOOK, ModItems.RANDOM_FOOD, ModItems.RANDOM_DRINK, ModItems.RANDOM_POTION,
+                ModItems.PSYCHO_VECNA, ModItems.VECNA_ADDTIME
+        );
 
-        ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipType, list) -> {
-            // 为 NoellesRoles 的所有物品添加提示（描述 + 冷却）
-            NoellesRolesItemToolTip.addItemtip(ModItems.TOOLBOX, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.CAPTURE_DEVICE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.POWER_RESTORATION, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.FAKE_KNIFE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.FAKE_GRENADE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.FAKE_REVOLVER, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.MASTER_KEY, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.DELUSION_VIAL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.WIND_MARK, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.DEFENSE_VIAL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SEDATIVE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ROLE_MINE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.TIMED_BOMB, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_PAN, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BLOOD_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.COLORFUL_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_SPEED_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_BOMB_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SPRING_TRAP, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SPRING_TRAP_ADDTIME, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_BLOOD_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_MACHETE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.TOMAHAWK, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_TOYS_AXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_PICKAXE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.THROWING_JERRY_CAN, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ONCE_LIGHTER, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_THROWING_WEAPON, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_JASON, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_COOK, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.CRYSTAL_BALL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ROBBER_PISTOL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_PISTOL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_DERRINGER, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BOUNTY_MODE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SILENCED_REVOLVER, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SILENT_GRENADE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SNIPER_RIFLE_BULLET, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BAYONET_COLDOWN_REFRESH, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.DREAM_IMPRINT, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.MEDICAL_KIT, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PAN, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_THROWING_PAN, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PILL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.TAPE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.HUNTING_KNIFE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SULFURIC_ACID_BARREL, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BLOWGUN, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.POISON_INJECTOR, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.DELUSION_SYRINGE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.KNOCKOUT_DRUG, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.JERRY_CAN, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.LIGHTER, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ONCE_STAFF, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_STAFF, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.MAGIC_BARRIER, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_LICH, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PHONE, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ICON_WEAPON_COOLDOWN_REFRESH, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ICON_ABILITY_COOLDOWN_REFRESH, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.ICON_POTION_EFFECT_REFRESH, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.DYING_WATCH_PROTECT, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.SLEEPING_BAG, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.BOOK, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_FOOD, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_DRINK, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.RANDOM_POTION, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.PSYCHO_VECNA, itemStack, list);
-            NoellesRolesItemToolTip.addItemtip(ModItems.VECNA_ADDTIME, itemStack, list);
-        }));
+        ItemTooltipApi.registerAppender(
+                NoellesRolesCore.id("psycho_staff_attack_speed_tooltip"),
+                ItemTooltipApi.DEFAULT_PRIORITY,
+                ModItems.PSYCHO_STAFF,
+                context -> context.tooltip().add(Text.translatable(
+                        "item.noellesroles.psycho_staff.tooltip.attack_speed",
+                        LichConstants.PSYCHO_STAFF_ATTACK_SPEED
+                ).setStyle(Style.EMPTY.withColor(ItemTooltipApi.REGULAR_TOOLTIP_COLOR)))
+        );
+        registerTimekeeperWatchTooltip();
 
         // 为需要额外模型的物品注册（目前所有物品都注册冷却模型，方便未来扩展）
         // 可以只注册有冷却的物品，但全部注册也无妨
@@ -511,26 +477,51 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesRolesItemExtraModel.registerExtraModel(ModItems.RANDOM_POTION);
     }
 
-    private static void registerTimekeeperWatchCooldownTooltip() {
-        TimekeeperWatchItem.setCooldownTooltipProvider((stack, mode) -> {
-            MinecraftClient client = MinecraftClient.getInstance();
-            if (client.player == null) {
-                return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.ready");
-            }
+    private static void registerTimekeeperWatchTooltip() {
+        ItemTooltipApi.registerAppender(
+                NoellesRolesCore.id("timekeeper_watch_tooltip"),
+                ItemTooltipApi.DEFAULT_PRIORITY,
+                ModItems.DYING_WATCH,
+                context -> {
+                    TimekeeperWatchState state = TimekeeperWatchItem.getState(context.stack());
+                    TimekeeperWatchMode mode = TimekeeperWatchItem.getMode(context.stack());
+                    Style roleStyle = Style.EMPTY.withColor(TextColor.fromRgb(TimekeeperConstants.ROLE_COLOR));
 
-            /*
-             * 怀表冷却不是原版 ItemCooldownManager，而是时停者自己的三模式冷却。
-             * 服务端把 TimekeeperPlayerComponent 只同步给玩家本人，所以这里在客户端 tooltip 阶段
-             * 直接读取本地玩家组件，就能精确显示当前选中模式的剩余秒数。
-             */
-            int cooldownTicks = TimekeeperPlayerComponent.KEY.get(client.player).getCooldownTicks(mode);
-            if (cooldownTicks <= 0) {
-                return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.ready");
-            }
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.state", state.text()).setStyle(roleStyle));
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.mode", mode.text()).setStyle(roleStyle));
+                    MutableText cost = Text.translatable("item.noellesroles.dying_watch.tooltip.cost", mode.getTimeCost())
+                            .setStyle(roleStyle)
+                            .append(Text.literal("§f" + TimekeeperConstants.TIME_CURRENCY_ICON + "§r"));
+                    context.tooltip().add(cost);
 
-            int cooldownSeconds = Math.max(1, (cooldownTicks + 19) / 20);
-            return Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.seconds", cooldownSeconds);
-        });
+                    /*
+                     * 怀表不用原版 ItemCooldownManager，而是三个互相独立的职业组件冷却。
+                     * 这种业务型冷却继续由扩展读取自己的同步组件，但文本追加仍统一经过 Wathe API，
+                     * 不再为了从 main 源集访问 MinecraftClient 而保留静态 provider 桥接。
+                     */
+                    Text cooldownStatus = Text.translatable("item.noellesroles.dying_watch.tooltip.cooldown.ready");
+                    if (context.player() != null) {
+                        int cooldownTicks = TimekeeperPlayerComponent.KEY.get(context.player()).getCooldownTicks(mode);
+                        if (cooldownTicks > 0) {
+                            cooldownStatus = Text.translatable(
+                                    "item.noellesroles.dying_watch.tooltip.cooldown.seconds",
+                                    Math.max(1, (cooldownTicks + 19) / 20)
+                            );
+                        }
+                    }
+                    context.tooltip().add(Text.translatable(
+                            "item.noellesroles.dying_watch.tooltip.cooldown",
+                            cooldownStatus
+                    ).setStyle(roleStyle));
+                    context.tooltip().add(Text.empty());
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.description").setStyle(roleStyle));
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.item_accelerate").setStyle(roleStyle));
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.ability_accelerate").setStyle(roleStyle));
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.rewind").setStyle(roleStyle));
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.breaks").setStyle(roleStyle));
+                    context.tooltip().add(Text.translatable("item.noellesroles.dying_watch.tooltip.elegant").setStyle(roleStyle));
+                }
+        );
     }
 
     /**

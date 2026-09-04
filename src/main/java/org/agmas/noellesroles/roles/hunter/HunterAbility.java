@@ -50,9 +50,8 @@ public final class HunterAbility {
         player.getItemCooldownManager().set(ModItems.HUNTING_KNIFE, 0);
         /*
          * 如果追猎者在开局 30 秒内花钱刷新猎刀冷却，服务端物品冷却已经被清零；
-         * 这里同步清掉“开局冷却来源”标记，避免 tooltip 继续按开局冷却状态理解后续猎刀冷却。
+         * 刷新只需要清除真实物品冷却；tooltip 不再维护独立的开局来源标记。
          */
-        HunterPlayerComponent.KEY.get(player).clearHuntingKnifeStartCooldown();
         player.playSoundToPlayer(SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
         NbtCompound extra = new NbtCompound();

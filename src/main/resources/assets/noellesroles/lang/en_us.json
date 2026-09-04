@@ -3,7 +3,6 @@
     "entity.noellesroles.magician_playback": "Magician Playback",
     "shop.purchase_failed": "purchase failed",
     "shop.noellesroles.power_restoration_unavailable": "There is no blackout right now, cannot purchase",
-    "tip.noellesroles.cooldown_temporary": "On cooldown...",
     "tip.noellesroles.ability.can_use": "Press %s to use ability",
 
     "announcement.goals.noellesroles.amnesiac": "Steal a role from a body, then carry on as that role.",

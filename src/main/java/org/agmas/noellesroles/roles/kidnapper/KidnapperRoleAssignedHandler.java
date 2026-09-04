@@ -24,7 +24,6 @@ public final class KidnapperRoleAssignedHandler {
          */
         KidnapperComponent kidnapperComponent = KidnapperComponent.KEY.get(player);
         kidnapperComponent.resetAll();
-        kidnapperComponent.startRoundCooldowns();
 
         player.giveItemStack(ModItems.KNOCKOUT_DRUG.getDefaultStack());
         player.getItemCooldownManager().set(ModItems.KNOCKOUT_DRUG, KidnapperConstants.START_COOLDOWN_TICKS);

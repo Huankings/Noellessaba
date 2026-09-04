@@ -22,10 +22,8 @@ public final class DrugmakerRoleAssignedHandler {
          * 按 NoellesRoles 专属武器的现有格式，只给当前职业会使用的物品写开局冷却。
          * 这样不会影响其它职业从掉落、调试或后续机制拿到同名物品时的开局状态。
          */
-        DrugmakerPlayerComponent drugmakerComponent = DrugmakerPlayerComponent.KEY.get(player);
-        drugmakerComponent.reset();
-        drugmakerComponent.startRoundCooldowns();
-
+        player.getItemCooldownManager().remove(ModItems.BLOWGUN);
+        player.getItemCooldownManager().remove(ModItems.POISON_INJECTOR);
         player.getItemCooldownManager().set(ModItems.BLOWGUN, DrugmakerConstants.START_COOLDOWN_TICKS);
         player.getItemCooldownManager().set(ModItems.POISON_INJECTOR, DrugmakerConstants.START_COOLDOWN_TICKS);
     }

@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.roles.assassin.AssassinPlayerComponent;
+import org.agmas.noellesroles.roles.assassin.AssassinCooldownHelper;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.cook.CookPsychoHandler;
 import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
@@ -203,7 +203,7 @@ public class NoellesRolesShops {
              * 刺刀冷却刷新是“即时生效图标”，购买成功与否取决于刺刀是否真的在冷却，
              * 而不是玩家背包有没有空位。
              */
-            return AssassinPlayerComponent.tryRefreshBayonetCooldown(player);
+            return AssassinCooldownHelper.tryRefreshBayonetCooldown(player);
         }
         if (item == ModItems.ICON_WEAPON_COOLDOWN_REFRESH) {
             return HackerComponent.refreshWeaponCooldown(player);

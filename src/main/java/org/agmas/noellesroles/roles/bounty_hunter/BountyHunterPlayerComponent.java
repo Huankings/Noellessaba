@@ -8,7 +8,6 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
@@ -51,8 +50,6 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
     private final PlayerEntity player;
     private UUID target;
-    private int bountyPistolStartCooldownTicks = 0;
-    private int bountyPistolCooldownTotalTicks = BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS;
     private boolean bountyModeActive = false;
     private int bountyDerringerSlot = -1;
 
@@ -72,8 +69,6 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
          */
         stopBountyMode(true);
         this.target = this.player.getUuid();
-        this.bountyPistolStartCooldownTicks = 0;
-        this.bountyPistolCooldownTotalTicks = BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS;
         this.player.getItemCooldownManager().remove(ModItems.BOUNTY_PISTOL);
         this.player.getItemCooldownManager().remove(ModItems.BOUNTY_DERRINGER);
         this.player.getItemCooldownManager().remove(ModItems.BOUNTY_MODE);
@@ -81,9 +76,8 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
     }
 
     public void startRoundCooldowns() {
-        this.bountyPistolStartCooldownTicks = BountyHunterConstants.START_COOLDOWN_TICKS;
-        this.bountyPistolCooldownTotalTicks = BountyHunterConstants.START_COOLDOWN_TICKS;
-        sync();
+        /* 实际条目包含完整的 30 秒总时长，tooltip 不再需要组件同步一份来源。 */
+        this.player.getItemCooldownManager().set(ModItems.BOUNTY_PISTOL, BountyHunterConstants.START_COOLDOWN_TICKS);
     }
 
     public boolean isCurrentBountyTarget(PlayerEntity possibleTarget) {
@@ -96,22 +90,6 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
     public boolean isBountyModeActive() {
         return this.bountyModeActive;
-    }
-
-    public int getDisplayedBountyPistolCooldownTotalTicks() {
-        if (this.bountyPistolStartCooldownTicks > 0) {
-            return BountyHunterConstants.START_COOLDOWN_TICKS;
-        }
-        return this.bountyPistolCooldownTotalTicks;
-    }
-
-    public void setBountyPistolCooldownTotalTicks(int cooldownTicks) {
-        this.bountyPistolCooldownTotalTicks = cooldownTicks;
-        sync();
-    }
-
-    public boolean isUsingStartCooldown(Item item) {
-        return item == ModItems.BOUNTY_PISTOL && this.bountyPistolStartCooldownTicks > 0;
     }
 
     public boolean tryStartBountyMode() {
@@ -200,14 +178,10 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
     @Override
     public void serverTick() {
-        boolean changed = tickStartCooldown();
-
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
         if (!gameWorld.isRole(this.player, NoellesRoleRegistry.BOUNTY_HUNTER)) {
             if (this.bountyModeActive) {
                 stopBountyMode(true);
-            } else if (changed) {
-                sync();
             }
             return;
         }
@@ -215,17 +189,6 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
         tickBountyMode(gameWorld);
         tickTargetSelection(gameWorld);
 
-        if (changed) {
-            sync();
-        }
-    }
-
-    private boolean tickStartCooldown() {
-        if (this.bountyPistolStartCooldownTicks <= 0) {
-            return false;
-        }
-        this.bountyPistolStartCooldownTicks--;
-        return this.bountyPistolStartCooldownTicks == 0;
     }
 
     private void tickBountyMode(GameWorldComponent gameWorld) {
@@ -391,24 +354,18 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
         if (hasRealTarget) {
             buf.writeUuid(this.target);
         }
-        buf.writeBoolean(this.bountyPistolStartCooldownTicks > 0);
-        buf.writeInt(this.bountyPistolCooldownTotalTicks);
         buf.writeBoolean(this.bountyModeActive);
     }
 
     @Override
     public void applySyncPacket(RegistryByteBuf buf) {
         this.target = buf.readBoolean() ? buf.readUuid() : this.player.getUuid();
-        this.bountyPistolStartCooldownTicks = buf.readBoolean() ? 1 : 0;
-        this.bountyPistolCooldownTotalTicks = buf.readInt();
         this.bountyModeActive = buf.readBoolean();
     }
 
     @Override
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putUuid("target", this.target == null ? this.player.getUuid() : this.target);
-        tag.putInt("bountyPistolStartCooldownTicks", this.bountyPistolStartCooldownTicks);
-        tag.putInt("bountyPistolCooldownTotalTicks", this.bountyPistolCooldownTotalTicks);
         tag.putBoolean("bountyModeActive", this.bountyModeActive);
         tag.putInt("bountyDerringerSlot", this.bountyDerringerSlot);
     }
@@ -416,10 +373,6 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
     @Override
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.target = tag.contains("target") ? tag.getUuid("target") : this.player.getUuid();
-        this.bountyPistolStartCooldownTicks = tag.getInt("bountyPistolStartCooldownTicks");
-        this.bountyPistolCooldownTotalTicks = tag.contains("bountyPistolCooldownTotalTicks")
-                ? tag.getInt("bountyPistolCooldownTotalTicks")
-                : BountyHunterConstants.BOUNTY_PISTOL_FAILED_COOLDOWN_TICKS;
         this.bountyModeActive = tag.getBoolean("bountyModeActive");
         this.bountyDerringerSlot = tag.getInt("bountyDerringerSlot");
     }
