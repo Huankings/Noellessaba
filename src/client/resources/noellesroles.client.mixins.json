@@ -73,6 +73,7 @@
     "roles.jason.JasonWoundedMinecraftMixin",
     "roles.jason.JasonWoundedPoseMixin",
     "roles.jason.JasonAbilityHeldItemRendererMixin",
+    "roles.jason.JasonAbilityBlindnessSprintMixin",
     "roles.jason.JasonAbilityClientWorldSoundMixin"
     ,"roles.vecna.VecnaKeyboardInputMixin"
     ,"roles.vecna.VecnaVisionMixin"

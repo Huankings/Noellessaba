@@ -46,6 +46,19 @@ public final class JasonTargetVisibilityHandler {
                         return TargetVisibilityApi.Decision.DENY;
                     }
 
+                    /*
+                     * 无恶不在期间，除杰森之外的存活玩家也彼此隔离。
+                     * TargetVisibilityApi 的规则会按 viewer -> target 双向求值，
+                     * 因此这里统一拒绝渲染、准心、交互和攻击，保证双方都看不到对方。
+                     */
+                    if (JasonAbilityRules.hasActiveAbilityInWorld(context.viewer().getWorld())
+                            && GameFunctions.isPlayerAliveAndSurvival(context.viewer())
+                            && GameFunctions.isPlayerAliveAndSurvival(context.target())
+                            && !JasonAbilityRules.isAbilityActiveLike(context.viewer())
+                            && !JasonAbilityRules.isAbilityActiveLike(context.target())) {
+                        return TargetVisibilityApi.Decision.DENY;
+                    }
+
                     return TargetVisibilityApi.Decision.PASS;
                 }
         );

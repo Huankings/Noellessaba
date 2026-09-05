@@ -73,8 +73,10 @@ public final class JasonAbilityManager {
             ServerPlayerEntity player = handler.getPlayer();
             if (JasonAbilityPlayerComponent.KEY.get(player).isActiveLike()) {
                 broadcastSound(server, JasonAbilitySoundS2CPacket.Action.STOP_LOOP);
+                clearWorldBlindness(player.getServerWorld());
             }
             JasonAbilityPlayerComponent.KEY.get(player).forceClear(false);
+            JasonAbilityBlindnessComponent.KEY.get(player).clearOwnedEffect();
         });
     }
 
@@ -121,6 +123,7 @@ public final class JasonAbilityManager {
             forceClearAbility(serverPlayer, false, true);
         }
         JasonAbilityPlayerComponent.KEY.get(player).reset();
+        JasonAbilityBlindnessComponent.KEY.get(player).clearOwnedEffect();
     }
 
     /**
@@ -131,8 +134,10 @@ public final class JasonAbilityManager {
      */
     public static void resetRoundTransientState(@NotNull ServerWorld world) {
         broadcastSound(world.getServer(), JasonAbilitySoundS2CPacket.Action.STOP_LOOP);
+        clearWorldBlindness(world);
         for (ServerPlayerEntity player : world.getPlayers()) {
             JasonAbilityPlayerComponent.KEY.get(player).reset();
+            JasonAbilityBlindnessComponent.KEY.get(player).clearOwnedEffect();
         }
     }
 
@@ -224,8 +229,13 @@ public final class JasonAbilityManager {
 
     private static void tickWorld(@NotNull ServerWorld world) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
+        boolean hasActiveJason = world.getPlayers().stream().anyMatch(JasonAbilityRules::isAbilityActiveLike);
+        boolean hasExitingJason = world.getPlayers().stream()
+                .anyMatch(player -> JasonAbilityRules.isAliveJason(player)
+                        && JasonAbilityPlayerComponent.KEY.get(player).isExiting());
         for (ServerPlayerEntity player : world.getPlayers()) {
             JasonAbilityPlayerComponent component = JasonAbilityPlayerComponent.KEY.get(player);
+            updateBlindnessEffect(player, hasActiveJason, hasExitingJason);
             tickScare(player, component);
 
             if (!GameFunctions.isPlayerAliveAndSurvival(player) || !gameWorld.isRole(player, NoellesRoleRegistry.JASON)) {
@@ -279,6 +289,39 @@ public final class JasonAbilityManager {
         }
     }
 
+    /** 根据观看者分类刷新杰森失明；无恶不在结束后只停止续杯，让最后一份效果自然过期。 */
+    private static void updateBlindnessEffect(
+            @NotNull ServerPlayerEntity player,
+            boolean hasActiveJason,
+            boolean hasExitingJason
+    ) {
+        JasonAbilityBlindnessComponent effect = JasonAbilityBlindnessComponent.KEY.get(player);
+        boolean enabled = hasActiveJason && (JasonAbilityRules.isAbilityActiveLike(player)
+                ? JasonConstants.ABILITY_BLINDNESS_FOR_JASON_SELF
+                : GameFunctions.isPlayerAliveAndSurvival(player)
+                ? JasonConstants.ABILITY_BLINDNESS_FOR_OTHER_SURVIVORS
+                : JasonConstants.ABILITY_BLINDNESS_FOR_NON_SURVIVAL);
+        if (enabled) {
+            /*
+             * EXITING 阶段已经在 requestExit() 写入精确的 40 tick（2 秒）效果，
+             * 这里必须保持它倒计时，不能再次续杯，也不能落入下面的清理分支。
+             */
+            if (!hasExitingJason) {
+                effect.refreshOwnedEffect();
+            }
+        } else if (hasActiveJason) {
+            effect.clearOwnedEffect();
+        } else if (effect.isOwnedAndActive()) {
+            effect.releaseOwnedEffectToExpireNaturally();
+        }
+    }
+
+    private static void clearWorldBlindness(@NotNull ServerWorld world) {
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            JasonAbilityBlindnessComponent.KEY.get(player).clearOwnedEffect();
+        }
+    }
+
     private static void tickScare(@NotNull ServerPlayerEntity player, @NotNull JasonAbilityPlayerComponent component) {
         int before = component.getScaredTicks();
         if (before <= 0) {
@@ -308,16 +351,27 @@ public final class JasonAbilityManager {
 
     private static void requestExit(@NotNull ServerPlayerEntity player, @NotNull JasonAbilityPlayerComponent component) {
         component.startExiting();
+        /*
+         * 失明从按下主动解除的这一刻开始计时，持续时间与 2 秒 EXITING 过渡完全一致。
+         * 这样不会在过渡结束后额外保留一段看不出显形变化的药水时间。
+         */
+        for (ServerPlayerEntity viewer : player.getServerWorld().getPlayers()) {
+            JasonAbilityBlindnessComponent.KEY.get(viewer).startNaturalExitCountdown(JasonConstants.ABILITY_EXIT_TICKS);
+        }
         recordExitRequested(player);
         broadcastSound(player.getServer(), JasonAbilitySoundS2CPacket.Action.STOP_LOOP);
         sendEndSound(player);
     }
 
     private static void forceClearAbility(@NotNull ServerPlayerEntity player, boolean startCooldown, boolean stopLoop) {
-        if (stopLoop && JasonAbilityPlayerComponent.KEY.get(player).isActiveLike()) {
+        boolean wasActive = JasonAbilityPlayerComponent.KEY.get(player).isActiveLike();
+        if (stopLoop && wasActive) {
             broadcastSound(player.getServer(), JasonAbilitySoundS2CPacket.Action.STOP_LOOP);
         }
         JasonAbilityPlayerComponent.KEY.get(player).forceClear(startCooldown);
+        if (wasActive) {
+            clearWorldBlindness(player.getServerWorld());
+        }
     }
 
     private static void triggerScare(@NotNull ServerPlayerEntity jason) {

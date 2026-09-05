@@ -357,6 +357,21 @@ public final class JasonConstants {
      */
     public static final float ABILITY_FOG_NON_SURVIVAL_END = 10.0F;
 
+    /** 无恶不在雾效的三类观看者开关，使用 Boolean 方便后续调试反射读取。 */
+    public static final Boolean ABILITY_FOG_FOR_JASON_SELF = false;
+    public static final Boolean ABILITY_FOG_FOR_OTHER_SURVIVORS = false;
+    public static final Boolean ABILITY_FOG_FOR_NON_SURVIVAL = false;
+
+    /** 无恶不在失明效果的三类目标开关。 */
+    public static final Boolean ABILITY_BLINDNESS_FOR_JASON_SELF = true;
+    public static final Boolean ABILITY_BLINDNESS_FOR_OTHER_SURVIVORS = true;
+    public static final Boolean ABILITY_BLINDNESS_FOR_NON_SURVIVAL = false;
+
+    /** 杰森失明归属每 tick 刷新的短效果时长，和 Wathe 停电药水保持一致。 */
+    public static final int ABILITY_BLINDNESS_REFRESH_TICKS = 60;
+    /** 自然结束时允许识别为杰森短效果的最大剩余时间。 */
+    public static final int ABILITY_BLINDNESS_MAX_OWNED_DURATION_TICKS = ABILITY_BLINDNESS_REFRESH_TICKS + 10;
+
     /**
      * 无恶不在雾效 provider 的优先级。
      * 数值高于普通地图/默认雾 provider，确保杰森能力的最终雾距不会被其它扩展覆盖。

@@ -70,10 +70,24 @@ public final class JasonAbilityFogHandler {
             return FogOverrideApi.FogOverride.pass();
         }
 
+        if (!isFogEnabledForViewer(client.player)) {
+            return FogOverrideApi.FogOverride.pass();
+        }
+
         FogRange target = getTargetRange(client.player);
         float start = lerp(context.baseStart(), target.start(), progress);
         float end = lerp(context.baseEnd(), target.end(), progress);
         return FogOverrideApi.FogOverride.override(start, end, FogShape.SPHERE);
+    }
+
+    private static boolean isFogEnabledForViewer(PlayerEntity viewer) {
+        if (JasonAbilityRules.isAbilityActiveLike(viewer)) {
+            return JasonConstants.ABILITY_FOG_FOR_JASON_SELF;
+        }
+        if (!GameFunctions.isPlayerAliveAndSurvival(viewer)) {
+            return JasonConstants.ABILITY_FOG_FOR_NON_SURVIVAL;
+        }
+        return JasonConstants.ABILITY_FOG_FOR_OTHER_SURVIVORS;
     }
 
     private static FogRange getTargetRange(PlayerEntity viewer) {

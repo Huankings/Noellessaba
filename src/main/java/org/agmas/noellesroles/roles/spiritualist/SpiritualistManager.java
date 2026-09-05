@@ -24,6 +24,7 @@ import dev.doctor4t.wathe.util.AdventureUsable;
 import dev.doctor4t.wathe.util.GunDropPayload;
 import dev.doctor4t.wathe.util.ShootMuzzleS2CPayload;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.ItemEntity;
@@ -84,6 +85,7 @@ import java.util.function.Predicate;
  * 所以这里把真正的状态切换入口集中起来，其他地方只负责在合适的时机调用它。</p>
  */
 public final class SpiritualistManager {
+    private static boolean initialized;
 
     /**
      * 以下常量统一收口“附身代理兼容”的关键数值与外部 ID。
@@ -118,6 +120,42 @@ public final class SpiritualistManager {
     private static final int POISON_FAILURE_TEXT_COLOR = 0xFF5555;
 
     private SpiritualistManager() {
+    }
+
+    /**
+     * 注册灵术师断线收束。
+     *
+     * <p>宿主离线时，宿主组件可能会随玩家数据一起保存；如果只依赖另一端下一 tick
+     * 找不到目标，重连后仍可能看到旧的 possessed 标记。因此这里在实体卸载前先清理
+     * 两端链接，并把宿主的临时使用状态一并取消。</p>
+     */
+    public static void init() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            ServerPlayerEntity leaving = handler.getPlayer();
+            SpiritualistPlayerComponent spiritualist = SpiritualistPlayerComponent.KEY.get(leaving);
+            if (spiritualist.isPossessing()) {
+                endPossession(leaving, false, false, false);
+            }
+
+            SpiritualistHostComponent host = SpiritualistHostComponent.KEY.get(leaving);
+            if (!host.possessed) {
+                return;
+            }
+
+            ServerPlayerEntity controller = host.spiritualistController == null
+                    ? null
+                    : leaving.getServer().getPlayerManager().getPlayer(host.spiritualistController);
+            if (controller != null && SpiritualistPlayerComponent.KEY.get(controller).isPossessing()) {
+                endPossession(controller, false, false, false);
+            } else {
+                cleanupPossessedHostTransientState(leaving);
+                host.reset();
+            }
+        });
     }
 
     public static boolean isPsychoTarget(@Nullable PlayerEntity target) {
@@ -217,6 +255,8 @@ public final class SpiritualistManager {
 
         ServerPlayerEntity host = getCurrentPossessionTarget(spiritualist);
         if (host != null) {
+            abortMining(host, spiritualistComponent);
+            cleanupPossessedHostTransientState(host);
             SpiritualistHostComponent hostComponent = SpiritualistHostComponent.KEY.get(host);
             if (createLingering) {
                 spiritualistComponent.setLingeringProtection(host.getUuid());
@@ -242,6 +282,28 @@ public final class SpiritualistManager {
                     extra
             );
         }
+    }
+
+    /**
+     * 取消宿主在附身期间产生的临时交互状态。
+     *
+     * <p>这里故意使用 clearActiveItem() 而不是 stopUsingItem()：强制解除附身只应取消
+     * 蓄力，不能因为解除事件再次触发猎刀、投掷物或其它客户端发包型物品的释放逻辑。</p>
+     */
+    public static void cleanupPossessedHostTransientState(@NotNull ServerPlayerEntity host) {
+        if (host.isUsingItem()) {
+            host.clearActiveItem();
+        }
+        HunterPlayerComponent.KEY.get(host).reset();
+        resetKinsHunterComponent(host);
+        host.sidewaysSpeed = 0.0f;
+        host.forwardSpeed = 0.0f;
+        host.upwardSpeed = 0.0f;
+        host.setJumping(false);
+        host.setSneaking(false);
+        host.setSprinting(false);
+        host.setVelocity(Vec3d.ZERO);
+        host.networkHandler.syncWithPlayerPosition();
     }
 
     /**

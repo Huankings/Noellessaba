@@ -50,6 +50,7 @@ import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterRoleAssignmentRules;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterVictoryRule;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistCommunicationManager;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistManager;
 import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.thief.ThiefInteractionHandler;
 import org.agmas.noellesroles.roles.thief.ThiefItemTracker;
@@ -99,6 +100,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesMoodTaskBootstrap.init();
         NoellesRolesBlackoutBootstrap.init();
         TimekeeperCommunicationManager.init();
+        SpiritualistManager.init();
         SpiritualistCommunicationManager.init();
         OperatorCommunicationManager.init();
         RemembererInteractionHandler.init();

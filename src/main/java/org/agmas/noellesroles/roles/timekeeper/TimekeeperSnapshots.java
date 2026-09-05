@@ -69,6 +69,7 @@ import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityBlindnessComponent;
 import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
@@ -197,6 +198,7 @@ public final class TimekeeperSnapshots {
              * 时停者回溯到技能发动前时应清掉幽魂和惊吓；回溯到技能持续中时也应恢复当时的阶段进度。
              */
             component("noellesroles:jason_ability", JasonAbilityPlayerComponent.KEY),
+            component("noellesroles:jason_ability_blindness", JasonAbilityBlindnessComponent.KEY),
             /*
              * 时停者自己的怀表冷却、光阴被动收入计时和时间狭缝剩余时间也属于“运行态”。
              * 因此它们要随快照倒回目标时间点；只有发动本次回溯产生的扣光阴、写冷却、

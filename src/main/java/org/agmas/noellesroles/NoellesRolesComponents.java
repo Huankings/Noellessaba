@@ -34,6 +34,7 @@ import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityBlindnessComponent;
 import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
@@ -141,6 +142,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
          * 复活 / 下一局不能复制，真正需要保留或回滚时由时停者快照系统读取 NBT。
          */
         registry.beginRegistration(PlayerEntity.class, JasonAbilityPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonAbilityPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, JasonAbilityBlindnessComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonAbilityBlindnessComponent::new);
     }
 
     @Override

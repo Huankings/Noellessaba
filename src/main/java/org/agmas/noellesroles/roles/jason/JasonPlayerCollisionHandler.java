@@ -2,6 +2,7 @@ package org.agmas.noellesroles.roles.jason;
 
 import dev.doctor4t.wathe.api.collision.PlayerCollisionApi;
 import dev.doctor4t.wathe.api.collision.PlayerCollisionMode;
+import dev.doctor4t.wathe.game.GameFunctions;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 /**
@@ -29,6 +30,10 @@ public final class JasonPlayerCollisionHandler {
                      */
                     return JasonAbilityRules.isAbilityActiveLike(context.self())
                             || JasonAbilityRules.isAbilityActiveLike(context.other())
+                            ? PlayerCollisionMode.NO_COLLISION
+                            : JasonAbilityRules.hasActiveAbilityInWorld(context.world())
+                            && GameFunctions.isPlayerAliveAndSurvival(context.self())
+                            && GameFunctions.isPlayerAliveAndSurvival(context.other())
                             ? PlayerCollisionMode.NO_COLLISION
                             : PlayerCollisionMode.PASS;
                 }

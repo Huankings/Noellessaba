@@ -58,6 +58,18 @@ public final class JasonAbilityRules {
         return isAbilityActiveLike(player);
     }
 
+    public static boolean hasActiveAbilityInWorld(@Nullable net.minecraft.world.World world) {
+        if (world == null) {
+            return false;
+        }
+        for (PlayerEntity player : world.getPlayers()) {
+            if (isAbilityActiveLike(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * 计算无恶不在对环境语音 / 雾效这类“强度型表现”的平滑进度。
      *

@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 import dev.doctor4t.wathe.cca.PlayerMoodComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
@@ -118,7 +119,18 @@ public class SpiritualistHostComponent implements AutoSyncedComponent, ServerTic
     public void serverTick() {
         if (this.possessed && this.spiritualistController != null) {
             PlayerEntity controller = this.player.getWorld().getPlayerByUuid(this.spiritualistController);
-            if (controller == null || !controller.isAlive() || !GameFunctions.isPlayerAliveAndSurvival(controller)) {
+            boolean reverseLinkValid = controller instanceof net.minecraft.server.network.ServerPlayerEntity serverController
+                    && SpiritualistPlayerComponent.KEY.get(serverController).isPossessing()
+                    && this.player.getUuid().equals(SpiritualistPlayerComponent.KEY.get(serverController).possessionTarget);
+            if (controller == null || !controller.isAlive() || !GameFunctions.isPlayerAliveAndSurvival(controller) || !reverseLinkValid) {
+                /*
+                 * 双向链接不一致通常来自宿主断线后重连：灵术师一侧已经结束附身，
+                 * 但宿主组件仍可能从玩家 NBT 恢复旧的 possessed 标记。这里把它视为
+                 * 失效会话并立即清除，避免移动包和鼠标锁定永久残留。
+                 */
+                if (this.player instanceof ServerPlayerEntity serverHost) {
+                    SpiritualistManager.cleanupPossessedHostTransientState(serverHost);
+                }
                 this.stopPossession();
             } else {
                 /*

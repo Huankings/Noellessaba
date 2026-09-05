@@ -70,6 +70,7 @@ import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 import org.agmas.noellesroles.roles.jason.JasonAbilityManager;
 import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityBlindnessComponent;
 import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
 import org.agmas.noellesroles.roles.jason.JasonWoundManager;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
@@ -193,6 +194,7 @@ public final class NoellesRolesEventBootstrap {
             InsaneDamnedKillerPlayerComponent.KEY.get(playerEntity).reset();
             JasonWoundManager.resetPlayer(playerEntity);
             JasonAbilityManager.resetPlayer(playerEntity);
+            JasonAbilityBlindnessComponent.KEY.get(playerEntity).reset();
             if (playerEntity instanceof ServerPlayerEntity serverPlayer) {
                 MorphlingReagentService.clearReagentReleaseGate(serverPlayer);
             }
