@@ -51,7 +51,8 @@ public final class JasonTargetVisibilityHandler {
                      * TargetVisibilityApi 的规则会按 viewer -> target 双向求值，
                      * 因此这里统一拒绝渲染、准心、交互和攻击，保证双方都看不到对方。
                      */
-                    if (JasonAbilityRules.hasActiveAbilityInWorld(context.viewer().getWorld())
+                    if (JasonConstants.ABILITY_HIDE_OTHER_SURVIVORS_FROM_EACH_OTHER
+                            && JasonAbilityRules.hasActiveAbilityInWorld(context.viewer().getWorld())
                             && GameFunctions.isPlayerAliveAndSurvival(context.viewer())
                             && GameFunctions.isPlayerAliveAndSurvival(context.target())
                             && !JasonAbilityRules.isAbilityActiveLike(context.viewer())

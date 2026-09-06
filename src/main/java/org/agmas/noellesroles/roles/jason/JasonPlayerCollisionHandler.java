@@ -31,7 +31,8 @@ public final class JasonPlayerCollisionHandler {
                     return JasonAbilityRules.isAbilityActiveLike(context.self())
                             || JasonAbilityRules.isAbilityActiveLike(context.other())
                             ? PlayerCollisionMode.NO_COLLISION
-                            : JasonAbilityRules.hasActiveAbilityInWorld(context.world())
+                            : JasonConstants.ABILITY_DISABLE_OTHER_SURVIVOR_COLLISION
+                            && JasonAbilityRules.hasActiveAbilityInWorld(context.world())
                             && GameFunctions.isPlayerAliveAndSurvival(context.self())
                             && GameFunctions.isPlayerAliveAndSurvival(context.other())
                             ? PlayerCollisionMode.NO_COLLISION

@@ -364,7 +364,7 @@ public final class JasonConstants {
 
     /** 无恶不在失明效果的三类目标开关。 */
     public static final Boolean ABILITY_BLINDNESS_FOR_JASON_SELF = true;
-    public static final Boolean ABILITY_BLINDNESS_FOR_OTHER_SURVIVORS = true;
+    public static final Boolean ABILITY_BLINDNESS_FOR_OTHER_SURVIVORS = false;
     public static final Boolean ABILITY_BLINDNESS_FOR_NON_SURVIVAL = false;
 
     /** 杰森失明归属每 tick 刷新的短效果时长，和 Wathe 停电药水保持一致。 */
@@ -451,10 +451,28 @@ public final class JasonConstants {
     public static final int ABILITY_TARGET_VISIBILITY_PRIORITY = 25000;
 
     /**
+     * 无恶不在期间，是否让杰森之外的其他存活玩家彼此完全不可见。
+     *
+     * <p>开启时会通过 TargetVisibilityApi 同时禁止玩家实体渲染、准心选中、
+     * 右键交互和攻击；关闭时只恢复其他存活玩家彼此之间的目标关系，
+     * 不影响“存活玩家看不到幽魂杰森”和“幽魂杰森看不到存活玩家”的原有规则。</p>
+     */
+    public static final Boolean ABILITY_HIDE_OTHER_SURVIVORS_FROM_EACH_OTHER = false;
+
+    /**
      * 无恶不在玩家碰撞规则优先级。
      * 高于 Wathe 默认玩家实体墙，确保幽魂杰森能穿过存活玩家。
      */
     public static final int ABILITY_COLLISION_PRIORITY = 25000;
+
+    /**
+     * 无恶不在期间，是否取消杰森之外的其他存活玩家彼此之间的碰撞与推挤。
+     *
+     * <p>开启时返回 PlayerCollisionMode.NO_COLLISION，同时取消 Wathe 玩家实体墙和
+     * 原版轻微推挤；关闭时其他存活玩家恢复当前服务器的默认碰撞规则，
+     * 但幽魂杰森与其他玩家之间仍然保持无碰撞、无推挤。</p>
+     */
+    public static final Boolean ABILITY_DISABLE_OTHER_SURVIVOR_COLLISION = false;
 
     /**
      * 无恶不在手持物隐藏规则优先级。
