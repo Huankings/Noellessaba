@@ -23,6 +23,7 @@ import org.agmas.noellesroles.registry.NoellesModifierRegistry;
 import org.agmas.noellesroles.registry.NoellesRoleGroups;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -178,6 +179,15 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
     @Override
     public void serverTick() {
+        /*
+         * 回溯播放时，赏金目标字段会被历史快照逐帧覆盖。
+         * 必须暂停目标有效性检查和随机抽取，避免“快照恢复旧目标 -> 本 tick 又随机换目标”
+         * 的循环，也避免为倒放中的临时目标变化不断记录 replay 事件。
+         * 回溯完成后才恢复正常逻辑；若目标确实离线，此时只会进行一次正常替换。
+         */
+        if (TimekeeperWorldComponent.KEY.get(this.player.getWorld()).isRewinding()) {
+            return;
+        }
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
         if (!gameWorld.isRole(this.player, NoellesRoleRegistry.BOUNTY_HUNTER)) {
             if (this.bountyModeActive) {
@@ -234,7 +244,7 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
         if (!isValidBountyTarget(gameWorld, currentTarget)
                 || Objects.equals(this.target, dualPersonalityPartner)) {
-            this.target = chooseNewTarget(gameWorld, dualPersonalityPartner);
+            this.target = chooseNewTarget(gameWorld, dualPersonalityPartner, null);
         }
 
         if (!Objects.equals(previousTarget, this.target)) {
@@ -243,7 +253,31 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
         }
     }
 
-    private UUID chooseNewTarget(GameWorldComponent gameWorld, UUID dualPersonalityPartner) {
+    /**
+     * 在 DeathApi 确认当前悬赏目标死亡后立即换目标。
+     * 时停者的时间狭缝会暂时保留死者的特殊存活状态，因此不能等待普通 tick 判断目标失效。
+     */
+    public void retargetAfterConfirmedDeath(UUID deceasedUuid) {
+        if (!(this.player instanceof ServerPlayerEntity serverPlayer)
+                || deceasedUuid == null
+                || !deceasedUuid.equals(this.target)) {
+            return;
+        }
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(serverPlayer.getWorld());
+        if (!gameWorld.isRole(serverPlayer, NoellesRoleRegistry.BOUNTY_HUNTER)
+                || !GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
+            return;
+        }
+        UUID previousTarget = this.target;
+        UUID dualPersonalityPartner = DualPersonalityComponent.KEY.get(this.player.getWorld()).getPartner(this.player.getUuid());
+        this.target = chooseNewTarget(gameWorld, dualPersonalityPartner, deceasedUuid);
+        if (!Objects.equals(previousTarget, this.target)) {
+            recordTargetChange(serverPlayer, previousTarget, this.target);
+            sync();
+        }
+    }
+
+    private UUID chooseNewTarget(GameWorldComponent gameWorld, UUID dualPersonalityPartner, UUID excludedTarget) {
         List<UUID> validTargets = new ArrayList<>();
         WorldModifierComponent modifierComponent = WorldModifierComponent.KEY.get(this.player.getWorld());
         LoversPairComponent loversPairComponent = LoversPairComponent.KEY.get(this.player.getWorld());
@@ -251,6 +285,9 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
         gameWorld.getRoles().forEach((uuid, role) -> {
             if (uuid == null || uuid.equals(this.player.getUuid())) {
+                return;
+            }
+            if (uuid.equals(excludedTarget)) {
                 return;
             }
             /*

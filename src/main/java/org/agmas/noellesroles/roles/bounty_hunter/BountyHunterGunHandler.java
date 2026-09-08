@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
 /**
  * 赏金手枪和赏金德林加的服务端开火接管。
@@ -89,7 +90,16 @@ public final class BountyHunterGunHandler {
         boolean wasBountyTarget = bountyHunter.isCurrentBountyTarget(target);
 
         context.recordGunHit(target);
-        boolean killed = context.killTarget(target);
+        /*
+         * GunShotContext.killTarget() 的默认返回值是“击杀调用返回后目标是否已经不再被
+         * GameFunctions.isPlayerAliveAndSurvival 判定为存活”。但时停者的时间狭缝会在同一次
+         * DeathApi afterAttempt 中把刚确认死亡的目标临时标记为特殊存活旁观，导致默认结果误判为 false。
+         * 这里记录击杀前的狭缝状态，并在“击杀前不在狭缝、击杀后进入狭缝”时认定为真实击杀，
+         * 这样赏金手枪仍会进入 15 秒目标击杀冷却；若目标原本就在狭缝，则不会把重复死亡拦截误判成击杀。
+         */
+        boolean wasInTimeRiftBeforeShot = TimekeeperPlayerComponent.KEY.get(target).isInTimeRift();
+        boolean killed = context.killTarget(target)
+                || (!wasInTimeRiftBeforeShot && TimekeeperPlayerComponent.KEY.get(target).isInTimeRift());
         return new ShotOutcome(killed, wasBountyTarget);
     }
 

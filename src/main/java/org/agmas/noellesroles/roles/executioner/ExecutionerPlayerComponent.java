@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityComponent;
 import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -56,6 +57,16 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
     }
 
     public void serverTick() {
+        /*
+         * 时停回溯期间，玩家组件会逐帧恢复历史快照。
+         * 此时历史帧中的目标可能暂时死亡、离线或尚未进入当前职业阶段，
+         * 不能把这种“倒放画面”当成现实状态再次随机抽取目标，否则会在每个回溯 tick
+         * 反复改目标并写入大量目标切换回放。目标 UUID 由 TimekeeperSnapshots 恢复，
+         * 等回溯结束后的正常 tick 再处理真正的离线目标替换。
+         */
+        if (TimekeeperWorldComponent.KEY.get(player.getWorld()).isRewinding()) {
+            return;
+        }
         GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(player.getWorld());
         if (!gameWorldComponent.isRole(player, NoellesRoleRegistry.EXECUTIONER)) return;
         UUID previousTarget = this.target;
@@ -125,6 +136,66 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
     public void setTarget(UUID target) {
         this.target = target;
         this.sync();
+    }
+
+    /**
+     * 在目标死亡已经确认、但时间狭缝尚未启动前立即换目标。
+     * 仅供“目标被其它方式杀死且仇杀客没有转职”的 afterAttempt 路径调用。
+     */
+    public void retargetAfterConfirmedDeath(UUID deceasedUuid) {
+        if (!(this.player instanceof ServerPlayerEntity serverPlayer)
+                || deceasedUuid == null
+                || !deceasedUuid.equals(this.target)) {
+            return;
+        }
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(this.player.getWorld());
+        if (!gameWorld.isRole(serverPlayer, NoellesRoleRegistry.EXECUTIONER)
+                || !GameFunctions.isPlayerAliveAndSurvival(serverPlayer)) {
+            return;
+        }
+        UUID previousTarget = this.target;
+        UUID dualPersonalityPartner = DualPersonalityComponent.KEY.get(this.player.getWorld()).getPartner(this.player.getUuid());
+        List<UUID> validTargets = new ArrayList<>();
+        WorldModifierComponent modifierComponent = WorldModifierComponent.KEY.get(this.player.getWorld());
+        LoversPairComponent loversPairComponent = LoversPairComponent.KEY.get(this.player.getWorld());
+        List<UUID> lovers = modifierComponent.getAllWithModifier(NoellesModifierRegistry.LOVERS);
+        gameWorld.getRoles().forEach((uuid, role) -> {
+            if (uuid == null || uuid.equals(this.player.getUuid()) || uuid.equals(deceasedUuid)
+                    || loversPairComponent.arePartnersOrFallback(this.player.getUuid(), uuid, lovers)
+                    || uuid.equals(dualPersonalityPartner)) {
+                return;
+            }
+            PlayerEntity candidate = this.player.getWorld().getPlayerByUuid(uuid);
+            if (isValidExecutionTarget(gameWorld, candidate, role)) {
+                validTargets.add(uuid);
+            }
+        });
+        Collections.shuffle(validTargets);
+        this.target = validTargets.isEmpty() ? this.player.getUuid() : validTargets.getFirst();
+        if (!java.util.Objects.equals(previousTarget, this.target)) {
+            recordTargetChange(serverPlayer, previousTarget, this.target);
+            sync();
+        }
+    }
+
+    private void recordTargetChange(ServerPlayerEntity executioner, UUID previousTarget, UUID newTarget) {
+        boolean previousWasRealTarget = previousTarget != null && !previousTarget.equals(this.player.getUuid());
+        boolean newIsRealTarget = newTarget != null && !newTarget.equals(this.player.getUuid());
+        if (!newIsRealTarget) {
+            return;
+        }
+        if (!previousWasRealTarget) {
+            var lockedTarget = executioner.getServer().getPlayerManager().getPlayer(newTarget);
+            GameRecordManager.event(dev.doctor4t.wathe.record.GameRecordTypes.GLOBAL_EVENT)
+                    .world(executioner.getServerWorld()).actor(executioner).target(lockedTarget)
+                    .put("event", NoellesEventIds.EXECUTIONER_TARGET_LOCKED_EVENT.toString())
+                    .putUuid("locked_target", newTarget).record();
+            return;
+        }
+        GameRecordManager.event(dev.doctor4t.wathe.record.GameRecordTypes.GLOBAL_EVENT)
+                .world(executioner.getServerWorld()).actor(executioner)
+                .put("event", NoellesEventIds.EXECUTIONER_TARGET_CHANGED_EVENT.toString())
+                .putUuid("old_target", previousTarget).putUuid("new_target", newTarget).record();
     }
 
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {

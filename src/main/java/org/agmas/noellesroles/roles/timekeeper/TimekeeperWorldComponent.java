@@ -19,6 +19,7 @@ import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
+import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterManager;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -220,6 +221,13 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         freezeUnprotectedPlayers(serverWorld);
 
         if (this.playbackCursor <= this.targetIndex) {
+            /*
+             * GameWorldComponent 的职业表不会整体纳入时停快照：恢复它会触发角色变化副作用，
+             * 还可能产生虚假的职业变更回放。因此最终历史帧落地后，只对影子小丑做一次
+             * 有限的职业映射收束：如果恢复的 pair 成员当前仍被记录为 JESTER，
+             * 才静默改回 SHADOW_JESTER；阶段、任务和物品全部保留刚刚恢复的快照结果。
+             */
+            ShadowJesterManager.reconcileAfterRewind(serverWorld);
             finishRewind();
             return;
         }

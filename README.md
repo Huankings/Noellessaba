@@ -722,6 +722,22 @@ Harpy 开局职业 / 词条分配规则也不是 mixin；同局互斥、绑定�
 
 这样回放文本不会只剩一个“发生了某事”，而是能讲清楚是谁、做了什么、结果是什么。
 
+时停者回溯会带来一个额外的回放时间线问题：世界 tick 可能倒回，但 Wathe 已记录的未来转职事件不会自动删除。若回溯最终帧恢复了运行时职业映射（例如影子小丑由狂信者恢复为影子小丑），必须在完成运行时修复后调用 Wathe 的：
+
+```java
+GameRecordManager.recordRoleCorrection(world, playerUuid, oldRole, newRole);
+```
+
+该 correction 只影响回放职业缓存，不会单独显示一条回放，也不会触发 `ModdedRoleAssigned` 或职业初始化。Wathe 会将它作为新的职业时间线屏障，忽略回溯终点之后、但属于被废弃未来时间线的旧职业变化；屏障之后真正发生的新转职仍正常显示。
+
+NoellesRoles 接入要求：
+
+- 先恢复职业/词条自己的组件、阶段、任务和物品，再调用 `recordRoleCorrection`；
+- 只对确实需要修正的玩家调用，不要覆盖其它特殊转职；
+- 正常职业变化继续使用 `GameWorldComponent.addRole(...)` / `recordRoleChange(...)`；
+- 影子小丑的回溯恢复示例见 `roles/shadow_jester/ShadowJesterManager.reconcileAfterRewind()`；
+- 时停回溯期间应暂停会写目标切换、转职或任务回放的正常 tick 状态机，避免把历史画面重复记录成新事件。
+
 ## 开发建议
 
 - 新职业先定阵营，再定是否需要组件、packet、商店和 client。
@@ -735,11 +751,10 @@ Harpy 开局职业 / 词条分配规则也不是 mixin；同局互斥、绑定�
 
 这套仓库的结构和下面几个扩展思路很像：
 
-- `StupidExpress2.1`：集中式角色注册、动态最大值、商店改写、`ModdedRoleAssigned`。
 - `kinssaba`：大体量职业组件化、转职链、商店和 CCA 的分层方式。
-- `StarryExpress1.3.2`：更精简的中央注册 + 商店改写模板。
+- `StarryExpress1.3.2`：目前仅保留指南书 / 图鉴和装饰内容；指南书读取本仓库的职业与词条资料，不在 StarryExpress 中实现玩法。
 
-如果你打算继续加职业，建议先顺着这几个模组的写法看一遍，再决定是新建一个大包，还是直接复用现有 `roles/<role>/` 结构。
+如果你打算继续加职业，建议先顺着当前仓库和 kinssaba 的写法看一遍，再决定是新建一个大包，还是直接复用现有 `roles/<role>/` 结构。
 
 ## Wathe 托盘 API 接入（1.3.3）
 

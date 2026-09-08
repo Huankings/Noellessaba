@@ -10,9 +10,8 @@
 | 职业需求 txt | `D:\哈比快车最新源码\noellesroles\txt要求\新职业` | 历史职业需求、后续简化提示词模板。 |
 | Wathe | `D:\哈比快车最新源码\wathe\Wathe - 副本1` | 类狼人杀玩法本体，提供角色、游戏流程、商店、任务、回放、托盘、经济等公开 API。 |
 | HarpyModLoader | `D:\哈比快车最新源码\harpymodloader\HarpyModLoader1` | 扩展职业加载、角色分配、强制角色、权重、扩展词条。 |
-| StupidExpress | `D:\哈比快车最新源码\stupidexpress\StupidExpress2.1` | 其他扩展职业参考；含小偷、召集者、商店、经济、动作/客户端参考。 |
 | kinssaba | `D:\哈比快车最新源码\kinswathe\kinssaba` | 其他扩展职业参考；含 KinsWatheRoles、商店、经济、词条、Noelles 联动。 |
-| StarryExpress | `D:\哈比快车最新源码\starryexpress\StarryExpress1.3.2`，源码在 `...\src` | 其他扩展职业参考；注意构建应在父目录执行，不是在 `src` 里执行。 |
+| StarryExpress | `D:\哈比快车最新源码\starryexpress\StarryExpress1.3.2`，源码在 `...\src` | 仅作为指南书 / 图鉴和装饰 Mod 使用；指南书读取 NoellesRoles 的职业与词条资料，构建应在父目录执行。 |
 
 旧 txt 里出现的 spark、桌面旧路径等只作为历史语境；除非用户重新要求，否则以后以本文件上面的路径为准。
 
@@ -189,7 +188,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 ## 新职业开发流程
 
 1. 先把用户需求拆成字段：职业名、英文 id、阵营、职业色、欢迎公告、技能、交互方式、冷却、商店、物品、HUD/UI、回放、死亡/胜利、兼容要求、是否要求先出方案。
-2. 用 `rg` 搜本仓库已有相似实现；跨项目参考时只复制思路，不直接复制映射名。`noellesroles/harpy/kinssaba` 多为 Yarn 命名，`stupidexpress/starryexpress` 有 Mojang 官方命名痕迹。
+2. 用 `rg` 搜本仓库已有相似实现；跨项目参考时只复制思路，不直接复制映射名。`noellesroles/harpy/kinssaba` 多为 Yarn 命名，`starryexpress` 的指南书代码使用 Mojang 官方命名。
 3. 判断是否需要改 Wathe 或 Harpy。只要能在 NoellesRoles 侧通过 API 或窄 mixin 解决，就优先不动 Wathe/Harpy。玩家体力和移动速度修正优先走 `PlayerStaminaApi` / `PlayerMovementApi`，不要再自己 shadow `forwardSpeed` / `sidewaysSpeed`。
 4. 如果用户要求“先分析方案”，先给方案，不改文件。否则按需求直接实现。
 5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。这里也包括体力、速度和心情惩罚值。
@@ -423,6 +422,16 @@ Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\
 
 格式化器里优先用 `Text.translatable("replay.global.noellesroles.xxx", ...)`，物品名用 `ItemStack#getName()` 或 `Text.translatable(item.getTranslationKey())`，不要把中文/英文字符串硬编码进回放数据，除非是为了玩家掉线兜底缓存。
 
+时停者回溯后的职业显示修正必须使用 Wathe `GameRecordManager.recordRoleCorrection(world, playerUuid, oldRole, newRole)`。该接口为 `ROLE_CHANGED` 记录增加 `rewind_role_restore=true` 和回溯终点 tick；Wathe `ReplayGenerator` 会隐藏 correction 本身，并把它作为职业时间线屏障，避免被回溯废弃的未来转职事件再次覆盖后续职业显示。
+
+NoellesRoles 侧的约束：
+
+- 先恢复职业自己的运行态组件和 `GameWorldComponent` 映射，再记录 correction；
+- correction 只用于回放缓存，不调用 `ModdedRoleAssigned`，不重新发放物品/任务，不重置阶段进度；
+- 只对明确需要修复且当前职业符合预期的玩家调用，不覆盖其它特殊转职；
+- 正常时间线转职仍走 `GameWorldComponent.addRole(...)` / `GameRecordManager.recordRoleChange(...)`；
+- 回溯期间暂停会随机换目标、转狂信、补发任务或写回放的职业 tick，避免历史帧被当成新事件。
+
 ## 编译和 jar 传递顺序
 
 只改 NoellesRoles 时：
@@ -445,7 +454,6 @@ cd "D:\哈比快车最新源码\wathe\Wathe - 副本1"
 
 - `D:\哈比快车最新源码\harpymodloader\HarpyModLoader1\libs`
 - `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\libs`
-- `D:\哈比快车最新源码\stupidexpress\StupidExpress2.1\libs`
 - `D:\哈比快车最新源码\kinswathe\kinssaba\libs`
 - `D:\哈比快车最新源码\starryexpress\StarryExpress1.3.2\libs`
 
@@ -458,14 +466,11 @@ cd "D:\哈比快车最新源码\harpymodloader\HarpyModLoader1"
 
 再把 `harpymodloader-*.jar` 复制到 NoellesRoles 和其他扩展的 `libs`。
 
-4. 编译 NoellesRoles，并在其他扩展依赖 Noelles 新 API 时把 `noellesroles-*.jar` 复制到 StupidExpress、kinssaba、StarryExpress 的 `libs`。
+4. 编译 NoellesRoles，并在其他扩展依赖 Noelles 新 API 时把 `noellesroles-*.jar` 复制到 kinssaba、StarryExpress 的 `libs`。
 
 5. 编译扩展联调：
 
 ```powershell
-cd "D:\哈比快车最新源码\stupidexpress\StupidExpress2.1"
-gradle build
-
 cd "D:\哈比快车最新源码\kinswathe\kinssaba"
 .\gradlew.bat build
 
@@ -473,7 +478,7 @@ cd "D:\哈比快车最新源码\starryexpress\StarryExpress1.3.2"
 .\gradlew.bat build
 ```
 
-StupidExpress 当前按用户说明使用本机 `gradle build`。StarryExpress 的源码路径虽然给到 `src`，但构建目录是父目录 `StarryExpress1.3.2`。
+StarryExpress 当前只构建指南书和装饰内容。其源码路径虽然位于 `src`，但构建目录仍是父目录 `StarryExpress1.3.2`。
 
 ## 后续新职业提示词模板
 

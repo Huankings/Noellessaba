@@ -23,6 +23,7 @@ import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +40,14 @@ public final class ShadowJesterManager {
     }
 
     public static void tickWorld(ServerWorld world) {
+        /*
+         * 回溯播放期间，ShadowJesterComponent 会被逐帧恢复。
+         * 离线死亡补处理、早期阶段转狂信、缔结殉情和任务补发都属于正常时间线副作用，
+         * 不能在历史帧上再次执行，否则会把刚恢复的 pair 又拆掉或重新清空进度。
+         */
+        if (TimekeeperWorldComponent.KEY.get(world).isRewinding()) {
+            return;
+        }
         ShadowJesterComponent component = ShadowJesterComponent.KEY.get(world);
         tickPendingOfflineDeaths(world, component);
         if (!component.hasPair()) {
@@ -60,6 +69,49 @@ public final class ShadowJesterManager {
         handleMissingPartnerInEarlyPhases(world, component, first, second);
         handleMissingPartnerAfterVow(world, component, first, second);
         maybeEnterPhaseFour(world, component);
+    }
+
+    /**
+     * 在时停回溯最后一张历史帧应用后，修复影子小丑职业映射与世界级 pair 状态的短暂错位。
+     *
+     * <p>GameWorldComponent 不整体回滚，避免角色变更事件和其它全局配置产生副作用。
+     * 这里严格只处理用户要求的情况：恢复后的 pair 成员当前职业恰好是 JESTER 时，
+     * 才静默恢复为 SHADOW_JESTER。不会覆盖其它特殊转职，也不会触发职业分配事件。</p>
+     */
+    public static void reconcileAfterRewind(ServerWorld world) {
+        ShadowJesterComponent component = ShadowJesterComponent.KEY.get(world);
+        if (!component.hasPair()) {
+            return;
+        }
+
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
+        boolean changed = false;
+        for (UUID uuid : List.of(component.first(), component.second())) {
+            if (uuid == null || gameWorld.getRole(uuid) != NoellesRoleRegistry.JESTER) {
+                continue;
+            }
+
+            /*
+             * 直接改可变角色表而不调用 addRole：这是回溯状态收束，不是新的游戏内转职。
+             * addRole 会记录角色变化 replay，且随后若触发 ModdedRoleAssigned 会重发/清理物品；
+             * 最终历史帧已经包含正确的阶段、任务、背包和毒素状态，不能再次初始化。
+             */
+            gameWorld.getRoles().put(uuid, NoellesRoleRegistry.SHADOW_JESTER);
+            /*
+             * 运行时职业已经修复后，还要把这次“时间线分支”同步给 Wathe 回放缓存。
+             * 该事件不会单独显示，但会阻止回放继续沿用倒流前的 JESTER 职业。
+             */
+            GameRecordManager.recordRoleCorrection(
+                    world,
+                    uuid,
+                    NoellesRoleRegistry.JESTER,
+                    NoellesRoleRegistry.SHADOW_JESTER
+            );
+            changed = true;
+        }
+        if (changed) {
+            gameWorld.sync();
+        }
     }
 
     private static void tickOnlinePartner(ServerWorld world, ShadowJesterComponent component, ServerPlayerEntity player) {

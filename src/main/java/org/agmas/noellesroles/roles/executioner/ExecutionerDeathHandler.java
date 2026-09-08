@@ -41,6 +41,25 @@ public final class ExecutionerDeathHandler {
                 DeathApi.DEFAULT_PRIORITY,
                 ExecutionerDeathHandler::handleTargetDeath
         );
+        DeathApi.registerAfterAttempt(
+                NoellesRolesCore.id("executioner_retarget_after_confirmed_death"),
+                DeathApi.PRIORITY_POST_CONFIRMED_DEATH,
+                ExecutionerDeathHandler::retargetAfterConfirmedDeath
+        );
+    }
+
+    private static void retargetAfterConfirmedDeath(dev.doctor4t.wathe.api.death.DeathContext context) {
+        if (!context.confirmedDeath() || context.serverVictim() == null) {
+            return;
+        }
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(context.serverVictim().getWorld());
+        for (UUID uuid : gameWorld.getAllWithRole(NoellesRoleRegistry.EXECUTIONER)) {
+            PlayerEntity executioner = context.serverVictim().getWorld().getPlayerByUuid(uuid);
+            if (executioner instanceof ServerPlayerEntity serverExecutioner) {
+                ExecutionerPlayerComponent.KEY.get(serverExecutioner)
+                        .retargetAfterConfirmedDeath(context.serverVictim().getUuid());
+            }
+        }
     }
 
     private static void handleTargetDeath(dev.doctor4t.wathe.api.death.DeathContext context) {

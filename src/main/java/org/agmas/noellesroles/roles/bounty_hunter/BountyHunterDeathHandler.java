@@ -46,6 +46,8 @@ public final class BountyHunterDeathHandler {
                     if (component.isCurrentBountyTarget(context.victim())) {
                         // 目标仍由组件维护，奖励只在“当前悬赏目标”真正死亡后发放一次。
                         PlayerShopComponent.KEY.get(bountyHunter).addToBalance(BountyHunterConstants.BOUNTY_REWARD_COINS);
+                        // 死亡已经确认，立即推进下一个目标，不等待时间狭缝结束。
+                        component.retargetAfterConfirmedDeath(context.victim().getUuid());
                     }
                 }
         );
