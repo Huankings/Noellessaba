@@ -39,6 +39,7 @@ import org.agmas.noellesroles.client.roles.thief.ThiefStatusHud;
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperStatusHud;
 import org.agmas.noellesroles.client.roles.vulture.VultureStatusHud;
 import org.agmas.noellesroles.client.roles.winder.WinderStatusHud;
+import org.agmas.noellesroles.client.roles.commoner.CommonerRevivalHud;
 
 /**
  * NoellesRoles 通用屏幕 HUD 注册入口。
@@ -51,6 +52,7 @@ public final class NoellesHudHandlers {
     }
 
     public static void register() {
+        CommonerRevivalHud.register();
         LoversPartnerHud.register();
         DualPersonalityPartnerHud.register();
         ShadowJesterPartnerHud.register();

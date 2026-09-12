@@ -37,6 +37,7 @@ import org.agmas.noellesroles.client.instinct.roles.timekeeper.TimekeeperRiftIns
 import org.agmas.noellesroles.client.instinct.roles.waiter.WaiterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.winder.WinderInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.vecna.VecnaInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.outlaw.OutlawInstinctHandler;
 
 public final class NoellesInstinctHandlers {
     public static final int PRIORITY_HIGH_INSTINCT_COLOR = 100;
@@ -60,6 +61,7 @@ public final class NoellesInstinctHandlers {
         JesterInstinctHandler.register();
         WinderInstinctHandler.register();
         VecnaInstinctHandler.register();
+        OutlawInstinctHandler.register();
         BartenderInstinctHandler.register();
         AngelInstinctHandler.register();
         ExecutionerInstinctHandler.register();

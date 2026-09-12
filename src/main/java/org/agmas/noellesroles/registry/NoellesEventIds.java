@@ -175,6 +175,16 @@ public final class NoellesEventIds {
     public static final Identifier LICH_DOOR_CONTROL_EVENT = NoellesRolesCore.id("lich_door_control");
     public static final Identifier VECNA_MARK_APPLIED_EVENT = NoellesRolesCore.id("vecna_mark_applied");
     public static final Identifier VECNA_MARK_ENDED_EVENT = NoellesRolesCore.id("vecna_mark_ended");
+    /** 平民开始等待转化为亡命徒的全局回放事件。 */
+    public static final Identifier COMMONER_REVIVAL_STARTED_EVENT = NoellesRolesCore.id("commoner_revival_started");
+    /** 平民完成复活并进入亡命时刻的全局回放事件。 */
+    public static final Identifier OUTLAW_REVIVED_EVENT = NoellesRolesCore.id("outlaw_revived");
+    /** 亡命时刻结束（倒计时归零或掉线）的全局回放事件。 */
+    public static final Identifier OUTLAW_TIME_ENDED_EVENT = NoellesRolesCore.id("outlaw_time_ended");
+    /** 亡命徒通过击杀累计获得护盾层的全局回放事件。 */
+    public static final Identifier OUTLAW_SHIELD_GAINED_EVENT = NoellesRolesCore.id("outlaw_shield_gained");
+    /** 亡命护盾抵挡伤害时使用的稳定护盾来源 id。 */
+    public static final Identifier OUTLAW_SHIELD_SOURCE = NoellesRolesCore.id("outlaw");
 
     private NoellesEventIds() {
     }

@@ -37,6 +37,8 @@ import org.agmas.noellesroles.roles.stalker.StalkerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperDeathHandler;
 import org.agmas.noellesroles.roles.voodoo.VoodooDeathHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaDeathHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawDeathHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawDeathProtectionHandler;
 
 /**
  * noellesroles 的死亡事件总引导器。
@@ -114,6 +116,7 @@ public final class NoellesRolesDeathBootstrap {
         JasonDeathHandler.init();
         ShadowJesterDeathHandler.init();
         VecnaDeathHandler.init();
+        OutlawDeathHandler.init();
     }
 
     /**
@@ -140,6 +143,9 @@ public final class NoellesRolesDeathBootstrap {
                 return false;
             }
             if (!SpiritualistDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
+                return false;
+            }
+            if (!OutlawDeathProtectionHandler.allowDeath(playerEntity, killer, deathReason)) {
                 return false;
             }
             /*

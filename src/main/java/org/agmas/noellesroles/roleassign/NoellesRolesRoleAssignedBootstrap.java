@@ -51,6 +51,8 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperRoleAssignedHandler;
 import org.agmas.noellesroles.roles.vulture.VultureRoleAssignedHandler;
 import org.agmas.noellesroles.roles.winder.WinderRoleAssignedHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaRoleAssignedHandler;
+import org.agmas.noellesroles.roles.commoner.CommonerRoleAssignedHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawRoleAssignedHandler;
 
 /**
  * noellesroles 的职业分配事件总引导器。
@@ -137,6 +139,8 @@ public final class NoellesRolesRoleAssignedBootstrap {
             JasonRoleAssignedHandler.onRoleAssigned(player, role);
             LichRoleAssignedHandler.onRoleAssigned(player, role);
             VecnaRoleAssignedHandler.onRoleAssigned(player, role);
+            CommonerRoleAssignedHandler.onRoleAssigned(player, role);
+            OutlawRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

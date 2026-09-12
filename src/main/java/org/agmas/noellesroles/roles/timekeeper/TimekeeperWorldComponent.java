@@ -20,6 +20,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterManager;
+import org.agmas.noellesroles.roles.outlaw.OutlawManager;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -228,6 +229,7 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
              * 才静默改回 SHADOW_JESTER；阶段、任务和物品全部保留刚刚恢复的快照结果。
              */
             ShadowJesterManager.reconcileAfterRewind(serverWorld);
+            OutlawManager.reconcileAfterRewind(serverWorld);
             finishRewind();
             return;
         }

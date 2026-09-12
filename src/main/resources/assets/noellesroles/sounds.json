@@ -91,5 +91,13 @@
         "stream": true
       }
     ]
+  },
+  "ambient.resurrected_outlaw": {
+    "sounds": [
+      {
+        "name": "noellesroles:ambient/resurrected_outlaw",
+        "stream": true
+      }
+    ]
   }
 }

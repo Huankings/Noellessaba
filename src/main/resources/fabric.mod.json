@@ -96,8 +96,10 @@
       "noellesroles:insane_damned_paranoid_killer",
       "noellesroles:timekeeper",
       "noellesroles:timekeeper_world",
-      "noellesroles:shadow_jester"
-      ,"noellesroles:vecna"
+      "noellesroles:shadow_jester",
+      "noellesroles:vecna",
+      "noellesroles:outlaw_player",
+      "noellesroles:outlaw_world"
     ]
   },
   "mixins": [

@@ -20,6 +20,7 @@ import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterPhase;
 import org.agmas.noellesroles.roles.arsonist.ArsonistConstants;
 import org.agmas.noellesroles.roles.thief.ThiefItemTracker;
+import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -304,8 +305,7 @@ public final class TimekeeperRiftHandler {
             @NotNull GameWorldComponent gameWorld,
             GameFunctions.@NotNull WinStatus vanillaWinStatus
     ) {
-        if (vanillaWinStatus != GameFunctions.WinStatus.KILLERS
-                && vanillaWinStatus != GameFunctions.WinStatus.PASSENGERS) {
+        if (vanillaWinStatus == GameFunctions.WinStatus.NONE) {
             return false;
         }
 
@@ -314,6 +314,20 @@ public final class TimekeeperRiftHandler {
          * 不会继续 keepRunning；这里不能把“将要独胜的人”误判成仍在拖局。
          */
         if (alivePlayers.size() <= 1) {
+            return false;
+        }
+
+        /*
+         * 亡命徒和其它独立职业不同：即使普通游戏时间归零也必须继续对局。
+         * 因此它的真实存活阻拦需要在 TIME/KILLERS/PASSENGERS 三种原版结果下都生效。
+         */
+        if (alivePlayers.stream().anyMatch(player -> gameWorld.isRole(player, NoellesRoleRegistry.OUTLAW)
+                && OutlawPlayerComponent.KEY.get(player).isOutlawActive())) {
+            return true;
+        }
+
+        if (vanillaWinStatus != GameFunctions.WinStatus.KILLERS
+                && vanillaWinStatus != GameFunctions.WinStatus.PASSENGERS) {
             return false;
         }
 

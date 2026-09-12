@@ -1031,7 +1031,25 @@
   "replay.global.noellesroles.timekeeper_watch_broken": "%s的%s破碎",
   "replay.global.noellesroles.timekeeper_watch_repaired": "%s修复了[%s]，花费 %s §f\uE781§r",
   "replay.global.noellesroles.timekeeper_watch_upgraded": "%s将[%s]升级为[%s]，花费 %s §f\uE781§r",
-  "replay.player.unknown": "未知来源"
+  "replay.player.unknown": "未知来源",
+  "announcement.role.noellesroles.commoner": "平民！",
+  "announcement.goals.noellesroles.commoner": "保持安全，坚持到旅程结束。",
+  "announcement.role.noellesroles.outlaw": "亡命徒",
+  "announcement.goals.noellesroles.outlaw": "在麻烦找上你之前解决所有隐患...祝你好运",
+  "announcement.title.noellesroles.outlaw": "亡命徒",
+  "announcement.win.noellesroles.outlaw": "亡命徒胜利",
+  "game.win.noellesroles.outlaw": "鲜血洒遍了每一处角落....",
+  "hud.noellesroles.outlaw.revival": "将在%s秒后复活",
+  "replay.death.noellesroles.outlaw_timeout.died": "%s的亡命时间已结束",
+  "replay.death.noellesroles.outlaw_offline.died": "%s因亡命时刻掉线而死亡",
+  "replay.global.noellesroles.outlaw_revived": "%s进入了亡命时刻",
+  "replay.global.noellesroles.commoner_revival_started": "%s将在亡命倒计时结束后复活",
+  "replay.global.noellesroles.outlaw_time_ended": "%s的亡命时刻已结束",
+  "replay.global.noellesroles.outlaw_shield_gained": "%s获得了一层亡命护盾",
+  "replay.shield_blocked.noellesroles.outlaw.item": "%s的亡命护盾抵挡了来自%s的%s伤害",
+  "replay.shield_blocked.noellesroles.outlaw.by_item": "%s的亡命护盾抵挡了来自%s的%s伤害",
+  "death_reason.noellesroles.outlaw_timeout": "亡命时间结束",
+  "death_reason.noellesroles.outlaw_offline": "亡命徒掉线"
 }
 
 

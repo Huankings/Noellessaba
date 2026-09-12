@@ -57,6 +57,10 @@ import org.agmas.noellesroles.roles.thief.ThiefItemTracker;
 import org.agmas.noellesroles.roles.thief.ThiefVictoryRule;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperCommunicationManager;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawManager;
+import org.agmas.noellesroles.roles.outlaw.OutlawBlackoutHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawGunHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawVictoryRule;
 import org.agmas.noellesroles.shop.NoellesRolesShopBootstrap;
 import org.agmas.noellesroles.tray.NoellesRolesTrayEffects;
 import org.agmas.noellesroles.visibility.NoellesTargetVisibilityHandlers;
@@ -82,6 +86,9 @@ public final class NoellesRolesBootstrap {
         NoellesRolesConfig.HANDLER.load();
         NoellesRolesCommand.init();
         NoellesRolesSounds.initialize();
+        OutlawBlackoutHandler.init();
+        OutlawGunHandler.init();
+        OutlawManager.init();
         ModItems.init();
         NoellesFramingShopEntries.init();
         NoellesRolesEntities.init();
@@ -139,6 +146,7 @@ public final class NoellesRolesBootstrap {
         ConvenerSummonHandler.init();
         ConvenerTaskShieldHandler.init();
         ConvenerVictoryRule.init();
+        OutlawVictoryRule.init();
         ThiefVictoryRule.init();
         LicensedVillainVictoryRule.init();
         ShadowJesterVictoryRule.init();

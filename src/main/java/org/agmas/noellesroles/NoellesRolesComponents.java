@@ -70,6 +70,8 @@ import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WindMarkPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
+import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
+import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
@@ -112,6 +114,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, EngineerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(EngineerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, WinderPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WinderPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, VecnaPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(VecnaPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, OutlawPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(OutlawPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, MagicianPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(MagicianPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, WindMarkPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WindMarkPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, OperatorPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(OperatorPlayerComponent::new);
@@ -163,5 +166,6 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
          * 注册成世界组件后，服务端只维护一份权威数据，客户端 HUD/透视/音乐通过同步组件读取。
          */
         worldComponentFactoryRegistry.register(ShadowJesterComponent.KEY, ShadowJesterComponent::new);
+        worldComponentFactoryRegistry.register(OutlawWorldComponent.KEY, OutlawWorldComponent::new);
     }
 }

@@ -7,6 +7,7 @@ import org.agmas.noellesroles.roles.jason.JasonMovementHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererMovementHandler;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapMovementHandler;
 import org.agmas.noellesroles.roles.starstruck.StarstruckMovementHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawMovementHandler;
 
 /**
  * NoellesRoles 的玩家移动速度 API 接入入口。
@@ -26,5 +27,6 @@ public final class NoellesRolesMovementBootstrap {
         SpringTrapMovementHandler.init();
         InsaneDamnedKillerMovementHandler.init();
         JasonMovementHandler.init();
+        OutlawMovementHandler.init();
     }
 }

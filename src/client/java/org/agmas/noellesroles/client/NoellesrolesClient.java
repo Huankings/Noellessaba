@@ -73,6 +73,8 @@ import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
 import org.agmas.noellesroles.client.roles.convener.ConvenerMoodHud;
 import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterMoodHud;
 import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterMusicController;
+import org.agmas.noellesroles.client.roles.outlaw.OutlawMusicController;
+import org.agmas.noellesroles.client.roles.outlaw.OutlawTimeHud;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityClientState;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityKeybinds;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityTimeHud;
@@ -138,6 +140,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         NoellesCrosshairHandlers.register();
         NoellesClientMovementBootstrap.init();
         DualPersonalityTimeHud.register();
+        OutlawTimeHud.register();
         DualPersonalityKeybinds.init();
         NoellesHeldItemVisibilityHandlers.register();
         NoellesPsychosisHandlers.register();
@@ -201,6 +204,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             CowardClientEffects.tick(client);
             JasonAbilityClientEffects.tick(client);
             ShadowJesterMusicController.tick(client);
+            OutlawMusicController.tick(client);
             /*
              * 无恶不在持续音需要由所有客户端本地播放。
              * 服务端仍会发 START/STOP 包作为即时控制，但这里按同步组件做一层补偿，
@@ -705,6 +709,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         JasonAbilityClientEffects.reset();
         JasonAbilityClientSoundController.reset(MinecraftClient.getInstance());
         ShadowJesterMusicController.reset(MinecraftClient.getInstance());
+        OutlawMusicController.reset(MinecraftClient.getInstance());
         DualPersonalityClientState.resetTransientRenderState();
         DualPersonalityKeybinds.resetSyncedState();
         ExecutionerMoodHud.reset();

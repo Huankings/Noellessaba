@@ -17,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +95,11 @@ public final class ConvenerSummonHandler {
                     PsychoModeApi.stop(alivePlayer);
                 }
 
-                ConvenerSummonLockdownHelper.applySummonLockdown(alivePlayer);
+                /* 亡命徒被召集时武器和能力都不进入召集者封控冷却。 */
+                if (!gameWorld.isRole(alivePlayer, NoellesRoleRegistry.OUTLAW)
+                        || !OutlawPlayerComponent.KEY.get(alivePlayer).isOutlawActive()) {
+                    ConvenerSummonLockdownHelper.applySummonLockdown(alivePlayer);
+                }
                 ConvenerDisguiseComponent.KEY.get(alivePlayer).setTimedDisguise(disguiseTarget, ConvenerConstants.SUMMON_MORPH_TICKS);
             }
 

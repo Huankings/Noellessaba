@@ -43,6 +43,8 @@ public final class NoellesRoleLimitsBootstrap {
         Harpymodloader.setRoleMaximum(NoellesRoleIds.JASON_ID, JasonConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.LICH_ID, LichConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.VECNA_ID, VecnaConstants.MAX_ROLE_COUNT);
+        Harpymodloader.setRoleMaximum(NoellesRoleIds.OUTLAW_ID, 0);
+        Harpymodloader.setRoleMaximum(NoellesRoleIds.COMMONER_ID, 0);
         Harpymodloader.MODIFIER_MAX.put(NoellesRoleIds.LOVERS_ID, LoversConstants.MAX_RANDOM_PAIRS);
         /*
          * 双重人格的随机上限不是固定值：

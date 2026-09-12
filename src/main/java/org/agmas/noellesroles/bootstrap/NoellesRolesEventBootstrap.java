@@ -109,6 +109,10 @@ import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
+import org.agmas.noellesroles.roles.commoner.CommonerRoleLimitHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawManager;
+import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
+import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -192,6 +196,7 @@ public final class NoellesRolesEventBootstrap {
              * 这样调试重置、回合切换或其它强制重置入口不会留下“非亡语杀手仍躺尸”的同步残留。
              */
             InsaneDamnedKillerPlayerComponent.KEY.get(playerEntity).reset();
+            OutlawPlayerComponent.KEY.get(playerEntity).reset();
             JasonWoundManager.resetPlayer(playerEntity);
             JasonAbilityManager.resetPlayer(playerEntity);
             JasonAbilityBlindnessComponent.KEY.get(playerEntity).reset();
@@ -216,6 +221,7 @@ public final class NoellesRolesEventBootstrap {
                  * 时停者自己在窗口内死亡时，狭缝玩家也会马上回到普通死亡旁观和死亡语音频道。
                  */
                 TimekeeperRiftHandler.tickActiveRifts(world);
+                OutlawManager.tickWorld(world);
                 ShadowJesterManager.tickWorld(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     float moodDrainMultiplier;
@@ -290,6 +296,7 @@ public final class NoellesRolesEventBootstrap {
             } else {
                 Harpymodloader.setRoleMaximum(NoellesRoleRegistry.HACKER, 0);
             }
+            CommonerRoleLimitHandler.refresh(dev.doctor4t.wathe.game.GameFunctions.getReadyPlayerCount(server.getOverworld()));
             /*
              * 执照恶棍沿用 kinssaba 原逻辑：按当前在线人数决定是否进入随机池。
              * 这里不使用 ready player count，是为了避免迁移后生成门槛和原 mod 出现细微漂移。
@@ -329,6 +336,7 @@ public final class NoellesRolesEventBootstrap {
             TimekeeperWorldComponent.KEY.get(serverWorld).reset();
             JasonFireWorldComponent.KEY.get(serverWorld).reset();
             ShadowJesterComponent.KEY.get(serverWorld).clear();
+            OutlawWorldComponent.KEY.get(serverWorld).reset();
             JasonWoundManager.resetRoundTransientState();
             JasonAbilityManager.resetRoundTransientState(serverWorld);
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);

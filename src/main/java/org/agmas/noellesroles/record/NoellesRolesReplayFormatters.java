@@ -2358,4 +2358,45 @@ public final class NoellesRolesReplayFormatters {
         }
         return Text.translatable("replay.death.noellesroles.spiritualist_soul_guard.died", spiritualist, protectedHost);
     }
+
+    public static Text formatOutlawTimeoutDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.outlaw_timeout.died", victim);
+    }
+
+    public static Text formatOutlawOfflineDeath(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        return victim == null ? null : Text.translatable("replay.death.noellesroles.outlaw_offline.died", victim);
+    }
+
+    public static Text formatOutlawRevived(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.outlaw_revived", actor);
+    }
+
+    public static Text formatOutlawTimeEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.outlaw_time_ended", actor);
+    }
+
+    public static Text formatOutlawShieldGained(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.outlaw_shield_gained", actor);
+    }
+
+    public static Text formatOutlawShieldBlocked(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text victim = targetText(event, match);
+        Text attacker = actorText(event, match);
+        if (victim == null) {
+            return null;
+        }
+        Text damage = DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        Text source = attacker == null ? Text.translatable("replay.player.unknown") : attacker;
+        return Text.translatable("replay.shield_blocked.noellesroles.outlaw.by_item", victim, source, damage);
+    }
+
+    public static Text formatCommonerRevivalStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.commoner_revival_started", actor);
+    }
 }

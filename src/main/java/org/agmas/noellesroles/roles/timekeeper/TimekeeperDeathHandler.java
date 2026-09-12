@@ -5,6 +5,7 @@ import dev.doctor4t.wathe.api.death.DeathDecision;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.death.DeathProcessComponent;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
+import org.agmas.noellesroles.registry.NoellesDeathReasons;
 
 /**
  * 时停者“时间狭缝”的死亡流程接入。
@@ -44,7 +45,8 @@ public final class TimekeeperDeathHandler {
                 DeathApi.PRIORITY_POST_CONFIRMED_DEATH,
                 context -> {
                     ServerPlayerEntity victim = context.serverVictim();
-                    if (victim != null && context.confirmedDeath()) {
+                    if (victim != null && context.confirmedDeath()
+                            && !NoellesDeathReasons.OUTLAW_OFFLINE_DEATH_REASON.equals(context.deathReason())) {
                         /*
                          * 时间狭缝必须等 Wathe 确认死亡后再启动：
                          * 这样免死、疯魔护盾、双重人格致死转化都不会误把玩家拉进狭缝。

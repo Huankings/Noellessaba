@@ -77,6 +77,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.PAN_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatPanShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.CONVENER_COUNTER_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatConvenerCounterShieldBlocked);
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.ALLERGIC_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatAllergicShieldBlocked);
+        ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.OUTLAW_SHIELD_SOURCE, NoellesRolesReplayFormatters::formatOutlawShieldBlocked);
 
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DELUSION_STARTED_EVENT, NoellesRolesReplayFormatters::formatDelusionStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.DELUSION_ENDED_EVENT, NoellesRolesReplayFormatters::formatDelusionEnded);
@@ -214,6 +215,10 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_EXIT_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierExit);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VECNA_MARK_APPLIED_EVENT, NoellesRolesReplayFormatters::formatVecnaMarkApplied);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.VECNA_MARK_ENDED_EVENT, NoellesRolesReplayFormatters::formatVecnaMarkEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OUTLAW_REVIVED_EVENT, NoellesRolesReplayFormatters::formatOutlawRevived);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OUTLAW_TIME_ENDED_EVENT, NoellesRolesReplayFormatters::formatOutlawTimeEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OUTLAW_SHIELD_GAINED_EVENT, NoellesRolesReplayFormatters::formatOutlawShieldGained);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.COMMONER_REVIVAL_STARTED_EVENT, NoellesRolesReplayFormatters::formatCommonerRevivalStarted);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.LICH_DOOR_CONTROL_EVENT, NoellesRolesReplayFormatters::formatLichDoorControl);
 
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.DEATH_REASON_THROWING_AXE, NoellesRolesReplayFormatters::formatThrowingAxeDeath);
@@ -238,5 +243,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.JASON_BURN_DEATH_REASON, NoellesRolesReplayFormatters::formatJasonBurnDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.SKELETON_DEATH_REASON, NoellesRolesReplayFormatters::formatLichSkeletonDeath);
         ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.REVERSE_DEATH_REASON, NoellesRolesReplayFormatters::formatVecnaReverseDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.OUTLAW_TIMEOUT_DEATH_REASON, NoellesRolesReplayFormatters::formatOutlawTimeoutDeath);
+        ReplayRegistry.registerDeathReasonFormatter(NoellesDeathReasons.OUTLAW_OFFLINE_DEATH_REASON, NoellesRolesReplayFormatters::formatOutlawOfflineDeath);
     }
 }

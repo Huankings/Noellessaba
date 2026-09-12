@@ -33,6 +33,8 @@ import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 import org.agmas.noellesroles.roles.thief.ThiefConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
+import org.agmas.noellesroles.roles.commoner.CommonerConstants;
+import org.agmas.noellesroles.roles.outlaw.OutlawConstants;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -101,6 +103,8 @@ public final class NoellesRoleRegistry {
     public static final Role TIMEKEEPER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.TIMEKEEPER_ID, TimekeeperConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
     //风灵师(好人)：可以漂浮玩家，购买风弹和风之印记，风之印记可标记人，当周围有人举刀会被紧急抬升
     public static final Role WINDER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.WINDER_ID, new Color(66, 215, 215).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    //平民(好人)：普通平民模板；仅在人数超过 12 人时进入 Harpy 随机池。
+    public static final Role COMMONER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.COMMONER_ID, CommonerConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
 
 /**
  * 义警：帮助好人消灭凶手
@@ -195,6 +199,8 @@ public final class NoellesRoleRegistry {
     public static final Role LICENSED_VILLAIN = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.LICENSED_VILLAIN_ID, LicensedVillainConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, LicensedVillainConstants.getMaxSprintTimeTicks(), false));
     //影子小丑(独立中立)：成对出现，先各自完成任务，再选择杀死另一半转狂信或缔结誓言独立获胜
     public static final Role SHADOW_JESTER = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.SHADOW_JESTER_ID, ShadowJesterConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, ShadowJesterConstants.MAX_SPRINT_TIME_TICKS, true));
+    //亡命徒(独立中立)：由平民死亡后复活转化，拥有专属亡命倒计时和独立胜利。
+    public static final Role OUTLAW = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.OUTLAW_ID, OutlawConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, -1, true));
 ///
     private NoellesRoleRegistry() {
     }

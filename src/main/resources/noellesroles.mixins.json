@@ -78,7 +78,8 @@
     "roles.jason.JasonAbilityEntitySoundMixin",
     "roles.jason.JasonKnifeExecutionCooldownMixin",
     "roles.jason.JasonWoundedRevolverPickupMixin"
-    ,"roles.vecna.VecnaKnifeCooldownMixin"
+    ,"roles.vecna.VecnaKnifeCooldownMixin",
+    "roles.outlaw.OutlawKnifeCooldownMixin"
 
   ],
   "injectors": {

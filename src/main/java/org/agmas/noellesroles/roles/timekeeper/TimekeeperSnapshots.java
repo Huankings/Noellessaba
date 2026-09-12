@@ -87,6 +87,8 @@ import org.agmas.noellesroles.roles.recaller.RecallerPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
+import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
+import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
@@ -206,7 +208,9 @@ public final class TimekeeperSnapshots {
              * 在每帧恢复后重新压回，避免时停者通过自己的回溯把发动成本抹掉。
              */
             component("noellesroles:timekeeper", TimekeeperPlayerComponent.KEY)
-            ,component("noellesroles:vecna", org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent.KEY)
+            ,component("noellesroles:vecna", org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent.KEY),
+            /* 平民复活倒计时、亡命时间、护盾和逐级缓慢都必须随时间线回滚。 */
+            component("noellesroles:outlaw_player", OutlawPlayerComponent.KEY)
     );
 
     private static final List<ComponentEntry> WORLD_COMPONENTS = List.of(
@@ -240,7 +244,9 @@ public final class TimekeeperSnapshots {
              * 影子小丑的配对、双方阶段、任务计数、缔结申请和谢幕音乐主题都属于局内时间线。
              * 如果不纳入快照，时停者回溯后可能出现“玩家回到第三阶段前，组件仍停在第四阶段”的错位。
              */
-            component("noellesroles:shadow_jester", ShadowJesterComponent.KEY)
+            component("noellesroles:shadow_jester", ShadowJesterComponent.KEY),
+            /* 活跃亡命徒集合和专属停电/全场音乐状态同样属于世界运行态。 */
+            component("noellesroles:outlaw_world", OutlawWorldComponent.KEY)
     );
 
     private TimekeeperSnapshots() {
