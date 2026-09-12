@@ -99,7 +99,8 @@
       "noellesroles:shadow_jester",
       "noellesroles:vecna",
       "noellesroles:outlaw_player",
-      "noellesroles:outlaw_world"
+      "noellesroles:outlaw_world",
+      "noellesroles:licensed_villain_moment"
     ]
   },
   "mixins": [

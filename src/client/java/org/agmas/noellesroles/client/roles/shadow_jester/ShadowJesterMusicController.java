@@ -10,6 +10,7 @@ import org.agmas.noellesroles.NoellesRolesSounds;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterMusicTheme;
+import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -25,6 +26,13 @@ public final class ShadowJesterMusicController {
     public static void tick(MinecraftClient client) {
         if (client == null || client.world == null || client.player == null) {
             reset(client);
+            return;
+        }
+
+        if (OutlawWorldComponent.KEY.get(client.world).hasActiveOutlaw()) {
+            /* 亡命时刻开始时必须立即让位，不能继续用普通谢幕结束时的淡出流程。 */
+            stopLoopImmediately();
+            activeTheme = ShadowJesterMusicTheme.NONE;
             return;
         }
 
@@ -49,7 +57,7 @@ public final class ShadowJesterMusicController {
 
     private static ShadowJesterMusicTheme resolveDesiredTheme(ShadowJesterComponent component) {
         ShadowJesterMusicTheme theme = component.getPhaseFourTheme();
-        if (component.areBothPairMembersConfirmedOrPendingDeath()) {
+        if (component.isPhaseFourSuspended() || component.areBothPairMembersConfirmedOrPendingDeath()) {
             return ShadowJesterMusicTheme.NONE;
         }
         /*

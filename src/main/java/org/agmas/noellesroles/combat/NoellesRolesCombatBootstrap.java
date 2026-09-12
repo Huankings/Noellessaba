@@ -6,6 +6,7 @@ import org.agmas.noellesroles.roles.coward.CowardGunCooldownHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerGunPenaltyHandler;
 import org.agmas.noellesroles.roles.jester.JesterGunTargetHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainGunPenaltyHandler;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainGunCooldownHandler;
 import org.agmas.noellesroles.roles.magician.MagicianGunHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingGunPenaltyHandler;
 import org.agmas.noellesroles.roles.robber.RobberGunHandler;
@@ -43,6 +44,7 @@ public final class NoellesRolesCombatBootstrap {
         JesterGunTargetHandler.init();
         ExecutionerGunPenaltyHandler.init();
         LicensedVillainGunPenaltyHandler.init();
+        LicensedVillainGunCooldownHandler.init();
         ShadowJesterGunHandler.init();
         MorphlingGunPenaltyHandler.init();
         VecnaGunHandler.init();

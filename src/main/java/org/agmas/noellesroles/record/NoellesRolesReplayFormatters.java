@@ -130,6 +130,18 @@ public final class NoellesRolesReplayFormatters {
         return Text.translatable("replay.global.noellesroles.shadow_jester_stage", actor, phase, definition);
     }
 
+    @Nullable
+    public static Text formatLicensedVillainMomentStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.licensed_villain_moment_started", actor);
+    }
+
+    @Nullable
+    public static Text formatLicensedVillainMomentEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.licensed_villain_moment_ended", actor);
+    }
+
     private static Text whiteBracketedItem(NbtCompound data, ServerWorld world) {
         /*
          * 用户希望飞斧回放变成“[%s]”的通用模板，并且中括号内用白色显示。

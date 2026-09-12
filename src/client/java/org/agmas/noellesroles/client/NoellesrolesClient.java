@@ -67,6 +67,7 @@ import org.agmas.noellesroles.client.roles.jester.JesterMoodHud;
 import org.agmas.noellesroles.client.roles.lich.LichMoodHud;
 import org.agmas.noellesroles.client.roles.vecna.VecnaMoodHud;
 import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMoodHud;
+import org.agmas.noellesroles.client.roles.licensed_villain.LicensedVillainMusicController;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererClientEffects;
 import org.agmas.noellesroles.client.roles.rememberer.RemembererMoodHud;
 import org.agmas.noellesroles.client.roles.robot.RobotMoodHud;
@@ -204,6 +205,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             CowardClientEffects.tick(client);
             JasonAbilityClientEffects.tick(client);
             ShadowJesterMusicController.tick(client);
+            LicensedVillainMusicController.tick(client);
             OutlawMusicController.tick(client);
             /*
              * 无恶不在持续音需要由所有客户端本地播放。
@@ -709,6 +711,7 @@ public class NoellesrolesClient implements ClientModInitializer {
         JasonAbilityClientEffects.reset();
         JasonAbilityClientSoundController.reset(MinecraftClient.getInstance());
         ShadowJesterMusicController.reset(MinecraftClient.getInstance());
+        LicensedVillainMusicController.reset(MinecraftClient.getInstance());
         OutlawMusicController.reset(MinecraftClient.getInstance());
         DualPersonalityClientState.resetTransientRenderState();
         DualPersonalityKeybinds.resetSyncedState();

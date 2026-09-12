@@ -63,6 +63,7 @@ public final class ShadowJesterGunHandler {
         }
         ShadowJesterComponent component = ShadowJesterComponent.KEY.get(context.shooter().getWorld());
         return component.getPhase(context.shooter().getUuid()) == ShadowJesterPhase.CURTAIN_CALL
+                && !component.isPhaseFourSuspended()
                 ? ShadowJesterConstants.PHASE_FOUR_REVOLVER_COOLDOWN_TICKS
                 : currentCooldown;
     }

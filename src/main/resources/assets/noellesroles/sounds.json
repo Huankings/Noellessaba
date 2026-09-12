@@ -84,6 +84,14 @@
       }
     ]
   },
+  "ambient.licensed_villain": {
+    "sounds": [
+      {
+        "name": "noellesroles:ambient/licensed_villain",
+        "stream": true
+      }
+    ]
+  },
   "ambient.lich": {
     "sounds": [
       {

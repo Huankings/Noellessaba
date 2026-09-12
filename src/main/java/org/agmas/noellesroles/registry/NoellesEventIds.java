@@ -161,6 +161,10 @@ public final class NoellesEventIds {
     public static final Identifier JASON_ABILITY_SCARED_EVENT = NoellesRolesCore.id("jason_ability_scared");
     public static final Identifier JASON_ABILITY_SCARE_ENDED_EVENT = NoellesRolesCore.id("jason_ability_scare_ended");
     public static final Identifier SHADOW_JESTER_STAGE_EVENT = NoellesRolesCore.id("shadow_jester_stage");
+    /** 执照恶棍首次满足阵营全灭条件并进入时刻。暂停后恢复不会重复记录。 */
+    public static final Identifier LICENSED_VILLAIN_MOMENT_STARTED_EVENT = NoellesRolesCore.id("licensed_villain_moment_started");
+    /** 已进入过时刻的执照恶棍确认死亡，包含其正在为亡命徒让位的情况。 */
+    public static final Identifier LICENSED_VILLAIN_MOMENT_ENDED_EVENT = NoellesRolesCore.id("licensed_villain_moment_ended");
     /** 巫妖骷髅命中玩家时的全局回放事件，用于显示“谁发射的哪类骷髅命中了谁”。 */
     public static final Identifier LICH_SKELETON_HIT_EVENT = NoellesRolesCore.id("lich_skeleton_hit");
     /** 巫妖成功释放魔法屏障后的全局回放事件，只在屏障实体成功生成后记录。 */

@@ -21,6 +21,7 @@ public interface NoellesRolesSounds {
     SoundEvent AMBIENT_JASON_JUMP_SCARE = REGISTRAR.create("ambient.jason_jump_scare");
     SoundEvent AMBIENT_SHADOW_JESTER_KING = REGISTRAR.create("ambient.shadow_jester_king");
     SoundEvent AMBIENT_SHADOW_JESTER_QUEEN = REGISTRAR.create("ambient.shadow_jester_queen");
+    SoundEvent AMBIENT_LICENSED_VILLAIN = REGISTRAR.create("ambient.licensed_villain");
     SoundEvent AMBIENT_LICH = REGISTRAR.create("ambient.lich");
     SoundEvent AMBIENT_VECNA = REGISTRAR.create("ambient.vecna");
     SoundEvent AMBIENT_RESURRECTED_OUTLAW = REGISTRAR.create("ambient.resurrected_outlaw");

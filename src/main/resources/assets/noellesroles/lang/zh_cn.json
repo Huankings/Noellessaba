@@ -37,6 +37,8 @@
   "announcement.win.noellesroles.licensed_villain": "执照恶棍胜利",
   "game.win.noellesroles.licensed_villain": "正义已得到伸张，以我的方式",
   "tip.noellesroles.licensed_villain.weapon": "执照恶棍已经获取了武器！",
+  "replay.global.noellesroles.licensed_villain_moment_started": "%s进入了执照恶棍时刻",
+  "replay.global.noellesroles.licensed_villain_moment_ended": "%s的执照恶棍时刻结束",
 
   "announcement.goals.noellesroles.arsonist": "泼上汽油，等待时机，点火焚烧",
   "announcement.role.noellesroles.arsonist": "纵火犯",

@@ -224,6 +224,36 @@ public class ModItems {
     );
 
     /**
+     * 标记“执照恶棍时刻临时给予”的 Wathe 物品。
+     *
+     * <p>执照恶棍时刻会被亡命时刻临时压制。回收时只删除带此标记的副本，
+     * 避免误删玩家原本持有、商店购买或其它职业给予的同类物品。</p>
+     */
+    public static final ComponentType<Boolean> LICENSED_VILLAIN_MOMENT_GRANTED = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "licensed_villain_moment_granted"),
+            ComponentType.<Boolean>builder()
+                    .codec(Codec.BOOL)
+                    .packetCodec(PacketCodecs.BOOL)
+                    .build()
+    );
+
+    /**
+     * 标记“影子小丑第四阶段临时补发”的 Wathe 物品。
+     *
+     * <p>第三阶段已经获得的左轮或开锁器不会带这个标记，因此亡命徒让位时
+     * 只会撤回谢幕时刻的额外补给，不会破坏缔结誓言阶段本来就拥有的机制。</p>
+     */
+    public static final ComponentType<Boolean> SHADOW_JESTER_CURTAIN_CALL_GRANTED = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "shadow_jester_curtain_call_granted"),
+            ComponentType.<Boolean>builder()
+                    .codec(Codec.BOOL)
+                    .packetCodec(PacketCodecs.BOOL)
+                    .build()
+    );
+
+    /**
      * 濒毁怀表当前状态。
      *
      * <p>0=普通、1=损坏、2=精致。这里刻意用 int 而不是字符串，

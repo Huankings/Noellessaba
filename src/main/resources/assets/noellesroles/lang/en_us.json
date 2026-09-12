@@ -33,6 +33,8 @@
     "announcement.win.noellesroles.licensed_villain": "Licensed Villain Win!",
     "game.win.noellesroles.licensed_villain": "The licensed villain ended everyone's life!",
     "tip.noellesroles.licensed_villain.weapon": "Licensed Villain has obtained weapon!",
+    "replay.global.noellesroles.licensed_villain_moment_started": "%s entered the licensed villain moment",
+    "replay.global.noellesroles.licensed_villain_moment_ended": "%s's licensed villain moment ended",
 
     "announcement.goals.noellesroles.arsonist": "Douse passengers in oil, then ignite them when the time is right.",
     "announcement.role.noellesroles.arsonist": "Arsonist",

@@ -146,6 +146,8 @@ public final class OutlawManager {
         );
         state.startOutlaw(initialLayers);
         OutlawWorldComponent.KEY.get(world).setOutlawActive(player.getUuid(), true);
+        /* 亡命时刻从这一行起已经生效，立即暂停两种低优先级时刻，不能等到下一次客户端 tick。 */
+        OutlawMomentPriorityHandler.onOutlawStarted(world);
         clearMoodTasks(player);
         TrainVoicePlugin.resetPlayer(player.getUuid());
         player.addStatusEffect(new StatusEffectInstance(
@@ -243,6 +245,8 @@ public final class OutlawManager {
         state.finishOutlaw();
         victim.removeStatusEffect(StatusEffects.SLOWNESS);
         OutlawWorldComponent.KEY.get(victim.getServerWorld()).setOutlawActive(victim.getUuid(), false);
+        /* 只有最后一名活跃亡命徒死亡后，协调器才会按影子小丑优先级恢复其它时刻。 */
+        OutlawMomentPriorityHandler.onOutlawEnded(victim.getServerWorld());
     }
 
     public static void recordOutlawKill(ServerPlayerEntity killer) {
@@ -286,5 +290,7 @@ public final class OutlawManager {
             }
         }
         gameWorld.sync();
+        /* 世界组件与玩家组件都完成回溯后，再统一修复三种时刻的暂停和恢复关系。 */
+        OutlawMomentPriorityHandler.reconcile(world);
     }
 }

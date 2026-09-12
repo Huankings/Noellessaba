@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.roles.shadow_jester;
 
+import dev.doctor4t.wathe.api.Faction;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -10,6 +11,7 @@ import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.util.AnnounceWelcomePayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -17,11 +19,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
+import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
@@ -52,6 +57,18 @@ public final class ShadowJesterManager {
         tickPendingOfflineDeaths(world, component);
         if (!component.hasPair()) {
             return;
+        }
+
+        /*
+         * 亡命时刻拥有最高优先级。影子小丑仍保留第四阶段本身，
+         * 这里只暂停第四阶段新增的音乐、补给与左轮冷却，第三阶段誓言机制不受影响。
+         */
+        if (component.getPhaseFourTheme() != ShadowJesterMusicTheme.NONE) {
+            if (OutlawWorldComponent.KEY.get(world).hasActiveOutlaw()) {
+                pausePhaseFourForOutlaw(world);
+            } else {
+                resumePhaseFourAfterOutlaw(world);
+            }
         }
 
         ServerPlayerEntity first = player(world, component.first());
@@ -322,6 +339,10 @@ public final class ShadowJesterManager {
         if (!component.hasPair() || component.getPhaseFourTheme() != ShadowJesterMusicTheme.NONE) {
             return;
         }
+        if (OutlawWorldComponent.KEY.get(world).hasActiveOutlaw()) {
+            /* 条件已经满足但亡命时刻仍在持续时先不进入，最后一名亡命徒死亡后会重新计算。 */
+            return;
+        }
         if (component.areBothPairMembersConfirmedOrPendingDeath()) {
             /*
              * 这里只拦“双方已经有明确死亡事实”的情况。
@@ -340,12 +361,57 @@ public final class ShadowJesterManager {
             ServerPlayerEntity player = player(world, uuid);
             if (player != null) {
                 player.getItemCooldownManager().remove(WatheItems.REVOLVER);
-                giveIfMissing(player, WatheItems.REVOLVER);
-                giveIfMissing(player, WatheItems.LOCKPICK);
-                giveIfMissing(player, WatheItems.CROWBAR);
+                giveCurtainCallItemIfMissing(player, WatheItems.REVOLVER);
+                giveCurtainCallItemIfMissing(player, WatheItems.LOCKPICK);
+                giveCurtainCallItemIfMissing(player, WatheItems.CROWBAR);
                 recordStage(player, ShadowJesterConstants.PHASE_FOUR_TEXT_KEY, ShadowJesterConstants.PHASE_FOUR_DEFINITION_KEY);
             }
         }
+    }
+
+    public static void pausePhaseFourForOutlaw(ServerWorld world) {
+        ShadowJesterComponent component = ShadowJesterComponent.KEY.get(world);
+        if (component.getPhaseFourTheme() == ShadowJesterMusicTheme.NONE) {
+            return;
+        }
+
+        boolean newlySuspended = !component.isPhaseFourSuspended();
+        if (newlySuspended) {
+            component.setPhaseFourSuspended(true);
+            removeCurtainCallGrantedItems(world);
+            for (UUID uuid : List.of(component.first(), component.second())) {
+                ServerPlayerEntity player = player(world, uuid);
+                if (player != null && player.getItemCooldownManager().isCoolingDown(WatheItems.REVOLVER)) {
+                    /* 当前剩余冷却无法通过公开 API 精确读取；暂停时改回该玩家的 Wathe 正常左轮冷却。 */
+                    player.getItemCooldownManager().set(WatheItems.REVOLVER, dev.doctor4t.wathe.game.GameConstants.getRevolverCooldown(player));
+                }
+            }
+        } else {
+            /* 暂停期间重新上线的玩家，其持久化背包也必须继续接受临时物品回收。 */
+            removeCurtainCallGrantedItemsFromInventories(world);
+        }
+    }
+
+    public static void resumePhaseFourAfterOutlaw(ServerWorld world) {
+        ShadowJesterComponent component = ShadowJesterComponent.KEY.get(world);
+        if (!component.isPhaseFourSuspended()
+                || component.getPhaseFourTheme() == ShadowJesterMusicTheme.NONE
+                || component.areBothPairMembersConfirmedOrPendingDeath()) {
+            return;
+        }
+
+        component.setPhaseFourSuspended(false);
+        for (UUID uuid : List.of(component.first(), component.second())) {
+            ServerPlayerEntity player = player(world, uuid);
+            if (player == null) {
+                continue;
+            }
+            player.getItemCooldownManager().remove(WatheItems.REVOLVER);
+            giveCurtainCallItemIfMissing(player, WatheItems.REVOLVER);
+            giveCurtainCallItemIfMissing(player, WatheItems.LOCKPICK);
+            giveCurtainCallItemIfMissing(player, WatheItems.CROWBAR);
+        }
+        /* 恢复的是同一次谢幕时刻，按需求不重复记录第四阶段进入回放。 */
     }
 
     private static void maybeEnterPhaseFour(ServerWorld world, ShadowJesterComponent component) {
@@ -362,19 +428,33 @@ public final class ShadowJesterManager {
         if (component.areBothPairMembersConfirmedOrPendingDeath()) {
             return;
         }
+        if (OutlawWorldComponent.KEY.get(world).hasActiveOutlaw()) {
+            return;
+        }
 
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
         List<ServerPlayerEntity> alive = world.getPlayers().stream()
-                .filter(GameFunctions::isPlayerAliveAndSurvival)
+                /*
+                 * 时间狭缝会把刚死亡的玩家临时标记为 Wathe 的“特殊存活旁观”，
+                 * 单独使用 GameFunctions.isPlayerAliveAndSurvival 会让已经死亡的最后一名杀手
+                 * 在 30 秒狭缝期间继续卡住第四阶段。谢幕时刻判断的是阵营是否已经死亡，
+                 * 因此这里必须把处于时间狭缝的玩家排除。
+                 */
+                .filter(ShadowJesterManager::isActiveAlive)
                 .filter(player -> !component.contains(player.getUuid()))
                 .toList();
         boolean civiliansAlive = alive.stream().anyMatch(player -> {
             Role role = gameWorld.getRole(player);
-            return role != null && (role.isInnocent() || role.getFaction() == dev.doctor4t.wathe.api.Faction.VIGILANTE);
+            /* 好人阵营严格只包含 Wathe 显式注册的平民和义警，不再使用旧 isInnocent 标志推断。 */
+            return role != null && (role.getFaction() == Faction.CIVILIAN || role.getFaction() == Faction.VIGILANTE);
         });
         boolean killersAlive = alive.stream().anyMatch(player -> {
             Role role = gameWorld.getRole(player);
-            return role != null && role.canUseKiller();
+            /*
+             * canUseKiller 只代表能否使用杀手功能，并不等价于阵营。
+             * 扩展职业即使拥有杀手能力，只要显式 Faction 不是 KILLER，就不能阻挡杀手阵营全灭判定。
+             */
+            return role != null && role.getFaction() == Faction.KILLER;
         });
         if (!civiliansAlive) {
             enterPhaseFour(world, ShadowJesterMusicTheme.KING);
@@ -407,9 +487,36 @@ public final class ShadowJesterManager {
         }
     }
 
-    private static void giveIfMissing(ServerPlayerEntity player, Item item) {
-        if (!player.getInventory().contains(new ItemStack(item))) {
-            player.getInventory().offerOrDrop(item.getDefaultStack());
+    private static void giveCurtainCallItemIfMissing(ServerPlayerEntity player, Item item) {
+        if (!player.getInventory().contains(stack -> stack.isOf(item))) {
+            ItemStack stack = item.getDefaultStack();
+            stack.set(ModItems.SHADOW_JESTER_CURTAIN_CALL_GRANTED, true);
+            player.getInventory().offerOrDrop(stack);
+        }
+    }
+
+    private static void removeCurtainCallGrantedItems(ServerWorld world) {
+        /*
+         * 来源标记随 ItemStack 一起移动，因此这里同时清理所有玩家背包和地面掉落实体。
+         * 第三阶段原本给予的普通左轮/开锁器没有标记，会被完整保留。
+         */
+        removeCurtainCallGrantedItemsFromInventories(world);
+        for (ItemEntity itemEntity : world.getEntitiesByType(TypeFilter.equals(ItemEntity.class), ignored -> true)) {
+            if (itemEntity.getStack().getOrDefault(ModItems.SHADOW_JESTER_CURTAIN_CALL_GRANTED, false)) {
+                itemEntity.discard();
+            }
+        }
+    }
+
+    private static void removeCurtainCallGrantedItemsFromInventories(ServerWorld world) {
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            player.getInventory().remove(
+                    stack -> stack.getOrDefault(ModItems.SHADOW_JESTER_CURTAIN_CALL_GRANTED, false),
+                    Integer.MAX_VALUE,
+                    player.getInventory()
+            );
+            player.getInventory().markDirty();
+            player.playerScreenHandler.sendContentUpdates();
         }
     }
 

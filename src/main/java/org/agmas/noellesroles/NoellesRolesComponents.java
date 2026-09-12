@@ -72,6 +72,7 @@ import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
@@ -167,5 +168,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
          */
         worldComponentFactoryRegistry.register(ShadowJesterComponent.KEY, ShadowJesterComponent::new);
         worldComponentFactoryRegistry.register(OutlawWorldComponent.KEY, OutlawWorldComponent::new);
+        /* 执照恶棍时刻需要向所有客户端同步音乐状态，并随世界时间线一起保存。 */
+        worldComponentFactoryRegistry.register(LicensedVillainMomentWorldComponent.KEY, LicensedVillainMomentWorldComponent::new);
     }
 }

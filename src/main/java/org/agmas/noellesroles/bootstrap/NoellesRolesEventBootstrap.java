@@ -76,6 +76,8 @@ import org.agmas.noellesroles.roles.jason.JasonWoundManager;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentManager;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackManager;
 import org.agmas.noellesroles.roles.morphling.MorphBodyDisguiseWorldComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingReagentService;
@@ -223,6 +225,8 @@ public final class NoellesRolesEventBootstrap {
                 TimekeeperRiftHandler.tickActiveRifts(world);
                 OutlawManager.tickWorld(world);
                 ShadowJesterManager.tickWorld(world);
+                /* 先让影子小丑完成阶段重算，再判断低优先级的执照恶棍时刻是否可以进入。 */
+                LicensedVillainMomentManager.tickWorld(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     float moodDrainMultiplier;
                     if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
@@ -337,6 +341,7 @@ public final class NoellesRolesEventBootstrap {
             JasonFireWorldComponent.KEY.get(serverWorld).reset();
             ShadowJesterComponent.KEY.get(serverWorld).clear();
             OutlawWorldComponent.KEY.get(serverWorld).reset();
+            LicensedVillainMomentWorldComponent.KEY.get(serverWorld).reset();
             JasonWoundManager.resetRoundTransientState();
             JasonAbilityManager.resetRoundTransientState(serverWorld);
             MagicianPlaybackManager.cleanupAllPlaybackEntities(serverWorld);

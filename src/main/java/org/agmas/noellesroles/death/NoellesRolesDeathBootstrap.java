@@ -23,6 +23,7 @@ import org.agmas.noellesroles.roles.jason.JasonDeathHandler;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperDeathRewardHandler;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerDeathHandler;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackDeathHandler;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainDeathHandler;
 import org.agmas.noellesroles.roles.mimic.MimicBackfireDeathHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingDeathHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerDeathHandler;
@@ -114,6 +115,7 @@ public final class NoellesRolesDeathBootstrap {
         NoisemakerBodySpawnHandler.init();
         MagicianPlaybackDeathHandler.init();
         JasonDeathHandler.init();
+        LicensedVillainDeathHandler.init();
         ShadowJesterDeathHandler.init();
         VecnaDeathHandler.init();
         OutlawDeathHandler.init();

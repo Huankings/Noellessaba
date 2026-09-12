@@ -89,6 +89,7 @@ import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
+import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
@@ -247,6 +248,9 @@ public final class TimekeeperSnapshots {
             component("noellesroles:shadow_jester", ShadowJesterComponent.KEY),
             /* 活跃亡命徒集合和专属停电/全场音乐状态同样属于世界运行态。 */
             component("noellesroles:outlaw_world", OutlawWorldComponent.KEY)
+            ,
+            /* 执照恶棍时刻的首次触发、活跃/暂停状态必须与音乐和临时物品一起回到历史帧。 */
+            component("noellesroles:licensed_villain_moment", LicensedVillainMomentWorldComponent.KEY)
     );
 
     private TimekeeperSnapshots() {

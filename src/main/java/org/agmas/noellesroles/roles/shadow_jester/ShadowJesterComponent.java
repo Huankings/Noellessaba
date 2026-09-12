@@ -53,6 +53,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
     private static final String REQUEST_TO_KEY = "request_to";
     private static final String REQUEST_TICKS_KEY = "request_ticks";
     private static final String PHASE_FOUR_THEME_KEY = "phase_four_theme";
+    private static final String PHASE_FOUR_SUSPENDED_KEY = "phase_four_suspended";
     private static final String PENDING_OFFLINE_DEATHS_KEY = "pending_offline_deaths";
     private static final String PENDING_PLAYER_KEY = "player";
     private static final String PENDING_REASON_KEY = "reason";
@@ -76,6 +77,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
     private UUID requestTo;
     private int requestTicksLeft;
     private ShadowJesterMusicTheme phaseFourTheme = ShadowJesterMusicTheme.NONE;
+    private boolean phaseFourSuspended;
     private final Map<UUID, Identifier> pendingOfflineDeaths = new HashMap<>();
 
     public ShadowJesterComponent(World world) {
@@ -103,6 +105,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
         this.secondConfirmedDead = false;
         clearVowRequest(false);
         this.phaseFourTheme = ShadowJesterMusicTheme.NONE;
+        this.phaseFourSuspended = false;
         this.pendingOfflineDeaths.clear();
         sync();
     }
@@ -130,6 +133,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
         this.firstConfirmedDead = false;
         this.secondConfirmedDead = false;
         this.phaseFourTheme = ShadowJesterMusicTheme.NONE;
+        this.phaseFourSuspended = false;
         clearVowRequest(false);
         sync();
     }
@@ -150,6 +154,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
         this.firstConfirmedDead = false;
         this.secondConfirmedDead = false;
         this.phaseFourTheme = ShadowJesterMusicTheme.NONE;
+        this.phaseFourSuspended = false;
         clearVowRequest(false);
         sync();
     }
@@ -398,6 +403,18 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
         sync();
     }
 
+    public boolean isPhaseFourSuspended() {
+        return this.phaseFourSuspended;
+    }
+
+    public void setPhaseFourSuspended(boolean suspended) {
+        if (this.phaseFourSuspended == suspended) {
+            return;
+        }
+        this.phaseFourSuspended = suspended;
+        sync();
+    }
+
     public void markPendingOfflineDeath(UUID player, Identifier reason) {
         if (player == null || reason == null) {
             return;
@@ -437,6 +454,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
         this.requestTo = tag.containsUuid(REQUEST_TO_KEY) ? tag.getUuid(REQUEST_TO_KEY) : null;
         this.requestTicksLeft = tag.getInt(REQUEST_TICKS_KEY);
         this.phaseFourTheme = ShadowJesterMusicTheme.fromSerialized(tag.getString(PHASE_FOUR_THEME_KEY));
+        this.phaseFourSuspended = tag.getBoolean(PHASE_FOUR_SUSPENDED_KEY);
 
         this.pendingOfflineDeaths.clear();
         for (NbtElement element : tag.getList(PENDING_OFFLINE_DEATHS_KEY, NbtElement.COMPOUND_TYPE)) {
@@ -480,6 +498,7 @@ public class ShadowJesterComponent implements AutoSyncedComponent {
         }
         tag.putInt(REQUEST_TICKS_KEY, this.requestTicksLeft);
         tag.putString(PHASE_FOUR_THEME_KEY, this.phaseFourTheme.serialized());
+        tag.putBoolean(PHASE_FOUR_SUSPENDED_KEY, this.phaseFourSuspended);
 
         NbtList pendingDeaths = new NbtList();
         for (Map.Entry<UUID, Identifier> entry : this.pendingOfflineDeaths.entrySet()) {
