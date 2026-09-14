@@ -950,6 +950,8 @@
   "commands.noellesroles.timekeeper.finish_rift.not_in_rift": "%s 当前不在时间狭缝中",
   "commands.noellesroles.timekeeper.finish_rift.rewinding": "当前正在时间回溯，暂时不能解除 %s 的时间狭缝",
   "commands.noellesroles.constants.minplayerspawn.dual_personality.success": "已将双重人格最少刷新人数设置为 %s",
+  "commands.noellesroles.constants.minplayerspawn.commoner.success": "已将平民最少刷新人数设置为 %s",
+  "commands.noellesroles.constants.spawnchance.commoner.success": "已将平民刷新概率设置为 %s",
   "announcement.modifier.noellesroles.lovers": "恋人",
   "announcement.win.noellesroles.lovers": "恋人胜利",
   "announcement.role.noellesroles.lovers": "恋人",

@@ -798,6 +798,8 @@
       "commands.noellesroles.timekeeper.finish_rift.not_in_rift": "%s is not currently in a time rift",
       "commands.noellesroles.timekeeper.finish_rift.rewinding": "A time rewind is active; cannot finish %s's time rift right now",
       "commands.noellesroles.constants.minplayerspawn.dual_personality.success": "Set dual personality minimum spawn players to %s",
+      "commands.noellesroles.constants.minplayerspawn.commoner.success": "Set Commoner minimum spawn players to %s",
+      "commands.noellesroles.constants.spawnchance.commoner.success": "Set Commoner spawn chance to %s",
       "announcement.modifier.noellesroles.lovers": "Lover!",
       "announcement.win.noellesroles.lovers": "The Lovers Win!",
       "announcement.role.noellesroles.lovers": "Lovers",

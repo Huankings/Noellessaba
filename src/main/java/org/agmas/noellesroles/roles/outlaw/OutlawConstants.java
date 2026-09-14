@@ -9,9 +9,9 @@ public final class OutlawConstants {
     /** 亡命徒本能透视使用的灰色。 */
     public static final int INSTINCT_COLOR = 0x808080;
     /** 亡命时刻初始持续时间。 */
-    public static final int OUTLAW_TIME_TICKS = GameConstants.getInTicks(1, 20);
+    public static final int OUTLAW_TIME_TICKS = GameConstants.getInTicks(1, 0);
     /** 每次有效击杀给亡命时刻增加的时间。 */
-    public static final int KILL_TIME_BONUS_TICKS = GameConstants.getInTicks(0, 15);
+    public static final int KILL_TIME_BONUS_TICKS = GameConstants.getInTicks(0, 10);
     /** 每累计多少次有效击杀获得一层护盾。 */
     public static final int KILLS_PER_SHIELD = 7;
     /** 复活时每多少名存活玩家提供一层初始护盾。 */
@@ -29,7 +29,7 @@ public final class OutlawConstants {
     /** 复活停电完全恢复的最长时间。 */
     public static final int BLACKOUT_MAX_SECONDS = 10;
     /** 亡命徒复活后向全场暴露位置的发光持续时间。 */
-    public static final int REVIVAL_GLOW_TICKS = GameConstants.getInTicks(0, 15);
+    public static final int REVIVAL_GLOW_TICKS = GameConstants.getInTicks(0, 60);
     /** 亡命徒复活时的初始缓慢等级。 */
     public static final int INITIAL_SLOWNESS_AMPLIFIER = 4;
     /** 每个缓慢等级持续 2 秒。 */

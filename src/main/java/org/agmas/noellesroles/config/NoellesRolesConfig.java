@@ -7,6 +7,7 @@ import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityConstants;
+import org.agmas.noellesroles.roles.commoner.CommonerConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
@@ -58,4 +59,12 @@ public class NoellesRolesConfig {
 
     @SerialEntry(comment = "Minimum participating player count required before the Dual Personality modifier can enter the random modifier pool. This is intentionally configurable and can be changed with /noellesroles constants minplayerspawn dual_personality.")
     public int dualPersonalityMinPlayerSpawn = DualPersonalityConstants.DEFAULT_MIN_RANDOM_PLAYER_COUNT;
+
+    /** 平民进入随机职业池所需的最少参局人数，可通过 NoellesRoles 指令修改。 */
+    @SerialEntry(comment = "Minimum participating players required for Commoner to enter the random role pool.")
+    public int commonerMinPlayerSpawn = CommonerConstants.DEFAULT_MIN_PLAYER_SPAWN;
+
+    /** 人数达标后平民进入随机职业池的概率，范围为 0.0 到 1.0。 */
+    @SerialEntry(comment = "Chance for Commoner to enter the random role pool after the player threshold is reached (0.0-1.0).")
+    public double commonerSpawnChance = CommonerConstants.DEFAULT_SPAWN_CHANCE;
 }

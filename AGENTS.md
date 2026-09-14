@@ -185,6 +185,22 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - 后续具体职业或词条需要特殊停电规则时，按 `roles/<role>/<RoleName>BlackoutHandler` 或 `modifiers/<modifier>/*BlackoutHandler` 拆文件，再由 bootstrap 调用 `init()`。
 - 时停者快照恢复 `wathe:blackout` 世界组件即可；Wathe 组件 NBT 已包含 ticks、总时长、恢复事件标记、黑幕不透明度和药水开关，不要再额外 accessor 私有字段。
 
+### 特殊时刻与亡命时刻让位
+
+后续新增或修改“特殊时刻 / 最终阶段 / 全场事件”时，只要它包含全场音乐、阶段专属物品、枪械冷却、移动属性、护盾、视野或其它持续强化，就必须评估是否会与亡命徒的亡命时刻同时存在。当前默认优先级是：**亡命时刻最高，影子小丑第四阶段其次，执照恶棍时刻再次**；除非用户明确要求改变，否则新的特殊时刻必须在亡命时刻开始后让位。
+
+- 让位不能只在客户端停止音乐。服务端必须同步暂停该时刻新增的物品、冷却、属性和其它实际机制，否则会出现“音乐停了但能力仍生效”的状态分裂。
+- 暂停时只撤销“该特殊时刻新增”的部分，不要破坏进入时刻之前已有的职业阶段和基础机制。例如影子小丑为亡命徒让位时，只暂停第四阶段谢幕音乐、第四阶段临时补给和 4 秒左轮，不影响第三阶段誓言、本能、外观和独立胜利规则。
+- 世界状态必须区分“从未进入”“正在生效”“已进入但被更高优先级时刻暂停”。不能把暂停直接写成结束，否则亡命徒死亡后无法恢复原时刻，也可能重复记录进入回放。
+- 暂停后的恢复仍属于同一次特殊时刻，默认不重复记录“进入时刻”回放；只有首次进入记录开始事件，职业真正死亡或时刻真正终止时才记录结束事件。若用户要求不同回放语义，再按需求调整。
+- 亡命时刻开始后应立即执行暂停，不能只依赖下一次普通 tick；存在多名调试亡命徒时，必须等最后一名活跃亡命徒结束后才能恢复低优先级时刻。
+- 当前跨职业协调入口是 `roles/outlaw/OutlawMomentPriorityHandler.java`。新增需要向亡命徒让位的时刻时，在对应职业包内实现自己的 `pause/resume/reconcile`，再由该协调器只负责编排优先级；不要把各职业的具体回收逻辑塞进亡命徒管理器。
+- 特殊时刻临时发放的物品必须带来源专属数据组件标记。暂停或结束时只回收带该标记的副本，并同时检查在线玩家背包和地面掉落实体；不要按物品类型宽泛删除，以免误删商店购买品、前置阶段已有物品或其它职业给予的同类物品。暂停期间玩家重新上线时也要继续执行回收兜底。
+- 客户端全场音乐以同步的服务端世界状态为准。亡命时刻开始时，低优先级音乐应立即停止以避免重叠；普通死亡或时刻自然结束是否淡出按职业需求决定。亡命时刻结束后，由同步状态重新拉起当前最高优先级的合法音乐。
+- 特殊时刻如果以“某阵营已经死亡”为触发条件，必须使用 `Role#getFaction()` / `Faction` 的显式阵营语义，不要用 `isInnocent()` 或 `canUseKiller()` 代替阵营。判断“已经死亡”时还要排除 `TimekeeperPlayerComponent#isInTimeRift()` 玩家，因为时间狭缝会让死者临时满足 `GameFunctions.isPlayerAliveAndSurvival(...)`。
+- 特殊时刻的开始、暂停和恢复状态属于局内时间线时，必须进入 `TimekeeperSnapshots`；回溯完成后还要执行一次优先级 `reconcile`，确保组件、临时物品、冷却与客户端音乐和最终历史帧一致。
+- 至少测试以下组合：低优先级时刻先开始后亡命徒复活、亡命徒先存在后低优先级触发条件成立、亡命徒死亡后恢复、暂停期间低优先级职业死亡、多个亡命徒依次死亡、暂停期间掉线重连、时停者回溯到时刻开始前/开始后/暂停期间。
+
 ## 新职业开发流程
 
 1. 先把用户需求拆成字段：职业名、英文 id、阵营、职业色、欢迎公告、技能、交互方式、冷却、商店、物品、HUD/UI、回放、死亡/胜利、兼容要求、是否要求先出方案。
@@ -196,8 +212,9 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
 8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：应回滚的玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，应回滚的世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
 9. 只要新增或改动 `VictoryApi` 胜利规则，尤其是独立阵营胜利、共胜、或活着时返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算的职业/词条，就必须评估时间狭缝：把“排除狭缝玩家后仍真正存活且仍应阻拦结算”的条件补进 `TimekeeperRiftHandler`，避免死者处于特殊存活旁观时继续卡住胜利。
-10. 只要新增或改动 Harpy 开局生成限制、同局互斥、绑定生成、词条与职业绑定/排斥，按 `*RoleAssignmentRules` / `*ModifierAssignmentRules` 拆小类并接 Harpy assignment API，不要新增分配 mixin。
-11. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
+10. 只要新增或改动带全场音乐、临时物品、特殊冷却或持续强化的“特殊时刻 / 最终阶段”，必须检查是否需要向亡命徒的亡命时刻让位，并按“服务端机制暂停与回收、客户端音乐停止、状态可恢复、恢复不重复回放、时停快照收束”完整实现，不能只处理音频。
+11. 只要新增或改动 Harpy 开局生成限制、同局互斥、绑定生成、词条与职业绑定/排斥，按 `*RoleAssignmentRules` / `*ModifierAssignmentRules` 拆小类并接 Harpy assignment API，不要新增分配 mixin。
+12. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
 
 ## 注册点检查清单
 
@@ -229,6 +246,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `TimekeeperSnapshots.java`：新增 CCA 运行态组件后同步加入 `PLAYER_COMPONENTS` / `WORLD_COMPONENTS`，或明确说明该组件不应被时间回溯。
 - `TimekeeperRiftHandler.java`：新增或改动独立胜利、共胜、`KEEP_RUNNING` 阻拦普通结算的职业/词条后，检查时间狭缝提前收束逻辑是否需要加入该规则。
 - `TimekeeperWorldStateSnapshot.java`：新增门、火、放置物、机关等可控世界状态时，评估是否需要纳入时停者回溯；不要做整张地图方块级回滚。
+- `OutlawMomentPriorityHandler.java`：新增或修改全场音乐、最终阶段、特殊时刻时，检查它是否需要向亡命时刻让位；具体暂停、临时物品回收、冷却撤销和恢复逻辑仍放在对应职业自己的 manager/handler 中。
 - `NoellesRolesRoleAssignedBootstrap.java`：职业分配后发初始物品、重置状态、设置开局冷却。
 - `NoellesRolesShopBootstrap.java`：注册静态/动态职业商店，或 ShopModifier。
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。

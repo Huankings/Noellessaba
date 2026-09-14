@@ -2,6 +2,7 @@ package org.agmas.noellesroles.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -74,7 +75,14 @@ public final class NoellesRolesCommand {
                         .then(CommandManager.literal("minplayerspawn")
                                 .then(CommandManager.literal("dual_personality")
                                         .then(CommandManager.argument("amount", IntegerArgumentType.integer(2))
-                                                .executes(NoellesRolesCommand::setDualPersonalityMinPlayerSpawn)))))
+                                                .executes(NoellesRolesCommand::setDualPersonalityMinPlayerSpawn)))
+                                .then(CommandManager.literal("commoner")
+                                        .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
+                                                .executes(NoellesRolesCommand::setCommonerMinPlayerSpawn))))
+                        .then(CommandManager.literal("spawnchance")
+                                .then(CommandManager.literal("commoner")
+                                        .then(CommandManager.argument("chance", DoubleArgumentType.doubleArg(0.0D, 1.0D))
+                                                .executes(NoellesRolesCommand::setCommonerSpawnChance)))))
                 .then(CommandManager.literal("remove")
                         .then(CommandManager.literal("lovers")
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
@@ -226,6 +234,30 @@ public final class NoellesRolesCommand {
         NoellesRolesConfig.HANDLER.save();
         context.getSource().sendFeedback(
                 () -> Text.translatable("commands.noellesroles.constants.minplayerspawn.dual_personality.success", amount),
+                true
+        );
+        return 1;
+    }
+
+    /** 设置平民进入随机职业池所需的最少参局人数。 */
+    private static int setCommonerMinPlayerSpawn(CommandContext<ServerCommandSource> context) {
+        int amount = IntegerArgumentType.getInteger(context, "amount");
+        NoellesRolesConfig.HANDLER.instance().commonerMinPlayerSpawn = amount;
+        NoellesRolesConfig.HANDLER.save();
+        context.getSource().sendFeedback(
+                () -> Text.translatable("commands.noellesroles.constants.minplayerspawn.commoner.success", amount),
+                true
+        );
+        return 1;
+    }
+
+    /** 设置人数达标后平民进入随机职业池的概率。 */
+    private static int setCommonerSpawnChance(CommandContext<ServerCommandSource> context) {
+        double chance = DoubleArgumentType.getDouble(context, "chance");
+        NoellesRolesConfig.HANDLER.instance().commonerSpawnChance = chance;
+        NoellesRolesConfig.HANDLER.save();
+        context.getSource().sendFeedback(
+                () -> Text.translatable("commands.noellesroles.constants.spawnchance.commoner.success", chance),
                 true
         );
         return 1;

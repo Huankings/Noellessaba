@@ -34,6 +34,7 @@ import org.agmas.noellesroles.roles.dreamer.DreamerDelusionHandler;
 import org.agmas.noellesroles.roles.hacker.HackerSafeTimeComponent;
 import org.agmas.noellesroles.roles.hacker.HackerRoleAssignmentRules;
 import org.agmas.noellesroles.roles.initiate.InitiateRoleAssignmentRules;
+import org.agmas.noellesroles.roles.commoner.CommonerRoleAssignmentRules;
 import org.agmas.noellesroles.roles.initiate.InitiateRoleLimitHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateTransformationHandler;
 import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
@@ -124,6 +125,7 @@ public final class NoellesRolesBootstrap {
         NecromancerRoleLimitHandler.init();
         InitiateRoleLimitHandler.init();
         InitiateRoleAssignmentRules.init();
+        CommonerRoleAssignmentRules.init();
         InitiateTransformationHandler.init();
         ShadowJesterRoleAssignmentRules.init();
         ThiefInteractionHandler.init();

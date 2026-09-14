@@ -111,7 +111,6 @@ import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
-import org.agmas.noellesroles.roles.commoner.CommonerRoleLimitHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawManager;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
@@ -300,7 +299,6 @@ public final class NoellesRolesEventBootstrap {
             } else {
                 Harpymodloader.setRoleMaximum(NoellesRoleRegistry.HACKER, 0);
             }
-            CommonerRoleLimitHandler.refresh(dev.doctor4t.wathe.game.GameFunctions.getReadyPlayerCount(server.getOverworld()));
             /*
              * 执照恶棍沿用 kinssaba 原逻辑：按当前在线人数决定是否进入随机池。
              * 这里不使用 ready player count，是为了避免迁移后生成门槛和原 mod 出现细微漂移。
