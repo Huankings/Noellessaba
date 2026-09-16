@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
 /**
  * 静语者“撕下胶带”交互。
@@ -48,7 +49,9 @@ public final class MuzzlerInteractionHandler {
             GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
             if (!gameWorld.isRunning()
                     || !GameFunctions.isPlayerAliveAndSurvival(player)
-                    || !GameFunctions.isPlayerAliveAndSurvival(victim)) {
+                    || !GameFunctions.isPlayerAliveAndSurvival(victim)
+                    || TimekeeperPlayerComponent.KEY.get(player).isInTimeRift()
+                    || TimekeeperPlayerComponent.KEY.get(victim).isInTimeRift()) {
                 return ActionResult.PASS;
             }
             /*
@@ -89,10 +92,15 @@ public final class MuzzlerInteractionHandler {
             );
             recordTapeRemoved(player, victim, victimSilence);
 
-            if (victimSilence.getTearChecks() >= MuzzlerConstants.TAPE_TEAR_CHECK_COUNT) {
-                victimSilence.setSilenced(false);
+            boolean tapeFullyRemoved = victimSilence.getTearChecks() >= MuzzlerConstants.TAPE_TEAR_CHECK_COUNT;
+            if (!tapeFullyRemoved) {
+                victimSilence.sync();
             }
-            victimSilence.sync();
+            if (tapeFullyRemoved) {
+                /* 先保留 silencer UUID，直到低心情死亡请求完成后再做完整清理。 */
+                victimSilence.setSilenced(false);
+                victimSilence.sync();
+            }
 
             PlayerMoodComponent victimMood = PlayerMoodComponent.KEY.get(victim);
             victimMood.setMood(victimMood.getMood() - MuzzlerConstants.TAPE_TEAR_MOOD_CHANGE);
@@ -100,6 +108,10 @@ public final class MuzzlerInteractionHandler {
 
             if (victimMood.getMood() <= 0.0F && MuzzlerConstants.KILL_IF_CHECKED_AT_ZERO) {
                 killLowMoodVictim(player, victim, victimSilence);
+            }
+            if (tapeFullyRemoved && GameFunctions.isPlayerAliveAndSurvival(victim)) {
+                /* 没有因撕带触发死亡时，清除贴带者和所有残留计时。 */
+                victimSilence.reset();
             }
 
             return ActionResult.SUCCESS;

@@ -26,6 +26,9 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
+import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,6 +90,10 @@ public final class NecromancerRevivalHandler {
              * 复活顺序沿用 StupidExpress：先把玩家拉回尸体位置并切回冒险模式，
              * 再删除尸体、写入新职业和金币。只有这些步骤都完成后才记录回放。
              */
+            /* 先解除死亡者可能残留的狭缝授权，再进入新的 Adventure 生命流程。 */
+            TimekeeperPlayerComponent.KEY.get(revived).clearTimeRiftForRevival();
+            SilencePlayerComponent.KEY.get(revived).reset();
+            KidnapperComponent.KEY.get(revived).reset();
             revived.teleport(necromancer.getServerWorld(), body.getX(), body.getY(), body.getZ(), Collections.emptySet(), body.getYaw(), body.getPitch());
             revived.changeGameMode(GameMode.ADVENTURE);
             body.discard();

@@ -244,7 +244,9 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
 - `TimekeeperSnapshots.java`：新增 CCA 运行态组件后同步加入 `PLAYER_COMPONENTS` / `WORLD_COMPONENTS`，或明确说明该组件不应被时间回溯。
-- `TimekeeperRiftHandler.java`：新增或改动独立胜利、共胜、`KEEP_RUNNING` 阻拦普通结算的职业/词条后，检查时间狭缝提前收束逻辑是否需要加入该规则。
+- `TimekeeperRiftHandler.java`：新增或改动独立胜利、共胜、`KEEP_RUNNING` 阻拦普通结算的职业/词条后，检查时间狭缝提前收束逻辑是否需要加入该规则；所有死亡敏感扫描还要排除 `isInTimeRift()`。
+- `roles/kidnapper/KidnapperDeathCleanupHandler.java`：绑匪或被控制目标确认死亡后的控制关系清理。
+- `roles/muzzler/MuzzlerDeathHandler.java`：玩家确认死亡后的胶带状态清理。
 - `TimekeeperWorldStateSnapshot.java`：新增门、火、放置物、机关等可控世界状态时，评估是否需要纳入时停者回溯；不要做整张地图方块级回滚。
 - `OutlawMomentPriorityHandler.java`：新增或修改全场音乐、最终阶段、特殊时刻时，检查它是否需要向亡命时刻让位；具体暂停、临时物品回收、冷却撤销和恢复逻辑仍放在对应职业自己的 manager/handler 中。
 - `NoellesRolesRoleAssignedBootstrap.java`：职业分配后发初始物品、重置状态、设置开局冷却。
@@ -327,6 +329,20 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 活着时返回 `VictoryApi.VictoryResult.keepRunning()`，用于阻拦普通杀手 / 乘客结算的规则。
 
 处理原则：如果排除当前处于时间狭缝的玩家后，游戏已经只剩一个可获胜阵营，狭缝玩家应立即 `finishTimeRift()` 转回普通死亡旁观和死亡语音频道，让 Wathe 正常结算；如果排除狭缝后仍有真正存活的独立阻拦者，则继续保留狭缝。后续新增这类职业时，要把“非狭缝存活阻拦条件”补进 `TimekeeperRiftHandler`，并测试“阻拦者正常存活”和“阻拦者死亡进入狭缝”两种局面。
+
+### 时间狭缝与死亡/复活状态
+
+时间狭缝使用 `PlayerLifeStateApi` 给 spectator 增加 alive override，因此狭缝玩家同时满足 `GameFunctions.isPlayerAliveAndSurvival(...)`，但玩法上已经死亡；此时 `GameFunctions.isPlayerSpectatingOrCreative(...)` 也不会返回普通旁观结果。凡是“真实存活”“死亡后清理”“可交互目标”“奖励归属”的机制，都必须在 Wathe 判断之外显式排除 `TimekeeperPlayerComponent#isInTimeRift()`，不要把狭缝玩家当作普通活人。
+
+- 绑匪控制必须在控制者或目标进入狭缝、普通旁观/创造或死亡时立即结束；控制者死亡时还要清理全场指向该 UUID 的控制关系。绑匪控制奖励必须在真实死亡阶段读取控制关系，不能放在 `beforeAttempt` 入口重复发放。
+- 胶带/静语状态属于被贴玩家的死亡相关运行态。玩家确认死亡后必须清掉 `silenced`、贴带者 UUID、室外计时和撕带计数；窒息 tick 不得对普通死亡旁观或狭缝玩家再次调用 `killPlayer()`。完整撕带也要清理全部状态，而不是只设置 `silenced=false`。
+- 列车长、绑匪等击杀额外奖励必须使用 `DeathApi` 的确认死亡阶段（`confirmedDeath()`，或等价的 `afterMarkedDead` 阶段），并检查攻击者是当前真实存活玩家；禁止在 `beforeAttempt` 按死亡请求次数发钱，否则胶带残留、环境伤害和递归死亡会造成重复金币。
+- 死灵法师或其它正常复活流程必须先清除 `inTimeRift` 和 `PlayerLifeStateApi` alive override，再切换到 Adventure；不能只切换游戏模式，否则下一 tick 的狭缝维护会把复活者重新切回 spectator。时间回溯复活应继续使用专用的回溯出口，不要和正常复活出口混用。
+- `OutlawPlayerComponent`、`OutlawWorldComponent` 等亡命徒状态属于时间线运行态，必须纳入 `TimekeeperSnapshots`，并在回溯结束后执行角色表、世界 active 集合、亡命倒计时、临时物品和时刻优先级的 `reconcile`。复活位置选择、初始护盾人数等存活扫描必须排除狭缝玩家。
+- 活跃亡命徒存在期间，杰森“无恶不在”必须立即强制退出并禁止再次发动；只有当前没有活跃亡命徒后才解除该限制。亡命徒开始、死亡、回溯恢复都要同步处理音效、失明、隐身、碰撞和客户端状态，不能只停止音乐。
+- 新增或修改死亡相关 CCA/世界组件时，要同时检查时间狭缝快照：死亡后的快照应保存清理后的状态，回溯到死亡前才恢复历史状态；不要在回溯期间无条件永久清除组件。
+
+推荐回归测试：绑匪死亡后目标立即解除控制；胶带窒息列车长只奖励一次且复活后无胶带；狭缝玩家被死灵法师复活后为正常 Adventure；亡命徒被杀后回溯可恢复亡命倒计时和时刻；活跃亡命徒存在时杰森无法重新发动无恶不在。
 
 ## 枪击与死亡 API
 

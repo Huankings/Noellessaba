@@ -2,6 +2,7 @@ package org.agmas.noellesroles.roles.muzzler;
 
 import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
 import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -42,6 +43,19 @@ public class SilencePlayerComponent implements AutoSyncedComponent, ServerTickin
 
     @Override
     public void serverTick() {
+        /*
+         * 普通死亡和时间狭缝死亡都不能继续运行胶带窒息计时。
+         * 狭缝的 alive override 会让 isPlayerAliveAndSurvival 返回 true，
+         * 所以必须显式检查 inTimeRift，避免死者每 tick 重复提交 killPlayer。
+         */
+        if (!GameFunctions.isPlayerAliveAndSurvival(this.player)
+                || TimekeeperPlayerComponent.KEY.get(this.player).isInTimeRift()) {
+            if (this.silenced) {
+                this.reset();
+            }
+            return;
+        }
+
         if (this.silenced) {
             this.silencedTicks++;
         } else {

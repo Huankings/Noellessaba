@@ -26,6 +26,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
+import org.agmas.noellesroles.roles.jason.JasonAbilityManager;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public final class OutlawManager {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
             OutlawPlayerComponent component = OutlawPlayerComponent.KEY.get(player);
-            if (component.isOutlawActive() && GameFunctions.isPlayerAliveAndSurvival(player)) {
+            if (component.isOutlawActive() && GameFunctions.isPlayerAliveAndSurvival(player)
+                    && !TimekeeperPlayerComponent.KEY.get(player).isInTimeRift()) {
                 GameFunctions.killPlayer(player, true, null, NoellesDeathReasons.OUTLAW_OFFLINE_DEATH_REASON);
             }
         });
@@ -87,7 +89,8 @@ public final class OutlawManager {
             if (!gameWorld.isRole(player, NoellesRoleRegistry.OUTLAW)) {
                 continue;
             }
-            if (GameFunctions.isPlayerAliveAndSurvival(player)) {
+            if (GameFunctions.isPlayerAliveAndSurvival(player)
+                    && !TimekeeperPlayerComponent.KEY.get(player).isInTimeRift()) {
                 state.tickOutlawTime();
                 player.getItemCooldownManager().remove(WatheItems.KNIFE);
                 applySlowness(player, state);
@@ -133,19 +136,24 @@ public final class OutlawManager {
             pitch = target.getPitch();
         }
 
+        TimekeeperPlayerComponent.KEY.get(player).clearTimeRiftForRevival();
         PlayerLifeStateApi.clearAliveOverride(player);
         player.changeGameMode(GameMode.ADVENTURE);
         player.teleport(world, x, y, z, Collections.emptySet(), yaw, pitch);
         gameWorld.addRole(player, NoellesRoleRegistry.OUTLAW);
         ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, NoellesRoleRegistry.OUTLAW);
 
-        int aliveCount = world.getPlayers(GameFunctions::isPlayerAliveAndSurvival).size();
+        int aliveCount = world.getPlayers(playerEntity ->
+                GameFunctions.isPlayerAliveAndSurvival(playerEntity)
+                        && !TimekeeperPlayerComponent.KEY.get(playerEntity).isInTimeRift()).size();
         int initialLayers = OutlawConstants.clampShieldLayers(
                 aliveCount / OutlawConstants.ALIVE_PLAYERS_PER_INITIAL_SHIELD,
                 OutlawConstants.MAX_INITIAL_SHIELD_LAYERS
         );
         state.startOutlaw(initialLayers);
         OutlawWorldComponent.KEY.get(world).setOutlawActive(player.getUuid(), true);
+        /* 亡命时刻从此刻开始压过无恶不在，立即关闭全场杰森幽魂状态。 */
+        JasonAbilityManager.forceExitForActiveOutlaw(world);
         /* 亡命时刻从这一行起已经生效，立即暂停两种低优先级时刻，不能等到下一次客户端 tick。 */
         OutlawMomentPriorityHandler.onOutlawStarted(world);
         clearMoodTasks(player);
@@ -204,11 +212,15 @@ public final class OutlawManager {
         UUID killerUuid = state.getRevivalKillerUuid();
         if (killerUuid != null) {
             ServerPlayerEntity killer = world.getServer().getPlayerManager().getPlayer(killerUuid);
-            if (killer != null && GameFunctions.isPlayerAliveAndSurvival(killer)) {
+            if (killer != null
+                    && GameFunctions.isPlayerAliveAndSurvival(killer)
+                    && !TimekeeperPlayerComponent.KEY.get(killer).isInTimeRift()) {
                 return killer;
             }
         }
-        List<ServerPlayerEntity> alive = new ArrayList<>(world.getPlayers(GameFunctions::isPlayerAliveAndSurvival));
+        List<ServerPlayerEntity> alive = new ArrayList<>(world.getPlayers(playerEntity ->
+                GameFunctions.isPlayerAliveAndSurvival(playerEntity)
+                        && !TimekeeperPlayerComponent.KEY.get(playerEntity).isInTimeRift()));
         if (alive.isEmpty()) {
             return null;
         }
@@ -292,5 +304,8 @@ public final class OutlawManager {
         gameWorld.sync();
         /* 世界组件与玩家组件都完成回溯后，再统一修复三种时刻的暂停和恢复关系。 */
         OutlawMomentPriorityHandler.reconcile(world);
+        if (worldState.hasActiveOutlaw()) {
+            JasonAbilityManager.forceExitForActiveOutlaw(world);
+        }
     }
 }

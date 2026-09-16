@@ -20,6 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,6 +59,8 @@ public class TapeItem extends Item {
                 || !gameWorld.isRole(user, NoellesRoleRegistry.MUZZLER)
                 || !GameFunctions.isPlayerAliveAndSurvival(user)
                 || !GameFunctions.isPlayerAliveAndSurvival(victim)
+                || TimekeeperPlayerComponent.KEY.get(user).isInTimeRift()
+                || TimekeeperPlayerComponent.KEY.get(victim).isInTimeRift()
                 || user.getItemCooldownManager().isCoolingDown(this)) {
             return ActionResult.PASS;
         }

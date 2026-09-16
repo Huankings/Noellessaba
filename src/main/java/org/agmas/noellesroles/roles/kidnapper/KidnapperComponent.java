@@ -17,6 +17,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -109,7 +110,15 @@ public class KidnapperComponent implements AutoSyncedComponent, ServerTickingCom
             this.endControl(true);
             return true;
         }
-        if (GameFunctions.isPlayerSpectatingOrCreative(controller) || GameFunctions.isPlayerSpectatingOrCreative(this.player)) {
+        /*
+         * 时间狭缝使用 alive override 把 spectator 临时伪装成玩法存活，
+         * 因此 isPlayerSpectatingOrCreative() 在这里不会识别到狭缝死者。
+         * 控制者或目标一旦进入狭缝，就已经不再是可操作的真实存活玩家，必须立即结束劫持。
+         */
+        if (GameFunctions.isPlayerSpectatingOrCreative(controller)
+                || GameFunctions.isPlayerSpectatingOrCreative(this.player)
+                || TimekeeperPlayerComponent.KEY.get(controller).isInTimeRift()
+                || TimekeeperPlayerComponent.KEY.get(this.player).isInTimeRift()) {
             this.releaseControlTip();
             this.endControl(false);
             return true;

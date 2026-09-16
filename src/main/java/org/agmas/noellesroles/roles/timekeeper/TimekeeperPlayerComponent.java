@@ -236,6 +236,25 @@ public class TimekeeperPlayerComponent implements AutoSyncedComponent, ServerTic
         sync();
     }
 
+    /**
+     * 死灵法师或亡命徒正常复活时退出时间狭缝。
+     * 与回溯出口不同，这里明确清除 alive override，避免旧的 spectator 授权
+     * 继续污染新的 Adventure 生命流程；调用方随后再切换到 Adventure。
+     */
+    public void clearTimeRiftForRevival() {
+        boolean wasInRift = this.inTimeRift;
+        this.inTimeRift = false;
+        this.timeRiftTicksLeft = 0;
+        if (this.player instanceof ServerPlayerEntity serverPlayer) {
+            PlayerLifeStateApi.clearAliveOverride(serverPlayer);
+            TrainVoicePlugin.resetPlayer(serverPlayer.getUuid());
+            if (wasInRift) {
+                serverPlayer.sendMessage(coloredActionbar("message.noellesroles.timekeeper.rift_ended"), true);
+            }
+        }
+        sync();
+    }
+
     private boolean tickCooldowns() {
         boolean changed = false;
         if (this.itemAccelerateCooldownTicks > 0) {

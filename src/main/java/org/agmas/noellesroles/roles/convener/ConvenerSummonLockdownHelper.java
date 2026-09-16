@@ -40,6 +40,8 @@ public final class ConvenerSummonLockdownHelper {
         setItemCooldown(player, ModItems.BOUNTY_MODE, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
         setItemCooldown(player, ModItems.PSYCHO_JASON, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
         setItemCooldown(player, ModItems.PSYCHO_LICH, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
+        setItemCooldown(player, ModItems.SPRING_TRAP, ConvenerConstants.PSYCHO_MODE_COOLDOWN_TICKS);
+
         setItemCooldown(player, WatheItems.BLACKOUT, ConvenerConstants.BLACKOUT_COOLDOWN_TICKS);
         applyAbilityCooldowns(player);
         applySpecialEventCooldowns(player);
@@ -56,6 +58,18 @@ public final class ConvenerSummonLockdownHelper {
         weaponItems.add(ModItems.THROWING_AXE);
         weaponItems.add(ModItems.ROBBER_PISTOL);
         weaponItems.add(ModItems.TIMED_BOMB);
+        weaponItems.add(ModItems.ONCE_STAFF);
+        weaponItems.add(ModItems.BOUNTY_PISTOL);
+        weaponItems.add(ModItems.SNIPER_RIFLE);
+        weaponItems.add(ModItems.BLOOD_AXE);
+        weaponItems.add(ModItems.THROWING_SPEED_AXE);
+        weaponItems.add(ModItems.THROWING_BOMB_AXE);
+        //杰森武器有如下
+        weaponItems.add(ModItems.THROWING_BLOOD_AXE);
+        weaponItems.add(ModItems.THROWING_MACHETE);
+        weaponItems.add(ModItems.TOMAHAWK);
+        weaponItems.add(ModItems.THROWING_TOYS_AXE);
+
         /*
          * kinssaba / StarryExpress 的同名实物道具已经迁入 NoellesRoles。
          * 召集者封控应直接压本仓库的 ModItems 常量，避免继续软查旧命名空间导致新道具漏掉冷却。
@@ -64,7 +78,6 @@ public final class ConvenerSummonLockdownHelper {
         weaponItems.add(ModItems.HUNTING_KNIFE);
         weaponItems.add(ModItems.KNOCKOUT_DRUG);
         weaponItems.add(ModItems.POISON_INJECTOR);
-        weaponItems.add(ModItems.PAN);
         weaponItems.add(ModItems.TAPE);
         addRegisteredItem(weaponItems, MOD_HARPY_SIMPLE_ROLES, "toxin");
         addRegisteredItem(weaponItems, MOD_HARPY_SIMPLE_ROLES, "bandit_revolver");

@@ -141,7 +141,8 @@ public final class TimekeeperRiftHandler {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
         for (ServerPlayerEntity player : world.getPlayers()) {
             if (!gameWorld.isRole(player, NoellesRoleRegistry.TIMEKEEPER)
-                    || !GameFunctions.isPlayerAliveAndSurvival(player)) {
+                    || !GameFunctions.isPlayerAliveAndSurvival(player)
+                    || TimekeeperPlayerComponent.KEY.get(player).isInTimeRift()) {
                 continue;
             }
 

@@ -3,8 +3,10 @@ package org.agmas.noellesroles.roles.kidnapper;
 import dev.doctor4t.wathe.api.death.DeathApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
+import dev.doctor4t.wathe.game.GameFunctions;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
 /**
  * 绑匪击杀迷药控制中的目标时的额外金币。
@@ -21,23 +23,25 @@ public final class KidnapperDeathRewardHandler {
         }
         initialized = true;
 
-        DeathApi.registerBeforeAttempt(
+        DeathApi.registerAfterMarkedDead(
                 NoellesRolesCore.id("kidnapper_controlled_kill_reward"),
-                DeathApi.DEFAULT_PRIORITY,
+                DeathApi.PRIORITY_POST_CONFIRMED_DEATH + 40,
                 context -> {
-                    if (context.killer() == null) {
+                    /* markedDead 只会在 Wathe 真正切换为死亡旁观后触发，护盾/免死不会进入此阶段。 */
+                    if (!context.markedDead() || !context.victimAliveAtStart() || context.serverKiller() == null) {
                         return;
                     }
 
                     GameWorldComponent gameWorld = GameWorldComponent.KEY.get(context.victim().getWorld());
                     KidnapperComponent controlled = KidnapperComponent.KEY.get(context.victim());
-                    if (gameWorld.isRole(context.killer(), NoellesRoleRegistry.KIDNAPPER) && controlled.controlTicks > 0) {
+                    if (gameWorld.isRole(context.serverKiller(), NoellesRoleRegistry.KIDNAPPER)
+                            && GameFunctions.isPlayerAliveAndSurvival(context.serverKiller())
+                            && !TimekeeperPlayerComponent.KEY.get(context.serverKiller()).isInTimeRift()
+                            && controlled.controlTicks > 0
+                            && context.serverKiller().getUuid().equals(controlled.controllerUUID)) {
                         /*
-                         * 这里保留旧 mixin 的“死亡请求入口发放”语义。
-                         * controlled.controlTicks 表示受害者仍处于绑匪迷药控制窗口，
-                         * 因此奖励只归属给亲自造成这次死亡请求的绑匪。
-                         *
-                         * 如果未来希望改成确认死亡后奖励，可以直接把注册阶段迁到 afterAttempt。
+                         * controlled.controlTicks 和 controllerUUID 同时匹配，确保奖励只归属
+                         * 亲自控制并完成击杀的绑匪；confirmedDeath() 保证护盾/免死不会产生奖励。
                          */
                         PlayerShopComponent.KEY.get(context.killer()).addToBalance(KidnapperConstants.ADDITIONAL_KILL_REWARD_COINS);
                     }

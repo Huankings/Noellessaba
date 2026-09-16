@@ -21,6 +21,8 @@ import org.agmas.noellesroles.roles.jester.JesterDeathProtectionHandler;
 import org.agmas.noellesroles.roles.jester.JesterPsychoAttackProtectionHandler;
 import org.agmas.noellesroles.roles.jason.JasonDeathHandler;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperDeathRewardHandler;
+import org.agmas.noellesroles.roles.kidnapper.KidnapperDeathCleanupHandler;
+import org.agmas.noellesroles.roles.muzzler.MuzzlerDeathHandler;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerDeathHandler;
 import org.agmas.noellesroles.roles.magician.MagicianPlaybackDeathHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainDeathHandler;
@@ -101,6 +103,8 @@ public final class NoellesRolesDeathBootstrap {
         VoodooDeathHandler.init();
         ConductorDeathRewardHandler.init();
         KidnapperDeathRewardHandler.init();
+        KidnapperDeathCleanupHandler.init();
+        MuzzlerDeathHandler.init();
         ExecutionerDeathHandler.init();
         StalkerDeathHandler.init();
         BountyHunterDeathHandler.init();

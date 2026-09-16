@@ -26,6 +26,7 @@ import net.minecraft.util.TypedActionResult;
 import org.agmas.noellesroles.packet.role.jason.JasonAbilitySoundS2CPacket;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,6 +88,11 @@ public final class JasonAbilityManager {
      * 同一枚 G 键会改为请求主动解除。</p>
      */
     public static void handleAbilityKey(@NotNull ServerPlayerEntity player) {
+        if (OutlawWorldComponent.KEY.get(player.getWorld()).hasActiveOutlaw()) {
+            /* 活跃亡命徒存在时，杰森不能重新进入不可见状态。 */
+            forceClearAbility(player, false, true);
+            return;
+        }
         if (!JasonAbilityRules.isAliveJason(player) || JasonWoundManager.isWoundedActionLocked(player)) {
             return;
         }
@@ -138,6 +144,15 @@ public final class JasonAbilityManager {
         for (ServerPlayerEntity player : world.getPlayers()) {
             JasonAbilityPlayerComponent.KEY.get(player).reset();
             JasonAbilityBlindnessComponent.KEY.get(player).clearOwnedEffect();
+        }
+    }
+
+    /** 亡命时刻开始时立即关闭所有杰森幽魂状态，避免等待下一次普通 tick。 */
+    public static void forceExitForActiveOutlaw(@NotNull ServerWorld world) {
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            if (JasonAbilityPlayerComponent.KEY.get(player).isActiveLike()) {
+                forceClearAbility(player, false, true);
+            }
         }
     }
 
@@ -229,6 +244,11 @@ public final class JasonAbilityManager {
 
     private static void tickWorld(@NotNull ServerWorld world) {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(world);
+        boolean outlawActive = OutlawWorldComponent.KEY.get(world).hasActiveOutlaw();
+        if (outlawActive) {
+            /* 回溯或跨 tick 恢复出幽魂状态时，也必须服从当前亡命时刻优先级。 */
+            forceExitForActiveOutlaw(world);
+        }
         boolean hasActiveJason = world.getPlayers().stream().anyMatch(JasonAbilityRules::isAbilityActiveLike);
         boolean hasExitingJason = world.getPlayers().stream()
                 .anyMatch(player -> JasonAbilityRules.isAliveJason(player)
