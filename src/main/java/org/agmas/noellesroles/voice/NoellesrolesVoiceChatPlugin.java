@@ -270,8 +270,7 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
             if (!canHearPossessingSpiritualist(recipient)) {
                 continue;
             }
-            if (shouldBlockVoiceBetween(spiritualist, recipient)
-                    || shouldBlockVoiceBetween(host, recipient)) {
+            if (shouldBlockRelayedPossessionVoice(spiritualist, host, recipient)) {
                 continue;
             }
 
@@ -475,6 +474,40 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
         }
 
         return false;
+    }
+
+    /**
+     * 灵术师借宿主发声时使用的专用过滤。
+     *
+     * <p>通用过滤里的附身分支是为了拦截原始麦克风包，不能直接套到重定向包上：
+     * 灵术师会被判定为正在附身，宿主会被判定为被附身，结果就是所有接收者都被跳过。
+     * 这里只保留双方应遵守的全局隔音规则和接收者出窍规则。</p>
+     */
+    private boolean shouldBlockRelayedPossessionVoice(
+            ServerPlayerEntity spiritualist,
+            ServerPlayerEntity host,
+            ServerPlayerEntity recipient
+    ) {
+        if (!GameFunctions.isPlayerAliveAndSurvival(spiritualist)
+                || !GameFunctions.isPlayerAliveAndSurvival(host)) {
+            return true;
+        }
+        if (TimekeeperWorldComponent.KEY.get(spiritualist.getServerWorld()).shouldBlockCommunication(spiritualist)
+                || TimekeeperWorldComponent.KEY.get(host.getServerWorld()).shouldBlockCommunication(host)
+                || TimekeeperWorldComponent.KEY.get(recipient.getServerWorld()).shouldBlockCommunication(recipient)) {
+            return true;
+        }
+        if (JasonCommunicationManager.shouldBlockVoiceBetween(spiritualist, recipient)
+                || JasonCommunicationManager.shouldBlockVoiceBetween(host, recipient)
+                || DualPersonalityCommunicationHelper.shouldBlockVoiceBetween(spiritualist, recipient)
+                || DualPersonalityCommunicationHelper.shouldBlockVoiceBetween(host, recipient)
+                || ConvenerCommunicationHelper.shouldBlockVoiceBetween(spiritualist, recipient)) {
+            return true;
+        }
+        if (ConvenerCommunicationHelper.shouldBlockVoiceBetween(host, recipient)) {
+            return true;
+        }
+        return SpiritualistPlayerComponent.KEY.get(recipient).isProjecting();
     }
 
     private boolean shouldDampenSurvivalVoice(ServerPlayerEntity sender, float dampenProgress) {

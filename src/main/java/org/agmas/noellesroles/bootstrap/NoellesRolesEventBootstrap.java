@@ -46,6 +46,7 @@ import org.agmas.noellesroles.roles.arsonist.ArsonistVictoryRule;
 import org.agmas.noellesroles.roles.arsonist.DousedPlayerComponent;
 import org.agmas.noellesroles.roles.arsonist.OilDousingHandler;
 import org.agmas.noellesroles.roles.assassin.HiddenBodiesWorldComponent;
+import org.agmas.noellesroles.roles.avaricious.AvariciousPayoutHandler;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerCommunicationManager;
 import org.agmas.noellesroles.roles.convener.ConvenerDisguiseComponent;
@@ -140,6 +141,7 @@ public final class NoellesRolesEventBootstrap {
         JasonWoundManager.init();
         JasonAbilityManager.init();
         AllergicModifierHandler.init();
+        AvariciousPayoutHandler.init();
         registerCombatAndStateEvents();
         NoellesRolesRoleAssignedBootstrap.init();
         registerServerTickEvents();

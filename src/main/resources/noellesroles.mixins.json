@@ -53,7 +53,6 @@
     "roles.cook.CookFinishEatMixin",
     "roles.physician.PhysicianTipPoisonMixin",
     "modifiers.allergic.AllergicFinishUsingMixin",
-    "roles.avaricious.AvariciousGoldPayoutMixin",
     "roles.drugmaker.DrugmakerGiveCoinsMixin",
     "roles.licensed_villain.LicensedVillainNoPickupMixin",
     "roles.robot.RobotNoPoisonMixin",

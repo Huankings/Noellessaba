@@ -540,7 +540,12 @@ public class NoellesrolesClient implements ClientModInitializer {
      */
     private static boolean noellesroles$handlePreAttack(PlayerEntity player) {
         if (player.getMainHandStack().isOf(ModItems.SNIPER_RIFLE)) {
-            return true;
+            /*
+             * 存活追忆者按住左键时，狙击枪左键只负责开镜，必须吞掉普通攻击。
+             * 死亡后的旁观者则必须把左键交还给原版 spectator 观战附身；
+             * 使用 Wathe 的非存活入口兼容特殊存活授权玩家。
+             */
+            return !GameFunctions.isPlayerSpectatingOrCreative(player);
         }
         if (noellesroles$handleTimekeeperWatchModeSwitch(player)) {
             return true;

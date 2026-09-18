@@ -1,6 +1,8 @@
 package org.agmas.noellesroles.roles.avaricious;
 
 import dev.doctor4t.wathe.game.GameConstants;
+import dev.doctor4t.wathe.game.GameFunctions;
+import net.minecraft.entity.player.PlayerEntity;
 
 /**
  * 扒手全部玩法数值。
@@ -29,5 +31,16 @@ public final class AvariciousConstants {
     /** 同上，保持绿皮书的每人收益说明与 NoellesRoles 当前逻辑一致。 */
     public static int guidebookPayoutPerPlayer() {
         return PAYOUT_PER_PLAYER;
+    }
+
+    /**
+     * 扒手服务端结算和客户端预计收益必须使用完全相同的存活定义。
+     * Wathe 允许扩展为 spectator/creative 玩家授予“玩法仍存活”的覆盖状态，
+     * 因此这里同时使用存活入口和互补的非存活入口，避免 HUD 与实际发钱人数不一致。
+     */
+    public static boolean isEligibleParticipant(PlayerEntity player) {
+        return player != null
+                && GameFunctions.isPlayerAliveAndSurvival(player)
+                && !GameFunctions.isPlayerSpectatingOrCreative(player);
     }
 }

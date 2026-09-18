@@ -1,7 +1,6 @@
 package org.agmas.noellesroles.client.roles.avaricious;
 
 import dev.doctor4t.wathe.cca.GameTimeComponent;
-import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -59,7 +58,7 @@ public final class AvariciousStatusHud {
 
         /*
          * GameTimeComponent.time 是倒计时，所以 elapsed 要用“起点 - 当前剩余时间”。
-         * 这和服务端 AvariciousGoldPayoutMixin 完全一致，HUD 才会和真实发钱点对齐。
+         * 这和服务端 AvariciousPayoutHandler 完全一致，HUD 才会和真实发钱点对齐。
          */
         int elapsed = Math.max(0, payoutComponent.getTimerStartTime() - timeComponent.time);
         int remainder = elapsed % AvariciousConstants.TIMER_TICKS;
@@ -73,7 +72,7 @@ public final class AvariciousStatusHud {
     private static int getExpectedPayout(ClientPlayerEntity player) {
         int nearbyPlayers = 0;
         for (PlayerEntity other : player.getWorld().getPlayers()) {
-            if (other == player || GameFunctions.isPlayerEliminated(other)) {
+            if (other == player || !AvariciousConstants.isEligibleParticipant(other)) {
                 continue;
             }
             if (other.distanceTo(player) <= AvariciousConstants.MAX_DISTANCE) {
