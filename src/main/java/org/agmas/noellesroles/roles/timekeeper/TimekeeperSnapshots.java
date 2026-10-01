@@ -88,6 +88,7 @@ import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.robot.RobotPlayerComponent;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
+import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
@@ -122,6 +123,17 @@ import java.util.UUID;
  * 这能覆盖当前需求里最容易影响局势的状态，同时避免每 4 tick 克隆全地图方块带来的性能风险。</p>
  */
 public final class TimekeeperSnapshots {
+    /* 中间帧只把会改变客户端外观/名字的状态发出去，其余状态延迟到最终帧。 */
+    private static final Set<String> INTERMEDIATE_PLAYER_SYNC_IDS = Set.of(
+            "noellesroles:morphling",
+            "noellesroles:morph_mark_player",
+            "noellesroles:convener_disguise",
+            "noellesroles:insane_damned_paranoid_killer"
+    );
+    private static final Set<String> INTERMEDIATE_WORLD_SYNC_IDS = Set.of(
+            "noellesroles:morph_body_disguise_world"
+    );
+
     private static final List<ComponentEntry> PLAYER_COMPONENTS = List.of(
             component("wathe:mood", PlayerMoodComponent.KEY),
             /*
@@ -212,6 +224,7 @@ public final class TimekeeperSnapshots {
             ,component("noellesroles:vecna", org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent.KEY),
             /* 平民复活倒计时、亡命时间、护盾和逐级缓慢都必须随时间线回滚。 */
             component("noellesroles:outlaw_player", OutlawPlayerComponent.KEY)
+            ,component("noellesroles:myers", MyersPlayerComponent.KEY)
     );
 
     private static final List<ComponentEntry> WORLD_COMPONENTS = List.of(
@@ -318,7 +331,7 @@ public final class TimekeeperSnapshots {
             return playerSnapshot != null && playerSnapshot.isPlayableAlive();
         }
 
-        public void apply(@NotNull ServerWorld world, @NotNull Set<UUID> protectedPlayers) {
+        public void apply(@NotNull ServerWorld world, @NotNull Set<UUID> protectedPlayers, boolean syncClientState) {
             RegistryWrapper.WrapperLookup registryLookup = world.getRegistryManager();
 
             /*
@@ -329,7 +342,8 @@ public final class TimekeeperSnapshots {
             for (ComponentEntry entry : WORLD_COMPONENTS) {
                 NbtCompound data = this.worldComponents.get(entry.id());
                 if (data != null) {
-                    restoreComponent(entry.key(), world, data, registryLookup);
+                    restoreComponent(entry.key(), world, data, registryLookup,
+                            syncClientState || INTERMEDIATE_WORLD_SYNC_IDS.contains(entry.id()));
                 }
             }
 
@@ -346,7 +360,7 @@ public final class TimekeeperSnapshots {
                 if (playerSnapshot == null) {
                     continue;
                 }
-                playerSnapshot.apply(player);
+                playerSnapshot.apply(player, syncClientState);
             }
         }
 
@@ -501,7 +515,7 @@ public final class TimekeeperSnapshots {
             return this.aliveAndSurvival && !PlayerLifeStateApi.isNonSurvivalMode(this.gameMode);
         }
 
-        private void apply(@NotNull ServerPlayerEntity player) {
+        private void apply(@NotNull ServerPlayerEntity player, boolean syncClientState) {
             RegistryWrapper.WrapperLookup registryLookup = player.getRegistryManager();
 
             /*
@@ -536,25 +550,29 @@ public final class TimekeeperSnapshots {
             player.setFireTicks(this.fireTicks);
             player.setFrozenTicks(this.frozenTicks);
             player.setAir(this.air);
-            restoreStatusEffects(player);
-
-            player.getInventory().clear();
-            player.getInventory().readNbt(this.inventory.copy());
-            player.getInventory().selectedSlot = Math.max(0, Math.min(this.selectedSlot, 8));
-            player.currentScreenHandler.setCursorStack(this.cursorStack.copy());
-            player.getInventory().markDirty();
-            player.currentScreenHandler.sendContentUpdates();
-
-            restoreItemCooldownTicks(player, this.itemCooldownTicks);
+            if (syncClientState) {
+                restoreStatusEffects(player);
+                player.getInventory().clear();
+                player.getInventory().readNbt(this.inventory.copy());
+                player.getInventory().selectedSlot = Math.max(0, Math.min(this.selectedSlot, 8));
+                player.currentScreenHandler.setCursorStack(this.cursorStack.copy());
+                player.getInventory().markDirty();
+                player.currentScreenHandler.sendContentUpdates();
+                restoreItemCooldownTicks(player, this.itemCooldownTicks);
+            }
 
             boolean wasInTimeRiftBeforeRestore = TimekeeperPlayerComponent.KEY.get(player).isInTimeRift();
 
             for (ComponentEntry entry : PLAYER_COMPONENTS) {
                 NbtCompound data = this.components.get(entry.id());
                 if (data != null) {
-                    restoreComponent(entry.key(), player, data, registryLookup);
+                    restoreComponent(entry.key(), player, data, registryLookup,
+                            syncClientState || INTERMEDIATE_PLAYER_SYNC_IDS.contains(entry.id()));
                 }
             }
+
+            /* 迈尔斯的冲刺/强制举刀状态需要在组件批量恢复后重新压回实体动作。 */
+            MyersPlayerComponent.KEY.get(player).reconcileAfterSnapshotRestore();
 
             /*
              * 组件和实体 flag 都恢复后，再让灵术师本体状态做一次收口。
@@ -644,11 +662,14 @@ public final class TimekeeperSnapshots {
             @NotNull ComponentKey<? extends Component> key,
             @NotNull Object provider,
             @NotNull NbtCompound tag,
-            RegistryWrapper.WrapperLookup registryLookup
+            RegistryWrapper.WrapperLookup registryLookup,
+            boolean syncClientState
     ) {
         Component component = key.get(provider);
         component.readFromNbt(tag.copy(), registryLookup);
-        ((ComponentKey) key).sync(provider);
+        if (syncClientState) {
+            ((ComponentKey) key).sync(provider);
+        }
     }
 
     private static <T> void copyNbtMap(@NotNull Map<T, NbtCompound> source, @NotNull Map<T, NbtCompound> target) {

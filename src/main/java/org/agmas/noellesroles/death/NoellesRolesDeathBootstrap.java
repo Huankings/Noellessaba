@@ -42,6 +42,7 @@ import org.agmas.noellesroles.roles.voodoo.VoodooDeathHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaDeathHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawDeathHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawDeathProtectionHandler;
+import org.agmas.noellesroles.roles.myers.MyersDeathHandler;
 
 /**
  * noellesroles 的死亡事件总引导器。
@@ -123,6 +124,7 @@ public final class NoellesRolesDeathBootstrap {
         ShadowJesterDeathHandler.init();
         VecnaDeathHandler.init();
         OutlawDeathHandler.init();
+        MyersDeathHandler.init();
     }
 
     /**

@@ -2411,4 +2411,10 @@ public final class NoellesRolesReplayFormatters {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.commoner_revival_started", actor);
     }
+
+    /** 迈尔斯屠刀冲刺撞门的专属回放文案。 */
+    public static Text formatMyersDoorBroken(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.myers_door_broken", actor);
+    }
 }

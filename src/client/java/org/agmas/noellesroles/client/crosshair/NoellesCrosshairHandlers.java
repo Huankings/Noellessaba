@@ -15,6 +15,7 @@ import org.agmas.noellesroles.client.roles.robber.RobberGunCrosshair;
 import org.agmas.noellesroles.client.roles.spring_trap.SpringTrapAxeCrosshair;
 import org.agmas.noellesroles.client.roles.thief.ThiefCrosshair;
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperWatchCrosshairOverlay;
+import org.agmas.noellesroles.client.roles.myers.MyersButcherKnifeCrosshair;
 import org.agmas.noellesroles.client.roles.waiter.WaiterCrosshair;
 
 /**
@@ -44,5 +45,6 @@ public final class NoellesCrosshairHandlers {
         ThiefCrosshair.register();
         TimekeeperWatchCrosshairOverlay.register();
         LichStaffCrosshair.register();
+        MyersButcherKnifeCrosshair.register();
     }
 }

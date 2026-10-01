@@ -4,6 +4,7 @@ import org.agmas.noellesroles.modifiers.feather.FeatherPlayerCollisionHandler;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerCollisionHandler;
 import org.agmas.noellesroles.roles.jason.JasonPlayerCollisionHandler;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerCollisionHandler;
+import org.agmas.noellesroles.roles.myers.MyersPlayerCollisionHandler;
 
 /**
  * NoellesRoles 接入 Wathe 玩家碰撞 API 的总入口。
@@ -27,5 +28,6 @@ public final class NoellesPlayerCollisionHandlers {
         FeatherPlayerCollisionHandler.init();
         InsaneDamnedKillerPlayerCollisionHandler.init();
         JasonPlayerCollisionHandler.init();
+        MyersPlayerCollisionHandler.init();
     }
 }

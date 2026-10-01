@@ -22,6 +22,7 @@ import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.vecna.VecnaConstants;
+import org.agmas.noellesroles.roles.myers.MyersConstants;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerConstants;
 import org.agmas.noellesroles.roles.necromancer.NecromancerConstants;
@@ -159,6 +160,8 @@ public final class NoellesRoleRegistry {
     public static final Role LICH = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.LICH_ID, LichConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     // 维克那（杀手）：通过颠倒标记和颠倒疯魔扰乱并处决目标。
     public static final Role VECNA = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.VECNA_ID, VecnaConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
+    // 迈尔斯(杀手)：使用屠刀冲刺，并通过恶意值购买恶灵附身。
+    public static final Role MYERS = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.MYERS_ID, MyersConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //交换者(杀手)：交换任意两个玩家的位置
     public static final Role SWAPPER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.SWAPPER_ID, new Color(57, 4, 170).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
     //亡语杀手(杀手)：能听到死者说话的声音

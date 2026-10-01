@@ -35,6 +35,8 @@ import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.swapper.SwapperC2SPacket;
 import org.agmas.noellesroles.packet.role.timekeeper.TimekeeperWatchModeC2SPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
+import org.agmas.noellesroles.packet.role.myers.MyersAbsorbC2SPacket;
+import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.bellringer.BellringerAbility;
 import org.agmas.noellesroles.roles.brainwasher.BrainwasherAbility;
@@ -209,6 +211,11 @@ public final class NoellesRolesPacketReceivers {
                 return;
             }
             VultureAbility.handle(payload, context.player());
+        }));
+        ServerPlayNetworking.registerGlobalReceiver(MyersAbsorbC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
+            MyersPlayerComponent component = MyersPlayerComponent.KEY.get(context.player());
+            if (payload.absorbing()) component.startAbsorbing();
+            else component.stopAbsorbing();
         }));
         ServerPlayNetworking.registerGlobalReceiver(SwapperC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
             if (shouldBlockTimeRiftAction(context.player())) {

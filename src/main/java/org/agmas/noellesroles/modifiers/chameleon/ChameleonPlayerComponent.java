@@ -18,6 +18,7 @@ public class ChameleonPlayerComponent implements AutoSyncedComponent, ServerTick
     public static final ComponentKey<ChameleonPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "chameleon"), ChameleonPlayerComponent.class);
     private final PlayerEntity player;
     public int hidingTicks;
+    private int syncDelay;
 
 
     public void reset() {
@@ -47,9 +48,17 @@ public class ChameleonPlayerComponent implements AutoSyncedComponent, ServerTick
         if (worldModifierComponent.isRole(player,NoellesModifierRegistry.CHAMELEON)) {
             if (player.getMovement().getX() != 0 || player.getMovement().getZ() != 0)  hidingTicks = 0;
             hidingTicks++;
+            /* 外观渐变允许少量插值误差，每 10 tick 校准一次即可。 */
+            if (++this.syncDelay >= 10) {
+                this.syncDelay = 0;
+                sync();
+            }
         } else {
-            hidingTicks = 0;
+            if (hidingTicks != 0) {
+                hidingTicks = 0;
+                this.syncDelay = 0;
+                sync();
+            }
         }
-        sync();
     }
 }

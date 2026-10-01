@@ -6,6 +6,7 @@ import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -35,13 +36,18 @@ public class AbilityPlayerComponent implements AutoSyncedComponent, ServerTickin
     }
 
     public void clientTick() {
+        /* 服务端每秒校准一次；两个校准点之间由客户端本地推进 HUD 倒计时。 */
+        if (this.cooldown > 0) {
+            --this.cooldown;
+        }
     }
 
     public void serverTick() {
         if (this.cooldown > 0) {
             --this.cooldown;
-
-            this.sync();
+            if (this.cooldown == 0 || this.cooldown % 20 == 0) {
+                this.sync();
+            }
         }
     }
 
@@ -68,5 +74,11 @@ public class AbilityPlayerComponent implements AutoSyncedComponent, ServerTickin
 
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.cooldown = tag.contains("cooldown") ? tag.getInt("cooldown") : 0;
+    }
+
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity recipient) {
+        // 通用能力冷却只被玩家自己的背包按钮、准心和 HUD 使用，不应广播给附近所有玩家。
+        return this.player.equals(recipient);
     }
 }

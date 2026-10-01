@@ -57,8 +57,8 @@ public final class TimekeeperConstants {
     /** 快照采样频率：每 4 tick 存一张，也就是每秒 5 张。 */
     public static final int SNAPSHOT_INTERVAL_TICKS = 4;
 
-    /** 历史缓存长度：保留 120 秒历史，作为多次回溯衔接的冗余前缀。 */
-    public static final int HISTORY_CACHE_SECONDS = 120;
+    /** 历史缓存长度：保留 90 秒历史，作为多次回溯衔接的冗余前缀。 */
+    public static final int HISTORY_CACHE_SECONDS = 90;
 
     /** 单次回溯深度：每次最多回到 30 秒前。 */
     public static final int SINGLE_REWIND_DEPTH_SECONDS = 30;

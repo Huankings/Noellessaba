@@ -78,6 +78,7 @@
     ,"roles.vecna.VecnaKeyboardInputMixin"
     ,"roles.vecna.VecnaVisionMixin"
     ,"roles.vecna.VecnaLookMixin"
+    ,"roles.myers.MyersHeldItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

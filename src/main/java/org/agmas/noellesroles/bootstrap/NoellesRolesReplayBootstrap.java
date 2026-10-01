@@ -56,6 +56,7 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOOD_AXE), NoellesRolesReplayFormatters::formatAxeHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.COLORFUL_AXE), NoellesRolesReplayFormatters::formatAxeHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOWGUN), NoellesRolesReplayFormatters::formatBlowgunHit);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MYERS_DOOR_BROKEN_EVENT, NoellesRolesReplayFormatters::formatMyersDoorBroken);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.BELLRINGER_REDUCE_TIME_EVENT, NoellesRolesReplayFormatters::formatBellringerReduceTime);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.DETECTIVE_CHECK_EVENT, NoellesRolesReplayFormatters::formatDetectiveCheck);

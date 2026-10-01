@@ -25,6 +25,7 @@ import org.agmas.noellesroles.roles.engineer.EngineerPlayerComponent;
 import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.lich.LichPsychoHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaPsychoHandler;
+import org.agmas.noellesroles.roles.myers.MyersPsychoHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
@@ -98,7 +99,10 @@ public class NoellesRolesShops {
          * 这样 NoellesRoles 的职业商店以后如果也开始使用任务币或多方案价格，
          * 购买判定会自动生效，不会被旧的 int 金额逻辑截断。
          */
-        if (!context.canAffordEntry() || (!ignoresShopCooldown(player, item) && player.getItemCooldownManager().isCoolingDown(item))) {
+        boolean actionPurchase = entry.isActionPurchase() || isImmediatePurchaseItem(item);
+        boolean cooldownBlocked = ShopApi.isPurchaseCooldownBlocked(context, actionPurchase);
+        if (!context.canAffordEntry()
+                || (cooldownBlocked && (actionPurchase || !ignoresShopCooldown(player, item)))) {
             return ShopPurchaseResult.FAIL_SHOW_MESSAGE;
         }
 
@@ -129,7 +133,9 @@ public class NoellesRolesShops {
      */
     public static boolean handlePurchase(@NotNull PlayerEntity player, int balance, @NotNull ItemStack stack, int price) {
         Item item = stack.getItem();
-        if (balance >= price && (ignoresShopCooldown(player, item) || !player.getItemCooldownManager().isCoolingDown(item))) {
+        boolean actionPurchase = isImmediatePurchaseItem(item);
+        boolean cooldownBlocked = ShopApi.isPurchaseCooldownBlocked(player, item, actionPurchase);
+        if (balance >= price && (!cooldownBlocked || (!actionPurchase && ignoresShopCooldown(player, item)))) {
             boolean success = deliverPurchasedStack(player, stack);
 
             if (success) {
@@ -191,6 +197,9 @@ public class NoellesRolesShops {
         if (item == ModItems.PSYCHO_VECNA) {
             return VecnaPsychoHandler.start(player);
         }
+        if (item == ModItems.EVIL_POSSESS) {
+            return MyersPsychoHandler.start(player);
+        }
         if (item == ModItems.VECNA_ADDTIME) {
             dev.doctor4t.wathe.cca.GameTimeComponent.KEY.get(player.getWorld()).addTime(org.agmas.noellesroles.roles.vecna.VecnaConstants.ADD_TIME_TICKS);
             return true;
@@ -243,16 +252,38 @@ public class NoellesRolesShops {
         return player.giveItemStack(deliveredStack);
     }
 
+    /**
+     * NoellesRoles 的 provider 会集中分派即时商品，而不是调用 ShopEntry.onBuy。
+     * 这些条目必须显式保持 ACTION 语义，不能被 Wathe 的普通物品冷却绕过开关放宽。
+     */
+    private static boolean isImmediatePurchaseItem(@NotNull Item item) {
+        return item == WatheItems.BLACKOUT
+                || item == WatheItems.PSYCHO_MODE
+                || item == ModItems.BOUNTY_MODE
+                || item == ModItems.PSYCHO_COOK
+                || item == ModItems.PSYCHO_LICH
+                || item == ModItems.PSYCHO_VECNA
+                || item == ModItems.EVIL_POSSESS
+                || item == ModItems.VECNA_ADDTIME
+                || item == ModItems.POWER_RESTORATION
+                || item == ModItems.BAYONET_COLDOWN_REFRESH
+                || item == ModItems.ICON_WEAPON_COOLDOWN_REFRESH
+                || item == ModItems.ICON_ABILITY_COOLDOWN_REFRESH
+                || item == ModItems.ICON_POTION_EFFECT_REFRESH
+                || item == ModItems.DYING_WATCH_PROTECT;
+    }
+
+    /**
+     * 保留 NoellesRoles 既有的旁观/创造调试便利，但该例外只允许普通给予类商品使用。
+     * 调用方会先判断 actionPurchase，因此即时能力不会通过这里绕开冷却。
+     */
     private static boolean ignoresShopCooldown(@NotNull PlayerEntity player, @NotNull Item item) {
-        /*
-         * 用户要求新物品方便调试：旁观/创造调试玩家不受冷却影响。
-         * 这里只对已明确要求的调试友好物品开放商店冷却绕过，避免影响其它既有职业商品的正式平衡。
-         */
         return (item == ModItems.PSYCHO_COOK
                 || item == ModItems.ONCE_STAFF
                 || item == ModItems.PSYCHO_STAFF
                 || item == ModItems.MAGIC_BARRIER
-                || item == ModItems.PSYCHO_LICH)
+                || item == ModItems.PSYCHO_LICH
+                || item == ModItems.EVIL_POSSESS)
                 && GameFunctions.isPlayerSpectatingOrCreative(player);
     }
 

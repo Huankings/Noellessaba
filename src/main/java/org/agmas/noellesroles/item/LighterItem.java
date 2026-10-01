@@ -57,7 +57,6 @@ public class LighterItem extends Item {
             for (ServerPlayerEntity doused : dousedPlayers) {
                 GameFunctions.killPlayer(doused, true, player, NoellesDeathReasons.ARSONIST_IGNITED_DEATH_REASON);
                 DousedPlayerComponent.KEY.get(doused).reset();
-                DousedPlayerComponent.KEY.get(doused).sync();
             }
             player.playSoundToPlayer(SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.PLAYERS, 1.0F, 1.0F);
 

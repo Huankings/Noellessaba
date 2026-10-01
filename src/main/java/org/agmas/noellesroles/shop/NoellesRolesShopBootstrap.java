@@ -28,6 +28,7 @@ import org.agmas.noellesroles.roles.kidnapper.KidnapperShopHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainShopHandler;
 import org.agmas.noellesroles.roles.lich.LichShopHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaShopHandler;
+import org.agmas.noellesroles.roles.myers.MyersShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingShopHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
@@ -186,6 +187,11 @@ public final class NoellesRolesShopBootstrap {
                 Identifier.of(NoellesRolesCore.MOD_ID, "vecna_shop"),
                 ShopApi.DEFAULT_PRIORITY,
                 VecnaShopHandler::modifyShop
+        );
+        ShopApi.registerShopModifier(
+                Identifier.of(NoellesRolesCore.MOD_ID, "myers_shop"),
+                ShopApi.DEFAULT_PRIORITY,
+                MyersShopHandler::modifyShop
         );
 
         // 共用一套伪装商店的职业。

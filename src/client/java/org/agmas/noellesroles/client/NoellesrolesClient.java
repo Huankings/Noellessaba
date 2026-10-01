@@ -96,6 +96,7 @@ import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
 import org.agmas.noellesroles.packet.role.timekeeper.TimekeeperWatchModeC2SPacket;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
+import org.agmas.noellesroles.packet.role.myers.MyersAbsorbC2SPacket;
 import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistTargeting;
@@ -107,6 +108,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
+import org.agmas.noellesroles.client.roles.myers.MyersMusicController;
 import org.lwjgl.glfw.GLFW;
 
 import org.agmas.noellesroles.client.items.NoellesRolesItemExtraModel;
@@ -122,6 +124,7 @@ public class NoellesrolesClient implements ClientModInitializer {
     public static PlayerBodyEntity targetBody;
     // 在 NoellesrolesClient 类中添加变量
     private static boolean wasGazingPressed = false;
+    private static boolean wasMyersAbsorbPressed = false;
     private static boolean wasChargingPressed = false;
     private static boolean wasUsingKnife = false;
     private static boolean grenadeThrowModeToggleHeld = false;
@@ -207,6 +210,7 @@ public class NoellesrolesClient implements ClientModInitializer {
             ShadowJesterMusicController.tick(client);
             LicensedVillainMusicController.tick(client);
             OutlawMusicController.tick(client);
+            MyersMusicController.tick(client);
             /*
              * 无恶不在持续音需要由所有客户端本地播放。
              * 服务端仍会发 START/STOP 包作为即时控制，但这里按同步组件做一层补偿，
@@ -214,6 +218,21 @@ public class NoellesrolesClient implements ClientModInitializer {
              */
             JasonAbilityClientSoundController.tick(client);
             // 在 ClientTickEvents.END_CLIENT_TICK.register(client -> { ... } 中：
+            MinecraftClient abilityClient = MinecraftClient.getInstance();
+            if (abilityClient.player != null
+                    && GameWorldComponent.KEY.get(abilityClient.player.getWorld()).isRole(abilityClient.player, NoellesRoleRegistry.MYERS)) {
+                boolean pressed = abilityBind.isPressed();
+                if (pressed && !wasMyersAbsorbPressed) {
+                    wasMyersAbsorbPressed = true;
+                    ClientPlayNetworking.send(new MyersAbsorbC2SPacket(true));
+                } else if (!pressed && wasMyersAbsorbPressed) {
+                    wasMyersAbsorbPressed = false;
+                    ClientPlayNetworking.send(new MyersAbsorbC2SPacket(false));
+                }
+            } else {
+                wasMyersAbsorbPressed = false;
+            }
+
             if (abilityBind.isPressed()) {
                 if (!wasGazingPressed) {
                     wasGazingPressed = true;
@@ -306,6 +325,9 @@ public class NoellesrolesClient implements ClientModInitializer {
                 client.execute(() -> {
                     if (MinecraftClient.getInstance().player == null) return;
                     GameWorldComponent gameWorldComponent = (GameWorldComponent) GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
+                    if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.MYERS)) {
+                        return;
+                    }
                     if (gameWorldComponent.isRole(MinecraftClient.getInstance().player, NoellesRoleRegistry.VULTURE)) {
                         if (targetBody == null) return;
                         ClientPlayNetworking.send(new VultureEatC2SPacket(targetBody.getUuid()));
@@ -395,7 +417,7 @@ public class NoellesrolesClient implements ClientModInitializer {
                 ModItems.ICON_WEAPON_COOLDOWN_REFRESH, ModItems.ICON_ABILITY_COOLDOWN_REFRESH,
                 ModItems.ICON_POTION_EFFECT_REFRESH, ModItems.DYING_WATCH_PROTECT, ModItems.SLEEPING_BAG,
                 ModItems.BOOK, ModItems.RANDOM_FOOD, ModItems.RANDOM_DRINK, ModItems.RANDOM_POTION,
-                ModItems.PSYCHO_VECNA, ModItems.VECNA_ADDTIME
+                ModItems.PSYCHO_VECNA, ModItems.VECNA_ADDTIME, ModItems.BUTCHER_KNIFE, ModItems.EVIL_POSSESS
         );
 
         ItemTooltipApi.registerAppender(

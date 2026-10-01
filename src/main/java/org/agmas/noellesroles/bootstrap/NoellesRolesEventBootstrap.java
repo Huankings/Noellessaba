@@ -115,6 +115,7 @@ import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawManager;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
+import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -188,7 +189,6 @@ public final class NoellesRolesEventBootstrap {
             TimekeeperPlayerComponent.KEY.get(playerEntity).reset();
             VecnaPlayerComponent.KEY.get(playerEntity).reset();
             DousedPlayerComponent.KEY.get(playerEntity).reset();
-            DousedPlayerComponent.KEY.get(playerEntity).sync();
             ConvenerPlayerComponent.KEY.get(playerEntity).reset();
             ConvenerDisguiseComponent.KEY.get(playerEntity).clearDisguise();
             ConvenerMomentumComponent.KEY.get(playerEntity).reset();
@@ -200,6 +200,7 @@ public final class NoellesRolesEventBootstrap {
              */
             InsaneDamnedKillerPlayerComponent.KEY.get(playerEntity).reset();
             OutlawPlayerComponent.KEY.get(playerEntity).reset();
+            MyersPlayerComponent.KEY.get(playerEntity).reset();
             JasonWoundManager.resetPlayer(playerEntity);
             JasonAbilityManager.resetPlayer(playerEntity);
             JasonAbilityBlindnessComponent.KEY.get(playerEntity).reset();

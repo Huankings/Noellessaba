@@ -12,9 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
-public class BodyDeathReasonComponent implements AutoSyncedComponent, ServerTickingComponent {
+public class BodyDeathReasonComponent implements AutoSyncedComponent {
     public static final ComponentKey<BodyDeathReasonComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "body_death_reason"), BodyDeathReasonComponent.class);
     public Identifier deathReason = GameConstants.DeathReasons.GENERIC;
     public Identifier playerRole = WatheRoles.CIVILIAN.identifier();
@@ -45,8 +44,4 @@ public class BodyDeathReasonComponent implements AutoSyncedComponent, ServerTick
         this.vultured = tag.getBoolean("vultured");
     }
 
-    @Override
-    public void serverTick() {
-        this.sync();
-    }
 }

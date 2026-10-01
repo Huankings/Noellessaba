@@ -10,10 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
-import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class RecallerPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
+public class RecallerPlayerComponent implements AutoSyncedComponent {
     public static final ComponentKey<RecallerPlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "recaller"), RecallerPlayerComponent.class);
     private final PlayerEntity player;
     public boolean placed = false;
@@ -35,13 +34,6 @@ public class RecallerPlayerComponent implements AutoSyncedComponent, ServerTicki
 
     public void sync() {
         KEY.sync(this.player);
-    }
-
-    public void clientTick() {
-    }
-
-    public void serverTick() {
-        this.sync();
     }
 
     public void setPosition() {
@@ -88,5 +80,10 @@ public class RecallerPlayerComponent implements AutoSyncedComponent, ServerTicki
         this.y = tag.contains("y") ? tag.getDouble("y") : 0;
         this.z = tag.contains("z") ? tag.getDouble("z") : 0;
         this.placed = tag.contains("placed") && tag.getBoolean("placed");
+    }
+
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity recipient) {
+        return this.player.equals(recipient);
     }
 }

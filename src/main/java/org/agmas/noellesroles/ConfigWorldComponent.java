@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 import java.util.UUID;
@@ -33,6 +32,7 @@ public class ConfigWorldComponent implements AutoSyncedComponent, ServerTickingC
     private final World world;
 
     public void reset() {
+        refreshSnapshot();
         this.sync();
     }
 
@@ -74,12 +74,34 @@ public class ConfigWorldComponent implements AutoSyncedComponent, ServerTickingC
 
     @Override
     public void serverTick() {
-        if (NoellesRolesConfig.HANDLER.instance().playerCountToMakeConducterKeyVisible == 0) {
-            masterKeyIsVisible = false;
-        } else {
-            if (world.getServer() != null)
-                masterKeyIsVisible =  world.getServer().getPlayerManager().getCurrentPlayerCount() >= NoellesRolesConfig.HANDLER.instance().playerCountToMakeConducterKeyVisible;
+        /*
+         * 配置和钥匙可见性过去每 tick 都把整个世界组件广播给全服。
+         * 这些值绝大多数整局不变，因此只在服务端真值实际变化时发送一次。
+         */
+        if (refreshSnapshot()) {
+            this.sync();
         }
-        this.sync();
+    }
+
+    private boolean refreshSnapshot() {
+        var config = NoellesRolesConfig.HANDLER.instance();
+        boolean nextMasterKeyVisible = config.playerCountToMakeConducterKeyVisible > 0
+                && this.world.getServer() != null
+                && this.world.getServer().getPlayerManager().getCurrentPlayerCount() >= config.playerCountToMakeConducterKeyVisible;
+        boolean changed = this.insaneSeesMorphs != config.insanePlayersSeeMorphs
+                || this.naturalVoodoosAllowed != config.voodooNonKillerDeaths
+                || this.masterKeyVisibleCount != config.playerCountToMakeConducterKeyVisible
+                || this.masterKeyIsVisible != nextMasterKeyVisible
+                || this.conductorDroppedItemInstinct != config.conductorDroppedItemInstinct
+                || this.coronerBodyInstinct != config.coronerBodyInstinct
+                || this.jesterPsychoCannotAttackKiller != config.jesterPsychoCannotAttackKiller;
+        this.insaneSeesMorphs = config.insanePlayersSeeMorphs;
+        this.naturalVoodoosAllowed = config.voodooNonKillerDeaths;
+        this.masterKeyVisibleCount = config.playerCountToMakeConducterKeyVisible;
+        this.masterKeyIsVisible = nextMasterKeyVisible;
+        this.conductorDroppedItemInstinct = config.conductorDroppedItemInstinct;
+        this.coronerBodyInstinct = config.coronerBodyInstinct;
+        this.jesterPsychoCannotAttackKiller = config.jesterPsychoCannotAttackKiller;
+        return changed;
     }
 }

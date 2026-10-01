@@ -21,6 +21,7 @@ import org.agmas.noellesroles.roles.shadow_jester.ForcedShadowJesterManager;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
+import org.agmas.noellesroles.roles.myers.MyersConstants;
 
 /**
  * NoellesRoles 调试/配置指令入口。
@@ -67,6 +68,10 @@ public final class NoellesRolesCommand {
                         .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
                                         .executes(NoellesRolesCommand::setTimeCurrency))))
+                .then(CommandManager.literal("addMalice")
+                        .then(CommandManager.argument("amount", IntegerArgumentType.integer(0))
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(NoellesRolesCommand::addMalice))))
                 .then(CommandManager.literal("timekeeper")
                         .then(CommandManager.literal("finish_rift")
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
@@ -128,6 +133,23 @@ public final class NoellesRolesCommand {
                         player.getDisplayName(),
                         amount,
                         Text.literal("§f" + TimekeeperConstants.TIME_CURRENCY_ICON + "§r")
+                ),
+                true
+        );
+        return 1;
+    }
+
+    /** 调试用：给指定玩家追加恶意值，不覆盖原余额。 */
+    private static int addMalice(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        int amount = IntegerArgumentType.getInteger(context, "amount");
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        PlayerShopComponent.KEY.get(player).addCurrencyAmount(MyersConstants.MALICE_CURRENCY_ID, amount);
+        context.getSource().sendFeedback(
+                () -> Text.translatable(
+                        "commands.noellesroles.add_malice.success",
+                        player.getDisplayName(),
+                        amount,
+                        Text.literal("§f" + MyersConstants.MALICE_CURRENCY_ICON + "§r")
                 ),
                 true
         );

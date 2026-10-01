@@ -5,15 +5,14 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
-import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
-public class VulturePlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
+public class VulturePlayerComponent implements AutoSyncedComponent {
     public static final ComponentKey<VulturePlayerComponent> KEY = ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "vulture"), VulturePlayerComponent.class);
     private final PlayerEntity player;
     public int bodiesEaten = 0;
@@ -36,13 +35,6 @@ public class VulturePlayerComponent implements AutoSyncedComponent, ServerTickin
         KEY.sync(this.player);
     }
 
-    public void clientTick() {
-    }
-
-    public void serverTick() {
-        sync();
-    }
-
 
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("bodiesEaten", this.bodiesEaten);
@@ -52,5 +44,10 @@ public class VulturePlayerComponent implements AutoSyncedComponent, ServerTickin
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.bodiesEaten = tag.contains("bodiesEaten") ? tag.getInt("bodiesEaten") : 0;
         this.bodiesRequired = tag.contains("bodiesRequired") ? tag.getInt("bodiesRequired") : 0;
+    }
+
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity recipient) {
+        return this.player.equals(recipient);
     }
 }

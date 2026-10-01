@@ -78,7 +78,8 @@
     "roles.jason.JasonKnifeExecutionCooldownMixin",
     "roles.jason.JasonWoundedRevolverPickupMixin"
     ,"roles.vecna.VecnaKnifeCooldownMixin",
-    "roles.outlaw.OutlawKnifeCooldownMixin"
+    "roles.outlaw.OutlawKnifeCooldownMixin",
+    "roles.myers.MyersButcherUsePoseMixin"
 
   ],
   "injectors": {

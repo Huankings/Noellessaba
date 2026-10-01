@@ -38,6 +38,7 @@ import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
+import org.agmas.noellesroles.roles.myers.MyersConstants;
 
 public class ModItems {
     public static void init() {
@@ -117,6 +118,8 @@ public class ModItems {
         // 巫妖疯魔商店图标走即时购买逻辑，不进入背包，但仍登记冷却以便 tooltip 显示。
         GameConstants.ITEM_COOLDOWNS.put(PSYCHO_LICH, LichConstants.PSYCHO_LICH_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(PSYCHO_VECNA, org.agmas.noellesroles.roles.vecna.VecnaConstants.PSYCHO_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(BUTCHER_KNIFE, MyersConstants.BUTCHER_KNIFE_COOLDOWN_TICKS);
+        GameConstants.ITEM_COOLDOWNS.put(EVIL_POSSESS, MyersConstants.EVIL_POSSESS_COOLDOWN_TICKS);
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -152,6 +155,7 @@ public class ModItems {
             entries.add(BAYONET);
             entries.add(SILENCED_REVOLVER);
             entries.add(SILENT_GRENADE);
+            entries.add(BUTCHER_KNIFE);
 
             // 角色机制与功能道具
             entries.add(MASTER_KEY);
@@ -629,6 +633,14 @@ public class ModItems {
     );
     // 维克那颠倒疯魔商店图标：购买后立即启动专属疯魔 profile。
     public static final Item PSYCHO_VECNA = register(new Item(new Item.Settings().maxCount(1)), "psycho_vecna");
+    /** 迈尔斯恶灵附身期间授予的屠刀。 */
+    public static final Item BUTCHER_KNIFE = register(
+            new MyersButcherKnifeItem(new Item.Settings().maxCount(1)), "butcher_knife"
+    );
+    /** 恶灵附身商店即时购买图标。 */
+    public static final Item EVIL_POSSESS = register(
+            new Item(new Item.Settings().maxCount(1)), "evil_possess"
+    );
     // 维克那游戏时间增加商店图标：购买后立即增加 30 秒，不进入背包。
     public static final Item VECNA_ADDTIME = register(new Item(new Item.Settings().maxCount(1)), "vecna_addtime");
     //电力恢复装置

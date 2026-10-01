@@ -209,10 +209,11 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
             return;
         }
 
+        boolean finalFrame = this.playbackCursor <= this.targetIndex;
         TimekeeperSnapshots.GlobalSnapshot snapshot = this.snapshots.get(this.playbackCursor);
-        snapshot.apply(serverWorld, this.protectedPlayers);
+        snapshot.apply(serverWorld, this.protectedPlayers, finalFrame);
         if (this.actorPostUseState != null) {
-            this.actorPostUseState.restore(serverWorld);
+            this.actorPostUseState.restore(serverWorld, finalFrame);
         }
         /*
          * 冻结必须在快照恢复之后刷新。
@@ -221,7 +222,7 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
          */
         freezeUnprotectedPlayers(serverWorld);
 
-        if (this.playbackCursor <= this.targetIndex) {
+        if (finalFrame) {
             /*
              * GameWorldComponent 的职业表不会整体纳入时停快照：恢复它会触发角色变化副作用，
              * 还可能产生虚假的职业变更回放。因此最终历史帧落地后，只对影子小丑做一次
@@ -458,7 +459,7 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
             );
         }
 
-        private void restore(@NotNull ServerWorld world) {
+        private void restore(@NotNull ServerWorld world, boolean syncClientState) {
             ServerPlayerEntity actor = world.getServer().getPlayerManager().getPlayer(this.actorUuid);
             if (actor == null) {
                 return;
@@ -466,11 +467,15 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
 
             TimekeeperPlayerComponent timekeeperComponent = TimekeeperPlayerComponent.KEY.get(actor);
             timekeeperComponent.readFromNbt(this.timekeeperData.copy(), actor.getRegistryManager());
-            timekeeperComponent.sync();
+            if (syncClientState) {
+                timekeeperComponent.sync();
+            }
 
-            PlayerShopComponent.KEY.get(actor).setCurrencyAmount(TimekeeperConstants.TIME_CURRENCY_ID, this.timeBalance);
+            if (syncClientState) {
+                PlayerShopComponent.KEY.get(actor).setCurrencyAmount(TimekeeperConstants.TIME_CURRENCY_ID, this.timeBalance);
+            }
 
-            if (!this.usedWatch.isEmpty() && this.usedWatch.isOf(ModItems.DYING_WATCH)) {
+            if (syncClientState && !this.usedWatch.isEmpty() && this.usedWatch.isOf(ModItems.DYING_WATCH)) {
                 int slot = Math.max(0, Math.min(this.selectedSlot, actor.getInventory().size() - 1));
                 actor.getInventory().setStack(slot, this.usedWatch.copy());
                 TimekeeperWatchItem.setState(actor.getInventory().getStack(slot), TimekeeperWatchItem.getState(this.usedWatch));

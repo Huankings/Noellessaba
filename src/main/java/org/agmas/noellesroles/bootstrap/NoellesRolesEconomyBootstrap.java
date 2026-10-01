@@ -12,6 +12,8 @@ import org.agmas.noellesroles.modifiers.taskmaster.TaskmasterTaskIncomeHandler;
 import org.agmas.noellesroles.roles.initiate.InitiateConstants;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
+import org.agmas.noellesroles.roles.myers.MyersConstants;
+import org.agmas.noellesroles.roles.myers.MyersEconomyHandler;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,6 +35,12 @@ public final class NoellesRolesEconomyBootstrap {
                 TimekeeperConstants.TIME_CURRENCY_ICON,
                 "currency.noellesroles.time",
                 context -> context.role() == NoellesRoleRegistry.TIMEKEEPER
+        );
+        EconomyApi.registerCurrency(
+                MyersConstants.MALICE_CURRENCY_ID,
+                MyersConstants.MALICE_CURRENCY_ICON,
+                "currency.noellesroles.malice_value",
+                context -> context.role() == NoellesRoleRegistry.MYERS
         );
 
         EconomyApi.registerBalanceHudRoles(List.of(
@@ -59,6 +67,7 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.INITIATE,
                 NoellesRoleRegistry.LICENSED_VILLAIN,
                 NoellesRoleRegistry.TIMEKEEPER
+                ,NoellesRoleRegistry.MYERS
         ));
 
         /*
@@ -152,5 +161,6 @@ public final class NoellesRolesEconomyBootstrap {
 
         MagnateEconomyHandler.init();
         TaskmasterTaskIncomeHandler.init();
+        MyersEconomyHandler.init();
     }
 }

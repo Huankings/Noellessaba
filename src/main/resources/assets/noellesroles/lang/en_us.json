@@ -901,5 +901,19 @@
       "replay.shield_blocked.noellesroles.outlaw.item": "%s's outlaw shield blocked %s damage from %s",
       "replay.shield_blocked.noellesroles.outlaw.by_item": "%s's outlaw shield blocked %s damage from %s",
       "death_reason.noellesroles.outlaw_timeout": "outlaw time ended",
-      "death_reason.noellesroles.outlaw_offline": "outlaw disconnected"
+      "death_reason.noellesroles.outlaw_offline": "outlaw disconnected",
+      "announcement.role.noellesroles.myers": "Myers",
+      "announcement.goals.noellesroles.myers": "Track them, stare at them, kill them!",
+      "currency.noellesroles.malice_value": "Malice",
+      "item.noellesroles.butcher_knife": "Butcher Knife",
+      "item.noellesroles.butcher_knife.tooltip": "Charge the butcher knife, then release to dash. Hitting a player kills them; hitting a Wathe door permanently pries it open.",
+      "item.noellesroles.evil_possess": "Evil Possess",
+      "item.noellesroles.evil_possess.tooltip": "Gain the power of evil possess and butcher everyone with the knife. Lasts 45 seconds, with a 4m05s cooldown.",
+      "psycho_mode.noellesroles.myers": "Evil Possess",
+      "psycho_mode.noellesroles.myers.text": "Track, stare, and kill!",
+      "psycho_shield.noellesroles.myers": "Evil Shield",
+      "hud.noellesroles.myers.ready": "Press %s to absorb malice (players: %s)",
+      "hud.noellesroles.myers.absorbing": "Absorbing... (players: %s)",
+      "replay.global.noellesroles.myers_door_broken": "%s smashed through a door"
+      ,"commands.noellesroles.add_malice.success": "%s's Malice increased by %s (%s)"
   }

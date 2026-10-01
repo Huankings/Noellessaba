@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
-import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 /**
  * 记录玩家是否已经被纵火犯浇油。
@@ -19,13 +17,12 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
  * <p>这个状态需要同步到客户端，因为纵火犯本能会根据它把玩家染成
  * “已浇油/未浇油”两种颜色。</p>
  */
-public class DousedPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
+public class DousedPlayerComponent implements AutoSyncedComponent {
     public static final ComponentKey<DousedPlayerComponent> KEY =
             ComponentRegistry.getOrCreate(Identifier.of(NoellesRolesCore.MOD_ID, "doused"), DousedPlayerComponent.class);
 
     private final PlayerEntity player;
     private boolean doused;
-    private int syncDelay;
 
     public DousedPlayerComponent(PlayerEntity player) {
         this.player = player;
@@ -36,7 +33,11 @@ public class DousedPlayerComponent implements AutoSyncedComponent, ServerTicking
     }
 
     public void setDoused(boolean doused) {
+        if (this.doused == doused) {
+            return;
+        }
         this.doused = doused;
+        this.sync();
     }
 
     public void sync() {
@@ -44,19 +45,8 @@ public class DousedPlayerComponent implements AutoSyncedComponent, ServerTicking
     }
 
     public void reset() {
-        this.doused = false;
-        this.syncDelay = 0;
-    }
-
-    @Override
-    public void clientTick() {
-    }
-
-    @Override
-    public void serverTick() {
-        this.syncDelay++;
-        if (this.syncDelay >= 20) {
-            this.syncDelay = 0;
+        if (this.doused) {
+            this.doused = false;
             this.sync();
         }
     }

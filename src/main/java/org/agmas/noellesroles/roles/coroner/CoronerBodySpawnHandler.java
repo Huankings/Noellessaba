@@ -35,8 +35,11 @@ public final class CoronerBodySpawnHandler {
                     if (gameWorld.getRole(context.victim()) == null) {
                         return;
                     }
-                    BodyDeathReasonComponent.KEY.get(context.body()).deathReason = context.deathReason();
-                    BodyDeathReasonComponent.KEY.get(context.body()).playerRole = gameWorld.getRole(context.victim()).identifier();
+                    BodyDeathReasonComponent component = BodyDeathReasonComponent.KEY.get(context.body());
+                    component.deathReason = context.deathReason();
+                    component.playerRole = gameWorld.getRole(context.victim()).identifier();
+                    // 尸体数据只在生成和秃鹫吞噬时变化，不再通过尸体 tick 持续广播。
+                    component.sync();
                 }
         );
     }

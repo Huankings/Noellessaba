@@ -189,6 +189,8 @@ public final class NoellesEventIds {
     public static final Identifier OUTLAW_SHIELD_GAINED_EVENT = NoellesRolesCore.id("outlaw_shield_gained");
     /** 亡命护盾抵挡伤害时使用的稳定护盾来源 id。 */
     public static final Identifier OUTLAW_SHIELD_SOURCE = NoellesRolesCore.id("outlaw");
+    /** 迈尔斯屠刀冲刺撞坏 Wathe 门的回放事件。 */
+    public static final Identifier MYERS_DOOR_BROKEN_EVENT = NoellesRolesCore.id("myers_door_broken");
 
     private NoellesEventIds() {
     }

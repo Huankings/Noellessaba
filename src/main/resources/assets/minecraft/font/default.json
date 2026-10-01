@@ -8,6 +8,15 @@
       "chars": [
         "\uE783"
       ]
+    },
+    {
+      "type": "bitmap",
+      "file": "noellesroles:font/malice_value.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        "\uE784"
+      ]
     }
   ]
 }

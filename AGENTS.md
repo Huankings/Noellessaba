@@ -317,6 +317,40 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 配置、常量缓存、纯客户端显示缓存、以及 `TimekeeperWorldComponent` 这类“正在执行回溯”的播放机械通常不应进入快照；排除时要写清楚原因。
 - 如果状态存在于 CCA 之外，例如静态 Map、延迟任务队列、播放实体、自定义非物品实体、语音连接或方块实体，不能只加组件白名单；要补对应的快照恢复、重建或回合清理。
 - 新组件开发完成后至少测试一次：组件状态改变后发动时停者回溯，确认该状态回到 30 秒前；购买回溯保护的玩家则不应被回滚。
+- 回溯期间禁止把快照恢复造成的自然结束/重新开始写入新回放：所有事件最终经过 `GameRecordManager.addEvent(...)`，应沿用 `MagicianReplayRecordMixin` 的统一回溯抑制入口，避免 Noisemaker、Sedative、Psycho 等效果反复刷屏或堆积事件。
+
+## 网络带宽与同步规范
+
+NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄、客户端能本地推导就不逐 tick 广播”为默认原则。此前扩展环境在 20 人以上挂机时出现持续高发送带宽，主要原因不是语音聊天，而是 CCA 世界组件/玩家组件每 tick 全量同步，以及时间回溯中每个历史帧重复同步大量组件、背包和状态效果。后续新增职业或机制必须把网络开销当作和 TPS、内存一样的设计约束。
+
+### 已完成的基础优化
+
+- Harpy `WorldModifierComponent` 已取消每 tick 全量广播；词条只在整轮分配结束、单独增删或清理时同步。
+- NoellesRoles 的配置组件、召回者、秃鹫、尸体死因、浇油和部分职业倒计时已改为变化边界或低频同步。
+- 只给本人使用的能力冷却/位置组件应通过 `shouldSyncWith` 限制收件人，不能默认向实体追踪范围内所有玩家发送。
+- 时停者回溯中间帧仍在服务端完整恢复，但客户端只接收必要的变形/伪装视觉状态；背包、药水、物品冷却、金币和普通职业组件延迟到最终历史帧统一刷新。
+- 时停回溯中间帧当前保留的视觉同步白名单在 `TimekeeperSnapshots.INTERMEDIATE_PLAYER_SYNC_IDS` / `INTERMEDIATE_WORLD_SYNC_IDS`，新增需要逐帧显示的伪装类机制必须明确加入并说明理由。
+
+### 新增组件和机制时的强制检查
+
+1. 先判断状态是服务端裁定、本人 HUD、全员可见外观，还是只在事件边界显示；不要因为客户端“方便读取”就每 tick 同步完整 NBT。
+2. 玩家组件默认实现 `shouldSyncWith`，只在确实需要他人观察时扩大收件人范围；全员同步必须在注释中写明观察者需求。
+3. 倒计时优先同步“开始/结束/每秒校准”，客户端本地递减或插值；只有会改变模型、名字、伪装或攻击目标的状态才考虑中间帧同步。
+4. 世界组件不得在 `ServerTickingComponent#serverTick` 中无条件 `KEY.sync(world)`。配置、词条表、配对表和全局标记应在值变化后批量同步一次。
+5. 服务端粒子、声音和实体位置更新要估算收件人数；避免在每 tick 对每个粒子采样点调用广播接口。可本地渲染的效果优先发送开始/结束/参数包，暂时不能客户端化时也要设置粒子预算和刷新间隔。
+6. C2S/S2C 包只传客户端必需字段，布尔值使用 bit mask，角度/坐标按需要量化；输入包要有变化检测或心跳间隔，不能无条件重复发送完整状态。
+7. 时停回溯新增玩家/世界组件时，必须同时决定：服务端中间帧是否恢复、客户端中间帧是否同步、最终帧是否统一刷新。配置、缓存和纯服务端状态不要加入中间帧同步白名单。
+8. 不要在组件 setter 已经同步后，调用方又无条件再次 `sync()`；一次状态变化尽量只产生一个组件包。
+
+### 网络回归检查
+
+新增职业/机制至少检查以下项目：
+
+- 19~26 名玩家开局后静置 1~2 分钟，确认没有与状态变化无关的持续发送。
+- 激活能力前后分别记录服务器发送 Mbps、接收 Mbps、TPS 和自定义包数量。
+- 触发时停回溯，分别检查中间帧和最终帧的带宽；确认变形/伪装显示仍正确，背包/金币/冷却在最终帧恢复。
+- 检查玩家加入、退出、死亡、旁观、断线重连和回合结束时是否会补发一次必要状态，而不是重新开启全量 tick 同步。
+- 如果新增组件无法证明同步频率和收件人范围合理，不应直接合入；先补充测量或设计说明。
 
 ## 胜利规则与时间狭缝
 
@@ -368,6 +402,9 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 完全替换职业商店：`ShopApi.registerRoleShop(role, provider)`。
 - 只改默认杀手商店少数条目：`ShopApi.registerShopModifier(id, priority, handler)`。
 - 购买时不要重复扣钱、播放音效、写购买回放；provider 的 `purchase` 只负责“是否真的交付成功”，公共结算由 Wathe `PlayerShopComponent` 处理。
+- 普通给予类商品使用 `new ShopEntry(...)`、`giveToInventory(...)` 或 `directToHotbar(...)`；购买即生效且不交付显示物品的商品必须使用 `ShopEntry.action(...)`。
+- `/wathe:shopCooldownBypass <true|false>` 默认关闭；开启后只有普通给予类商品可以在显示物品冷却期间购买，即时 `ACTION` 商品仍然受冷却限制。
+- NoellesRoles 的自定义 provider 必须调用 `ShopApi.isPurchaseCooldownBlocked(...)`，不要自行组合 `ItemCooldownManager#isCoolingDown` 与 Wathe 世界开关。旧式集中交付商品如果条目暂时不能直接改成 `action(...)`，必须在 `NoellesRolesShops` 的即时商品识别中登记。
 - 需要金币 HUD 的非杀手职业，注册 `EconomyApi.registerBalanceHudRole(role)`。
 - 需要普通被动收入，注册 `EconomyApi.registerPassiveIncomeRole(role)`。
 - 任务金币走 `TaskCompletionApi.registerTaskIncomeProvider`；需要“任务完成后的特殊效果”走 `TaskCompletionApi.AFTER_TASK_COMPLETE`。

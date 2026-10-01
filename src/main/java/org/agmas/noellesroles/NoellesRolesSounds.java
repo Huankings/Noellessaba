@@ -24,6 +24,11 @@ public interface NoellesRolesSounds {
     SoundEvent AMBIENT_LICENSED_VILLAIN = REGISTRAR.create("ambient.licensed_villain");
     SoundEvent AMBIENT_LICH = REGISTRAR.create("ambient.lich");
     SoundEvent AMBIENT_VECNA = REGISTRAR.create("ambient.vecna");
+    SoundEvent AMBIENT_MYERS = REGISTRAR.create("ambient.myers");
+    SoundEvent AMBIENT_EVIL_POSSESS = REGISTRAR.create("ambient.evil_possess");
+    SoundEvent AMBIENT_EVIL_RELEASE = REGISTRAR.create("ambient.evil_release");
+    SoundEvent ITEM_BUTCHER_KNIFE_HIT_1 = REGISTRAR.create("item.butcher_knife_hit_1");
+    SoundEvent ITEM_BUTCHER_KNIFE_HIT_2 = REGISTRAR.create("item.butcher_knife_hit_2");
     SoundEvent AMBIENT_RESURRECTED_OUTLAW = REGISTRAR.create("ambient.resurrected_outlaw");
     SoundEvent ITEM_SYRINGE_STAB = REGISTRAR.create("item.syringe_stab");
 

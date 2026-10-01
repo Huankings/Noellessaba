@@ -82,7 +82,6 @@ public final class OilDousingHandler {
 
             DousedPlayerComponent doused = DousedPlayerComponent.KEY.get(target);
             doused.setDoused(true);
-            doused.sync();
 
             NbtCompound extra = new NbtCompound();
             extra.putUuid("target_player", target.getUuid());

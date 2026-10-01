@@ -1053,7 +1053,21 @@
   "replay.shield_blocked.noellesroles.outlaw.item": "%s的亡命护盾抵挡了来自%s的%s伤害",
   "replay.shield_blocked.noellesroles.outlaw.by_item": "%s的亡命护盾抵挡了来自%s的%s伤害",
   "death_reason.noellesroles.outlaw_timeout": "亡命时间结束",
-  "death_reason.noellesroles.outlaw_offline": "亡命徒掉线"
+  "death_reason.noellesroles.outlaw_offline": "亡命徒掉线",
+  "announcement.role.noellesroles.myers": "迈尔斯",
+  "announcement.goals.noellesroles.myers": "跟踪他们，凝视他们，杀戮他们！",
+  "currency.noellesroles.malice_value": "恶意值",
+  "item.noellesroles.butcher_knife": "屠刀",
+  "item.noellesroles.butcher_knife.tooltip": "蓄力举起屠刀，释放后进行快速冲刺。冲刺途中撞到玩家会造成屠刀伤害，撞到 Wathe 门会永久撬开。",
+  "item.noellesroles.evil_possess": "恶灵附身",
+  "item.noellesroles.evil_possess.tooltip": "购买后获得恶灵附身的力量，手持屠刀无情屠杀所有人。持续45秒，冷却4分05秒。",
+  "psycho_mode.noellesroles.myers": "恶灵附身",
+  "psycho_mode.noellesroles.myers.text": "跟踪、凝视，然后杀戮！",
+  "psycho_shield.noellesroles.myers": "恶灵护盾",
+  "hud.noellesroles.myers.ready": "按下%s键汲取恶意值(可汲取玩家数：%s)",
+  "hud.noellesroles.myers.absorbing": "汲取中...(汲取玩家数：%s)",
+  "replay.global.noellesroles.myers_door_broken": "%s撞坏了一扇门"
+  ,"commands.noellesroles.add_malice.success": "已为%s增加%s恶意值（%s）"
 }
 
 

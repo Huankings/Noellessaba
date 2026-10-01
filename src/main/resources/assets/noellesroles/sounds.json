@@ -1,5 +1,10 @@
 {
   "ambient.vecna": {"sounds": [{"name": "noellesroles:ambient/vecna", "stream": true}]},
+  "ambient.myers": {"sounds": [{"name": "noellesroles:ambient/myers", "stream": true}]},
+  "ambient.evil_possess": {"sounds": ["noellesroles:ambient/evil_possess"]},
+  "ambient.evil_release": {"sounds": ["noellesroles:ambient/evil_release"]},
+  "item.butcher_knife_hit_1": {"sounds": ["noellesroles:item/butcher_knife_hit_1"]},
+  "item.butcher_knife_hit_2": {"sounds": ["noellesroles:item/butcher_knife_hit_2"]},
   "role_mine_beep": {
     "subtitle": "subtitles.noellesroles.role_mine_beep",
     "sounds": [

@@ -40,9 +40,11 @@ public class BartenderPlayerComponent implements AutoSyncedComponent, ServerTick
     public void serverTick() {
         if (this.glowTicks > 0) {
             --this.glowTicks;
-
+            // 本能只判断是否大于 0，开始时已经同步，结束边界再同步一次即可。
+            if (this.glowTicks == 0) {
+                this.sync();
+            }
         }
-        this.sync();
     }
 
     public boolean giveArmor() {
@@ -54,7 +56,6 @@ public class BartenderPlayerComponent implements AutoSyncedComponent, ServerTick
 
     public boolean startGlow() {
         setGlowTicks(GameConstants.getInTicks(0,40));
-        this.sync();
         return true;
     }
 

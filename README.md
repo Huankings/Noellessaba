@@ -333,6 +333,29 @@ Wathe 已经把玩家体力和移动速度公开化了。NoellesRoles 侧不需�
 
 如果组件只是配置、常量缓存、客户端临时显示缓存，或者像 `TimekeeperWorldComponent` 自己一样代表“正在回溯的播放机械”，不要盲目加入快照；这种例外要在代码注释里说明原因。若组件指向自定义实体、延迟任务、语音连接、全局 Map 或非 CCA 静态状态，单纯保存组件 NBT 可能不够，还要给对应实体/管理器补快照恢复或回合清理逻辑。
 
+### 回溯期间的网络同步策略
+
+时停回溯的服务端历史恢复和客户端网络刷新现在分层处理：
+
+- 每个历史帧仍由服务端恢复玩家位置、生命、实体标记、职业运行态以及其它会影响玩法裁定的状态。
+- 中间帧不再逐玩家广播完整背包、光标物品、药水、物品冷却、金币和普通职业组件，避免“历史帧数 × 玩家数 × 组件数”形成网络峰值。
+- 变形和伪装相关状态保留中间帧同步，包括 Morphling、变形试剂标记、召集者伪装、亡语杀手尸体伪装和变形尸体来源；这样客户端仍能看到必要的外观/名字时间线。
+- 到达最终历史帧后，统一刷新背包、药水、物品冷却、经济和普通 CCA 状态，并重新应用时停者发动回溯产生的光阴扣除、怀表冷却和怀表物品状态。
+- 该策略不改变服务端回溯结果，只减少中间帧的客户端数据包；新增需要逐帧显示的外观状态时，必须经过 `TimekeeperSnapshots` 的中间帧白名单评估。
+
+这次优化解决了多人真局中回溯瞬间发送带宽从正常水平暴涨到高峰的问题。后续新增职业或机制时，不要默认把所有组件都放进中间帧同步；只有客户端必须实时看到的外观、名字、目标或交互状态才应逐帧同步，其余状态应在最终帧统一刷新或按秒校准。
+
+### 扩展职业网络开销约束
+
+NoellesRoles 的职业机制优先遵循以下原则：
+
+1. CCA 组件只在状态变化、开始/结束边界或低频校准时同步；禁止世界组件在每个 server tick 无条件 `sync()`。
+2. 组件默认只同步给需要它的观察者；本人 HUD 使用的冷却、位置和选择目标要实现 `shouldSyncWith`，不要默认广播给所有追踪玩家。
+3. 粒子和声音效果按效果实例、可见距离和刷新预算控制；暂时使用服务端粒子时，避免每个采样点每 tick 单独广播。
+4. 自定义网络包只携带客户端渲染所需字段；输入、坐标、角度和倒计时应考虑变化检测、量化和心跳间隔。
+5. 新增运行态组件必须同时检查 `TimekeeperSnapshots.PLAYER_COMPONENTS` / `WORLD_COMPONENTS`、中间帧同步白名单、玩家重置和最终帧刷新逻辑。
+6. 开发验证至少包含多人挂机、能力激活、回溯、死亡/旁观、断线重连和回合结束场景，并记录发送/接收带宽和 TPS。
+
 ## 时间狭缝与胜利规则接入
 
 时间狭缝会把刚死亡的玩家临时拉成 Wathe 的“特殊存活旁观”。这让 30 秒内的时间回溯可以把死者从历史快照里复活，但也意味着这些玩家在倒计时结束前会被 `GameFunctions.isPlayerAliveAndSurvival(...)` 和 `VictoryApi` 视为仍然存活。
@@ -672,7 +695,9 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 - 固定商店：写 `MyRoleShopHandler.getShopEntries()`，然后在 `NoellesRolesShopBootstrap` 里 `registerStatic(...)`
 - 默认杀手商店改写：写 `ShopApi.registerShopModifier(...)`
 
-如果商品是瞬发效果、不是单纯放进背包，还要在 `NoellesRolesShops.deliverPurchasedStack()` 里补交付分支。
+普通发物品商品使用 `new ShopEntry(...)`、`giveToInventory(...)` 或 `directToHotbar(...)`。如果商品是瞬发效果、不是单纯放进背包，必须使用 `ShopEntry.action(...)`；旧式集中交付商品还要在 `NoellesRolesShops.deliverPurchasedStack()` 里补交付分支，并加入即时商品识别。
+
+Wathe 的 `/wathe:shopCooldownBypass <true|false>` 默认关闭。开启后，NoellesRoles 通过 `ShopApi` 注册的普通给予类商品即使显示物品仍在冷却也可以购买；疯魔、恢复电力、冷却刷新等购买即生效商品仍然受冷却限制。NoellesRoles 的 provider 统一调用 `ShopApi.isPurchaseCooldownBlocked(...)`，不要重新复制 `ItemCooldownManager` 与世界开关判定。
 
 ### 8. 需要死亡保护、反噬或特殊清理时
 
