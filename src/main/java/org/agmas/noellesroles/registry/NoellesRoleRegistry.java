@@ -36,6 +36,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.commoner.CommonerConstants;
 import org.agmas.noellesroles.roles.outlaw.OutlawConstants;
+import org.agmas.noellesroles.roles.perceiver.PerceiverConstants;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -80,6 +81,8 @@ public final class NoellesRoleRegistry {
     public static final Role NOISEMAKER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.NOISEMAKER_ID, new Color(200, 255, 0).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //接线员(好人)：可以选择搭建两个人的联系或者广播另外一个人的话
     public static final Role OPERATOR = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.OPERATOR_ID, new Color(75, 221, 192).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    //感知者(好人)：能够察觉持续看向自己、且正在通过本能或被动透视感知自己的玩家
+    public static final Role PERCEIVER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.PERCEIVER_ID, PerceiverConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //医师(好人)：可以看到谁中毒并且用医疗箱救治，救治后获得金币奖励，可购买药丸饮用来获得护盾抵挡伤害
     public static final Role PHYSICIAN = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.PHYSICIAN_ID, PhysicianConstants.ROLE_COLOR, true, false, Role.MoodType.REAL, PhysicianConstants.getMaxSprintTimeTicks(), false));
     //先知(好人)：可以花钱揭露身份，用水晶球对准玩家使用可以指定揭露该玩家的身份

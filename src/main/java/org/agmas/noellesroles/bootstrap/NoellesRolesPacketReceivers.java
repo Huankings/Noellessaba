@@ -29,6 +29,8 @@ import org.agmas.noellesroles.packet.role.goddess.GoddessC2SPacket;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 import org.agmas.noellesroles.packet.role.noisemaker.NoisemakerGlowC2SPacket;
 import org.agmas.noellesroles.packet.role.operator.OperatorC2SPacket;
+import org.agmas.noellesroles.packet.role.perceiver.PerceiverAwarenessC2SPacket;
+import org.agmas.noellesroles.packet.role.perceiver.PerceiverSelectC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionControlC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerGazeC2SPacket;
@@ -55,6 +57,7 @@ import org.agmas.noellesroles.roles.lich.LichAbility;
 import org.agmas.noellesroles.roles.magician.MagicianTargetAbility;
 import org.agmas.noellesroles.roles.morphling.MorphlingMorphAbility;
 import org.agmas.noellesroles.roles.operator.OperatorAbility;
+import org.agmas.noellesroles.roles.perceiver.PerceiverAbility;
 import org.agmas.noellesroles.roles.phantom.PhantomAbility;
 import org.agmas.noellesroles.roles.prophet.ProphetAbility;
 import org.agmas.noellesroles.roles.recaller.RecallerAbility;
@@ -242,6 +245,14 @@ public final class NoellesRolesPacketReceivers {
             }
             OperatorAbility.handle(payload, context.player());
         }));
+        ServerPlayNetworking.registerGlobalReceiver(PerceiverSelectC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
+            if (shouldBlockTimeRiftAction(context.player())) {
+                return;
+            }
+            PerceiverAbility.handleSelection(payload, context.player());
+        }));
+        ServerPlayNetworking.registerGlobalReceiver(PerceiverAwarenessC2SPacket.ID, (payload, context) ->
+                context.server().execute(() -> PerceiverAbility.handleAwarenessReport(payload, context.player())));
         ServerPlayNetworking.registerGlobalReceiver(BlowgunC2SPacket.ID, new BlowgunC2SPacket.Receiver());
         ServerPlayNetworking.registerGlobalReceiver(TimekeeperWatchModeC2SPacket.ID, (payload, context) -> context.server().execute(() -> TimekeeperAbility.switchWatchMode(context.player(), payload.modeOrdinal())));
         ServerPlayNetworking.registerGlobalReceiver(AbilityC2SPacket.ID, (payload, context) -> context.server().execute(() -> {

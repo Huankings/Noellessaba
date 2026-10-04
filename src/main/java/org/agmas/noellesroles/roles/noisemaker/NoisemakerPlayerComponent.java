@@ -32,6 +32,18 @@ public class NoisemakerPlayerComponent implements AutoSyncedComponent, ServerTic
         this.lastTarget = null;
         this.sync();
     }
+
+    /**
+     * 清除大嗓门技能冷却。
+     *
+     * <p>大嗓门使用自己的组件保存冷却，而濒毁怀表的技能加速默认只清理通用
+     * AbilityPlayerComponent，因此这里提供明确入口供时停者能力调用，避免两套冷却状态分裂。</p>
+     */
+    public void clearCooldown() {
+        this.cooldownTicks = 0;
+        this.lastTarget = null;
+        this.sync();
+    }
     // 尝试使用能力
     public boolean tryUseAbility(UUID targetUuid) {
         if (this.cooldownTicks <= 0) {

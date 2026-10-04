@@ -26,6 +26,8 @@ import org.agmas.noellesroles.packet.role.jason.JasonAbilitySoundS2CPacket;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
 import org.agmas.noellesroles.packet.role.noisemaker.NoisemakerGlowC2SPacket;
 import org.agmas.noellesroles.packet.role.operator.OperatorC2SPacket;
+import org.agmas.noellesroles.packet.role.perceiver.PerceiverAwarenessC2SPacket;
+import org.agmas.noellesroles.packet.role.perceiver.PerceiverSelectC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionControlC2SPacket;
 import org.agmas.noellesroles.packet.role.spiritualist.SpiritualistPossessionViewS2CPacket;
 import org.agmas.noellesroles.packet.role.stalker.StalkerDashC2SPacket;
@@ -52,6 +54,8 @@ public final class NoellesRolesPayloadTypes {
         PayloadTypeRegistry.playC2S().register(DualPersonalitySwitchC2SPacket.ID, DualPersonalitySwitchC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(DualPersonalitySwitchKeyLabelC2SPacket.ID, DualPersonalitySwitchKeyLabelC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(OperatorC2SPacket.ID, OperatorC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(PerceiverSelectC2SPacket.ID, PerceiverSelectC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(PerceiverAwarenessC2SPacket.ID, PerceiverAwarenessC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(NoisemakerGlowC2SPacket.ID, NoisemakerGlowC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ControllerPossessC2SPacket.ID, ControllerPossessC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ControllerReleaseC2SPacket.ID, ControllerReleaseC2SPacket.CODEC);

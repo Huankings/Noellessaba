@@ -109,6 +109,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchMode;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWatchState;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.client.roles.myers.MyersMusicController;
+import org.agmas.noellesroles.client.roles.perceiver.PerceiverClientPerceptionReporter;
 import org.lwjgl.glfw.GLFW;
 
 import org.agmas.noellesroles.client.items.NoellesRolesItemExtraModel;
@@ -204,6 +205,7 @@ public class NoellesrolesClient implements ClientModInitializer {
 
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            PerceiverClientPerceptionReporter.tick(client);
             RemembererClientEffects.tick(client);
             CowardClientEffects.tick(client);
             JasonAbilityClientEffects.tick(client);

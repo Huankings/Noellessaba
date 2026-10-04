@@ -80,6 +80,7 @@ import org.agmas.noellesroles.roles.morphling.MorphBodyDisguiseWorldComponent;
 import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.necromancer.NecromancerWorldComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
+import org.agmas.noellesroles.roles.perceiver.PerceiverPlayerComponent;
 import org.agmas.noellesroles.roles.phantom.PhantomPlayerComponent;
 import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
 import org.agmas.noellesroles.roles.prophet.ProphetPlayerComponent;
@@ -178,6 +179,8 @@ public final class TimekeeperSnapshots {
             component("noellesroles:winder", WinderPlayerComponent.KEY),
             component("noellesroles:wind_mark", WindMarkPlayerComponent.KEY),
             component("noellesroles:operator", OperatorPlayerComponent.KEY),
+            /* 感知者的选中目标、剩余时间、凝视进度和当前反向透视集合均属于局内时间线。 */
+            component("noellesroles:perceiver", PerceiverPlayerComponent.KEY),
             component("noellesroles:angel", AngelPlayerComponent.KEY),
             component("noellesroles:coward", CowardPlayerComponent.KEY),
             component("noellesroles:sedative", SedativePlayerComponent.KEY),

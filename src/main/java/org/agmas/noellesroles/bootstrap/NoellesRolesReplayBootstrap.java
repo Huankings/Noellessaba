@@ -171,6 +171,9 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_STARTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_ENDED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastEnded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.OPERATOR_BROADCAST_INTERRUPTED_EVENT, NoellesRolesReplayFormatters::formatOperatorBroadcastInterrupted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PERCEIVER_SELECTED_EFFECT_STARTED_EVENT, NoellesRolesReplayFormatters::formatPerceiverSelectedEffectStarted);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PERCEIVER_SELECTED_EFFECT_ENDED_EVENT, NoellesRolesReplayFormatters::formatPerceiverSelectedEffectEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PERCEIVER_SELECTION_FAILED_EVENT, NoellesRolesReplayFormatters::formatPerceiverSelectionFailed);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.REMEMBERER_RECALL_EVENT, NoellesRolesReplayFormatters::formatRemembererRecall);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.REMEMBERER_SNIPER_RELOADED_EVENT, NoellesRolesReplayFormatters::formatRemembererSniperReloaded);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.WAITER_SERVE_EVENT, NoellesRolesReplayFormatters::formatWaiterServe);

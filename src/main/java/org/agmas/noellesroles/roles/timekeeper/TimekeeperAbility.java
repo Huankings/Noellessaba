@@ -19,6 +19,7 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownManagerAccessor;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.noisemaker.NoisemakerPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -200,6 +201,13 @@ public final class TimekeeperAbility {
         List<ServerPlayerEntity> targets = eligibleGoodSideTargets(timekeeper);
         for (ServerPlayerEntity target : targets) {
             AbilityPlayerComponent.KEY.get(target).setCooldown(0);
+            /*
+             * 大嗓门的冷却不在通用 AbilityPlayerComponent 中，而是在自己的组件里。
+             * 技能加速必须同时清理这份状态，否则按钮仍会显示冷却且服务端仍拒绝使用。
+             */
+            if (GameWorldComponent.KEY.get(target.getWorld()).isRole(target, NoellesRoleRegistry.NOISEMAKER)) {
+                NoisemakerPlayerComponent.KEY.get(target).clearCooldown();
+            }
             sendActionbar(target, Text.translatable("message.noellesroles.timekeeper.ability_cooldown_refreshed"));
         }
         return true;

@@ -8,6 +8,7 @@ import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.vecna.VecnaConstants;
 import org.agmas.noellesroles.roles.myers.MyersConstants;
+import org.agmas.noellesroles.roles.perceiver.PerceiverConstants;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterConstants;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
 
@@ -47,6 +48,7 @@ public final class NoellesRoleLimitsBootstrap {
         Harpymodloader.setRoleMaximum(NoellesRoleIds.MYERS_ID, MyersConstants.MAX_ROLE_COUNT);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.OUTLAW_ID, 0);
         Harpymodloader.setRoleMaximum(NoellesRoleIds.COMMONER_ID, 0);
+        Harpymodloader.setRoleMaximum(NoellesRoleIds.PERCEIVER_ID, PerceiverConstants.MAX_ROLE_COUNT);
         Harpymodloader.MODIFIER_MAX.put(NoellesRoleIds.LOVERS_ID, LoversConstants.MAX_RANDOM_PAIRS);
         /*
          * 双重人格的随机上限不是固定值：

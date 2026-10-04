@@ -41,12 +41,15 @@ public class NoisemakerPlayerWidget extends ButtonWidget {
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         NoisemakerPlayerComponent comp = NoisemakerPlayerComponent.KEY.get(MinecraftClient.getInstance().player);
 
-        // 检查是否在冷却中
-        if (comp.getCooldownTicks() > 0) {
+        // 先让 ButtonWidget 完成基础状态绘制，再对实际图标和头像设置灰色 shader。
+        // 如果在 super.renderWidget 前设置，父类绘制流程可能覆盖 shader，导致冷却灰化失效。
+        super.renderWidget(context, mouseX, mouseY, delta);
+
+        boolean coolingDown = comp.getCooldownTicks() > 0;
+        if (coolingDown) {
             context.setShaderColor(0.25f, 0.25f, 0.25f, 0.5f);
         }
 
-        super.renderWidget(context, mouseX, mouseY, delta);
         context.drawGuiTexture(ShopEntry.Type.TOOL.getTexture(), this.getX() - 7, this.getY() - 7, 30, 30);
 
         PlayerSkinDrawer.draw(
@@ -71,8 +74,8 @@ public class NoisemakerPlayerWidget extends ButtonWidget {
         context.setShaderColor(1f, 1f, 1f, 1f);
 
         // 显示冷却倒计时
-        if (comp.getCooldownTicks() > 0) {
-            int remainingSeconds = comp.getCooldownTicks() / 20;
+        if (coolingDown) {
+            int remainingSeconds = (comp.getCooldownTicks() + 19) / 20;
             String timeText = remainingSeconds + "s";
             context.drawText(MinecraftClient.getInstance().textRenderer,
                     timeText, this.getX(), this.getY(), Color.RED.getRGB(), true);

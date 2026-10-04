@@ -89,6 +89,7 @@ import org.agmas.noellesroles.roles.muzzler.SilencePlayerComponent;
 import org.agmas.noellesroles.roles.necromancer.NecromancerRevivalHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerRoleLimitHandler;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
+import org.agmas.noellesroles.roles.perceiver.PerceiverPlayerComponent;
 import org.agmas.noellesroles.roles.phantom.PhantomPlayerComponent;
 import org.agmas.noellesroles.roles.physician.PhysicianPlayerComponent;
 import org.agmas.noellesroles.roles.physician.PhysicianStatusAlertHandler;
@@ -179,6 +180,7 @@ public final class NoellesRolesEventBootstrap {
             HackerComponent.KEY.get(playerEntity).reset();
             HackerPhoneComponent.KEY.get(playerEntity).reset();
             StarstruckPlayerComponent.KEY.get(playerEntity).reset();
+            PerceiverPlayerComponent.KEY.get(playerEntity).reset();
             SilencePlayerComponent.KEY.get(playerEntity).reset();
             HunterPlayerComponent.KEY.get(playerEntity).reset();
             /* 制毒师没有额外冷却来源组件；回合重置只清真实物品冷却。 */

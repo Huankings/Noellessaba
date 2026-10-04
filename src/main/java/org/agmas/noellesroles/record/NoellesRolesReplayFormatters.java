@@ -1698,6 +1698,35 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatPerceiverSelectedEffectStarted(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        if (actor == null || target == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.perceiver_selected_effect_started", actor, target);
+    }
+
+    @Nullable
+    public static Text formatPerceiverSelectedEffectEnded(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "target_player");
+        return target == null
+                ? null
+                : Text.translatable("replay.global.noellesroles.perceiver_selected_effect_ended", target);
+    }
+
+    @Nullable
+    public static Text formatPerceiverSelectionFailed(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        Text deadPlayer = playerFromKey(event, match, "dead_player");
+        if (actor == null || target == null || deadPlayer == null) {
+            return null;
+        }
+        return Text.translatable("replay.global.noellesroles.perceiver_selection_failed", actor, target, deadPlayer);
+    }
+
+    @Nullable
     public static Text formatRemembererRecall(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         Text target = playerFromKey(event, match, "memory_target");

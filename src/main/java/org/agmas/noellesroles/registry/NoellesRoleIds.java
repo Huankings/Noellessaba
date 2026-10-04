@@ -85,6 +85,8 @@ public final class NoellesRoleIds {
     public static final Identifier VECNA_ID = NoellesRolesCore.id("vecna");
     /** 迈尔斯职业稳定 id。 */
     public static final Identifier MYERS_ID = NoellesRolesCore.id("myers");
+    /** 感知者职业稳定 id。 */
+    public static final Identifier PERCEIVER_ID = NoellesRolesCore.id("perceiver");
     /** 平民职业稳定 id。 */
     public static final Identifier COMMONER_ID = NoellesRolesCore.id("commoner");
     /** 亡命徒职业稳定 id。 */

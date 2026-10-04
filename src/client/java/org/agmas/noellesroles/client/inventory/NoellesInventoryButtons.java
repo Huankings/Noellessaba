@@ -11,6 +11,7 @@ import org.agmas.noellesroles.client.ui.roles.magician.MagicianInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.morphling.MorphlingInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.noisemaker.NoisemakerInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.operator.OperatorInventoryButtons;
+import org.agmas.noellesroles.client.ui.roles.perceiver.PerceiverInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.swapper.SwapperInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.voodoo.VoodooInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.winder.WinderInventoryButtons;
@@ -32,6 +33,7 @@ public final class NoellesInventoryButtons {
         WinderInventoryButtons.register();
         MagicianInventoryButtons.register();
         OperatorInventoryButtons.register();
+        PerceiverInventoryButtons.register();
         CoronerInventoryButtons.register();
         BrainwasherInventoryButtons.register();
         GoddessInventoryButtons.register();

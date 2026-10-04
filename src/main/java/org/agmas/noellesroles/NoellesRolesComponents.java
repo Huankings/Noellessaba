@@ -61,6 +61,7 @@ import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.agmas.noellesroles.roles.operator.OperatorPlayerComponent;
+import org.agmas.noellesroles.roles.perceiver.PerceiverPlayerComponent;
 import org.agmas.noellesroles.roles.rememberer.RemembererPlayerComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
@@ -121,6 +122,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, MagicianPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(MagicianPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, WindMarkPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(WindMarkPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, OperatorPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(OperatorPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, PerceiverPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(PerceiverPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, AngelPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AngelPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, CowardPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(CowardPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, SedativePlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(SedativePlayerComponent::new);

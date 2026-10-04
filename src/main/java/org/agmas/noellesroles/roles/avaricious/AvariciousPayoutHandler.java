@@ -1,7 +1,6 @@
 package org.agmas.noellesroles.roles.avaricious;
 
 import dev.doctor4t.wathe.api.event.GameEvents;
-import dev.doctor4t.wathe.cca.GameTimeComponent;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.gamemode.MurderGameMode;
@@ -15,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 
 /**
  * 扒手的周期金币结算。
@@ -60,34 +60,49 @@ public final class AvariciousPayoutHandler {
     }
 
     private static void tickWorld(ServerWorld world, GameWorldComponent gameWorld) {
+        /*
+         * 回溯期间由 TimekeeperWorldComponent 逐帧恢复历史世界快照。
+         * 此时不能再按“当前现实 tick”递减扒手计时，否则会在历史帧之外额外消耗冷却；
+         * 等回溯结束后，计时会从最终恢复的历史值继续正常推进。
+         */
+        if (TimekeeperWorldComponent.KEY.get(world).isRewinding()) {
+            return;
+        }
+
         AvariciousPayoutComponent payout = AvariciousPayoutComponent.KEY.get(world);
-        boolean hasAliveAvaricious = world.getPlayers(player ->
+        boolean hasAvariciousRole = world.getPlayers(player ->
+                gameWorld.isRole(player, NoellesRoleRegistry.AVARICIOUS)
+        ).size() > 0;
+        boolean hasEligibleAvaricious = world.getPlayers(player ->
                 gameWorld.isRole(player, NoellesRoleRegistry.AVARICIOUS)
                         && AvariciousConstants.isEligibleParticipant(player)
         ).size() > 0;
 
-        if (!hasAliveAvaricious) {
-            // 没有活着的扒手时不保留旧计时；下一次转职后重新等待完整周期。
-            if (payout.hasTimerStartTime()) {
+        if (!hasEligibleAvaricious) {
+            /*
+             * 被杀死的扒手或处于时间狭缝的扒手都不能继续触发偷钱。
+             * 职业仍存在时保留当前剩余 tick，只是暂停推进；这样狭缝结束或回溯恢复后，
+             * 倒计时不会因为一次临时非存活状态被额外消耗。职业已经被移除时才清空旧计时，
+             * 防止下一次重新分配扒手直接继承上一轮周期。
+             */
+            if (!hasAvariciousRole && payout.hasTimer()) {
                 payout.reset();
             }
             return;
         }
 
-        int currentTime = GameTimeComponent.KEY.get(world).getTime();
-        if (!payout.hasTimerStartTime()) {
-            // 角色刚分配/转职后的第一个服务端 tick，建立新的完整周期。
-            payout.setTimerStartTime(currentTime);
+        if (!payout.hasTimer()) {
+            // 角色刚分配/转职后的第一个服务端 tick，建立新的独立完整周期。
+            payout.startTimer();
             return;
         }
 
-        int elapsed = payout.getTimerStartTime() - currentTime;
-        if (elapsed < 0) {
-            // 时停者回溯或其它时间调整让剩余时间增加时，重新校准避免倒计时卡死。
-            payout.setTimerStartTime(currentTime);
-            return;
-        }
-        if (elapsed < AvariciousConstants.TIMER_TICKS) {
+        /*
+         * 这里推进的是扒手自己的剩余 tick，而不是 Wathe 的 GameTimeComponent.time。
+         * 因此 Wathe 加时/减时不会改变偷钱周期；时停者回溯则会通过
+         * TimekeeperSnapshots 恢复该世界组件的历史值，仍保持原有回溯语义。
+         */
+        if (!payout.tickTimer()) {
             return;
         }
 
@@ -120,6 +135,6 @@ public final class AvariciousPayoutHandler {
         }
 
         // 无论本次附近是否有人，都推进到下一完整周期，避免每 tick 重复结算。
-        payout.setTimerStartTime(currentTime);
+        payout.startTimer();
     }
 }

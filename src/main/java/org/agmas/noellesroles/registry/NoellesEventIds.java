@@ -104,6 +104,12 @@ public final class NoellesEventIds {
     public static final Identifier OPERATOR_BROADCAST_STARTED_EVENT = NoellesRolesCore.id("operator_broadcast_started");
     public static final Identifier OPERATOR_BROADCAST_ENDED_EVENT = NoellesRolesCore.id("operator_broadcast_ended");
     public static final Identifier OPERATOR_BROADCAST_INTERRUPTED_EVENT = NoellesRolesCore.id("operator_broadcast_interrupted");
+    /** 感知者成功选择存活玩家并开始 30 秒被动透视效果。 */
+    public static final Identifier PERCEIVER_SELECTED_EFFECT_STARTED_EVENT = NoellesRolesCore.id("perceiver_selected_effect_started");
+    /** 感知者的目标效果自然到时或因目标死亡提前消失。 */
+    public static final Identifier PERCEIVER_SELECTED_EFFECT_ENDED_EVENT = NoellesRolesCore.id("perceiver_selected_effect_ended");
+    /** 感知者尝试选择非存活玩家而失败。 */
+    public static final Identifier PERCEIVER_SELECTION_FAILED_EVENT = NoellesRolesCore.id("perceiver_selection_failed");
     public static final Identifier REMEMBERER_RECALL_EVENT = NoellesRolesCore.id("rememberer_recall");
     public static final Identifier REMEMBERER_SNIPER_RELOADED_EVENT = NoellesRolesCore.id("rememberer_sniper_reloaded");
     public static final Identifier WAITER_SERVE_EVENT = NoellesRolesCore.id("waiter_serve");

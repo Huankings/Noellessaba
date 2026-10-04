@@ -45,6 +45,7 @@ import org.agmas.noellesroles.roles.muzzler.MuzzlerInteractionHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerRevivalHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerRoleLimitHandler;
 import org.agmas.noellesroles.roles.operator.OperatorCommunicationManager;
+import org.agmas.noellesroles.roles.perceiver.PerceiverTaskCompletionHandler;
 import org.agmas.noellesroles.roles.physician.PhysicianStatusAlertHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererInteractionHandler;
 import org.agmas.noellesroles.roles.rememberer.RemembererSniperManager;
@@ -120,6 +121,7 @@ public final class NoellesRolesBootstrap {
         WaiterInteractionHandler.init();
         CookFeedingHandler.init();
         StarstruckAbility.registerTaskCompletionApi();
+        PerceiverTaskCompletionHandler.init();
         MuzzlerInteractionHandler.init();
         NecromancerRevivalHandler.init();
         NecromancerRoleLimitHandler.init();

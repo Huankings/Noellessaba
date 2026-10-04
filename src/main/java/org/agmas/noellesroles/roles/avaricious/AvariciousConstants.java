@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.avaricious;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
 /**
  * 扒手全部玩法数值。
@@ -37,10 +38,12 @@ public final class AvariciousConstants {
      * 扒手服务端结算和客户端预计收益必须使用完全相同的存活定义。
      * Wathe 允许扩展为 spectator/creative 玩家授予“玩法仍存活”的覆盖状态，
      * 因此这里同时使用存活入口和互补的非存活入口，避免 HUD 与实际发钱人数不一致。
+     * 时间狭缝正是这种特殊存活覆盖状态，必须额外排除，避免死者在狭缝内继续参与偷钱。
      */
     public static boolean isEligibleParticipant(PlayerEntity player) {
         return player != null
                 && GameFunctions.isPlayerAliveAndSurvival(player)
-                && !GameFunctions.isPlayerSpectatingOrCreative(player);
+                && !GameFunctions.isPlayerSpectatingOrCreative(player)
+                && !TimekeeperPlayerComponent.KEY.get(player).isInTimeRift();
     }
 }

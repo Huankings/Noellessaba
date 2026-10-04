@@ -1,6 +1,5 @@
 package org.agmas.noellesroles.client.roles.avaricious;
 
-import dev.doctor4t.wathe.cca.GameTimeComponent;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -22,7 +21,12 @@ public final class AvariciousStatusHud {
 
     public static void register() {
         NoellesHudSupport.registerAliveRole("roles/avaricious/status", NoellesRoleRegistry.AVARICIOUS, context -> {
-            if (context.debugHudVisible()) {
+            /*
+             * Wathe 的存活覆盖会让时间狭缝玩家仍通过通用存活 HUD 过滤，
+             * 但扒手在狭缝内已经不能偷钱，所以这里必须使用扒手自己的参与者判定。
+             */
+            if (context.debugHudVisible()
+                    || !AvariciousConstants.isEligibleParticipant(context.player())) {
                 return;
             }
 
@@ -45,10 +49,9 @@ public final class AvariciousStatusHud {
     }
 
     private static int getSecondsUntilNextPayout(ClientPlayerEntity player) {
-        GameTimeComponent timeComponent = GameTimeComponent.KEY.get(player.getWorld());
         AvariciousPayoutComponent payoutComponent = AvariciousPayoutComponent.KEY.get(player.getWorld());
 
-        if (!payoutComponent.hasTimerStartTime()) {
+        if (!payoutComponent.hasTimer()) {
             /*
              * 服务端开局需要一个 tick 写入并同步起点。
              * 客户端未收到前先显示完整周期，避免出现负数或跳动文本。
@@ -56,17 +59,8 @@ public final class AvariciousStatusHud {
             return Math.max(1, (AvariciousConstants.TIMER_TICKS + 19) / 20);
         }
 
-        /*
-         * GameTimeComponent.time 是倒计时，所以 elapsed 要用“起点 - 当前剩余时间”。
-         * 这和服务端 AvariciousPayoutHandler 完全一致，HUD 才会和真实发钱点对齐。
-         */
-        int elapsed = Math.max(0, payoutComponent.getTimerStartTime() - timeComponent.time);
-        int remainder = elapsed % AvariciousConstants.TIMER_TICKS;
-        int ticksRemaining = remainder == 0
-                ? AvariciousConstants.TIMER_TICKS
-                : AvariciousConstants.TIMER_TICKS - remainder;
-
-        return Math.max(1, (ticksRemaining + 19) / 20);
+        // 服务端组件保存的是独立剩余 tick，不会因 Wathe 加时/减时而跳变。
+        return Math.max(1, (payoutComponent.getRemainingTicks() + 19) / 20);
     }
 
     private static int getExpectedPayout(ClientPlayerEntity player) {
