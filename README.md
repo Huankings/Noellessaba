@@ -276,7 +276,9 @@ NoellesRoles 的心情任务逻辑应优先使用 Wathe `MoodTaskApi`，不要�
 
 - 新增任务定义用 `MoodTaskApi.registerTask(...)`，再由 `NoellesRolesMoodTaskBootstrap` 调用对应职业或词条自己的 `*MoodTaskHandler.init()`。
 - 主动发放随机任务用 `assignRandomTask` / `assignRandomTasks`，指定任务用 `assignTask(player, taskId)`。
-- 如果职业要阻止 Wathe 自动刷任务、低心情补槽、外部随机发放或指定发放，用 `MoodTaskApi.registerAssignmentRule(...)`，并按 `AssignmentSource` 判断来源。
+- Wathe 的固定心情阈值模式仍只会按原有心情档位自动补到最多 3 个任务；世界的动态槽位可以设置为高于 3，但高出的槽位只适用于 Wathe 随机事件模式和扩展主动发放。
+- 随机事件模式的首个自动任务仍使用 `TIME_TO_FIRST_TASK`，之后的随机发放由 `INTERNAL_RANDOM_EVENT` 标识；扩展需要区分首个冷却、随机事件和低心情补槽时，应按 `AssignmentSource` 分支处理。
+- 如果职业要阻止 Wathe 自动刷任务、随机事件、低心情补槽、外部随机发放或指定发放，用 `MoodTaskApi.registerAssignmentRule(...)`，并按 `AssignmentSource` 判断来源。
 - 不要在 server tick 里等任务出现在 HUD 后再 `removeTask`。这种做法会让客户端看到任务闪现。影子小丑的第一阶段任务节奏见 `roles/shadow_jester/ShadowJesterTaskHandler.java`：它只允许自己 guard 包住的随机发放，其余发放在进入任务栏前就被拒绝。
 - 任务完成后的收益和副作用用 `TaskCompletionApi.AFTER_TASK_COMPLETE`、任务收入 provider、任务收入规则或 `MoodTaskApi.registerCompletionRule(...)`。
 

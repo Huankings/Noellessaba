@@ -410,7 +410,9 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 - 任务金币走 `TaskCompletionApi.registerTaskIncomeProvider`；需要“任务完成后的特殊效果”走 `TaskCompletionApi.AFTER_TASK_COMPLETE`。
 - 需要“任务完成但跳过 Wathe 默认收入”的窄场景，例如服务员帮别人完成任务，用 `TaskCompletionApi.registerTaskIncomeRule(...)`，不要再 mixin `TaskCompletionApi`。
 - 需要阻止任务完成确认的职业状态，例如灵术师附身，用 `MoodTaskApi.registerCompletionRule(...)`，不要再 mixin `PlayerMoodComponent#completeTask(...)`。
-- 需要阻止 Wathe 自动刷任务、低心情补槽、外部随机发放或指定发放时，用 `MoodTaskApi.registerAssignmentRule(...)` 并按 `AssignmentSource` 判断来源；不要在 server tick 里等任务出现后再 `removeTask`，否则客户端 HUD 会看到任务闪现。
+- Wathe 固定心情阈值模式仍只按原有阈值自动补到最多 3 个任务；动态任务槽位高于 3 时，不会扩展固定阈值补槽，额外槽位只供 Wathe 随机事件模式和扩展主动发放使用。
+- Wathe 随机事件模式的首个自动任务仍使用 `TIME_TO_FIRST_TASK`，后续事件使用 `MoodTaskApi.AssignmentSource.INTERNAL_RANDOM_EVENT`；需要区分首个冷却、随机事件和低心情补槽时必须按 `AssignmentSource` 判断。
+- 需要阻止 Wathe 自动刷任务、随机事件、低心情补槽、外部随机发放或指定发放时，用 `MoodTaskApi.registerAssignmentRule(...)` 并按 `AssignmentSource` 判断来源；不要在 server tick 里等任务出现后再 `removeTask`，否则客户端 HUD 会看到任务闪现。
 - 新增 Noelles 自定义心情任务时，按职业或词条拆到 `roles/<role>/<RoleName>MoodTaskHandler` 或 `modifiers/<modifier>/*MoodTaskHandler`，再由 `NoellesRolesMoodTaskBootstrap` 聚合调用；不要塞进总入口或经济 bootstrap。
 
 ## 客户端与 mixin
