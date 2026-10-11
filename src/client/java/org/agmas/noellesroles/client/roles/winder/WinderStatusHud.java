@@ -2,7 +2,7 @@ package org.agmas.noellesroles.client.roles.winder;
 
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
@@ -31,12 +31,12 @@ public final class WinderStatusHud {
             ));
 
             if (winder.isFloatingActive()) {
-                lines.add(Text.translatable("tip.winder.stop", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()));
+                lines.add(Text.translatable("tip.winder.stop", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()));
                 lines.add(Text.translatable("tip.winder.active", Math.max(0, (winder.getFloatingTicksRemaining() + 19) / 20)));
             } else if (ability.cooldown > 0) {
                 lines.add(Text.translatable("tip.noellesroles.cooldown", Math.max(0, (ability.cooldown + 19) / 20)));
             } else {
-                lines.add(Text.translatable("tip.winder.use", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()));
+                lines.add(Text.translatable("tip.winder.use", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()));
             }
 
             NoellesHudSupport.drawBottomRightLines(context, lines, NoellesRoleRegistry.WINDER.color());

@@ -1,7 +1,7 @@
 package org.agmas.noellesroles.client.roles.shadow_jester;
 
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterComponent;
@@ -36,7 +36,7 @@ public final class ShadowJesterStatusHud {
     }
 
     private static Text choiceLine(ShadowJesterComponent component, java.util.UUID playerUuid) {
-        Text abilityKey = NoellesrolesClient.abilityBind.getBoundKeyLocalizedText();
+        Text abilityKey = NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText();
         if (component.isRequestFrom(playerUuid)) {
             /*
              * 申请方看见剩余有效期。向上取整能避免最后 1 tick 直接显示 0 秒，

@@ -3,7 +3,7 @@ package org.agmas.noellesroles.client.roles.jason;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 
@@ -34,7 +34,7 @@ public final class JasonWoundedInputLock {
         }
         return client.options.attackKey.matchesMouse(button)
                 || client.options.useKey.matchesMouse(button)
-                || (NoellesrolesClient.abilityBind != null && NoellesrolesClient.abilityBind.matchesMouse(button));
+                || (NoellesClientKeybindings.getAbilityBind() != null && NoellesClientKeybindings.getAbilityBind().matchesMouse(button));
     }
 
     public static boolean shouldBlockKeyboardPress(MinecraftClient client, int key, int scancode) {
@@ -45,7 +45,7 @@ public final class JasonWoundedInputLock {
                 || client.options.useKey.matchesKey(key, scancode)
                 || client.options.jumpKey.matchesKey(key, scancode)
                 || client.options.sprintKey.matchesKey(key, scancode)
-                || (NoellesrolesClient.abilityBind != null && NoellesrolesClient.abilityBind.matchesKey(key, scancode));
+                || (NoellesClientKeybindings.getAbilityBind() != null && NoellesClientKeybindings.getAbilityBind().matchesKey(key, scancode));
     }
 
     public static void releaseBlockedKeys(MinecraftClient client) {
@@ -59,8 +59,8 @@ public final class JasonWoundedInputLock {
          */
         releaseKey(client.options.attackKey);
         releaseKey(client.options.useKey);
-        if (NoellesrolesClient.abilityBind != null) {
-            releaseKey(NoellesrolesClient.abilityBind);
+        if (NoellesClientKeybindings.getAbilityBind() != null) {
+            releaseKey(NoellesClientKeybindings.getAbilityBind());
         }
 
         /*
@@ -84,7 +84,7 @@ public final class JasonWoundedInputLock {
                 || key.equals(client.options.useKey)
                 || key.equals(client.options.jumpKey)
                 || key.equals(client.options.sprintKey)
-                || (NoellesrolesClient.abilityBind != null && key.equals(NoellesrolesClient.abilityBind));
+                || (NoellesClientKeybindings.getAbilityBind() != null && key.equals(NoellesClientKeybindings.getAbilityBind()));
     }
 
     private static void releaseKey(KeyBinding key) {

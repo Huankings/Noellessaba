@@ -5,7 +5,7 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.vecna.VecnaConstants;
@@ -15,7 +15,7 @@ public final class VecnaStatusHud {
     private VecnaStatusHud() {}
     public static void register() {
         NoellesHudSupport.registerAliveRole("roles/vecna/status", NoellesRoleRegistry.VECNA, context -> {
-            if (NoellesrolesClient.abilityBind == null) return;
+            if (NoellesClientKeybindings.getAbilityBind() == null) return;
             AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(context.player());
             Text line;
             if (ability.cooldown > 0) {
@@ -33,13 +33,13 @@ public final class VecnaStatusHud {
                         && GameFunctions.isPlayerAliveAndSurvival(target)) {
                     line = Text.translatable(
                             "tip.noellesroles.vecna.use_target",
-                            NoellesrolesClient.abilityBind.getBoundKeyLocalizedText(),
+                            NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText(),
                             target.getDisplayName()
                     );
                 } else {
                     line = Text.translatable(
                             "tip.noellesroles.vecna.use_self",
-                            NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                            NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                     );
                 }
             }

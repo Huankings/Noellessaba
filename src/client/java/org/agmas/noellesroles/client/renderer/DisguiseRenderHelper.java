@@ -11,7 +11,8 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.SkinTextures;
 import org.agmas.noellesroles.ConfigWorldComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.appearance.NoellesAppearanceClientState;
+import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverClientState;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.agmas.noellesroles.roles.coroner.CoronerPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
@@ -96,12 +97,12 @@ public final class DisguiseRenderHelper {
         ClientPlayerEntity localPlayer = MinecraftClient.getInstance().player;
         if (localPlayer != null
                 && targetUuid.equals(localPlayer.getUuid())
-                && NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES != null) {
+                && NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures() != null) {
             // 这里必须优先兜住“目标就是本地玩家自己”的情况。
             // 否则当 A 变形成 B、B 又变形成 A 时，
             // B 在 A 客户端里取到的就会是“A 当前已经显示成的 B 皮肤”，
             // 而不是“A 这个 UUID 原本该有的皮肤”，于是双方会互相看错。
-            return NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES;
+            return NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures();
         }
 
         // 优先从 Tab 玩家列表读取真实皮肤。
@@ -136,11 +137,11 @@ public final class DisguiseRenderHelper {
      */
     @Nullable
     public static SkinTextures resolveShuffledSkinTextures(AbstractClientPlayerEntity renderedPlayer) {
-        if (NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE == null) {
+        if (InsaneObserverClientState.getShuffledPlayerEntriesCache() == null) {
             return null;
         }
 
-        UUID shuffledUuid = NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE.get(renderedPlayer.getUuid());
+        UUID shuffledUuid = InsaneObserverClientState.getShuffledPlayerEntriesCache().get(renderedPlayer.getUuid());
         return resolveSkinTexturesFromUuid(renderedPlayer, shuffledUuid, true);
     }
 
@@ -161,8 +162,8 @@ public final class DisguiseRenderHelper {
              * 也会随之一起统一成灵术师自己的外观。
              */
             if (spiritualistComponent.isProjecting() && player != localPlayer) {
-                if (NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES != null) {
-                    return NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES;
+                if (NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures() != null) {
+                    return NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures();
                 }
                 return resolveSkinTexturesFromUuid(localPlayer, localPlayer.getUuid(), true);
             }
@@ -185,8 +186,8 @@ public final class DisguiseRenderHelper {
             if (configComp != null
                     && configComp.insaneSeesMorphs
                     && WatheClient.moodComponent.isLowerThanDepressed()
-                    && NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE != null
-                    && NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE.containsKey(player.getUuid())) {
+                    && InsaneObserverClientState.getShuffledPlayerEntriesCache() != null
+                    && InsaneObserverClientState.getShuffledPlayerEntriesCache().containsKey(player.getUuid())) {
                 return resolveShuffledSkinTextures(player);
             }
         }

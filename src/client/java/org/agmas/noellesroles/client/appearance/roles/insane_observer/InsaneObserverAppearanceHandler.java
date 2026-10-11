@@ -9,7 +9,7 @@ import net.minecraft.util.Formatting;
 import org.agmas.noellesroles.ConfigWorldComponent;
 import org.agmas.noellesroles.client.appearance.NoellesAppearancePriorities;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverClientState;
 import org.agmas.noellesroles.client.renderer.DisguiseRenderHelper;
 
 /**
@@ -42,7 +42,7 @@ public final class InsaneObserverAppearanceHandler {
     }
 
     private static boolean isInsaneObserverMorphEnabled(AbstractClientPlayerEntity player) {
-        if (WatheClient.moodComponent == null || NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE == null) {
+        if (WatheClient.moodComponent == null || InsaneObserverClientState.getShuffledPlayerEntriesCache() == null) {
             return false;
         }
 
@@ -56,6 +56,6 @@ public final class InsaneObserverAppearanceHandler {
         return config != null
                 && config.insaneSeesMorphs
                 && WatheClient.moodComponent.isLowerThanDepressed()
-                && NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE.containsKey(player.getUuid());
+                && InsaneObserverClientState.getShuffledPlayerEntriesCache().containsKey(player.getUuid());
     }
 }

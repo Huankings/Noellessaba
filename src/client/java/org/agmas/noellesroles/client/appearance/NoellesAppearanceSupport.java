@@ -9,7 +9,7 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.appearance.NoellesAppearanceClientState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -26,11 +26,11 @@ public final class NoellesAppearanceSupport {
     public static SkinTextures resolveLocalOriginalSkin(ClientPlayerEntity localPlayer) {
         /*
          * 灵术师出窍时需要稳定显示自己的原始皮肤。
-         * 如果 NoellesrolesClient 已经在登录时缓存过本地原皮，优先使用缓存；
+         * 如果客户端连接状态已经缓存过本地原皮，优先使用缓存；
          * 缓存还没准备好时，再让 Wathe 按 UUID 从玩家列表 / Wathe 缓存 / 默认皮肤逐层兜底。
          */
-        if (NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES != null) {
-            return NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES;
+        if (NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures() != null) {
+            return NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures();
         }
         return PlayerAppearanceApi.resolveOriginalSkinTextures(localPlayer.getUuid(), true);
     }

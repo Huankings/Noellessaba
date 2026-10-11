@@ -3,7 +3,7 @@ package org.agmas.noellesroles.client.roles.prophet;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.prophet.ProphetConstants;
@@ -41,7 +41,7 @@ public final class ProphetStatusHud {
             } else if (shop.balance < ProphetConstants.REVEAL_COST) {
                 lines.add(Text.translatable("tip.prophet.not_enough_money", ProphetConstants.REVEAL_COST));
             } else {
-                lines.add(Text.translatable("tip.prophet.use", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()));
+                lines.add(Text.translatable("tip.prophet.use", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()));
             }
 
             NoellesHudSupport.drawBottomRightLines(context, lines, NoellesRoleRegistry.PROPHET.color());

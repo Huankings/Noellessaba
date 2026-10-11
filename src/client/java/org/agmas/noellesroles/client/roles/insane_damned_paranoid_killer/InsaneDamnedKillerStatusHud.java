@@ -1,7 +1,7 @@
 package org.agmas.noellesroles.client.roles.insane_damned_paranoid_killer;
 
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
@@ -18,7 +18,7 @@ public final class InsaneDamnedKillerStatusHud {
                 "roles/insane_damned_paranoid_killer/corpse_status",
                 NoellesRoleRegistry.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES,
                 context -> {
-                    if (NoellesrolesClient.abilityBind == null) {
+                    if (NoellesClientKeybindings.getAbilityBind() == null) {
                         return;
                     }
 
@@ -31,7 +31,7 @@ public final class InsaneDamnedKillerStatusHud {
                             corpseMode
                                     ? "hud.noellesroles.the_insane_damned_paranoid_killer.corpse_active"
                                     : "hud.noellesroles.the_insane_damned_paranoid_killer.corpse_hint",
-                            NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                            NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                     );
 
                     NoellesHudSupport.drawBottomRightLine(

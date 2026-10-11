@@ -12,7 +12,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.roles.detective.DetectiveConstants;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public final class DetectiveTargetHudHandler {
                     PlayerEntity target = context.targetPlayer();
                     if (target == null
                             || !GameFunctions.isPlayerAliveAndSurvival(target)
-                            || NoellesrolesClient.abilityBind == null) {
+                            || NoellesClientKeybindings.getAbilityBind() == null) {
                         return;
                     }
 
@@ -55,7 +55,7 @@ public final class DetectiveTargetHudHandler {
                      */
                     Text targetInfo = Text.translatable(
                             "hud.noellesroles.detective.target",
-                            NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                            NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                     ).withColor(NoellesRoleRegistry.DETECTIVE.color());
                     drawCentered(context.renderer(), context.drawContext(), targetInfo, 32, NoellesRoleRegistry.DETECTIVE.color());
                 }

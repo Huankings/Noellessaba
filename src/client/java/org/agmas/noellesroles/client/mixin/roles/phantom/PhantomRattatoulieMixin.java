@@ -17,7 +17,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

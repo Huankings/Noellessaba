@@ -37,11 +37,11 @@ public final class PlayerHeadTextureHelper {
         ClientPlayerEntity localPlayer = client.player;
         if (localPlayer != null
                 && targetUuid.equals(localPlayer.getUuid())
-                && org.agmas.noellesroles.client.NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES != null) {
+                && org.agmas.noellesroles.client.appearance.NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures() != null) {
             // 背包头像和世界内变形解析保持一致：
             // 如果目标就是本地玩家自己，也必须固定回到“本地玩家原始皮肤缓存”，
             // 不能把自己当前伪装后的显示皮肤又反向带进头像系统。
-            return org.agmas.noellesroles.client.NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES;
+            return org.agmas.noellesroles.client.appearance.NoellesAppearanceClientState.getLocalPlayerOriginalSkinTextures();
         }
 
         if (localPlayer != null && localPlayer.networkHandler != null) {

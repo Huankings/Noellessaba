@@ -2,7 +2,7 @@ package org.agmas.noellesroles.client.roles.angel;
 
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.angel.AngelAbility;
@@ -41,9 +41,9 @@ public final class AngelStatusHud {
             if (ability.cooldown > 0) {
                 lines.add(Text.translatable("tip.noellesroles.cooldown", Math.max(0, (ability.cooldown + 19) / 20)));
             } else if (guardMode) {
-                lines.add(Text.translatable("hud.noellesroles.angel.use_guard", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()));
+                lines.add(Text.translatable("hud.noellesroles.angel.use_guard", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()));
             } else {
-                lines.add(Text.translatable("hud.noellesroles.angel.use_soothe", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()));
+                lines.add(Text.translatable("hud.noellesroles.angel.use_soothe", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()));
             }
 
             NoellesHudSupport.drawBottomRightLines(context, lines, NoellesRoleRegistry.ANGEL.color());

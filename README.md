@@ -48,13 +48,18 @@
 - Wathe 客户端武器目标 API：`dev.doctor4t.wathe.api.combat.WeaponTargetingApi`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
+- 客户端 Fabric 主入口：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`，只负责初始化编排。
+- 客户端职责 bootstrap：`src/client/java/org/agmas/noellesroles/client/bootstrap/`
+- 客户端按键和左键预攻击：`src/client/java/org/agmas/noellesroles/client/input/`
+- 客户端物品显示与输入：`src/client/java/org/agmas/noellesroles/client/items/`
+- 客户端外观缓存：`src/client/java/org/agmas/noellesroles/client/appearance/`
 - 杰森客户端雾效 provider：`src/client/java/org/agmas/noellesroles/client/roles/jason/JasonAbilityFogHandler.java`
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
 - 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
 - 低心情幻觉手持物预留注册：`src/client/java/org/agmas/noellesroles/client/mood/NoellesPsychosisHandlers.java`
 - 客户端移动表现总引导：`src/client/java/org/agmas/noellesroles/client/movement/NoellesClientMovementBootstrap.java`
 - 准心图标注册入口：`src/client/java/org/agmas/noellesroles/client/crosshair/NoellesCrosshairHandlers.java`
-- 物品描述与冷却注册：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java` 中的 `registerItemTooltipsAndModels()`，接入 Wathe `ItemTooltipApi`
+- 物品描述与冷却注册：`src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientItemBootstrap.java`，接入 Wathe `ItemTooltipApi`
 - 职业状态 HUD：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`
 - 职业准心图标：`src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`
 - 词条固定 HUD：`src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/*Hud.java`
@@ -64,13 +69,32 @@
 - 词条背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/*InventoryButtons.java`
 - mixin：`src/main/java/org/agmas/noellesroles/mixin/` 和 `src/client/java/org/agmas/noellesroles/client/mixin/`
 
+### 客户端入口与职责拆分
+
+当前 `NoellesrolesClient.java` 只负责调用客户端职责模块，不再堆积职业逻辑、物品清单、网络 receiver、每帧 tick、实体渲染器或客户端临时状态。新增客户端功能应按下列边界放置：
+
+- 职业能力、状态机、音乐、相机和职业专属视觉：`client/roles/<role>/`。
+- 词条状态和固定 HUD：`client/modifiers/<modifier>/`、`client/hud/modifiers/<modifier>/`。
+- 公共能力键、能力键分发和左键预攻击：`client/input/`。
+- 物品颜色、Tooltip、动态 Tooltip、模型谓词和物品模式切换：`client/items/`。
+- 客户端注册编排：`client/bootstrap/`，其中 `NoellesClientTickBootstrap` 只调度 tick，`NoellesClientResetHandler` 只负责 JOIN / DISCONNECT 清理。
+- 原始皮肤、伪装和疯狂观察者随机映射缓存：`client/appearance/`；这些是纯客户端缓存，不加入时停者快照。
+
+职业或物品的具体判定不能重新写回 bootstrap；bootstrap 只维护注册顺序和职责调用。外部扩展读取 NoellesRoles 公共能力键时使用：
+
+```java
+NoellesClientKeybindings.getAbilityBind()
+```
+
+旧的 `NoellesrolesClient.abilityBind`、`targetBody`、`LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES` 和 `SHUFFLED_PLAYER_ENTRIES_CACHE` 已移除。NoellesRoles 客户端 API 发生变化后，必须先构建 NoellesRoles，再将最新非 sources jar 复制到扩展的 `libs` 目录并重新编译扩展，避免运行时出现 `NoSuchFieldError` 或 `NoSuchMethodError`。
+
 NoellesRoles 的职业或词条如果需要让本地观察者脑补目标手持指定/随机物品或手臂姿势，应使用 Wathe 的 `dev.doctor4t.wathe.api.client.mood.PsychosisItemApi`。当前 `NoellesPsychosisHandlers` 仅提供空注册入口，后续按职业/词条拆分 provider，并通过 priority 控制覆盖：高于 Wathe 默认 priority 0 的规则优先，低于或等于 0 的规则只在默认幻觉未处理时生效。该能力仅改变客户端视觉，不改变真实物品、服务端交互或攻击判定；特殊存活授权的 spectator/creative 仍会看到幻觉，普通死亡旁观则由 Wathe 自动清理。
 
 ## 物品描述与冷却 Tooltip
 
 NoellesRoles 的普通物品已经统一接入 Wathe
-`dev.doctor4t.wathe.api.client.tooltip.ItemTooltipApi`。`NoellesrolesClient#registerItemTooltipsAndModels()`
-使用 `registerItems(...)` 批量登记物品；API 自动读取 `item.noellesroles.<path>.tooltip`，保留翻译中的
+`dev.doctor4t.wathe.api.client.tooltip.ItemTooltipApi`。`NoellesClientItemBootstrap#register()`
+调用 `registerItems(...)` 批量登记物品；API 自动读取 `item.noellesroles.<path>.tooltip`，保留翻译中的
 `\n` 多行说明，并在存在原版物品冷却时添加标准红色读秒。
 
 读秒取当前客户端冷却条目的 `endTick - tick`，不再用 `GameConstants.ITEM_COOLDOWNS` 中的默认总时长
@@ -550,7 +574,7 @@ NoellesRoles 的职业雾效统一接入 Wathe：
 
 - API：`dev.doctor4t.wathe.api.client.fog.FogOverrideApi`
 - 杰森 provider：`src/client/java/org/agmas/noellesroles/client/roles/jason/JasonAbilityFogHandler.java`
-- 注册入口：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+- 注册入口：`src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientRoleBootstrap.java`
 
 工作顺序是：原版、液体状态和 Wathe 地图雾先计算基础值，职业 provider 再通过 `FogOverrideApi.FogContext` 读取基础值并返回目标 start/end/shape，Wathe 最后把最终值写回 RenderSystem。Iris 的标准 `FogUniforms` 会从 RenderSystem getter 读取该最终值，因此 Sodium + Iris shaderpack 不应把 Wathe 地图雾或杰森雾恢复成普通视频设置视距。世界渲染结束后 Wathe 会调用原版 `BackgroundRenderer.clearFog()` 切换到 GUI 无雾状态，避免 1.21.1 文字 shader 继续使用世界的 `FogColor`，导致聊天栏、tab 和 HUD 在白天变白、夜晚变黑。
 
@@ -558,7 +582,7 @@ NoellesRoles 的职业雾效统一接入 Wathe：
 
 1. 在 `client/roles/<role>/` 新建 `<RoleName>FogHandler.java`。
 2. 把视距、优先级和过渡时间放入对应 `*Constants`。
-3. 在 `NoellesrolesClient.onInitializeClient()` 注册 provider。
+3. 在 `NoellesClientRoleBootstrap.register()` 注册 provider。
 4. provider 返回 `FogOverride.pass()` 表示当前状态不接管雾效。
 5. 不要新增职业自己的 `WorldRenderer.render` 雾效 mixin，也不要直接依赖 Iris 私有类。
 
@@ -685,7 +709,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 - 物品模型放 `src/main/resources/assets/noellesroles/models/item/`
 - 文本放 `src/main/resources/assets/noellesroles/lang/`
 
-在客户端 `registerItemTooltipsAndModels()` 中用 `ItemTooltipApi.registerItem(...)` 注册物品描述；不要新增
+在客户端 `NoellesClientItemBootstrap#register()` 中用 `ItemTooltipApi.registerItems(...)` 注册物品描述；不要新增
 扩展自己的 tooltip callback。只有物品需要额外动态行时才注册 appender。
 
 如果你要让物品有默认冷却，记得在 `ModItems.init()` 里补 `GameConstants.ITEM_COOLDOWNS.put(...)`。
@@ -719,6 +743,8 @@ Wathe 的 `/wathe:shopCooldownBypass <true|false>` 默认关闭。开启后，No
 客户端相关内容统一放在：
 
 - `src/client/java/org/agmas/noellesroles/client/...`
+
+客户端主入口 `NoellesrolesClient` 只负责调用 bootstrap。新增职业客户端能力时，优先在职业包新建 `*AbilityInputHandler`、`*StatusHud`、`*Crosshair` 或 `*FogHandler`，再把 `register()` / `tick()` 调用加入对应的聚合入口；不要把职业判断和状态字段直接写回 `NoellesrolesClient`。
 
 常见内容包括：
 

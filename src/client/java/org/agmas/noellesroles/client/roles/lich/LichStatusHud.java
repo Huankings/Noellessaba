@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.lich.LichConstants;
@@ -28,7 +28,7 @@ public final class LichStatusHud {
 
     public static void register() {
         NoellesHudSupport.registerAliveRole("roles/lich/status", NoellesRoleRegistry.LICH, context -> {
-            if (NoellesrolesClient.abilityBind == null) {
+            if (NoellesClientKeybindings.getAbilityBind() == null) {
                 return;
             }
 
@@ -42,7 +42,7 @@ public final class LichStatusHud {
                         ? Text.translatable("tip.noellesroles.lich.ability.no_doors", LichConstants.DOOR_CONTROL_RADIUS_BLOCKS)
                         : Text.translatable(
                         "tip.noellesroles.lich.ability.ready",
-                        NoellesrolesClient.abilityBind.getBoundKeyLocalizedText(),
+                        NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText(),
                         LichConstants.DOOR_CONTROL_RADIUS_BLOCKS,
                         nearbyDoors
                 );

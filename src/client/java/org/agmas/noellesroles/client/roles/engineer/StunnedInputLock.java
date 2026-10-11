@@ -2,7 +2,7 @@ package org.agmas.noellesroles.client.roles.engineer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
 import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 
@@ -47,7 +47,7 @@ public final class StunnedInputLock {
                 || client.options.jumpKey.matchesMouse(button)
                 || client.options.sneakKey.matchesMouse(button)
                 || client.options.sprintKey.matchesMouse(button)
-                || (NoellesrolesClient.abilityBind != null && NoellesrolesClient.abilityBind.matchesMouse(button))) {
+                || (NoellesClientKeybindings.getAbilityBind() != null && NoellesClientKeybindings.getAbilityBind().matchesMouse(button))) {
             return true;
         }
 
@@ -75,7 +75,7 @@ public final class StunnedInputLock {
                 || client.options.swapHandsKey.matchesKey(key, scancode)
                 || client.options.dropKey.matchesKey(key, scancode)
                 || client.options.inventoryKey.matchesKey(key, scancode)
-                || (NoellesrolesClient.abilityBind != null && NoellesrolesClient.abilityBind.matchesKey(key, scancode))) {
+                || (NoellesClientKeybindings.getAbilityBind() != null && NoellesClientKeybindings.getAbilityBind().matchesKey(key, scancode))) {
             return true;
         }
 
@@ -102,8 +102,8 @@ public final class StunnedInputLock {
         releaseKey(client.options.swapHandsKey);
         releaseKey(client.options.dropKey);
         releaseKey(client.options.inventoryKey);
-        if (NoellesrolesClient.abilityBind != null) {
-            releaseKey(NoellesrolesClient.abilityBind);
+        if (NoellesClientKeybindings.getAbilityBind() != null) {
+            releaseKey(NoellesClientKeybindings.getAbilityBind());
         }
         for (KeyBinding hotbarKey : client.options.hotbarKeys) {
             releaseKey(hotbarKey);
@@ -148,7 +148,7 @@ public final class StunnedInputLock {
                 || key.equals(client.options.swapHandsKey)
                 || key.equals(client.options.dropKey)
                 || key.equals(client.options.inventoryKey)
-                || (NoellesrolesClient.abilityBind != null && key.equals(NoellesrolesClient.abilityBind))) {
+                || (NoellesClientKeybindings.getAbilityBind() != null && key.equals(NoellesClientKeybindings.getAbilityBind()))) {
             return true;
         }
 

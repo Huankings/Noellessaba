@@ -3,7 +3,7 @@ package org.agmas.noellesroles.client.roles.recaller;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.recaller.RecallerConstants;
@@ -22,9 +22,9 @@ public final class RecallerStatusHud {
             RecallerPlayerComponent recaller = RecallerPlayerComponent.KEY.get(context.player());
             PlayerShopComponent shop = PlayerShopComponent.KEY.get(context.player());
 
-            Text line = Text.translatable("tip.recaller.teleport", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText());
+            Text line = Text.translatable("tip.recaller.teleport", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText());
             if (!recaller.placed) {
-                line = Text.translatable("tip.recaller.place", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText());
+                line = Text.translatable("tip.recaller.place", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText());
             } else if (shop.balance < RecallerConstants.TELEPORT_COST) {
                 line = Text.translatable("tip.recaller.not_enough_money", RecallerConstants.TELEPORT_COST);
             }

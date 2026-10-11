@@ -83,7 +83,21 @@
 - `src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
 - `src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
 - `src/main/java/org/agmas/noellesroles/record/NoellesRolesReplayFormatters.java`
-- `src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+- `src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`：Fabric 客户端主入口，只负责调用客户端职责 bootstrap，不保存职业状态，也不直接承载物品、网络、tick 或渲染注册细节。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientRoleBootstrap.java`：职业 / 词条客户端 HUD、雾效和客户端按键初始化聚合入口。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientItemBootstrap.java`：物品颜色、Tooltip、动态 Tooltip 和模型谓词注册入口。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientTickBootstrap.java`：客户端每 tick 调度入口，只调用各职业和机制自己的 tick provider。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientNetworkingBootstrap.java`：客户端 S2C receiver 注册入口。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientResetHandler.java`：JOIN / DISCONNECT 客户端临时状态清理入口。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientEntityRendererBootstrap.java`：实体渲染器注册入口。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientParticleBootstrap.java`：客户端粒子工厂和托盘粒子注册入口。
+- `src/client/java/org/agmas/noellesroles/client/input/NoellesClientKeybindings.java`：公共能力键注册和读取 API；外部扩展不得再访问 `NoellesrolesClient.abilityBind`。
+- `src/client/java/org/agmas/noellesroles/client/input/NoellesAbilityInputHandler.java`：公共 G 能力键分发器；具体目标解析放到对应职业包。
+- `src/client/java/org/agmas/noellesroles/client/input/NoellesClientPreAttackHandlers.java`：狙击枪、怀表、扩展手雷的客户端左键预攻击接管入口。
+- `src/client/java/org/agmas/noellesroles/client/appearance/NoellesAppearanceClientState.java`：本地原始皮肤缓存；该缓存是纯客户端显示状态，不加入时停快照。
+- `src/client/java/org/agmas/noellesroles/client/appearance/roles/insane_observer/InsaneObserverClientState.java`：疯狂观察者随机伪装映射和刷新计时；属于纯客户端缓存，不加入时停快照。
+- `src/client/java/org/agmas/noellesroles/client/items/NoellesRolesGrenadeInputHandler.java`：扩展手雷直投 / 蓄力投掷模式切换。
+- `src/client/java/org/agmas/noellesroles/client/roles/<role>/*AbilityInputHandler.java`：职业能力键的目标解析、按下边沿和职业专属输入状态。
 - `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`：按职业拆分的客户端雾效 provider，例如杰森的 `JasonAbilityFogHandler`。
 - `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`：通用屏幕 HUD 总注册入口，只调用各职业自己的 `register()`。
 - `src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`：Wathe `HudOverlayApi` 的存活职业过滤、右下角文字和玩家名兜底辅助。
@@ -99,6 +113,25 @@
 - `src/client/resources/noellesroles.client.mixins.json`
 - `src/main/resources/assets/noellesroles/lang/zh_cn.json`
 - `src/main/resources/assets/noellesroles/lang/en_us.json`
+
+### 客户端入口与职责拆分
+
+客户端入口已经完成职责拆分。`NoellesrolesClient` 只做初始化编排，后续新增客户端功能必须先判断归属，再放入对应包：
+
+- 职业状态、能力输入、音乐、相机和职业专属效果：`client/roles/<role>/`。
+- 词条客户端状态和 UI：`client/modifiers/<modifier>/` 或 `client/hud/modifiers/<modifier>/`。
+- 通用按键、左键预攻击、能力键分发：`client/input/`。
+- 物品颜色、Tooltip、模型谓词和物品输入：`client/items/`，注册清单由 `NoellesClientItemBootstrap` 编排。
+- 客户端 tick、网络包、连接清理、粒子、实体渲染和疯魔背景音：`client/bootstrap/` 下对应的职责类。
+- 皮肤、伪装和疯狂观察者随机映射缓存：`client/appearance/`，不得重新放回 `NoellesrolesClient`。
+
+职责 bootstrap 只负责注册顺序或调度，具体职业判定、目标解析、状态机和清理逻辑必须留在职业 / 词条自己的类里。外部扩展如果需要读取公共能力键，应使用：
+
+```java
+NoellesClientKeybindings.getAbilityBind()
+```
+
+`NoellesrolesClient.abilityBind`、`NoellesrolesClient.targetBody`、`NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES` 和 `NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE` 已移除，不能作为跨模组 API 继续使用。修改 NoellesRoles 客户端 API 后，必须重新构建 NoellesRoles，并将最新非 sources jar 复制到依赖扩展的 `libs` 后再编译扩展。
 
 ### 当前仓库里的优先参考职业
 
@@ -253,8 +286,16 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesShopBootstrap.java`：注册静态/动态职业商店，或 ShopModifier。
 - `NoellesRolesShops.java`：购买特殊图标、即时能力物品、随机物品时的交付逻辑。
 - `ModItems.java`：新增物品、数据组件、默认冷却。
-- `NoellesrolesClient.java`：客户端按键、Wathe `ItemTooltipApi` 物品注册、model predicate、实体渲染、客户端网络包。
-- `client/roles/<role>/*FogHandler.java`：职业专属雾效 provider；在 `NoellesrolesClient` 注册，不新增 WorldRenderer 雾效 mixin。
+- `NoellesrolesClient.java`：只负责调用客户端职责 bootstrap，不再直接注册客户端按键、Tooltip、model predicate、实体渲染或网络包。
+- `NoellesClientKeybindings.java`：公共能力键注册；外部扩展读取能力键必须调用 `getAbilityBind()`。
+- `NoellesClientItemBootstrap.java`：物品颜色、Tooltip、动态 Tooltip 和模型谓词注册。
+- `NoellesClientTickBootstrap.java`：客户端每 tick provider 调度。
+- `NoellesClientNetworkingBootstrap.java`：客户端网络 receiver 注册。
+- `NoellesClientResetHandler.java`：JOIN / DISCONNECT 状态清理。
+- `NoellesClientEntityRendererBootstrap.java`：实体渲染器注册。
+- `NoellesClientParticleBootstrap.java`：粒子和托盘粒子注册。
+- `NoellesClientRoleBootstrap.java`：职业 HUD、Mood HUD、Fog 和职业客户端初始化聚合。
+- `client/roles/<role>/*FogHandler.java`：职业专属雾效 provider；在 `NoellesClientRoleBootstrap` 注册，不新增 WorldRenderer 雾效 mixin。
 - `NoellesClientMovementBootstrap.java`：新增客户端移动提示、表现或本地状态时，在这里按职业 / 词条聚合调用。
 - `NoellesHudHandlers.java`：新增普通屏幕 HUD provider 后，在这里调用该职业/词条 HUD 类的 `register()`。
 - `NoellesInventoryButtons.java`：新增背包按钮 provider 后，在这里调用该职业 `*InventoryButtons.register()`。
@@ -419,7 +460,7 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 
 - 普通物品描述和原版物品冷却读秒统一通过 Wathe `ItemTooltipApi.registerItem(...)` / `registerItems(...)` 注册，不要新增扩展自己的 `ItemTooltipCallback`。
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
-- 职业专属雾效放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`，通过 Wathe `FogOverrideApi` 在 `NoellesrolesClient` 注册；不要在 NoellesRoles 再直接注入 `WorldRenderer.render` 覆盖雾距。
+- 职业专属雾效放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`，通过 Wathe `FogOverrideApi` 在 `NoellesClientRoleBootstrap` 注册；不要在 NoellesRoles 再直接注入 `WorldRenderer.render` 覆盖雾距。
 - 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，目标射线使用 `WeaponTargetingApi` 的 visible 入口，不要 mixin `CrosshairRenderer`。
 - 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
@@ -430,7 +471,7 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 
 ### 物品 Tooltip API
 
-- 当前注册入口是 `NoellesrolesClient#registerItemTooltipsAndModels()`；普通物品用 `ItemTooltipApi.registerItems(...)` 批量登记，`.tooltip` 翻译中的 `\n` 由 Wathe 统一拆行。
+- 当前注册入口是 `NoellesClientItemBootstrap#register()`；普通物品用 `ItemTooltipApi.registerItems(...)` 批量登记，`.tooltip` 翻译中的 `\n` 由 Wathe 统一拆行。具体物品 Tooltip 和模型清单不要重新写回 `NoellesrolesClient`。
 - 冷却读秒由 Wathe 读取当前 `ItemCooldownManager.Entry.endTick - tick`。禁止再从 `GameConstants.ITEM_COOLDOWNS` 取固定总时长并乘 `getCooldownProgress()`，否则枪械 modifier、多来源冷却和临时冷却会错误。
 - `GameConstants.ITEM_COOLDOWNS` 仍是服务端默认玩法数值；“保留默认冷却表”和“tooltip 不读取默认总时长”是两个不同职责。
 - 额外动态文本用 `ItemTooltipApi.registerAppender(...)`。疯魔法杖是普通动态数值示例；时停者怀表是不走原版物品冷却、读取职业同步组件的例外示例。
@@ -443,7 +484,7 @@ NoellesRoles 只消费 Wathe 的雾效 API，不复制 Wathe 的 RenderSystem / 
 
 - Wathe API：`dev.doctor4t.wathe.api.client.fog.FogOverrideApi`
 - 职业 provider：`src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>FogHandler.java`
-- 客户端注册入口：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`
+- 客户端注册入口：`src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientRoleBootstrap.java`
 
 provider 只描述当前职业状态下的目标雾距，基础雾值由 Wathe 先计算并通过 `FogOverrideApi.FogContext` 提供。进入 / 退出状态需要平滑过渡时，使用组件状态和 `context.tickDelta()` 插值；过渡时间、start/end、优先级必须放在对应职业 `*Constants`。
 

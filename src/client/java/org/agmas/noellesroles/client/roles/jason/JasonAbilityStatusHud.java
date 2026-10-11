@@ -1,7 +1,7 @@
 package org.agmas.noellesroles.client.roles.jason;
 
 import net.minecraft.text.Text;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.jason.JasonAbilityPlayerComponent;
@@ -17,7 +17,7 @@ public final class JasonAbilityStatusHud {
 
     public static void register() {
         NoellesHudSupport.registerAliveRole("roles/jason/ability_status", NoellesRoleRegistry.JASON, context -> {
-            if (NoellesrolesClient.abilityBind == null || JasonPsychoHandler.isJasonModeActive(context.player())) {
+            if (NoellesClientKeybindings.getAbilityBind() == null || JasonPsychoHandler.isJasonModeActive(context.player())) {
                 return;
             }
 
@@ -25,9 +25,9 @@ public final class JasonAbilityStatusHud {
             Text line = switch (component.getPhase()) {
                 case IDLE -> component.getCooldownTicks() > 0
                         ? Text.translatable("hud.noellesroles.jason.ability.cooldown", seconds(component.getCooldownTicks()))
-                        : Text.translatable("hud.noellesroles.jason.ability.ready", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText());
+                        : Text.translatable("hud.noellesroles.jason.ability.ready", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText());
                 case ENTERING, ACTIVE -> component.canRequestExit()
-                        ? Text.translatable("hud.noellesroles.jason.ability.exit_ready", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText())
+                        ? Text.translatable("hud.noellesroles.jason.ability.exit_ready", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText())
                         : Text.translatable("hud.noellesroles.jason.ability.min_exit", seconds(component.getRemainingMinExitTicks()));
                 case EXITING -> Text.translatable(
                         "hud.noellesroles.jason.ability.exiting",

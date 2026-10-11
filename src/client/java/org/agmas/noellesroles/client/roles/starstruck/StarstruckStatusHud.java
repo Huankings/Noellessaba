@@ -2,7 +2,7 @@ package org.agmas.noellesroles.client.roles.starstruck;
 
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
@@ -18,7 +18,7 @@ public final class StarstruckStatusHud {
             AbilityPlayerComponent ability = AbilityPlayerComponent.KEY.get(context.player());
             Text line = ability.cooldown > 0
                     ? Text.translatable("tip.noellesroles.cooldown", Math.max(0, (ability.cooldown + 19) / 20))
-                    : Text.translatable("tip.noellesroles.starstruck", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText());
+                    : Text.translatable("tip.noellesroles.starstruck", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText());
 
             NoellesHudSupport.drawBottomRightLine(context, line, NoellesRoleRegistry.STARSTRUCK.color());
         });

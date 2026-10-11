@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
@@ -37,22 +37,22 @@ public final class SpiritualistStatusHud {
             } else if (spiritualist.isProjecting()) {
                 lines.add(Text.translatable(
                         "hud.noellesroles.spiritualist.end_projection",
-                        NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                        NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                 ));
             } else if (spiritualist.isPossessing()) {
                 lines.add(Text.translatable(
                         "hud.noellesroles.spiritualist.end_possession",
-                        NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                        NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                 ));
             } else if (isPossessionAim(context.player())) {
                 lines.add(Text.translatable(
                         "hud.noellesroles.spiritualist.start_possession",
-                        NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                        NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                 ));
             } else {
                 lines.add(Text.translatable(
                         "hud.noellesroles.spiritualist.start_projection",
-                        NoellesrolesClient.abilityBind.getBoundKeyLocalizedText()
+                        NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText()
                 ));
             }
 

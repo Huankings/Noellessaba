@@ -3,7 +3,7 @@ package org.agmas.noellesroles.client.roles.timekeeper;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
@@ -31,7 +31,7 @@ public final class TimekeeperRiftInputLock {
         }
 
         return key.equals(client.options.inventoryKey)
-                || (NoellesrolesClient.abilityBind != null && key.equals(NoellesrolesClient.abilityBind));
+                || (NoellesClientKeybindings.getAbilityBind() != null && key.equals(NoellesClientKeybindings.getAbilityBind()));
     }
 
     public static void releaseBlockedKeys(MinecraftClient client) {
@@ -45,8 +45,8 @@ public final class TimekeeperRiftInputLock {
          * 因此这里像回溯输入锁一样，把两枚被禁用的键都主动清空。
          */
         releaseKey(client.options.inventoryKey);
-        if (NoellesrolesClient.abilityBind != null) {
-            releaseKey(NoellesrolesClient.abilityBind);
+        if (NoellesClientKeybindings.getAbilityBind() != null) {
+            releaseKey(NoellesClientKeybindings.getAbilityBind());
         }
 
         /*

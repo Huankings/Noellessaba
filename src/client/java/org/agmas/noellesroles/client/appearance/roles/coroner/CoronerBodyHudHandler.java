@@ -16,7 +16,7 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceSupport;
 import org.agmas.noellesroles.client.appearance.modifiers.graverobber.GraverobberBodyInfoAccess;
 import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
@@ -108,7 +108,7 @@ public final class CoronerBodyHudHandler {
                 Text roleInfo = Text.translatable("hud.vulture.already_consumed").withColor(NoellesRoleRegistry.VULTURE.color());
                 drawCentered(renderer, context, roleInfo, CoronerConstants.BODY_ROLE_INFO_Y, Colors.WHITE);
             } else if (AbilityPlayerComponent.KEY.get(player).cooldown <= 0 && GameFunctions.isPlayerAliveAndSurvival(player)) {
-                Text roleInfo = Text.translatable("hud.vulture.eat", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText())
+                Text roleInfo = Text.translatable("hud.vulture.eat", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText())
                         .withColor(Colors.RED);
                 drawCentered(renderer, context, roleInfo, CoronerConstants.BODY_ROLE_INFO_Y, Colors.WHITE);
             }

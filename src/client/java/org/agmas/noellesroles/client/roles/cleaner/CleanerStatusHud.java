@@ -3,7 +3,7 @@ package org.agmas.noellesroles.client.roles.cleaner;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.cleaner.CleanerConstants;
@@ -17,7 +17,7 @@ public final class CleanerStatusHud {
 
     public static void register() {
         NoellesHudSupport.registerAliveRole("roles/cleaner/status", NoellesRoleRegistry.CLEANER, context -> {
-            if (NoellesrolesClient.abilityBind == null) {
+            if (NoellesClientKeybindings.getAbilityBind() == null) {
                 return;
             }
 
@@ -29,7 +29,7 @@ public final class CleanerStatusHud {
             } else if (ability.cooldown > 0) {
                 line = Text.translatable("tip.noellesroles.cooldown", Math.max(0, (ability.cooldown + 19) / 20));
             } else {
-                line = Text.translatable("tip.noellesroles.cleaner.use", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText());
+                line = Text.translatable("tip.noellesroles.cleaner.use", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText());
             }
 
             NoellesHudSupport.drawBottomRightLine(context, line, NoellesRoleRegistry.CLEANER.color());

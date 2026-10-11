@@ -4,7 +4,7 @@ import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.client.NoellesrolesClient;
+import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
 import org.agmas.noellesroles.client.hud.NoellesHudSupport;
 import org.agmas.noellesroles.item.TimekeeperWatchItem;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
@@ -25,11 +25,11 @@ public final class TimekeeperStatusHud {
             Text line;
             if (hasWatch(context.player(), TimekeeperWatchState.NORMAL)) {
                 line = shop.balance >= TimekeeperConstants.UPGRADE_WATCH_PRICE
-                        ? Text.translatable("tip.noellesroles.timekeeper.upgrade.ready", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText())
+                        ? Text.translatable("tip.noellesroles.timekeeper.upgrade.ready", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText())
                         : Text.translatable("tip.noellesroles.timekeeper.upgrade.need_money", TimekeeperConstants.UPGRADE_WATCH_PRICE);
             } else if (hasWatch(context.player(), TimekeeperWatchState.BROKEN)) {
                 line = shop.balance >= TimekeeperConstants.REPAIR_WATCH_PRICE
-                        ? Text.translatable("tip.noellesroles.timekeeper.repair.ready", NoellesrolesClient.abilityBind.getBoundKeyLocalizedText())
+                        ? Text.translatable("tip.noellesroles.timekeeper.repair.ready", NoellesClientKeybindings.getAbilityBind().getBoundKeyLocalizedText())
                         : Text.translatable("tip.noellesroles.timekeeper.repair.need_money", TimekeeperConstants.REPAIR_WATCH_PRICE);
             } else {
                 line = Text.translatable("tip.noellesroles.timekeeper.no_watch");
