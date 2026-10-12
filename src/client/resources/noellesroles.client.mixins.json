@@ -46,7 +46,6 @@
     "roles.engineer.StunnedMouseMixin",
     "roles.engineer.StunnedMinecraftMixin",
     "roles.engineer.StunnedKeyboardMixin",
-    "roles.bomber.TimedBombBedViewMixin",
     "roles.timekeeper.TimekeeperKeyBindingAccessor",
     "roles.timekeeper.TimekeeperRewindKeyBindingMixin",
     "roles.timekeeper.TimekeeperRewindMouseMixin",

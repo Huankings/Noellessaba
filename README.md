@@ -272,7 +272,7 @@ NoellesRoles 的普通物品已经统一接入 Wathe
 - `NoellesRolesComponents.java` 负责把所有 CCA component 和 world component 一次性注册进去。
 - `TimekeeperWorldComponent.java` 负责时停者世界级快照历史、回溯游标、保护名单和回溯播放。
 - `TimekeeperRiftHandler.java` 负责时间狭缝入口、动态失效检测，以及“狭缝玩家不应继续阻塞胜利结算”时的提前收束。
-- `TimekeeperSnapshots.java` 负责把 Wathe / Noelles 的可回溯运行态写成快照并恢复；新增 CCA 组件后要同步加入这里的 `PLAYER_COMPONENTS` 或 `WORLD_COMPONENTS`，否则回溯时该组件会停留在“回溯前未来状态”。
+- `TimekeeperSnapshots.java` 负责把 Wathe / Noelles 的内置可回溯运行态写成快照并恢复；外部扩展应通过 `TimekeeperSnapshotApi` 注册玩家组件、世界组件或非 CCA participant，否则回溯时该组件会停留在“回溯前未来状态”。
 - `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
 - `NoellesRolesCombatBootstrap.java` 负责统一接入 Wathe `GunShotApi`，只调用各职业 / 词条自己的枪击、左轮反火和冷却 handler。
 - `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath` 并接入 Wathe `DeathApi`，保持“先保命，再强制放行，再反噬”和“死亡阶段按优先级执行”的顺序。
@@ -352,12 +352,93 @@ Wathe 已经把玩家体力和移动速度公开化了。NoellesRoles 侧不需�
 
 新增职业或词条只要新增了 CCA 组件，就必须判断这个组件是否属于局内运行态。如果它会影响冷却、目标、标记、伪装、任务进度、免死层数、语音/聊天状态、商店状态、转职状态、实体控制状态等玩法结果，就要加入 `TimekeeperSnapshots`：
 
-- 玩家组件加到 `PLAYER_COMPONENTS`
-- 世界组件加到 `WORLD_COMPONENTS`
+- 外部玩家组件通过 `TimekeeperSnapshotApi.registerPlayerComponent(...)` 注册
+- 外部世界组件通过 `TimekeeperSnapshotApi.registerWorldComponent(...)` 注册
 - 组件的 `writeToNbt` / `readFromNbt` 必须完整覆盖可回溯字段
 - 恢复后需要客户端立刻看到的状态，组件必须能被 `ComponentKey.sync(...)` 正确同步
 
 如果组件只是配置、常量缓存、客户端临时显示缓存，或者像 `TimekeeperWorldComponent` 自己一样代表“正在回溯的播放机械”，不要盲目加入快照；这种例外要在代码注释里说明原因。若组件指向自定义实体、延迟任务、语音连接、全局 Map 或非 CCA 静态状态，单纯保存组件 NBT 可能不够，还要给对应实体/管理器补快照恢复或回合清理逻辑。
+
+### 时停回溯公开扩展 API
+
+时停回溯现在通过 `org.agmas.noellesroles.api.timekeeper.TimekeeperSnapshotApi` 对外公开。扩展职业不应直接修改 `TimekeeperSnapshots` 的内部白名单，而应在自己的模组初始化阶段登记需要回溯的状态。注册必须在本局第一张历史快照生成前完成；历史采样开始后再注册会抛出明确异常，避免旧历史帧缺少新字段。
+
+普通职业状态优先使用 CCA 组件：
+
+```java
+TimekeeperSnapshotApi.registerPlayerComponent(
+        Identifier.of("my_mod", "my_role"),
+        MyRolePlayerComponent.KEY
+);
+TimekeeperSnapshotApi.registerWorldComponent(
+        Identifier.of("my_mod", "my_role_world"),
+        MyRoleWorldComponent.KEY
+);
+```
+
+如果组件会改变伪装、玩家名字、模型或攻击目标，需要回溯中间帧就立刻同步给客户端，可以传入第三个参数 `true`；冷却、计数、金币和普通服务端状态应保持默认的最终帧同步：
+
+```java
+TimekeeperSnapshotApi.registerPlayerComponent(
+        Identifier.of("my_mod", "my_role_disguise"),
+        MyRoleDisguiseComponent.KEY,
+        true
+);
+```
+
+CCA 组件必须在 `writeToNbt` / `readFromNbt` 中覆盖全部可回溯字段，恢复时不要触发新的奖励、击杀、任务或回放事件。组件应由扩展自己的 CCA initializer 注册，NoellesRoles 不会把外部组件加入 `NoellesRolesComponents`。
+
+静态 Map、延迟任务、自定义实体索引或其它非 CCA 状态使用 `TimekeeperSnapshotParticipant`：
+
+```java
+TimekeeperSnapshotApi.registerParticipant(new TimekeeperSnapshotParticipant() {
+    @Override
+    public Identifier id() {
+        return Identifier.of("my_mod", "my_role_runtime");
+    }
+
+    @Override
+    public NbtCompound captureWorldState(ServerWorld world, RegistryWrapper.WrapperLookup lookup) {
+        return MyRoleRuntime.writeSnapshot(world, lookup);
+    }
+
+    @Override
+    public void restoreWorldState(ServerWorld world, NbtCompound data,
+                                  RegistryWrapper.WrapperLookup lookup,
+                                  boolean syncClientState) {
+        MyRoleRuntime.restoreSnapshot(world, data, lookup, syncClientState);
+    }
+});
+```
+
+参与者收到 `null` 数据时表示目标历史帧没有该状态，通常应清除当前未来时间线创建的实体、任务或标记。自定义实体的生成、删除和位置恢复仍由扩展自己负责，回溯引擎不会根据任意 NBT 猜测实体语义。
+
+如果扩展还有不能直接写入快照的管理器缓存，应注册 `TimekeeperRewindListener`：
+
+```java
+TimekeeperSnapshotApi.registerRewindListener(
+        Identifier.of("my_mod", "my_role_rewind"),
+        0,
+        new TimekeeperRewindListener() {
+            @Override
+            public void onRewindStarted(ServerWorld world, Set<UUID> protectedPlayers) {
+                MyRoleRuntime.pauseFutureTasks(world);
+            }
+
+            @Override
+            public void onRewindFinished(ServerWorld world) {
+                MyRoleRuntime.reconcileAfterRewind(world);
+            }
+
+            @Override
+            public void onRewindReset(ServerWorld world) {
+                MyRoleRuntime.clearRoundState(world);
+            }
+        }
+);
+```
+
+外部职业的 server tick 应在 `TimekeeperSnapshotApi.isRewinding(world)` 为 true 时暂停会继续推进未来时间线的逻辑；需要判断某名玩家是否参加本次倒放时使用 `isProtectedFromCurrentRewind(world, uuid)`。最终帧收束后，扩展应在 `onRewindFinished` 中重建静态缓存、实体引用、临时物品来源和职业阶段。
 
 ### 回溯期间的网络同步策略
 
@@ -379,7 +460,7 @@ NoellesRoles 的职业机制优先遵循以下原则：
 2. 组件默认只同步给需要它的观察者；本人 HUD 使用的冷却、位置和选择目标要实现 `shouldSyncWith`，不要默认广播给所有追踪玩家。
 3. 粒子和声音效果按效果实例、可见距离和刷新预算控制；暂时使用服务端粒子时，避免每个采样点每 tick 单独广播。
 4. 自定义网络包只携带客户端渲染所需字段；输入、坐标、角度和倒计时应考虑变化检测、量化和心跳间隔。
-5. 新增运行态组件必须同时检查 `TimekeeperSnapshots.PLAYER_COMPONENTS` / `WORLD_COMPONENTS`、中间帧同步白名单、玩家重置和最终帧刷新逻辑。
+5. 新增运行态组件必须同时检查 `TimekeeperSnapshotApi` 注册作用域、中间帧同步策略、玩家重置和最终帧刷新逻辑。
 6. 开发验证至少包含多人挂机、能力激活、回溯、死亡/旁观、断线重连和回合结束场景，并记录发送/接收带宽和 TPS。
 
 ## 时间狭缝与胜利规则接入
@@ -682,7 +763,7 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 - `AutoSyncedComponent`
 - `ServerTickingComponent`，必要时再加 `ClientTickingComponent`
 
-注册新组件后还要同步检查时停者回溯：如果该组件属于局内运行态，把玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，把世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`。这一步和 `NoellesRolesComponents`、`fabric.mod.json` 一样属于组件注册的必做项，否则时间回溯只会回滚玩家背包/位置等基础状态，而新组件仍停在回溯前的未来状态。
+注册新组件后还要同步检查时停者回溯：如果该组件属于局内运行态，外部扩展通过 `TimekeeperSnapshotApi.registerPlayerComponent(...)` 或 `registerWorldComponent(...)` 登记；非 CCA 状态通过 `registerParticipant(...)` 登记。这一步和扩展自己的 CCA initializer 一样属于组件注册的必做项，否则时间回溯只会回滚玩家背包/位置等基础状态，而新组件仍停在回溯前的未来状态。
 
 如果新职业或词条还新增了 `VictoryApi` 规则，尤其是独立阵营胜利、共胜，或活着时会返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算，也要同步检查 `TimekeeperRiftHandler`。时间狭缝玩家会被 Wathe 当作特殊存活旁观；没有把新阻拦条件加入狭缝收束判断时，最后一个阻拦者死亡后可能仍在狭缝里卡住胜利结算。
 
@@ -813,3 +894,9 @@ NoellesRoles 接入要求：
 
 托盘效果在 `NoellesRolesTrayEffects` 中实现 `TrayEffectHandler#replayDisplay` 即可复用 Wathe 的通用 `[效果名]` 回放。职业取物限制分别由 `WaiterTrayTakeRules`、`BartenderTrayTakeRules` 和 `CookTrayTakeRules` 注册到 `TrayTakeRegistry`：服务员同类最多 2 份，酒保鸡尾酒和厨师普通食物同类最多 3 份（均为背包+主手总数）。托盘粒子使用 `TrayParticleRegistry.registerProvider` 注册，禁止新增托盘方块实体 mixin。
 客户端粒子由 `client/tray/NoellesRolesTrayParticles` 聚合，具体按职业拆分到 `client/roles/bartender/BartenderTrayParticleHandler`、`client/roles/coward/CowardTrayParticleHandler` 和 `client/roles/bomber/BomberTrayParticleHandler`；`NoellesrolesClient` 只调用聚合入口的 `init()`。
+
+## 床粒子接口更新（Wathe 1.3.3）
+
+床效果服务端逻辑继续使用 Wathe `BedEffectRegistry`；客户端床粒子使用 `BedParticleRegistry.registerProvider` 注册。provider 通过 `BedParticleContext` 读取客户端床实体和观察者，按 priority 调度，不能通过 Mixin 注入 `TrimmedBedBlockEntity.clientTick`。
+
+NoellesRoles 使用 `client/bed/NoellesRolesBedParticles` 作为床粒子聚合入口，具体职业逻辑按 `client/roles/<role>/<RoleName>BedParticleHandler` 拆分。炸弹客的定时炸弹床黑烟现在由 `BomberBedParticleHandler` 注册，旧的 `TimedBombBedViewMixin` 已删除并从客户端 Mixin 配置移除；其杀手可见性、粒子位置和稀疏刷新行为保持不变。

@@ -29,9 +29,12 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.api.timekeeper.TimekeeperRewindListener;
+import org.agmas.noellesroles.api.timekeeper.TimekeeperSnapshotParticipant;
 import org.agmas.noellesroles.death.DeathProcessComponent;
 import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownEntryAccessor;
@@ -102,6 +105,7 @@ import org.agmas.noellesroles.roles.vulture.VulturePlayerComponent;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WindMarkPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
+import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -115,6 +119,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * 时停者快照工具。
@@ -134,6 +141,17 @@ public final class TimekeeperSnapshots {
     private static final Set<String> INTERMEDIATE_WORLD_SYNC_IDS = Set.of(
             "noellesroles:morph_body_disguise_world"
     );
+
+    /**
+     * 外部扩展的注册表不直接暴露给其它模组，避免外部代码修改内部集合破坏快照顺序。
+     * 扩展必须通过 TimekeeperSnapshotApi 注册，并且只能在首张历史快照生成前登记。
+     */
+    private static final Object EXTERNAL_REGISTRY_LOCK = new Object();
+    private static final List<ComponentEntry> EXTERNAL_PLAYER_COMPONENTS = new ArrayList<>();
+    private static final List<ComponentEntry> EXTERNAL_WORLD_COMPONENTS = new ArrayList<>();
+    private static final List<TimekeeperSnapshotParticipant> EXTERNAL_PARTICIPANTS = new ArrayList<>();
+    private static final List<RewindListenerEntry> EXTERNAL_REWIND_LISTENERS = new ArrayList<>();
+    private static boolean externalRegistrationLocked = false;
 
     private static final List<ComponentEntry> PLAYER_COMPONENTS = List.of(
             component("wathe:mood", PlayerMoodComponent.KEY),
@@ -273,17 +291,175 @@ public final class TimekeeperSnapshots {
     }
 
     public static @NotNull GlobalSnapshot capture(@NotNull ServerWorld world) {
+        lockExternalRegistration();
         return new GlobalSnapshot(world);
     }
 
+    /**
+     * 供公开 API 使用的玩家组件注册入口。
+     *
+     * <p>组件注册必须发生在游戏开始采样历史之前。快照历史一旦开始，继续追加
+     * 组件会导致旧历史帧缺少新字段，因此这里会明确拒绝过晚注册，而不是产生
+     * 看似成功但无法完整回溯的状态。</p>
+     */
+    public static void registerExternalPlayerComponent(
+            @NotNull Identifier id,
+            @NotNull ComponentKey<? extends Component> key,
+            boolean syncOnIntermediateFrame
+    ) {
+        registerExternalComponent(EXTERNAL_PLAYER_COMPONENTS, id, key, syncOnIntermediateFrame);
+    }
+
+    /** 供公开 API 使用的世界组件注册入口。 */
+    public static void registerExternalWorldComponent(
+            @NotNull Identifier id,
+            @NotNull ComponentKey<? extends Component> key,
+            boolean syncOnIntermediateFrame
+    ) {
+        registerExternalComponent(EXTERNAL_WORLD_COMPONENTS, id, key, syncOnIntermediateFrame);
+    }
+
+    /** 供公开 API 使用的非 CCA 状态参与者注册入口。 */
+    public static void registerExternalParticipant(@NotNull TimekeeperSnapshotParticipant participant) {
+        Objects.requireNonNull(participant, "participant");
+        Identifier id = Objects.requireNonNull(participant.id(), "participant.id()");
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            ensureRegistrationOpen(id);
+            ensureUniqueExternalId(id);
+            EXTERNAL_PARTICIPANTS.add(participant);
+        }
+    }
+
+    /** 供公开 API 使用的回溯生命周期监听器注册入口。 */
+    public static void registerExternalRewindListener(
+            @NotNull Identifier id,
+            int priority,
+            @NotNull TimekeeperRewindListener listener
+    ) {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(listener, "listener");
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            ensureRegistrationOpen(id);
+            ensureUniqueExternalId(id);
+            EXTERNAL_REWIND_LISTENERS.add(new RewindListenerEntry(id.toString(), priority, listener));
+            EXTERNAL_REWIND_LISTENERS.sort(Comparator.comparingInt(RewindListenerEntry::priority).reversed());
+        }
+    }
+
+    /** 回溯开始后通知外部扩展暂停自己的非快照逻辑。 */
+    public static void dispatchRewindStarted(@NotNull ServerWorld world, @NotNull Set<UUID> protectedPlayers) {
+        for (RewindListenerEntry entry : rewindListenersSnapshot()) {
+            try {
+                entry.listener().onRewindStarted(world, Collections.unmodifiableSet(new HashSet<>(protectedPlayers)));
+            } catch (RuntimeException exception) {
+                NoellesRolesCore.LOGGER.error("时停回溯扩展监听器 {} 处理开始事件失败", entry.id(), exception);
+            }
+        }
+    }
+
+    /** 最终历史帧落地后通知外部扩展重建缓存和实体引用。 */
+    public static void dispatchRewindFinished(@NotNull ServerWorld world) {
+        for (RewindListenerEntry entry : rewindListenersSnapshot()) {
+            try {
+                entry.listener().onRewindFinished(world);
+            } catch (RuntimeException exception) {
+                NoellesRolesCore.LOGGER.error("时停回溯扩展监听器 {} 处理完成事件失败", entry.id(), exception);
+            }
+        }
+    }
+
+    /** 回合结束或世界清理时通知外部扩展丢弃本轮缓存。 */
+    public static void dispatchRewindReset(@NotNull ServerWorld world) {
+        for (RewindListenerEntry entry : rewindListenersSnapshot()) {
+            try {
+                entry.listener().onRewindReset(world);
+            } catch (RuntimeException exception) {
+                NoellesRolesCore.LOGGER.error("时停回溯扩展监听器 {} 处理重置事件失败", entry.id(), exception);
+            }
+        }
+    }
+
+    private static void registerExternalComponent(
+            @NotNull List<ComponentEntry> target,
+            @NotNull Identifier id,
+            @NotNull ComponentKey<? extends Component> key,
+            boolean syncOnIntermediateFrame
+    ) {
+        Objects.requireNonNull(id, "id");
+        Objects.requireNonNull(key, "key");
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            ensureRegistrationOpen(id);
+            ensureUniqueExternalId(id);
+            target.add(new ComponentEntry(id.toString(), key, syncOnIntermediateFrame));
+        }
+    }
+
+    private static void lockExternalRegistration() {
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            externalRegistrationLocked = true;
+        }
+    }
+
+    private static void ensureRegistrationOpen(@NotNull Identifier id) {
+        if (externalRegistrationLocked) {
+            throw new IllegalStateException(
+                    "不能在时停历史快照开始采样后注册扩展回溯状态: " + id
+            );
+        }
+    }
+
+    private static void ensureUniqueExternalId(@NotNull Identifier id) {
+        String stringId = id.toString();
+        boolean builtIn = PLAYER_COMPONENTS.stream().anyMatch(entry -> entry.id().equals(stringId))
+                || WORLD_COMPONENTS.stream().anyMatch(entry -> entry.id().equals(stringId));
+        boolean external = EXTERNAL_PLAYER_COMPONENTS.stream().anyMatch(entry -> entry.id().equals(stringId))
+                || EXTERNAL_WORLD_COMPONENTS.stream().anyMatch(entry -> entry.id().equals(stringId))
+                || EXTERNAL_PARTICIPANTS.stream().anyMatch(entry -> entry.id().toString().equals(stringId))
+                || EXTERNAL_REWIND_LISTENERS.stream().anyMatch(entry -> entry.id().equals(stringId));
+        if (builtIn || external) {
+            throw new IllegalArgumentException("时停回溯扩展 id 已注册: " + id);
+        }
+    }
+
+    private static @NotNull List<ComponentEntry> allPlayerComponents() {
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            List<ComponentEntry> entries = new ArrayList<>(PLAYER_COMPONENTS);
+            entries.addAll(EXTERNAL_PLAYER_COMPONENTS);
+            return entries;
+        }
+    }
+
+    private static @NotNull List<ComponentEntry> allWorldComponents() {
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            List<ComponentEntry> entries = new ArrayList<>(WORLD_COMPONENTS);
+            entries.addAll(EXTERNAL_WORLD_COMPONENTS);
+            return entries;
+        }
+    }
+
+    private static @NotNull List<TimekeeperSnapshotParticipant> participantsSnapshot() {
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            return List.copyOf(EXTERNAL_PARTICIPANTS);
+        }
+    }
+
+    private static @NotNull List<RewindListenerEntry> rewindListenersSnapshot() {
+        synchronized (EXTERNAL_REGISTRY_LOCK) {
+            return List.copyOf(EXTERNAL_REWIND_LISTENERS);
+        }
+    }
+
     private static @NotNull ComponentEntry component(@NotNull String id, @NotNull ComponentKey<? extends Component> key) {
-        return new ComponentEntry(id, key);
+        return new ComponentEntry(id, key, INTERMEDIATE_PLAYER_SYNC_IDS.contains(id)
+                || INTERMEDIATE_WORLD_SYNC_IDS.contains(id));
     }
 
     public static final class GlobalSnapshot {
         private final long worldTime;
         private final Map<String, NbtCompound> worldComponents = new LinkedHashMap<>();
+        private final Map<String, NbtCompound> participantWorldData = new LinkedHashMap<>();
         private final Map<UUID, PlayerSnapshot> players = new HashMap<>();
+        private final Map<UUID, Map<String, NbtCompound>> participantPlayerData = new HashMap<>();
         private final Map<UUID, NbtCompound> bodyEntityData = new HashMap<>();
         private final Map<UUID, NbtCompound> itemEntityData = new HashMap<>();
         private final TimekeeperWorldStateSnapshot worldStateSnapshot;
@@ -292,13 +468,15 @@ public final class TimekeeperSnapshots {
             RegistryWrapper.WrapperLookup registryLookup = world.getRegistryManager();
             this.worldTime = world.getTime();
 
-            for (ComponentEntry entry : WORLD_COMPONENTS) {
+            for (ComponentEntry entry : allWorldComponents()) {
                 this.worldComponents.put(entry.id(), captureComponent(entry.key(), world, registryLookup));
             }
+            captureParticipantWorldData(world, registryLookup);
             this.worldStateSnapshot = TimekeeperWorldStateSnapshot.capture(world);
 
             for (ServerPlayerEntity player : world.getPlayers()) {
                 this.players.put(player.getUuid(), new PlayerSnapshot(player));
+                captureParticipantPlayerData(player, registryLookup);
             }
 
             for (PlayerBodyEntity body : world.getEntitiesByType(WatheEntities.PLAYER_BODY, body -> !body.isRemoved())) {
@@ -320,7 +498,9 @@ public final class TimekeeperSnapshots {
             this.worldTime = other.worldTime;
             this.worldStateSnapshot = new TimekeeperWorldStateSnapshot(other.worldStateSnapshot);
             copyNbtMap(other.worldComponents, this.worldComponents);
+            copyNbtMap(other.participantWorldData, this.participantWorldData);
             copyPlayerMap(other.players, this.players);
+            copyNestedNbtMap(other.participantPlayerData, this.participantPlayerData);
             copyNbtMap(other.bodyEntityData, this.bodyEntityData);
             copyNbtMap(other.itemEntityData, this.itemEntityData);
         }
@@ -342,13 +522,15 @@ public final class TimekeeperSnapshots {
              * 这样玩家的任务、金币、语音和物品状态回写时，读到的是目标时间点的局内时间与世界运行态。
              * 不恢复 GameWorldComponent 本身，是为了避免 readFromNbt 里的角色变更回放副作用。
              */
-            for (ComponentEntry entry : WORLD_COMPONENTS) {
+            for (ComponentEntry entry : allWorldComponents()) {
                 NbtCompound data = this.worldComponents.get(entry.id());
                 if (data != null) {
                     restoreComponent(entry.key(), world, data, registryLookup,
-                            syncClientState || INTERMEDIATE_WORLD_SYNC_IDS.contains(entry.id()));
+                            syncClientState || entry.syncOnIntermediateFrame());
                 }
             }
+
+            restoreParticipantWorldData(world, registryLookup, syncClientState);
 
             this.worldStateSnapshot.restore(world);
             restoreBodyEntities(world);
@@ -364,6 +546,102 @@ public final class TimekeeperSnapshots {
                     continue;
                 }
                 playerSnapshot.apply(player, syncClientState);
+                restoreParticipantPlayerData(player, registryLookup, syncClientState);
+            }
+        }
+
+        private void captureParticipantWorldData(
+                @NotNull ServerWorld world,
+                @NotNull RegistryWrapper.WrapperLookup registryLookup
+        ) {
+            for (TimekeeperSnapshotParticipant participant : participantsSnapshot()) {
+                try {
+                    NbtCompound data = participant.captureWorldState(world, registryLookup);
+                    if (data != null) {
+                        this.participantWorldData.put(participant.id().toString(), data.copy());
+                    }
+                } catch (RuntimeException exception) {
+                    NoellesRolesCore.LOGGER.error(
+                            "捕获时停回溯扩展世界状态 {} 失败，本帧将跳过该状态",
+                            participant.id(),
+                            exception
+                    );
+                }
+            }
+        }
+
+        private void captureParticipantPlayerData(
+                @NotNull ServerPlayerEntity player,
+                @NotNull RegistryWrapper.WrapperLookup registryLookup
+        ) {
+            Map<String, NbtCompound> playerData = new LinkedHashMap<>();
+            for (TimekeeperSnapshotParticipant participant : participantsSnapshot()) {
+                try {
+                    NbtCompound data = participant.capturePlayerState(player, registryLookup);
+                    if (data != null) {
+                        playerData.put(participant.id().toString(), data.copy());
+                    }
+                } catch (RuntimeException exception) {
+                    NoellesRolesCore.LOGGER.error(
+                            "捕获时停回溯扩展玩家状态 {} ({}) 失败，本帧将跳过该状态",
+                            participant.id(),
+                            player.getUuid(),
+                            exception
+                    );
+                }
+            }
+            if (!playerData.isEmpty()) {
+                this.participantPlayerData.put(player.getUuid(), playerData);
+            }
+        }
+
+        private void restoreParticipantWorldData(
+                @NotNull ServerWorld world,
+                @NotNull RegistryWrapper.WrapperLookup registryLookup,
+                boolean syncClientState
+        ) {
+            for (TimekeeperSnapshotParticipant participant : participantsSnapshot()) {
+                NbtCompound data = this.participantWorldData.get(participant.id().toString());
+                try {
+                    participant.restoreWorldState(
+                            world,
+                            data == null ? null : data.copy(),
+                            registryLookup,
+                            syncClientState
+                    );
+                } catch (RuntimeException exception) {
+                    NoellesRolesCore.LOGGER.error(
+                            "恢复时停回溯扩展世界状态 {} 失败",
+                            participant.id(),
+                            exception
+                    );
+                }
+            }
+        }
+
+        private void restoreParticipantPlayerData(
+                @NotNull ServerPlayerEntity player,
+                @NotNull RegistryWrapper.WrapperLookup registryLookup,
+                boolean syncClientState
+        ) {
+            Map<String, NbtCompound> playerData = this.participantPlayerData.get(player.getUuid());
+            for (TimekeeperSnapshotParticipant participant : participantsSnapshot()) {
+                NbtCompound data = playerData == null ? null : playerData.get(participant.id().toString());
+                try {
+                    participant.restorePlayerState(
+                            player,
+                            data == null ? null : data.copy(),
+                            registryLookup,
+                            syncClientState
+                    );
+                } catch (RuntimeException exception) {
+                    NoellesRolesCore.LOGGER.error(
+                            "恢复时停回溯扩展玩家状态 {} ({}) 失败",
+                            participant.id(),
+                            player.getUuid(),
+                            exception
+                    );
+                }
             }
         }
 
@@ -474,7 +752,7 @@ public final class TimekeeperSnapshots {
             this.statusEffects = copyStatusEffects(player.getStatusEffects());
             this.itemCooldownTicks = captureItemCooldownTicks(player);
 
-            for (ComponentEntry entry : PLAYER_COMPONENTS) {
+            for (ComponentEntry entry : allPlayerComponents()) {
                 this.components.put(entry.id(), captureComponent(entry.key(), player, registryLookup));
             }
         }
@@ -566,11 +844,11 @@ public final class TimekeeperSnapshots {
 
             boolean wasInTimeRiftBeforeRestore = TimekeeperPlayerComponent.KEY.get(player).isInTimeRift();
 
-            for (ComponentEntry entry : PLAYER_COMPONENTS) {
+            for (ComponentEntry entry : allPlayerComponents()) {
                 NbtCompound data = this.components.get(entry.id());
                 if (data != null) {
                     restoreComponent(entry.key(), player, data, registryLookup,
-                            syncClientState || INTERMEDIATE_PLAYER_SYNC_IDS.contains(entry.id()));
+                            syncClientState || entry.syncOnIntermediateFrame());
                 }
             }
 
@@ -681,12 +959,34 @@ public final class TimekeeperSnapshots {
         }
     }
 
+    private static void copyNestedNbtMap(
+            @NotNull Map<UUID, Map<String, NbtCompound>> source,
+            @NotNull Map<UUID, Map<String, NbtCompound>> target
+    ) {
+        for (Map.Entry<UUID, Map<String, NbtCompound>> playerEntry : source.entrySet()) {
+            Map<String, NbtCompound> copiedPlayerData = new LinkedHashMap<>();
+            copyNbtMap(playerEntry.getValue(), copiedPlayerData);
+            target.put(playerEntry.getKey(), copiedPlayerData);
+        }
+    }
+
     private static void copyPlayerMap(@NotNull Map<UUID, PlayerSnapshot> source, @NotNull Map<UUID, PlayerSnapshot> target) {
         for (Map.Entry<UUID, PlayerSnapshot> entry : source.entrySet()) {
             target.put(entry.getKey(), new PlayerSnapshot(entry.getValue()));
         }
     }
 
-    private record ComponentEntry(@NotNull String id, @NotNull ComponentKey<? extends Component> key) {
+    private record ComponentEntry(
+            @NotNull String id,
+            @NotNull ComponentKey<? extends Component> key,
+            boolean syncOnIntermediateFrame
+    ) {
+    }
+
+    private record RewindListenerEntry(
+            @NotNull String id,
+            int priority,
+            @NotNull TimekeeperRewindListener listener
+    ) {
     }
 }

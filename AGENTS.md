@@ -90,7 +90,8 @@
 - `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientNetworkingBootstrap.java`：客户端 S2C receiver 注册入口。
 - `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientResetHandler.java`：JOIN / DISCONNECT 客户端临时状态清理入口。
 - `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientEntityRendererBootstrap.java`：实体渲染器注册入口。
-- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientParticleBootstrap.java`：客户端粒子工厂和托盘粒子注册入口。
+- `src/client/java/org/agmas/noellesroles/client/bootstrap/NoellesClientParticleBootstrap.java`：客户端粒子工厂、床粒子和托盘粒子注册入口。
+- `src/client/java/org/agmas/noellesroles/client/bed/NoellesRolesBedParticles.java`：床粒子聚合入口，只调用各职业的床粒子 handler。
 - `src/client/java/org/agmas/noellesroles/client/input/NoellesClientKeybindings.java`：公共能力键注册和读取 API；外部扩展不得再访问 `NoellesrolesClient.abilityBind`。
 - `src/client/java/org/agmas/noellesroles/client/input/NoellesAbilityInputHandler.java`：公共 G 能力键分发器；具体目标解析放到对应职业包。
 - `src/client/java/org/agmas/noellesroles/client/input/NoellesClientPreAttackHandlers.java`：狙击枪、怀表、扩展手雷的客户端左键预攻击接管入口。
@@ -122,7 +123,7 @@
 - 词条客户端状态和 UI：`client/modifiers/<modifier>/` 或 `client/hud/modifiers/<modifier>/`。
 - 通用按键、左键预攻击、能力键分发：`client/input/`。
 - 物品颜色、Tooltip、模型谓词和物品输入：`client/items/`，注册清单由 `NoellesClientItemBootstrap` 编排。
-- 客户端 tick、网络包、连接清理、粒子、实体渲染和疯魔背景音：`client/bootstrap/` 下对应的职责类。
+- 客户端 tick、网络包、连接清理、粒子、实体渲染和疯魔背景音：`client/bootstrap/` 下对应的职责类；床粒子由 `client/bed/` 聚合，具体 provider 按职业放入 `client/roles/<role>/`。
 - 皮肤、伪装和疯狂观察者随机映射缓存：`client/appearance/`，不得重新放回 `NoellesrolesClient`。
 
 职责 bootstrap 只负责注册顺序或调度，具体职业判定、目标解析、状态机和清理逻辑必须留在职业 / 词条自己的类里。外部扩展如果需要读取公共能力键，应使用：
@@ -243,7 +244,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。这里也包括体力、速度和心情惩罚值。
 6. 关键代码写详细中文注释，尤其是：为什么要这么接入 API、为什么要在服务端/客户端判断、为什么要同步组件、为什么要这样处理回合结束/玩家死亡/掉线。
 7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
-8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：应回滚的玩家组件加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`，应回滚的世界组件加入 `TimekeeperSnapshots.WORLD_COMPONENTS`；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
+8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：外部扩展用 `TimekeeperSnapshotApi` 注册应回滚的玩家/世界组件或 participant；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
 9. 只要新增或改动 `VictoryApi` 胜利规则，尤其是独立阵营胜利、共胜、或活着时返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算的职业/词条，就必须评估时间狭缝：把“排除狭缝玩家后仍真正存活且仍应阻拦结算”的条件补进 `TimekeeperRiftHandler`，避免死者处于特殊存活旁观时继续卡住胜利。
 10. 只要新增或改动带全场音乐、临时物品、特殊冷却或持续强化的“特殊时刻 / 最终阶段”，必须检查是否需要向亡命徒的亡命时刻让位，并按“服务端机制暂停与回收、客户端音乐停止、状态可恢复、恢复不重复回放、时停快照收束”完整实现，不能只处理音频。
 11. 只要新增或改动 Harpy 开局生成限制、同局互斥、绑定生成、词条与职业绑定/排斥，按 `*RoleAssignmentRules` / `*ModifierAssignmentRules` 拆小类并接 Harpy assignment API，不要新增分配 mixin。
@@ -276,7 +277,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `modifiers/<modifier>/<ModifierName>ModifierAssignmentRules.java`：新增 Harpy 词条分配规则、词条与职业绑定/排斥、词条公告前强制配对或动态上限。
 - `NoellesRolesComponents.java`：需要持久/同步状态时注册 CCA 组件。
 - `fabric.mod.json`：新增 CCA 组件 id。
-- `TimekeeperSnapshots.java`：新增 CCA 运行态组件后同步加入 `PLAYER_COMPONENTS` / `WORLD_COMPONENTS`，或明确说明该组件不应被时间回溯。
+- `TimekeeperSnapshots.java`：维护内置 CCA 运行态清单；外部扩展不得直接修改内部清单，应通过 `TimekeeperSnapshotApi` 注册组件或 participant。
 - `TimekeeperRiftHandler.java`：新增或改动独立胜利、共胜、`KEEP_RUNNING` 阻拦普通结算的职业/词条后，检查时间狭缝提前收束逻辑是否需要加入该规则；所有死亡敏感扫描还要排除 `isInTimeRift()`。
 - `roles/kidnapper/KidnapperDeathCleanupHandler.java`：绑匪或被控制目标确认死亡后的控制关系清理。
 - `roles/muzzler/MuzzlerDeathHandler.java`：玩家确认死亡后的胶带状态清理。
@@ -352,13 +353,32 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 
 时停者回溯会按 `TimekeeperSnapshots` 的快照白名单恢复组件 NBT。新增组件时按下面规则处理：
 
-- 属于局内运行态的玩家组件，例如冷却、目标、标记、伪装、任务/进度、免死层数、临时控制、语音/聊天状态，加入 `TimekeeperSnapshots.PLAYER_COMPONENTS`。
-- 属于局内运行态的世界组件，例如全局倒计时、全局标记、全局实体索引、阵营共享进度，加入 `TimekeeperSnapshots.WORLD_COMPONENTS`。
+- NoellesRoles 内置组件继续由 `TimekeeperSnapshots` 的内置清单维护；外部玩家组件必须通过 `TimekeeperSnapshotApi.registerPlayerComponent(...)` 注册。
+- 外部世界组件必须通过 `TimekeeperSnapshotApi.registerWorldComponent(...)` 注册；不要直接修改 `TimekeeperSnapshots` 的内部清单。
 - 组件的 `writeToNbt` / `readFromNbt` 必须覆盖所有应回滚字段；恢复后需要客户端立刻刷新的组件必须能正确 `sync`。
 - 配置、常量缓存、纯客户端显示缓存、以及 `TimekeeperWorldComponent` 这类“正在执行回溯”的播放机械通常不应进入快照；排除时要写清楚原因。
 - 如果状态存在于 CCA 之外，例如静态 Map、延迟任务队列、播放实体、自定义非物品实体、语音连接或方块实体，不能只加组件白名单；要补对应的快照恢复、重建或回合清理。
 - 新组件开发完成后至少测试一次：组件状态改变后发动时停者回溯，确认该状态回到 30 秒前；购买回溯保护的玩家则不应被回滚。
 - 回溯期间禁止把快照恢复造成的自然结束/重新开始写入新回放：所有事件最终经过 `GameRecordManager.addEvent(...)`，应沿用 `MagicianReplayRecordMixin` 的统一回溯抑制入口，避免 Noisemaker、Sedative、Psycho 等效果反复刷屏或堆积事件。
+
+### 时停回溯公开扩展 API
+
+时停回溯对外公开的稳定入口位于：
+
+- `src/main/java/org/agmas/noellesroles/api/timekeeper/TimekeeperSnapshotApi.java`
+- `src/main/java/org/agmas/noellesroles/api/timekeeper/TimekeeperSnapshotParticipant.java`
+- `src/main/java/org/agmas/noellesroles/api/timekeeper/TimekeeperRewindListener.java`
+
+外部职业初始化时按以下规则接入：
+
+- 普通玩家运行态使用 `registerPlayerComponent(id, key)`。
+- 普通世界运行态使用 `registerWorldComponent(id, key)`。
+- 伪装、名字、模型、目标等必须逐历史帧可见的状态，才把第三个 `syncOnIntermediateFrame` 参数设为 `true`；冷却、计数、金币和普通服务端状态保持默认最终帧同步。
+- 静态 Map、延迟任务、自定义实体索引和其它非 CCA 状态使用 `registerParticipant(...)`，由扩展自己实现 NBT 捕获、恢复和未来实体清理。
+- 外部管理器缓存、暂停逻辑和最终历史帧收束使用 `registerRewindListener(...)`；回溯开始时暂停会推进未来时间线的逻辑，完成时重建缓存，重置时清除本轮状态。
+- 所有注册必须在首张历史快照生成前完成；历史采样开始后继续注册会被拒绝，防止历史帧字段不一致。
+- `readFromNbt`、participant 恢复和 reconcile 不得把快照恢复误判成新的击杀、奖励、任务完成、职业变化或回放事件。
+- 外部 server tick 在 `TimekeeperSnapshotApi.isRewinding(world)` 为 true 时必须暂停未来时间线逻辑；受保护玩家通过 `isProtectedFromCurrentRewind(world, uuid)` 判断，不应被扩展 participant 强行覆盖。
 
 ## 网络带宽与同步规范
 
@@ -370,7 +390,7 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 - NoellesRoles 的配置组件、召回者、秃鹫、尸体死因、浇油和部分职业倒计时已改为变化边界或低频同步。
 - 只给本人使用的能力冷却/位置组件应通过 `shouldSyncWith` 限制收件人，不能默认向实体追踪范围内所有玩家发送。
 - 时停者回溯中间帧仍在服务端完整恢复，但客户端只接收必要的变形/伪装视觉状态；背包、药水、物品冷却、金币和普通职业组件延迟到最终历史帧统一刷新。
-- 时停回溯中间帧当前保留的视觉同步白名单在 `TimekeeperSnapshots.INTERMEDIATE_PLAYER_SYNC_IDS` / `INTERMEDIATE_WORLD_SYNC_IDS`，新增需要逐帧显示的伪装类机制必须明确加入并说明理由。
+- 时停回溯中间帧同步现在由每个内置或外部组件注册条目的 `syncOnIntermediateFrame` 决定；外部扩展只有在伪装、名字、模型或攻击目标确实需要逐帧显示时才把该参数设为 `true`。
 
 ### 新增组件和机制时的强制检查
 
@@ -623,3 +643,9 @@ HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`�
 
 托盘效果实现 `TrayEffectHandler#replayDisplay` 后即可使用 Wathe 的通用白色 `[效果名]` 回放，不再注册专用 tray placement/take/consume formatter。取物数量通过 `TrayTakeRegistry` 注册：服务员最多 2 份，酒保鸡尾酒与厨师普通食物最多 3 份，均按背包加主手同类总数计算。托盘粒子必须使用 `TrayParticleRegistry.registerProvider`，不要再新增 `BeveragePlateBlockEntity` 或 `FoodPlatterBlock` mixin。
 客户端粒子由 `client/tray/NoellesRolesTrayParticles` 聚合，具体实现按职业放在 `client/roles/bartender`、`client/roles/coward`、`client/roles/bomber` 的独立 handler 中；新增效果应放入对应职业类，`NoellesrolesClient` 只负责调用聚合入口 `init()`。
+
+## 床粒子接口更新（Wathe 1.3.3）
+
+床效果服务端逻辑继续使用 `BedEffectRegistry`；客户端粒子必须使用 Wathe 的 `BedParticleRegistry.registerProvider`，不要再新增 `TrimmedBedBlockEntity` 床粒子 Mixin。床粒子 provider 由 `client/bed/NoellesRolesBedParticles` 聚合，具体实现按职业拆分到 `client/roles/<role>/<RoleName>BedParticleHandler`。
+
+炸弹客定时炸弹床粒子由 `BomberBedParticleHandler` 注册，保留原 `TimedBombBedViewMixin` 的杀手可见性和稀疏黑烟刷新行为；旧 Mixin 已从 `noellesroles.client.mixins.json` 移除。`NoellesClientParticleBootstrap` 统一调用床粒子和托盘粒子两个聚合入口，`NoellesrolesClient` 不直接承载职业粒子逻辑。

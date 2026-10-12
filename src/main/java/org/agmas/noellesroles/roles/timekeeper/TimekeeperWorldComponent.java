@@ -113,6 +113,11 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         this.protectedPlayers.clear();
         collectConsumedProtectionPlayers(player.getServerWorld());
         freezeUnprotectedPlayers(player.getServerWorld());
+        /*
+         * 外部职业需要在历史帧开始播放后暂停自己的静态 Map、延迟任务和自定义实体
+         * 逻辑。此时保护名单已经最终确定，监听器可以据此跳过受保护玩家。
+         */
+        TimekeeperSnapshots.dispatchRewindStarted(player.getServerWorld(), this.protectedPlayers);
         sync();
         return true;
     }
@@ -130,6 +135,7 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
     }
 
     public void finishRewind() {
+        boolean wasRewinding = this.rewinding;
         /*
          * 明确以 targetIndex 作为播放终点，而不是靠 snapshots 是否清空判断。
          * 删除到达点之后的历史可以切断“已经被改写的未来”，同时保留到达点之前的旧前缀，
@@ -146,10 +152,23 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
         this.targetIndex = -1;
         this.protectedPlayers.clear();
         this.actorPostUseState = null;
+        if (wasRewinding && this.world instanceof ServerWorld serverWorld) {
+            /*
+             * 最终状态已经落地且内部回溯游标已清理，现在才通知外部扩展重建缓存。
+             * 这样扩展在 onRewindFinished 中看到的是普通时间线，而不是半完成状态。
+             */
+            TimekeeperSnapshots.dispatchRewindFinished(serverWorld);
+        }
         sync();
     }
 
     public void reset() {
+        boolean wasRewinding = this.rewinding;
+        boolean hadHistory = !this.snapshots.isEmpty();
+        if ((wasRewinding || hadHistory) && this.world instanceof ServerWorld serverWorld) {
+            /* 回合提前结束时没有最终历史帧，外部扩展必须走清理而不是收束回放。 */
+            TimekeeperSnapshots.dispatchRewindReset(serverWorld);
+        }
         this.rewinding = false;
         this.snapshots.clear();
         this.protectedPlayers.clear();
