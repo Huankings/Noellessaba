@@ -74,7 +74,7 @@ public final class NoellesRoleRegistry {
     //工程师(好人)：可以购买工具箱修复门的异常状态，购买捕捉装置捕捉其他人，购买电力恢复装置结束停电状态
     public static final Role ENGINEER = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.ENGINEER_ID, new Color(100, 149, 237).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //圣母(好人)：把别人变成好人阵营
-    public static final Role GODDESS = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.GODDESS_ID, Color.WHITE.getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
+    public static final Role GODDESS = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.GODDESS_ID, new Color(255, 255, 255).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //模仿者(好人)：在杀手看来是杀手同伙并且和杀手一样的透视颜色，并且拥有通用杀手中立商店
     public static final Role MIMIC = WatheRoles.registerCivilianRole(new Role(NoellesRoleIds.MIMIC_ID, new Color(255, 137, 155).getRGB(), true, false, Role.MoodType.REAL, WatheRoles.CIVILIAN.getMaxSprintTime(), false));
     //大嗓门(好人)：死后发光，可以点亮别人
