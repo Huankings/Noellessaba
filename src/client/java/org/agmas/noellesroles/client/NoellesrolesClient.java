@@ -13,6 +13,7 @@ import org.agmas.noellesroles.client.bootstrap.NoellesClientTickBootstrap;
 import org.agmas.noellesroles.client.crosshair.NoellesCrosshairHandlers;
 import org.agmas.noellesroles.client.hud.NoellesHudHandlers;
 import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
+import org.agmas.noellesroles.client.input.NoellesClientInputBootstrap;
 import org.agmas.noellesroles.client.input.NoellesClientPreAttackHandlers;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
 import org.agmas.noellesroles.client.inventory.NoellesInventoryButtons;
@@ -25,6 +26,7 @@ public final class NoellesrolesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         NoellesClientKeybindings.register();
+        NoellesClientInputBootstrap.register();
         NoellesInstinctHandlers.register();
         NoellesAppearanceHandlers.register();
         NoellesHudHandlers.register();

@@ -1,10 +1,10 @@
 package org.agmas.noellesroles.client.roles.jason;
 
+import dev.doctor4t.wathe.api.client.input.ClientInputApi;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
 import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
 import org.lwjgl.glfw.GLFW;
 
@@ -74,7 +74,6 @@ public final class JasonAbilityInputLock {
     }
 
     private static void releaseKey(KeyBinding key) {
-        key.setPressed(false);
-        ((TimekeeperKeyBindingAccessor) key).noellesroles$setTimesPressed(0);
+        ClientInputApi.releaseKey(key);
     }
 }

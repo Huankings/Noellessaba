@@ -18,6 +18,7 @@ import org.agmas.noellesroles.modifiers.lovers.LoversModifierAssignmentRules;
 import org.agmas.noellesroles.modifiers.lovers.LoversVictoryRule;
 import org.agmas.noellesroles.registry.NoellesFramingShopEntries;
 import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.noellesroles.reset.NoellesRolesResetBootstrap;
 import org.agmas.noellesroles.roles.amnesiac.AmnesiacRoleSelectionHandler;
 import org.agmas.noellesroles.roles.arsonist.ArsonistReplayTracker;
 import org.agmas.noellesroles.roles.arsonist.ArsonistVictoryRule;
@@ -164,6 +165,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesPayloadTypes.register();
         NoellesRolesShopBootstrap.init();
         NoellesRolesEconomyBootstrap.init();
+        NoellesRolesResetBootstrap.init();
         NoellesRolesEventBootstrap.init();
         NoellesRolesPacketReceivers.register();
     }

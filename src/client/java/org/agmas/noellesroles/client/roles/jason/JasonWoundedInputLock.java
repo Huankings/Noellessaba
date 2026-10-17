@@ -1,10 +1,10 @@
 package org.agmas.noellesroles.client.roles.jason;
 
+import dev.doctor4t.wathe.api.client.input.ClientInputApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
-import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 
 /**
@@ -88,11 +88,10 @@ public final class JasonWoundedInputLock {
     }
 
     private static void releaseKey(KeyBinding key) {
-        key.setPressed(false);
-        clearPressQueue(key);
+        ClientInputApi.releaseKey(key);
     }
 
     private static void clearPressQueue(KeyBinding key) {
-        ((TimekeeperKeyBindingAccessor) key).noellesroles$setTimesPressed(0);
+        ClientInputApi.clearPressQueue(key);
     }
 }

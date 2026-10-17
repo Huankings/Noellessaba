@@ -1,13 +1,11 @@
 package org.agmas.noellesroles.client.mixin.roles.vecna;
 
 import net.minecraft.client.MinecraftClient;
+import dev.doctor4t.wathe.api.client.input.ClientInputApi;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
-import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
-import org.lwjgl.glfw.GLFW;
 import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,14 +44,6 @@ public abstract class VecnaKeyboardInputMixin {
     }
 
     private static boolean isPhysicallyPressed(MinecraftClient client, KeyBinding keyBinding) {
-        InputUtil.Key boundKey = ((TimekeeperKeyBindingAccessor) keyBinding).noellesroles$getBoundKey();
-        long window = client.getWindow().getHandle();
-        if (boundKey.getCategory() == InputUtil.Type.KEYSYM || boundKey.getCategory() == InputUtil.Type.SCANCODE) {
-            return InputUtil.isKeyPressed(window, boundKey.getCode());
-        }
-        if (boundKey.getCategory() == InputUtil.Type.MOUSE) {
-            return GLFW.glfwGetMouseButton(window, boundKey.getCode()) == GLFW.GLFW_PRESS;
-        }
-        return false;
+        return ClientInputApi.isPhysicallyPressed(client, keyBinding);
     }
 }

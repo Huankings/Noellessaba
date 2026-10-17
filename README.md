@@ -960,3 +960,16 @@ UUID 独立保存；招募关系保存招募者与目标；疯魔暂停快照只
 本职业依赖 Wathe 的疯魔扩展 API：`cooldownItem`、`addRemainingTicks`、`addArmourLayers`、`ensureMinimumCooldown`、
 `PsychoModeState`、`pause/resume`。更新 Wathe 后必须先生成非 sources jar，替换本工程 `libs/wathe-*.jar`，
 然后再构建 NoellesRoles。
+
+## 客户端输入与回合重置接入
+
+NoellesRoles 的职业输入限制已统一迁移到 Wathe `ClientInputApi`。客户端入口由
+`NoellesClientInputBootstrap` 聚合，操控者、定身、灵术师、时停者、绑匪、杰森、违禁者和
+双重人格分别在自己的 `*InputRules` 中注册 KeyBinding、键盘、鼠标、输入 tick 和最终动作规则。
+扩展侧不再直接 mixin `KeyBinding`、`Keyboard`、`Mouse` 或 `MinecraftClient` 的攻击/使用入口，
+也不再自行 accessor `timesPressed` 和 `boundKey`。
+
+玩家级职业状态重置由 `NoellesRolesResetBootstrap` 聚合，各职业 `*ResetHandler` 接入 Harpy
+`ResetPlayerEvent`。恋人和双重人格等世界级状态使用 Wathe `GameEvents.ON_BEGIN_INITIALIZE`
+在职业/词条分配前清理，并在 `ON_FINISH_FINALIZE` 完成结算后的收尾。旧的 `*ReseterMixin` 和
+`RoundModifierStateResetMixin` 已删除。

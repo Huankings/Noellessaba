@@ -96,6 +96,8 @@
 - `src/client/java/org/agmas/noellesroles/client/input/NoellesClientKeybindings.java`：公共能力键注册和读取 API；外部扩展不得再访问 `NoellesrolesClient.abilityBind`。
 - `src/client/java/org/agmas/noellesroles/client/input/NoellesAbilityInputHandler.java`：公共 G 能力键分发器；具体目标解析放到对应职业包。
 - `src/client/java/org/agmas/noellesroles/client/input/NoellesClientPreAttackHandlers.java`：狙击枪、怀表、扩展手雷的客户端左键预攻击接管入口。
+- `src/client/java/org/agmas/noellesroles/client/input/NoellesClientInputBootstrap.java`：Wathe `ClientInputApi` 聚合入口，只调用各职业/词条自己的 `*InputRules.register()`。
+- `src/main/java/org/agmas/noellesroles/reset/NoellesRolesResetBootstrap.java`：玩家与世界回合清理聚合入口，只调用各职业 `*ResetHandler.init()` 和词条回合清理 handler。
 - `src/client/java/org/agmas/noellesroles/client/appearance/NoellesAppearanceClientState.java`：本地原始皮肤缓存；该缓存是纯客户端显示状态，不加入时停快照。
 - `src/client/java/org/agmas/noellesroles/client/appearance/roles/insane_observer/InsaneObserverClientState.java`：疯狂观察者随机伪装映射和刷新计时；属于纯客户端缓存，不加入时停快照。
 - `src/client/java/org/agmas/noellesroles/client/items/NoellesRolesGrenadeInputHandler.java`：扩展手雷直投 / 蓄力投掷模式切换。
@@ -185,6 +187,7 @@ NoellesRoles 的职业 / 词条运行时资源在源码中按所有者拆分，�
 - 疯魔加时、增加护盾、最低冷却与临时暂停：使用 Wathe `PsychoModeApi.addRemainingTicks`、`addArmourLayers`、`ensureMinimumCooldown`、`pause/resume` 和 `PsychoModeState`；有独立购买图标的 profile 必须登记 `cooldownItem`。完整说明见 Wathe `README_PSYCHO_MODE_API.md`。
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
 - 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
+- 客户端输入与最终动作：`ClientInputApi`；KeyBinding、键盘、鼠标、滚轮、攻击、使用、选取方块和挖掘都走这里，不要再 mixin 原版输入类或 `MinecraftClient` 动作方法。
 - 玩家体力：`PlayerStaminaApi`、`PlayerStaminaComponent`
 - 玩家移动速度：`PlayerMovementApi`
 - 枪击、目标覆写、左轮反火、枪械冷却：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
@@ -678,3 +681,11 @@ HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`�
 床效果服务端逻辑继续使用 `BedEffectRegistry`；客户端粒子必须使用 Wathe 的 `BedParticleRegistry.registerProvider`，不要再新增 `TrimmedBedBlockEntity` 床粒子 Mixin。床粒子 provider 由 `client/bed/NoellesRolesBedParticles` 聚合，具体实现按职业拆分到 `client/roles/<role>/<RoleName>BedParticleHandler`。
 
 炸弹客定时炸弹床粒子由 `BomberBedParticleHandler` 注册，保留原 `TimedBombBedViewMixin` 的杀手可见性和稀疏黑烟刷新行为；旧 Mixin 已从 `noellesroles.client.mixins.json` 移除。`NoellesClientParticleBootstrap` 统一调用床粒子和托盘粒子两个聚合入口，`NoellesrolesClient` 不直接承载职业粒子逻辑。
+
+## 输入与 Reset 组织规则
+
+- 客户端输入统一由 `NoellesClientInputBootstrap` 聚合；具体规则放 `client/roles/<role>/*InputRules` 或 `client/modifiers/<modifier>/*InputRules`。
+- 按键残留使用 Wathe `ClientInputApi.clearPressQueue/releaseKey` 清理；真实绑定物理状态使用 `isPhysicallyPressed`，不得新增 KeyBinding accessor mixin。
+- `ClientInputApi` 只负责客户端体验；攻击、物品使用和自定义 C2S packet 必须保留服务端校验。
+- 玩家级硬重置使用 Harpy `ResetPlayerEvent`，按职业放 `roles/<role>/*ResetHandler`；世界级开局前清理使用 Wathe `GameEvents.ON_BEGIN_INITIALIZE`。
+- 不得重新新增 `*ReseterMixin`、`RoundModifierStateResetMixin`，也不要直接注入 `GameFunctions.resetPlayer/initializeGame/finalizeGame`。

@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.spiritualist;
 
 import com.mojang.authlib.GameProfile;
+import dev.doctor4t.wathe.api.client.input.ClientInputApi;
 import dev.doctor4t.wathe.cca.MapVariablesWorldComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.piston.PistonBehavior;
@@ -8,7 +9,6 @@ import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.network.ClientConnectionState;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.effect.StatusEffect;
@@ -23,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import org.agmas.noellesroles.client.mixin.roles.spiritualist.SpiritualistKeyBindingAccessor;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistConstants;
 
 import java.util.Collections;
@@ -260,16 +259,9 @@ public class SpiritualProjectionCamera extends ClientPlayerEntity {
      * 只有灵术师出窍时的假玩家相机可以读取真实按键并向上飞。</p>
      */
     private boolean isProjectionJumpPhysicallyPressed() {
-        InputUtil.Key jumpBoundKey =
-                ((SpiritualistKeyBindingAccessor) SpiritualistClientController.client().options.jumpKey).noellesroles$getBoundKey();
-        long windowHandle = SpiritualistClientController.client().getWindow().getHandle();
-
-        if (jumpBoundKey.getCategory() == InputUtil.Type.KEYSYM || jumpBoundKey.getCategory() == InputUtil.Type.SCANCODE) {
-            return InputUtil.isKeyPressed(windowHandle, jumpBoundKey.getCode());
-        }
-        if (jumpBoundKey.getCategory() == InputUtil.Type.MOUSE) {
-            return org.lwjgl.glfw.GLFW.glfwGetMouseButton(windowHandle, jumpBoundKey.getCode()) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-        }
-        return false;
+        return ClientInputApi.isPhysicallyPressed(
+                SpiritualistClientController.client(),
+                SpiritualistClientController.client().options.jumpKey
+        );
     }
 }

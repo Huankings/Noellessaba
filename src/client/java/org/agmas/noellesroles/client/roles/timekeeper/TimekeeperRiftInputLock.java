@@ -1,10 +1,10 @@
 package org.agmas.noellesroles.client.roles.timekeeper;
 
+import dev.doctor4t.wathe.api.client.input.ClientInputApi;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import org.agmas.noellesroles.client.input.NoellesClientKeybindings;
-import org.agmas.noellesroles.client.mixin.roles.timekeeper.TimekeeperKeyBindingAccessor;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 
 /**
@@ -61,7 +61,6 @@ public final class TimekeeperRiftInputLock {
     }
 
     private static void releaseKey(KeyBinding key) {
-        key.setPressed(false);
-        ((TimekeeperKeyBindingAccessor) key).noellesroles$setTimesPressed(0);
+        ClientInputApi.releaseKey(key);
     }
 }

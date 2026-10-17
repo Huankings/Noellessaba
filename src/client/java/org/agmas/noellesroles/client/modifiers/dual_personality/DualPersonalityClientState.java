@@ -1,5 +1,6 @@
 package org.agmas.noellesroles.client.modifiers.dual_personality;
 
+import dev.doctor4t.wathe.api.client.input.ClientInputApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.gui.TimeRenderer;
 import net.minecraft.client.MinecraftClient;
@@ -116,9 +117,9 @@ public final class DualPersonalityClientState {
          * 玩家可能在变成休眠人格之前就已经按住 Shift。
          * 单纯拦截后续 keyPress 不会释放这个“已按下”状态，所以每 tick 主动清掉。
          */
-        client.options.sneakKey.setPressed(false);
+        ClientInputApi.releaseKey(client.options.sneakKey);
         for (KeyBinding hotbarKey : client.options.hotbarKeys) {
-            hotbarKey.setPressed(false);
+            ClientInputApi.releaseKey(hotbarKey);
         }
     }
 

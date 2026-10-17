@@ -6,58 +6,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * 灵术师特殊相机状态下的本地交互拦截。
+ * 灵术师特殊相机断线清理。
+ *
+ * <p>攻击、使用、选取方块、挖掘和热键栏限制已经迁移到 Wathe ClientInputApi，
+ * 此处只保留 MinecraftClient disconnect 生命周期，避免为了无关生命周期再新增输入 mixin。</p>
  */
 @Mixin(MinecraftClient.class)
 public abstract class SpiritualistMinecraftMixin {
-
-    @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
-    private void noellesroles$blockDetachedAttack(CallbackInfoReturnable<Boolean> cir) {
-        if (SpiritualistClientController.isProjectionActive() || SpiritualistClientController.isPossessionViewActive()) {
-            cir.setReturnValue(false);
-        }
-    }
-
-    @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
-    private void noellesroles$blockDetachedUse(CallbackInfo ci) {
-        if (SpiritualistClientController.isProjectionActive()) {
-            ci.cancel();
-            return;
-        }
-
-        if (SpiritualistClientController.isPossessionViewActive()) {
-            SpiritualistClientController.handleImmediatePossessionUseAttempt();
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "doItemPick", at = @At("HEAD"), cancellable = true)
-    private void noellesroles$blockProjectionPick(CallbackInfo ci) {
-        if (SpiritualistClientController.isProjectionActive()) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "handleBlockBreaking", at = @At("HEAD"), cancellable = true)
-    private void noellesroles$blockDetachedBlockBreaking(boolean breaking, CallbackInfo ci) {
-        if (SpiritualistClientController.isProjectionActive() || SpiritualistClientController.isPossessionViewActive()) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(
-            method = "handleInputEvents",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z", ordinal = 2),
-            cancellable = true
-    )
-    private void noellesroles$blockProjectionHotbar(CallbackInfo ci) {
-        if (SpiritualistClientController.isProjectionActive()) {
-            ci.cancel();
-        }
-    }
 
     @Inject(method = "disconnect()V", at = @At("HEAD"))
     private void noellesroles$cleanupDetachedCameraOnDisconnect(CallbackInfo ci) {
