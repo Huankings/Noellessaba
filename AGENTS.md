@@ -109,6 +109,10 @@
 - `src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`：背包按钮的 Wathe API 接入、分页、在线玩家和头像列表共享工具。
 - `src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`：各职业自己的背包按钮 provider。
 - `src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/*InventoryButtons.java`：词条自己的背包按钮 provider。
+- `src/main/owned-resources/roles/<role>/`：职业专属的模型、纹理、HUD、皮肤、声音、粒子和着色器资源根。
+- `src/main/owned-resources/modifiers/<modifier>/`：词条专属资源根。
+- `src/main/owned-resources/shared/<system>/`：真正的跨职业共享机制资源根，例如 `shared/framing`。
+- `resource-sources/`：不进入 jar 的 `.bbmodel`、编辑用音频和已无运行时引用但需要保留的历史资源。
 - `src/main/resources/fabric.mod.json`
 - `src/main/resources/noellesroles.mixins.json`
 - `src/client/resources/noellesroles.client.mixins.json`
@@ -133,6 +137,20 @@ NoellesClientKeybindings.getAbilityBind()
 ```
 
 `NoellesrolesClient.abilityBind`、`NoellesrolesClient.targetBody`、`NoellesrolesClient.LOCAL_PLAYER_ORIGINAL_SKIN_TEXTURES` 和 `NoellesrolesClient.SHUFFLED_PLAYER_ENTRIES_CACHE` 已移除，不能作为跨模组 API 继续使用。修改 NoellesRoles 客户端 API 后，必须重新构建 NoellesRoles，并将最新非 sources jar 复制到依赖扩展的 `libs` 后再编译扩展。
+
+### 资源所有权与目录拆分
+
+NoellesRoles 的职业 / 词条运行时资源在源码中按所有者拆分，不得重新堆回 `src/main/resources/assets/noellesroles/models/item`、`textures/item`、`textures/gui/sprites/hud`、`sounds` 等公共目录。
+
+- 职业资源放 `src/main/owned-resources/roles/<role_id>/`，词条资源放 `src/main/owned-resources/modifiers/<modifier_id>/`。所有者目录内从 `assets/...` 或 `data/...` 开始保留完整 Minecraft 资源结构。
+- 归属按资源的“主要设计职业”判定。其它职业能偷取、复制、回放或临时获得该物品，不会改变它的资源所有者。
+- 只有资源本身就是多职业共同机制时才放 `shared/<system_id>`；不得因为不确定归属就全部放入 `shared/common`。
+- `build.gradle` 会把每个 `<scope>/<owner>` 目录注册为独立资源根，所以最终 jar 中仍使用原有 `assets/noellesroles/...` 路径。不要为了整理目录修改物品 id、声音事件 id、粒子 id 或职业 id。
+- 构建已设置 `DuplicatesStrategy.FAIL`。如果两个所有者输出同一资源路径，应先确定唯一所有者或提取到 `shared`，不要放宽重复策略。
+- `lang/*.json`、`sounds.json`、`icon.png`、`assets/minecraft/font/default.json`、`data` 标签以及 Fabric / Mixin 清单属于全局入口，继续留在 `src/main/resources`。
+- `.png.mcmeta` 必须和 PNG 同目录迁移。声音事件 id 与 `sounds.json` 里的 OGG 路径是两个层级，迁移后必须同时校验，不能只看 Java `SoundEvent`。
+- `.bbmodel`、中间音频、原始美术文件和已无引用的历史资源放 `resource-sources/`。该目录不是资源根，不会进入 jar。
+- 资源迁移或新增完成后，至少要验证 JSON 可解析、模型 parent / override / texture 引用、`sounds.json` OGG 路径、粒子纹理、字体图片、着色器文件以及最终 jar 条目。
 
 ### 当前仓库里的优先参考职业
 
@@ -247,11 +265,12 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 5. 所有玩法数值除职业 RGB 以外，放到该职业 `*Constants` 类里；冷却统一用 `GameConstants.getInTicks(min, sec)` 或明确 tick 常量。这里也包括体力、速度和心情惩罚值。
 6. 关键代码写详细中文注释，尤其是：为什么要这么接入 API、为什么要在服务端/客户端判断、为什么要同步组件、为什么要这样处理回合结束/玩家死亡/掉线。
 7. 每个新增职业优先拆成独立包：`roles/<role_id>/` 放服务端逻辑、组件、常量、商店、能力处理；客户端对应放到 `client/roles/<role_id>/`、`client/ui/roles/<role_id>/`、`client/instinct/roles/<role_id>/` 等。普通屏幕 HUD 放到 `client/roles/<role_id>/<RoleName>StatusHud.java`；词条固定 HUD 放到 `client/hud/modifiers/<modifier>/<ModifierName>Hud.java`；背包按钮放到 `client/ui/roles/<role_id>/<RoleName>InventoryButtons.java`，不要新增 HUD / screen mixin。
-8. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：外部扩展用 `TimekeeperSnapshotApi` 注册应回滚的玩家/世界组件或 participant；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
-9. 只要新增或改动 `VictoryApi` 胜利规则，尤其是独立阵营胜利、共胜、或活着时返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算的职业/词条，就必须评估时间狭缝：把“排除狭缝玩家后仍真正存活且仍应阻拦结算”的条件补进 `TimekeeperRiftHandler`，避免死者处于特殊存活旁观时继续卡住胜利。
-10. 只要新增或改动带全场音乐、临时物品、特殊冷却或持续强化的“特殊时刻 / 最终阶段”，必须检查是否需要向亡命徒的亡命时刻让位，并按“服务端机制暂停与回收、客户端音乐停止、状态可恢复、恢复不重复回放、时停快照收束”完整实现，不能只处理音频。
-11. 只要新增或改动 Harpy 开局生成限制、同局互斥、绑定生成、词条与职业绑定/排斥，按 `*RoleAssignmentRules` / `*ModifierAssignmentRules` 拆小类并接 Harpy assignment API，不要新增分配 mixin。
-12. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
+8. 新增模型、纹理、HUD、皮肤、声音、粒子或着色器时，必须放入 `src/main/owned-resources/roles|modifiers|shared/<owner>/` 对应资源根，不得重新堆入公共 `src/main/resources/assets/noellesroles` 目录。美术源文件与历史备份放 `resource-sources/`，并在编译后检查最终 jar 资源路径。
+9. 只要新增或改动 CCA 组件、世界组件、实体运行态、全局 Map/管理器状态，就必须评估时停者回溯：外部扩展用 `TimekeeperSnapshotApi` 注册应回滚的玩家/世界组件或 participant；不应回滚的配置/缓存/播放机械要在代码或方案里写明排除原因。
+10. 只要新增或改动 `VictoryApi` 胜利规则，尤其是独立阵营胜利、共胜、或活着时返回 `KEEP_RUNNING` 阻拦普通杀手/乘客结算的职业/词条，就必须评估时间狭缝：把“排除狭缝玩家后仍真正存活且仍应阻拦结算”的条件补进 `TimekeeperRiftHandler`，避免死者处于特殊存活旁观时继续卡住胜利。
+11. 只要新增或改动带全场音乐、临时物品、特殊冷却或持续强化的“特殊时刻 / 最终阶段”，必须检查是否需要向亡命徒的亡命时刻让位，并按“服务端机制暂停与回收、客户端音乐停止、状态可恢复、恢复不重复回放、时停快照收束”完整实现，不能只处理音频。
+12. 只要新增或改动 Harpy 开局生成限制、同局互斥、绑定生成、词条与职业绑定/排斥，按 `*RoleAssignmentRules` / `*ModifierAssignmentRules` 拆小类并接 Harpy assignment API，不要新增分配 mixin。
+13. 新增功能完成后按“注册点检查清单”逐项核对，再编译。
 
 ## 注册点检查清单
 
@@ -307,7 +326,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `client/mood/NoellesPsychosisHandlers.java`：低心情幻觉手持物/手臂姿势 provider 的客户端聚合注册入口。
 - `noellesroles.mixins.json` / `noellesroles.client.mixins.json`：服务端和客户端 mixin 分开注册，环境要正确。
 - `zh_cn.json` / `en_us.json`：职业名、欢迎公告、物品名、tooltip、HUD、actionbar、回放、死亡原因。
-- `assets/noellesroles/models/item/*.json`、`textures/item/*.png`、`textures/gui/sprites/hud/*`：物品模型和 HUD 图标。
+- `src/main/owned-resources/roles|modifiers|shared/<owner>/assets/...`：物品模型、纹理、HUD、皮肤、声音、粒子与着色器；所有者边界和最终 jar 路径都要检查。
+- `resource-sources/`：`.bbmodel`、编辑用音频与已无运行时引用的历史备份；确认不会被 Gradle 打包。
 - `NoellesRolesReplayFormatters.java`：格式化器使用 `Text.translatable`，回放数据里存稳定 id/uuid/必要显示名，避免玩家掉线后显示未知。
 
 ## 角色注册规则

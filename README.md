@@ -67,6 +67,8 @@
 - 背包按钮共享工具：`src/client/java/org/agmas/noellesroles/client/inventory/NoellesInventoryButtonSupport.java`
 - 职业背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/roles/<role>/*InventoryButtons.java`
 - 词条背包按钮：`src/client/java/org/agmas/noellesroles/client/ui/modifiers/<modifier>/*InventoryButtons.java`
+- 按所有者拆分的职业 / 词条 / 共享资源：`src/main/owned-resources/roles|modifiers|shared/<id>/`
+- 不进入最终 jar 的美术源文件和历史资源：`resource-sources/`
 - mixin：`src/main/java/org/agmas/noellesroles/mixin/` 和 `src/client/java/org/agmas/noellesroles/client/mixin/`
 
 ### 客户端入口与职责拆分
@@ -106,6 +108,37 @@ NoellesRoles 的普通物品已经统一接入 Wathe
 因为三种模式冷却不走原版 `ItemCooldownManager`，才读取 `TimekeeperPlayerComponent`。不要重新创建
 `NoellesRolesItemToolTip`、扩展自己的全局 `ItemTooltipCallback`，也不要为了区分冷却来源恢复已经删除的
 强盗、刺客、制毒师、弹簧陷阱 tooltip 组件或在其他职业组件中增加 `*CooldownSource` 字段。
+
+## 资源目录与所有权规则
+
+NoellesRoles 的职业与词条资源不再全部堆在 `src/main/resources/assets/noellesroles` 的公共目录中。源码里按“主要设计所有者”拆分：
+
+```text
+src/main/owned-resources/
+├─ roles/<role_id>/
+│  └─ assets/noellesroles/...
+├─ modifiers/<modifier_id>/
+│  └─ assets/noellesroles/...
+└─ shared/<system_id>/
+   └─ assets/noellesroles/...
+```
+
+例如追忆者的狙击枪、子弹、Mood HUD 和召回准心都在：
+
+```text
+src/main/owned-resources/roles/rememberer/assets/noellesroles/
+```
+
+`build.gradle` 会把每个 `<scope>/<owner>` 目录加为独立资源根。因此上面的模型在最终 jar 中仍是 `assets/noellesroles/models/item/sniper_rifle.json`，物品 id、模型 id、声音事件、粒子 id 和旧资源包覆盖路径不会因源码归档而改变。构建使用 `DuplicatesStrategy.FAIL`，两个所有者输出同一运行时路径时会直接报错，不会静默覆盖。
+
+归属时按下列顺序判断：
+
+1. 为某个职业设计的物品、HUD、皮肤、声音、粒子或着色器，放到 `roles/<role_id>`。其它职业能够偷取、复制或临时使用它，不会改变主要所有者。
+2. 专属某个词条的资源放到 `modifiers/<modifier_id>`。
+3. 本身就是多职业共同机制的资源才放到 `shared/<system_id>`，例如 `shared/framing`。
+4. `lang/*.json`、`sounds.json`、`icon.png`、`assets/minecraft/font/default.json`、`data` 标签和 Fabric / Mixin 清单是全局入口，继续留在 `src/main/resources`。
+
+`.png.mcmeta` 必须和对应 PNG 放在同一所有者的同一运行时目录中。`.bbmodel`、编辑用 MP3 和已无运行时引用但仍需保留的历史资源放在 `resource-sources/`；该目录不是 Gradle 资源根，不会进入 jar。
 
 ## 阵营规则
 
@@ -786,8 +819,10 @@ ModdedRoleAssigned.EVENT.invoker().assignModdedRole(player, newRole);
 
 - 物品放 `src/main/java/org/agmas/noellesroles/item/`
 - 实体放 `src/main/java/org/agmas/noellesroles/entities/`
-- 物品贴图放 `src/main/resources/assets/noellesroles/textures/item/`
-- 物品模型放 `src/main/resources/assets/noellesroles/models/item/`
+- 职业物品贴图放 `src/main/owned-resources/roles/<role_id>/assets/noellesroles/textures/item/`
+- 职业物品模型放 `src/main/owned-resources/roles/<role_id>/assets/noellesroles/models/item/`
+- 词条资源把 `roles/<role_id>` 换成 `modifiers/<modifier_id>`；真正的跨职业共享资源放 `shared/<system_id>`
+- HUD、皮肤、声音、粒子和着色器也使用同一所有者资源根，再从 `assets/...` 按 Minecraft 标准目录布局
 - 文本放 `src/main/resources/assets/noellesroles/lang/`
 
 在客户端 `NoellesClientItemBootstrap#register()` 中用 `ItemTooltipApi.registerItems(...)` 注册物品描述；不要新增
