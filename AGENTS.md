@@ -163,6 +163,7 @@ NoellesClientKeybindings.getAbilityBind()
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 低心情幻觉手持物：`PsychosisItemApi`；当前由 `client/mood/NoellesPsychosisHandlers` 预留空注册入口，后续职业/词条按 provider 与 priority 接入。
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
+- 疯魔加时、增加护盾、最低冷却与临时暂停：使用 Wathe `PsychoModeApi.addRemainingTicks`、`addArmourLayers`、`ensureMinimumCooldown`、`pause/resume` 和 `PsychoModeState`；有独立购买图标的 profile 必须登记 `cooldownItem`。完整说明见 Wathe `README_PSYCHO_MODE_API.md`。
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
 - 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
 - 玩家体力：`PlayerStaminaApi`、`PlayerStaminaComponent`
@@ -204,6 +205,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - 聚合入口只放 `bootstrap/NoellesRolesPsychoBootstrap.java`，它只负责调用 `roles/<role>/<RoleName>PsychoHandler.init()`。
 - 新职业需要自己的疯魔形态时，在对应 `roles/<role>/` 包里注册 `PsychoModeProfile`；持续时间、护盾层数、授予物品、锁栏物品、球棒/近战命中声音、护盾声音、背景音乐、皮肤、结束回放名称和护盾回放名称都写进 profile。
 - 服务端启动疯魔用 `PsychoModeApi.start(player, profileId)`，提前结束或回合清理用 `PsychoModeApi.stop(player, recordReplay)`；不要直接写 `PlayerPsychoComponent#psychoTicks`、`armour` 或手动增减 `psychosActive`。
+- 增加疯魔剩余时间必须用 `PsychoModeApi.addRemainingTicks`，动态增加疯魔护盾必须用 `PsychoModeApi.addArmourLayers`；两个入口都会校验当前 profile 并同步组件。高优先级特殊时刻暂时让位时使用 `pause/resume`；暂停不是结束，不应记录结束回放或清理该轮职业历史。
+- 跨职业强制疯魔冷却使用 profile 的 `cooldownItem` 配合 `ensureMinimumCooldown`，已有更长冷却不得缩短。修改 Wathe 疯魔 API 后先构建 Wathe、复制非 sources jar 到本工程 `libs`，再编译 NoellesRoles。
 - 判断状态用 `PsychoModeApi.isActive(...)`、`getRemainingTicks(...)`、`getArmour(...)`；只有 `TimekeeperSnapshots` 这种组件快照白名单才应直接引用 Wathe 的 CCA key。
 - 疯魔护盾的穿透/强制抵挡用 `PsychoModeApi.registerShieldRule(...)`，不要再 mixin `PlayerPsychoComponent#getArmour()`。
 - 静音或自定义音乐用 profile 的 `hitSound(null)`、`backgroundSound(sound, false/true)`；客户端新增音乐时再调用 `PsychoModeClientApi.registerBackgroundAmbience(...)`。

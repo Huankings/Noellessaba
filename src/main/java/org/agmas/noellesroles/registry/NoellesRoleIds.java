@@ -91,6 +91,8 @@ public final class NoellesRoleIds {
     public static final Identifier COMMONER_ID = NoellesRolesCore.id("commoner");
     /** 亡命徒职业稳定 id。 */
     public static final Identifier OUTLAW_ID = NoellesRolesCore.id("outlaw");
+    /** 杀手皇后职业稳定 id。 */
+    public static final Identifier KILLER_QUEEN_ID = NoellesRolesCore.id("killer_queen");
 
     private NoellesRoleIds() {
     }

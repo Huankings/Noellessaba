@@ -30,6 +30,7 @@ public interface NoellesRolesSounds {
     SoundEvent ITEM_BUTCHER_KNIFE_HIT_1 = REGISTRAR.create("item.butcher_knife_hit_1");
     SoundEvent ITEM_BUTCHER_KNIFE_HIT_2 = REGISTRAR.create("item.butcher_knife_hit_2");
     SoundEvent AMBIENT_RESURRECTED_OUTLAW = REGISTRAR.create("ambient.resurrected_outlaw");
+    SoundEvent AMBIENT_KILLER_QUEEN = REGISTRAR.create("ambient.killer_queen");
     SoundEvent ITEM_SYRINGE_STAB = REGISTRAR.create("item.syringe_stab");
 
     static void initialize() {

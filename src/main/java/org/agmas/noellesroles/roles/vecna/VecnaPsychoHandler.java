@@ -38,6 +38,7 @@ public final class VecnaPsychoHandler {
                 // 显式指定 Wathe 通用结束事件，确保回放使用“%s的%s结束”格式。
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(VecnaConstants.PSYCHO_DURATION_TICKS)
+                .cooldownItem(org.agmas.noellesroles.ModItems.PSYCHO_VECNA)
                 .armour(1)
                 .grantedItems(List.of(WatheItems.BAT.getDefaultStack()))
                 // 疯魔期间使用 Wathe 默认球棒，球棒击杀必须沿用标准 bat 死因；reverse 只用于标记反噬。

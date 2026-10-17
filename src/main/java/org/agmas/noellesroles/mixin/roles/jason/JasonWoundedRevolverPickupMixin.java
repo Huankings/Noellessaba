@@ -3,6 +3,7 @@ package org.agmas.noellesroles.mixin.roles.jason;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.roles.jason.JasonWoundManager;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPickupRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class JasonWoundedRevolverPickupMixin {
     @Inject(method = "onPlayerCollision", at = @At("HEAD"), cancellable = true)
     private void noellesroles$blockWoundedRevolverPickup(PlayerEntity player, CallbackInfo ci) {
-        if (JasonWoundManager.shouldBlockRevolverPickup(player, (ItemEntity) (Object) this)) {
+        ItemEntity item = (ItemEntity) (Object) this;
+        if (JasonWoundManager.shouldBlockRevolverPickup(player, item)
+                || KillerQueenPickupRules.shouldBlockRevolverPickup(player, item)) {
             ci.cancel();
         }
     }

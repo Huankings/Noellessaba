@@ -31,6 +31,7 @@ public final class BountyHunterPsychoHandler {
                 .shieldNameTranslationKey("psycho_shield.noellesroles.bounty_hunter")
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(BountyHunterConstants.BOUNTY_MODE_DURATION_TICKS)
+                .cooldownItem(org.agmas.noellesroles.ModItems.BOUNTY_MODE)
                 .armour(BountyHunterConstants.BOUNTY_MODE_SHIELD_LAYERS)
                 .grantedItems(java.util.List.of(derringer))
                 .meleeKill(false, GameConstants.DeathReasons.BAT)

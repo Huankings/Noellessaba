@@ -29,6 +29,7 @@ import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainShopHandler;
 import org.agmas.noellesroles.roles.lich.LichShopHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaShopHandler;
 import org.agmas.noellesroles.roles.myers.MyersShopHandler;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenShopHandler;
 import org.agmas.noellesroles.roles.muzzler.MuzzlerShopHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingShopHandler;
 import org.agmas.noellesroles.roles.necromancer.NecromancerShopHandler;
@@ -205,6 +206,7 @@ public final class NoellesRolesShopBootstrap {
         registerStatic(NoellesRoleRegistry.HACKER, HackerShopHandler::getShopEntries);
         registerStatic(NoellesRoleRegistry.INITIATE, InitiateShopHandler::getShopEntries);
         registerStatic(NoellesRoleRegistry.LICENSED_VILLAIN, LicensedVillainShopHandler::getShopEntries);
+        registerStatic(NoellesRoleRegistry.KILLER_QUEEN, KillerQueenShopHandler::getShopEntries);
 
         // 杀手动态商店：按阶段状态实时变化。
         ShopApi.registerRoleShop(NoellesRoleRegistry.STALKER, provider(StalkerShopHandler::getShopEntries));

@@ -3,6 +3,7 @@ package org.agmas.noellesroles.roles.outlaw;
 import net.minecraft.server.world.ServerWorld;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentManager;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterManager;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPsychoHandler;
 
 /**
  * 亡命时刻对影子小丑第四阶段和执照恶棍时刻的优先级协调器。
@@ -18,6 +19,7 @@ public final class OutlawMomentPriorityHandler {
         /* 先撤销服务端能力和临时物品，客户端随后会依据同步状态立即切换音乐。 */
         ShadowJesterManager.pausePhaseFourForOutlaw(world);
         LicensedVillainMomentManager.pauseAllForOutlaw(world);
+        KillerQueenPsychoHandler.pauseForOutlaw(world);
     }
 
     public static void onOutlawEnded(ServerWorld world) {
@@ -31,6 +33,7 @@ public final class OutlawMomentPriorityHandler {
          */
         ShadowJesterManager.resumePhaseFourAfterOutlaw(world);
         LicensedVillainMomentManager.reconcileNow(world);
+        KillerQueenPsychoHandler.resumeAfterOutlaw(world);
     }
 
     public static void reconcile(ServerWorld world) {

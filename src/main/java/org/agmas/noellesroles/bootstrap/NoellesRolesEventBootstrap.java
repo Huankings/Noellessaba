@@ -117,6 +117,9 @@ import org.agmas.noellesroles.roles.outlaw.OutlawManager;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenManager;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPlayerComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenWorldComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -203,6 +206,7 @@ public final class NoellesRolesEventBootstrap {
             InsaneDamnedKillerPlayerComponent.KEY.get(playerEntity).reset();
             OutlawPlayerComponent.KEY.get(playerEntity).reset();
             MyersPlayerComponent.KEY.get(playerEntity).reset();
+            KillerQueenPlayerComponent.KEY.get(playerEntity).reset();
             JasonWoundManager.resetPlayer(playerEntity);
             JasonAbilityManager.resetPlayer(playerEntity);
             JasonAbilityBlindnessComponent.KEY.get(playerEntity).reset();
@@ -231,6 +235,7 @@ public final class NoellesRolesEventBootstrap {
                 ShadowJesterManager.tickWorld(world);
                 /* 先让影子小丑完成阶段重算，再判断低优先级的执照恶棍时刻是否可以进入。 */
                 LicensedVillainMomentManager.tickWorld(world);
+                KillerQueenManager.tickWorld(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
                     float moodDrainMultiplier;
                     if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
@@ -344,6 +349,7 @@ public final class NoellesRolesEventBootstrap {
             JasonFireWorldComponent.KEY.get(serverWorld).reset();
             ShadowJesterComponent.KEY.get(serverWorld).clear();
             OutlawWorldComponent.KEY.get(serverWorld).reset();
+            KillerQueenWorldComponent.KEY.get(serverWorld).clear();
             LicensedVillainMomentWorldComponent.KEY.get(serverWorld).reset();
             JasonWoundManager.resetRoundTransientState();
             JasonAbilityManager.resetRoundTransientState(serverWorld);

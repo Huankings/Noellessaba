@@ -41,6 +41,7 @@ import org.agmas.noellesroles.client.roles.vulture.VultureStatusHud;
 import org.agmas.noellesroles.client.roles.winder.WinderStatusHud;
 import org.agmas.noellesroles.client.roles.commoner.CommonerRevivalHud;
 import org.agmas.noellesroles.client.roles.myers.MyersStatusHud;
+import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenStatusHud;
 
 /**
  * NoellesRoles 通用屏幕 HUD 注册入口。
@@ -94,5 +95,6 @@ public final class NoellesHudHandlers {
         LichStatusHud.register();
         VecnaStatusHud.register();
         MyersStatusHud.register();
+        KillerQueenStatusHud.register();
     }
 }

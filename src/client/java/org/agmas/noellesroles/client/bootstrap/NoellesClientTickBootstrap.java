@@ -20,6 +20,7 @@ import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientContro
 import org.agmas.noellesroles.client.roles.stalker.StalkerAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.vulture.VultureAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperWatchInputHandler;
+import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenMusicController;
 
 /** 客户端每帧调度器，只聚合各职责 provider。 */
 public final class NoellesClientTickBootstrap {
@@ -39,6 +40,7 @@ public final class NoellesClientTickBootstrap {
         LicensedVillainMusicController.tick(client);
         OutlawMusicController.tick(client);
         MyersMusicController.tick(client);
+        KillerQueenMusicController.tick(client);
         JasonAbilityClientSoundController.tick(client);
         MyersAbilityInputHandler.tick(client);
         StalkerAbilityInputHandler.tick(client);

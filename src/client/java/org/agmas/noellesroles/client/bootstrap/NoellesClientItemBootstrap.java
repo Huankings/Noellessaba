@@ -66,7 +66,8 @@ public final class NoellesClientItemBootstrap {
                 ModItems.ICON_WEAPON_COOLDOWN_REFRESH, ModItems.ICON_ABILITY_COOLDOWN_REFRESH,
                 ModItems.ICON_POTION_EFFECT_REFRESH, ModItems.DYING_WATCH_PROTECT, ModItems.SLEEPING_BAG,
                 ModItems.BOOK, ModItems.RANDOM_FOOD, ModItems.RANDOM_DRINK, ModItems.RANDOM_POTION,
-                ModItems.PSYCHO_VECNA, ModItems.VECNA_ADDTIME, ModItems.BUTCHER_KNIFE, ModItems.EVIL_POSSESS
+                ModItems.PSYCHO_VECNA, ModItems.VECNA_ADDTIME, ModItems.BUTCHER_KNIFE, ModItems.EVIL_POSSESS,
+                ModItems.ACID_SOLUTION, ModItems.MARKER_STAFF, ModItems.PSYCHO_KILLER_QUEEN
         );
         ItemTooltipApi.registerAppender(
                 NoellesRolesCore.id("psycho_staff_attack_speed_tooltip"),
@@ -132,7 +133,8 @@ public final class NoellesClientItemBootstrap {
                 ModItems.ONCE_STAFF, ModItems.PSYCHO_STAFF, ModItems.MAGIC_BARRIER, ModItems.PSYCHO_LICH,
                 ModItems.ICON_WEAPON_COOLDOWN_REFRESH, ModItems.ICON_ABILITY_COOLDOWN_REFRESH, ModItems.ICON_POTION_EFFECT_REFRESH,
                 ModItems.DYING_WATCH_PROTECT, ModItems.SLEEPING_BAG, ModItems.BOOK, ModItems.RANDOM_FOOD,
-                ModItems.RANDOM_DRINK, ModItems.RANDOM_POTION
+                ModItems.RANDOM_DRINK, ModItems.RANDOM_POTION, ModItems.ACID_SOLUTION,
+                ModItems.MARKER_STAFF, ModItems.PSYCHO_KILLER_QUEEN
         };
         for (Item item : items) {
             NoellesRolesItemExtraModel.registerExtraModel(item);

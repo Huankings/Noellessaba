@@ -42,6 +42,7 @@ public final class SpringTrapPsychoHandler {
                 .shieldNameTranslationKey("psycho_shield.noellesroles.spring_trap")
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(SpringTrapConstants.SPRING_TRAP_DURATION_TICKS)
+                .cooldownItem(ModItems.SPRING_TRAP)
                 .armour(SpringTrapConstants.SPRING_TRAP_SHIELD_LAYERS)
                 .grantedItems(java.util.List.of(colorfulAxe))
                 .meleeKill(false, NoellesDeathReasons.DEATH_REASON_AXE)

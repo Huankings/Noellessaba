@@ -9,6 +9,7 @@ import org.agmas.noellesroles.client.roles.vulture.VultureAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.vecna.VecnaAbilityInputHandler;
+import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenAbilityInputHandler;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
@@ -38,6 +39,8 @@ public final class NoellesAbilityInputHandler {
             targetId = ShadowJesterAbilityInputHandler.resolveTargetId(client.player);
         } else if (gameWorld.isRole(client.player, NoellesRoleRegistry.VECNA)) {
             targetId = VecnaAbilityInputHandler.resolveTargetId(client.player);
+        } else if (gameWorld.isRole(client.player, NoellesRoleRegistry.KILLER_QUEEN)) {
+            targetId = KillerQueenAbilityInputHandler.resolveTargetId(client.player);
         }
         ClientPlayNetworking.send(new AbilityC2SPacket(targetId));
     }

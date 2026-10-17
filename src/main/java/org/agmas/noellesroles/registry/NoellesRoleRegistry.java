@@ -19,6 +19,7 @@ import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.initiate.InitiateConstants;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenConstants;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.vecna.VecnaConstants;
@@ -179,6 +180,8 @@ public final class NoellesRoleRegistry {
     public static final Role EXECUTIONER = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.EXECUTIONER_ID, new Color(74, 27, 5).getRGB(), false, false, Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime() * 3 / 2, true));
     //黑客(杀手中立)：可透视到杀手，可以破解未知玩家身份。破解后获得金币，可以在商店购买辅助道具辅助杀手取得胜利
     public static final Role HACKER = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.HACKER_ID, HackerConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, WatheRoles.CIVILIAN.getMaxSprintTime(), true));
+    //杀手皇后(杀手中立)：通过酸液、标记和招募协助杀手，并可完成全标记专属胜利。
+    public static final Role KILLER_QUEEN = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.KILLER_QUEEN_ID, KillerQueenConstants.ROLE_COLOR, false, false, Role.MoodType.FAKE, KillerQueenConstants.INFINITE_SPRINT_TIME_TICKS, true));
     //狂信者(杀手中立)：拥有透视，和杀手一起合作。被好人枪击会进入疯魔模式
     public static final Role JESTER = WatheRoles.registerNeutralRole(new Role(NoellesRoleIds.JESTER_ID, new Color(255, 86, 243).getRGB(), false, false, Role.MoodType.FAKE, -1, true));
     //秃鹫(杀手中立)：吃掉一定的尸体后变成杀手

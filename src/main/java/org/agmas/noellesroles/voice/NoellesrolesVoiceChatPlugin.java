@@ -29,6 +29,7 @@ import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.convener.ConvenerCommunicationHelper;
 import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
 import org.agmas.noellesroles.roles.jason.JasonCommunicationManager;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenCommunicationHelper;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityCommunicationHelper;
@@ -438,6 +439,10 @@ public class NoellesrolesVoiceChatPlugin implements VoicechatPlugin {
          * 这条规则放在中心过滤里，默认 proximity voice、group/static/entity 包和职业手动重发包都会经过同一判断。
          */
         if (JasonCommunicationManager.shouldBlockVoiceBetween(sender, receiver)) {
+            return true;
+        }
+
+        if (KillerQueenCommunicationHelper.shouldBlockBetween(sender, receiver)) {
             return true;
         }
 

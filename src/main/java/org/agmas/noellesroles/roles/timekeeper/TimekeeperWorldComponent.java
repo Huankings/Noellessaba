@@ -250,6 +250,8 @@ public class TimekeeperWorldComponent implements AutoSyncedComponent, ServerTick
              */
             ShadowJesterManager.reconcileAfterRewind(serverWorld);
             OutlawManager.reconcileAfterRewind(serverWorld);
+            /* 杀手皇后组件、疯魔 profile 和物品冷却均已恢复；立即收束标记、招募与亡命时刻暂停关系。 */
+            org.agmas.noellesroles.roles.killer_queen.KillerQueenManager.tickWorld(serverWorld);
             finishRewind();
             return;
         }

@@ -3,6 +3,7 @@ package org.agmas.noellesroles.client.tray;
 import org.agmas.noellesroles.client.roles.bartender.BartenderTrayParticleHandler;
 import org.agmas.noellesroles.client.roles.bomber.BomberTrayParticleHandler;
 import org.agmas.noellesroles.client.roles.coward.CowardTrayParticleHandler;
+import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenTrayParticleHandler;
 
 /** NoellesRoles 托盘粒子注册聚合入口；具体逻辑按职业拆分到 client.roles 下。 */
 public final class NoellesRolesTrayParticles {
@@ -15,5 +16,6 @@ public final class NoellesRolesTrayParticles {
         BartenderTrayParticleHandler.init();
         CowardTrayParticleHandler.init();
         BomberTrayParticleHandler.init();
+        KillerQueenTrayParticleHandler.init();
     }
 }

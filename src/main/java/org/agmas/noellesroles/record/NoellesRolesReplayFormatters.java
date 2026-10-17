@@ -2446,4 +2446,92 @@ public final class NoellesRolesReplayFormatters {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.myers_door_broken", actor);
     }
+
+    public static Text formatKillerQueenAcidMark(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "target");
+        Text queen = playerFromKey(event, match, "secondary_target");
+        return target == null || queen == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_acid_mark", target, queen);
+    }
+
+    /** 酸液通过 Wathe 托盘效果 API 放入托盘时的专属回放句式。 */
+    public static Text formatKillerQueenAcidTrayPlacement(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.item_use.noellesroles.killer_queen_acid_tray", actor);
+    }
+
+    public static Text formatKillerQueenSpeedStart(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_speed_start", actor);
+    }
+
+    public static Text formatKillerQueenSpeedEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_speed_end", actor);
+    }
+
+    public static Text formatKillerQueenDazeStart(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_daze_start", actor);
+    }
+
+    public static Text formatKillerQueenDazeEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_daze_end", actor);
+    }
+
+    public static Text formatKillerQueenRootStart(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target");
+        Text item = Text.literal(event.data().getString("item_name"));
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_root_start", target, actor, item);
+    }
+
+    public static Text formatKillerQueenRootEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "victim");
+        return target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_root_end", target);
+    }
+
+    public static Text formatKillerQueenPsychoMark(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target");
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_psycho_mark", target, actor);
+    }
+
+    public static Text formatKillerQueenPsychoShieldGain(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_psycho_shield_gain", actor);
+    }
+
+    public static Text formatKillerQueenMarkRollback(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target");
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_mark_rollback", target, actor,
+                Text.translatable("psycho_mode.noellesroles.killer_queen"));
+    }
+
+    public static Text formatKillerQueenShuffle(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target");
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_shuffle", actor, target);
+    }
+
+    public static Text formatKillerQueenRecruit(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = playerFromKey(event, match, "target");
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_recruit", actor, target);
+    }
+
+    public static Text formatKillerQueenRecruitTarget(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text recruit = actorText(event, match);
+        Text target = playerFromKey(event, match, "target");
+        return recruit == null || target == null ? null : Text.translatable("replay.global.noellesroles.killer_queen_recruit_target", recruit, target);
+    }
+
+    public static Text formatKillerQueenRecruitTargetChanged(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text recruit = actorText(event, match);
+        Text oldTarget = playerFromKey(event, match, "target");
+        Text nextTarget = playerFromKey(event, match, "secondary_target");
+        return recruit == null || oldTarget == null || nextTarget == null ? null
+                : Text.translatable("replay.global.noellesroles.killer_queen_recruit_target_changed", recruit, oldTarget, nextTarget);
+    }
 }

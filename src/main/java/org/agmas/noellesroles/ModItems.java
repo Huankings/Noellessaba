@@ -25,6 +25,8 @@ import org.agmas.noellesroles.roles.hacker.HackerConstants;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperConstants;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenConstants;
+import org.agmas.noellesroles.roles.killer_queen.MarkerStaffItem;
 import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.lich.LichMagicBarrierItem;
 import org.agmas.noellesroles.roles.lich.LichPsychoStaffItem;
@@ -120,6 +122,8 @@ public class ModItems {
         GameConstants.ITEM_COOLDOWNS.put(PSYCHO_VECNA, org.agmas.noellesroles.roles.vecna.VecnaConstants.PSYCHO_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(BUTCHER_KNIFE, MyersConstants.BUTCHER_KNIFE_COOLDOWN_TICKS);
         GameConstants.ITEM_COOLDOWNS.put(EVIL_POSSESS, MyersConstants.EVIL_POSSESS_COOLDOWN_TICKS);
+        // 杀手皇后疯魔商店图标使用 4 分 30 秒冷却；标记法杖的节奏由攻击速度而不是物品冷却控制。
+        GameConstants.ITEM_COOLDOWNS.put(PSYCHO_KILLER_QUEEN, KillerQueenConstants.PSYCHO_COOLDOWN_TICKS);
 
         /*
          * 这里把 NoellesRoles 自己的“实物道具”挂到 Wathe 的装备创造栏里。
@@ -160,6 +164,7 @@ public class ModItems {
             // 角色机制与功能道具
             entries.add(MASTER_KEY);
             entries.add(DELUSION_VIAL);
+            entries.add(ACID_SOLUTION);
             entries.add(DELUSION_SYRINGE);
             entries.add(WIND_MARK);
             entries.add(DREAM_IMPRINT);
@@ -180,6 +185,7 @@ public class ModItems {
             entries.add(LIGHTER);
             entries.add(ONCE_STAFF);
             entries.add(PSYCHO_STAFF);
+            entries.add(MARKER_STAFF);
             entries.add(MAGIC_BARRIER);
             entries.add(PHONE);
             entries.add(DEFENSE_VIAL);
@@ -407,6 +413,11 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1)),
             "delusion_vial"
     );
+    /** 杀手皇后可混入托盘食品或饮品的酸液。 */
+    public static final Item ACID_SOLUTION = register(
+            new Item(new Item.Settings().maxCount(KillerQueenConstants.ITEM_MAX_COUNT)),
+            "acid_solution"
+    );
     // 幻觉注剂：蓄力瞄准 3 格内玩家，成功后直接复用幻觉组件。
     public static final Item DELUSION_SYRINGE = register(
             new DelusionSyringeItem(new Item.Settings().maxCount(1)),
@@ -556,7 +567,7 @@ public class ModItems {
     // 濒毁怀表：时停者开局获得的核心物品，状态与模式由上方数据组件保存。
     public static final Item DYING_WATCH = register(
             new TimekeeperWatchItem(new Item.Settings()
-                    .maxCount(1)
+                    .maxCount(KillerQueenConstants.ITEM_MAX_COUNT)
                     .component(TIMEKEEPER_WATCH_STATE, TimekeeperWatchState.NORMAL.ordinal())
                     .component(TIMEKEEPER_WATCH_MODE, TimekeeperWatchMode.ITEM_ACCELERATE.ordinal())),
             "dying_watch"
@@ -630,6 +641,18 @@ public class ModItems {
     public static final Item PSYCHO_LICH = register(
             new Item(new Item.Settings().maxCount(1)),
             "psycho_lich"
+    );
+    /** 杀手皇后疯魔期间由 profile 临时授予的非致死标记法杖。 */
+    public static final Item MARKER_STAFF = register(
+            new MarkerStaffItem(new Item.Settings()
+                    .maxCount(KillerQueenConstants.ITEM_MAX_COUNT)
+                    .attributeModifiers(MarkerStaffItem.createAttributeModifiers())),
+            "marker_staff"
+    );
+    /** 购买后立即启动杀手皇后疯魔的商店图标。 */
+    public static final Item PSYCHO_KILLER_QUEEN = register(
+            new Item(new Item.Settings().maxCount(KillerQueenConstants.ITEM_MAX_COUNT)),
+            "psycho_killer_queen"
     );
     // 维克那颠倒疯魔商店图标：购买后立即启动专属疯魔 profile。
     public static final Item PSYCHO_VECNA = register(new Item(new Item.Settings().maxCount(1)), "psycho_vecna");

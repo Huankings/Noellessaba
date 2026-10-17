@@ -9,6 +9,36 @@ import net.minecraft.util.Identifier;
  * 拆出来后，记录事件的业务代码和注册 formatter 的代码可以共享同一份定义。</p>
  */
 public final class NoellesEventIds {
+    /** 酸液托盘扩展效果 id。 */
+    public static final Identifier KILLER_QUEEN_ACID_TRAY_EFFECT = NoellesRolesCore.id("killer_queen_acid");
+    /** 酸液拿取后添加杀手皇后标记。 */
+    public static final Identifier KILLER_QUEEN_ACID_MARK_EVENT = NoellesRolesCore.id("killer_queen_acid_mark");
+    /** 酸液给予杀手皇后或机器人移速加成。 */
+    public static final Identifier KILLER_QUEEN_SPEED_START_EVENT = NoellesRolesCore.id("killer_queen_speed_start");
+    /** 酸液移速加成自然结束。 */
+    public static final Identifier KILLER_QUEEN_SPEED_END_EVENT = NoellesRolesCore.id("killer_queen_speed_end");
+    /** 酸液使普通玩家进入晕眩状态。 */
+    public static final Identifier KILLER_QUEEN_DAZE_START_EVENT = NoellesRolesCore.id("killer_queen_daze_start");
+    /** 酸液晕眩状态结束。 */
+    public static final Identifier KILLER_QUEEN_DAZE_END_EVENT = NoellesRolesCore.id("killer_queen_daze_end");
+    /** 标记法杖命中后开始定身。 */
+    public static final Identifier KILLER_QUEEN_ROOT_START_EVENT = NoellesRolesCore.id("killer_queen_root_start");
+    /** 标记法杖定身结束。 */
+    public static final Identifier KILLER_QUEEN_ROOT_END_EVENT = NoellesRolesCore.id("killer_queen_root_end");
+    /** 疯魔期间由标记法杖添加标记。 */
+    public static final Identifier KILLER_QUEEN_PSYCHO_MARK_EVENT = NoellesRolesCore.id("killer_queen_psycho_mark");
+    /** 标记法杖累计两次有效首次标记后增加疯魔护盾。 */
+    public static final Identifier KILLER_QUEEN_PSYCHO_SHIELD_GAIN_EVENT = NoellesRolesCore.id("killer_queen_psycho_shield_gain");
+    /** 疯魔真正结束后回退本轮新增标记。 */
+    public static final Identifier KILLER_QUEEN_MARK_ROLLBACK_EVENT = NoellesRolesCore.id("killer_queen_mark_rollback");
+    /** 杀手皇后洗牌杀手职业。 */
+    public static final Identifier KILLER_QUEEN_SHUFFLE_EVENT = NoellesRolesCore.id("killer_queen_shuffle");
+    /** 杀手皇后招募玩家。 */
+    public static final Identifier KILLER_QUEEN_RECRUIT_EVENT = NoellesRolesCore.id("killer_queen_recruit");
+    /** 被招募玩家锁定初始击杀目标。 */
+    public static final Identifier KILLER_QUEEN_RECRUIT_TARGET_EVENT = NoellesRolesCore.id("killer_queen_recruit_target");
+    /** 被招募玩家因旧目标失效而切换击杀目标。 */
+    public static final Identifier KILLER_QUEEN_RECRUIT_TARGET_CHANGED_EVENT = NoellesRolesCore.id("killer_queen_recruit_target_changed");
     public static final Identifier DEFENSE_TRAY_EFFECT = NoellesRolesCore.id("defense_vial");
     public static final Identifier DELUSION_TRAY_EFFECT = NoellesRolesCore.id("delusion_vial");
     public static final Identifier SEDATIVE_TRAY_EFFECT = NoellesRolesCore.id("sedative");

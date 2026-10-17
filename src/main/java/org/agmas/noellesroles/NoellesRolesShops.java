@@ -26,6 +26,7 @@ import org.agmas.noellesroles.roles.hacker.HackerComponent;
 import org.agmas.noellesroles.roles.lich.LichPsychoHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaPsychoHandler;
 import org.agmas.noellesroles.roles.myers.MyersPsychoHandler;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPsychoHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperShopHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.waiter.WaiterShopHandler;
@@ -102,7 +103,8 @@ public class NoellesRolesShops {
         boolean actionPurchase = entry.isActionPurchase() || isImmediatePurchaseItem(item);
         boolean cooldownBlocked = ShopApi.isPurchaseCooldownBlocked(context, actionPurchase);
         if (!context.canAffordEntry()
-                || (cooldownBlocked && (actionPurchase || !ignoresShopCooldown(player, item)))) {
+                || (cooldownBlocked && (actionPurchase || !ignoresShopCooldown(player, item))
+                && !ignoresActionCooldown(player, item))) {
             return ShopPurchaseResult.FAIL_SHOW_MESSAGE;
         }
 
@@ -135,7 +137,9 @@ public class NoellesRolesShops {
         Item item = stack.getItem();
         boolean actionPurchase = isImmediatePurchaseItem(item);
         boolean cooldownBlocked = ShopApi.isPurchaseCooldownBlocked(player, item, actionPurchase);
-        if (balance >= price && (!cooldownBlocked || (!actionPurchase && ignoresShopCooldown(player, item)))) {
+        if (balance >= price && (!cooldownBlocked
+                || (!actionPurchase && ignoresShopCooldown(player, item))
+                || ignoresActionCooldown(player, item))) {
             boolean success = deliverPurchasedStack(player, stack);
 
             if (success) {
@@ -199,6 +203,9 @@ public class NoellesRolesShops {
         }
         if (item == ModItems.EVIL_POSSESS) {
             return MyersPsychoHandler.start(player);
+        }
+        if (item == ModItems.PSYCHO_KILLER_QUEEN) {
+            return KillerQueenPsychoHandler.start(player);
         }
         if (item == ModItems.VECNA_ADDTIME) {
             dev.doctor4t.wathe.cca.GameTimeComponent.KEY.get(player.getWorld()).addTime(org.agmas.noellesroles.roles.vecna.VecnaConstants.ADD_TIME_TICKS);
@@ -264,6 +271,7 @@ public class NoellesRolesShops {
                 || item == ModItems.PSYCHO_LICH
                 || item == ModItems.PSYCHO_VECNA
                 || item == ModItems.EVIL_POSSESS
+                || item == ModItems.PSYCHO_KILLER_QUEEN
                 || item == ModItems.VECNA_ADDTIME
                 || item == ModItems.POWER_RESTORATION
                 || item == ModItems.BAYONET_COLDOWN_REFRESH
@@ -285,6 +293,11 @@ public class NoellesRolesShops {
                 || item == ModItems.PSYCHO_LICH
                 || item == ModItems.EVIL_POSSESS)
                 && GameFunctions.isPlayerSpectatingOrCreative(player);
+    }
+
+    /** 杀手皇后新调试物品明确允许非存活玩家绕过即时商品冷却。 */
+    private static boolean ignoresActionCooldown(@NotNull PlayerEntity player, @NotNull Item item) {
+        return item == ModItems.PSYCHO_KILLER_QUEEN && GameFunctions.isPlayerSpectatingOrCreative(player);
     }
 
     /**

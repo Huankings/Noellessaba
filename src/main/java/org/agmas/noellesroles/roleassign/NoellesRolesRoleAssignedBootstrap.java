@@ -55,6 +55,7 @@ import org.agmas.noellesroles.roles.vecna.VecnaRoleAssignedHandler;
 import org.agmas.noellesroles.roles.commoner.CommonerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawRoleAssignedHandler;
 import org.agmas.noellesroles.roles.myers.MyersRoleAssignedHandler;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenRoleAssignedHandler;
 
 /**
  * noellesroles 的职业分配事件总引导器。
@@ -145,6 +146,7 @@ public final class NoellesRolesRoleAssignedBootstrap {
             CommonerRoleAssignedHandler.onRoleAssigned(player, role);
             OutlawRoleAssignedHandler.onRoleAssigned(player, role);
             MyersRoleAssignedHandler.onRoleAssigned(player, role);
+            KillerQueenRoleAssignedHandler.onRoleAssigned(player, role);
         });
     }
 

@@ -76,6 +76,8 @@ import org.agmas.noellesroles.roles.jason.JasonAbilityBlindnessComponent;
 import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPlayerComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenWorldComponent;
 import org.agmas.noellesroles.roles.magician.MagicianPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
@@ -190,6 +192,7 @@ public final class TimekeeperSnapshots {
             component("noellesroles:controller", ControllerPlayerComponent.KEY),
             component("noellesroles:controlled", ControlledPlayerComponent.KEY),
             component("noellesroles:stunned", StunnedPlayerComponent.KEY),
+            component("noellesroles:killer_queen_player", KillerQueenPlayerComponent.KEY),
             component("noellesroles:stalker", StalkerPlayerComponent.KEY),
             component("noellesroles:bomber", BomberPlayerComponent.KEY),
             component("noellesroles:bounty_hunter", BountyHunterPlayerComponent.KEY),
@@ -257,6 +260,7 @@ public final class TimekeeperSnapshots {
             component("noellesroles:hacker_safe_time", HackerSafeTimeComponent.KEY),
             component("noellesroles:avaricious_payout", AvariciousPayoutComponent.KEY),
             component("noellesroles:necromancer", NecromancerWorldComponent.KEY),
+            component("noellesroles:killer_queen", KillerQueenWorldComponent.KEY),
             component("noellesroles:lovers_pairs", LoversPairComponent.KEY),
             component("noellesroles:dual_personality", DualPersonalityComponent.KEY),
             /*

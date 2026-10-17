@@ -57,6 +57,20 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.COLORFUL_AXE), NoellesRolesReplayFormatters::formatAxeHit);
         ReplayRegistry.registerItemHitFormatter(net.minecraft.registry.Registries.ITEM.getId(ModItems.BLOWGUN), NoellesRolesReplayFormatters::formatBlowgunHit);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.MYERS_DOOR_BROKEN_EVENT, NoellesRolesReplayFormatters::formatMyersDoorBroken);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_ACID_MARK_EVENT, NoellesRolesReplayFormatters::formatKillerQueenAcidMark);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_SPEED_START_EVENT, NoellesRolesReplayFormatters::formatKillerQueenSpeedStart);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_SPEED_END_EVENT, NoellesRolesReplayFormatters::formatKillerQueenSpeedEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_DAZE_START_EVENT, NoellesRolesReplayFormatters::formatKillerQueenDazeStart);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_DAZE_END_EVENT, NoellesRolesReplayFormatters::formatKillerQueenDazeEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_ROOT_START_EVENT, NoellesRolesReplayFormatters::formatKillerQueenRootStart);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_ROOT_END_EVENT, NoellesRolesReplayFormatters::formatKillerQueenRootEnd);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_PSYCHO_MARK_EVENT, NoellesRolesReplayFormatters::formatKillerQueenPsychoMark);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_PSYCHO_SHIELD_GAIN_EVENT, NoellesRolesReplayFormatters::formatKillerQueenPsychoShieldGain);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_MARK_ROLLBACK_EVENT, NoellesRolesReplayFormatters::formatKillerQueenMarkRollback);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_SHUFFLE_EVENT, NoellesRolesReplayFormatters::formatKillerQueenShuffle);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_RECRUIT_EVENT, NoellesRolesReplayFormatters::formatKillerQueenRecruit);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_RECRUIT_TARGET_EVENT, NoellesRolesReplayFormatters::formatKillerQueenRecruitTarget);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.KILLER_QUEEN_RECRUIT_TARGET_CHANGED_EVENT, NoellesRolesReplayFormatters::formatKillerQueenRecruitTargetChanged);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.HACKER_REVEAL_EVENT, NoellesRolesReplayFormatters::formatHackerReveal);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.BELLRINGER_REDUCE_TIME_EVENT, NoellesRolesReplayFormatters::formatBellringerReduceTime);
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.DETECTIVE_CHECK_EVENT, NoellesRolesReplayFormatters::formatDetectiveCheck);
@@ -67,6 +81,11 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerSkillFormatter(NoellesEventIds.KIDNAPPER_RELEASE_EVENT, NoellesRolesReplayFormatters::formatKidnapperRelease);
 
         ReplayRegistry.registerBedEffectPlacementFormatter(NoellesEventIds.TIMED_BOMB_BED_EMBEDDED_EVENT, NoellesRolesReplayFormatters::formatTimedBombBedEmbedded);
+        /* 酸液放入托盘使用专属句式，不依赖通用试剂名称回退。 */
+        ReplayRegistry.registerTrayEffectPlacementFormatter(
+                NoellesEventIds.KILLER_QUEEN_ACID_TRAY_EFFECT,
+                NoellesRolesReplayFormatters::formatKillerQueenAcidTrayPlacement
+        );
 
 
         ReplayRegistry.registerShieldSourceFormatter(NoellesEventIds.DEFENSE_TRAY_EFFECT, NoellesRolesReplayFormatters::formatDefenseShieldBlocked);

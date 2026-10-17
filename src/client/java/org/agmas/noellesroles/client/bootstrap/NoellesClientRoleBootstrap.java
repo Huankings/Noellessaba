@@ -19,6 +19,7 @@ import org.agmas.noellesroles.client.roles.shadow_jester.ShadowJesterMoodHud;
 import org.agmas.noellesroles.client.roles.spring_trap.SpringTrapMoodHud;
 import org.agmas.noellesroles.client.roles.starstruck.StarstruckMoodHud;
 import org.agmas.noellesroles.client.roles.vecna.VecnaMoodHud;
+import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenMoodHud;
 
 /**
  * 维护旧客户端入口中仍属于职业/词条的注册调用。
@@ -50,5 +51,6 @@ public final class NoellesClientRoleBootstrap {
         JasonAbilityFogHandler.register();
         SpringTrapMoodHud.register();
         ShadowJesterMoodHud.register();
+        KillerQueenMoodHud.register();
     }
 }

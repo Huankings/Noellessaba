@@ -10,6 +10,7 @@ import org.agmas.noellesroles.roles.rememberer.RemembererPsychoShieldHandler;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapPsychoHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaPsychoHandler;
 import org.agmas.noellesroles.roles.myers.MyersPsychoHandler;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPsychoHandler;
 
 /**
  * NoellesRoles 的疯魔 API 接入分发器。
@@ -40,5 +41,6 @@ public final class NoellesRolesPsychoBootstrap {
         LichPsychoHandler.init();
         VecnaPsychoHandler.init();
         MyersPsychoHandler.init();
+        KillerQueenPsychoHandler.init();
     }
 }

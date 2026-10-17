@@ -44,6 +44,7 @@ public final class LichPsychoHandler {
                 .shieldNameTranslationKey("psycho_shield.noellesroles.lich")
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(LichConstants.PSYCHO_LICH_DURATION_TICKS)
+                .cooldownItem(ModItems.PSYCHO_LICH)
                 .armour(LichConstants.PSYCHO_LICH_SHIELD_COUNT)
                 .grantedItems(List.of(new ItemStack(ModItems.PSYCHO_STAFF)))
                 .meleeKill(true, GameConstants.DeathReasons.BAT)

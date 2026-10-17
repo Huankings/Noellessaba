@@ -38,6 +38,8 @@ import org.agmas.noellesroles.roles.jason.JasonAbilityBlindnessComponent;
 import org.agmas.noellesroles.roles.jason.JasonFireWorldComponent;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
 import org.agmas.noellesroles.roles.kidnapper.KidnapperComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenPlayerComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenWorldComponent;
 import org.agmas.noellesroles.roles.morphling.MorphlingPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphMarkPlayerComponent;
 import org.agmas.noellesroles.roles.morphling.MorphBodyDisguiseWorldComponent;
@@ -151,6 +153,8 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
          */
         registry.beginRegistration(PlayerEntity.class, JasonAbilityPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonAbilityPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, JasonAbilityBlindnessComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonAbilityBlindnessComponent::new);
+        /* 酸液速度和晕眩都是局内时间线状态，复活不复制，由时停者快照负责回滚。 */
+        registry.beginRegistration(PlayerEntity.class, KillerQueenPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(KillerQueenPlayerComponent::new);
     }
 
     @Override
@@ -174,5 +178,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         worldComponentFactoryRegistry.register(OutlawWorldComponent.KEY, OutlawWorldComponent::new);
         /* 执照恶棍时刻需要向所有客户端同步音乐状态，并随世界时间线一起保存。 */
         worldComponentFactoryRegistry.register(LicensedVillainMomentWorldComponent.KEY, LicensedVillainMomentWorldComponent::new);
+        /* 杀手皇后的标记、招募和疯魔暂停均为整局共享关系。 */
+        worldComponentFactoryRegistry.register(KillerQueenWorldComponent.KEY, KillerQueenWorldComponent::new);
     }
 }

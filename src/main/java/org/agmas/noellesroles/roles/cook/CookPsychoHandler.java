@@ -43,6 +43,7 @@ public final class CookPsychoHandler {
                 .shieldNameTranslationKey("psycho_shield.noellesroles.cook")
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(CookConstants.PSYCHO_COOK_DURATION_TICKS)
+                .cooldownItem(ModItems.PSYCHO_COOK)
                 /*
                  * 厨师疯魔只授予疯魔飞锅。
                  * 复制默认 profile 后必须覆盖 grantedItems，否则玩家会同时获得默认球棒。

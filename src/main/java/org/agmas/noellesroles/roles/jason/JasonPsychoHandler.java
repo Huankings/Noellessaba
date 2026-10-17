@@ -40,6 +40,7 @@ public final class JasonPsychoHandler {
                 .shieldNameTranslationKey("psycho_shield.noellesroles.jason")
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(JasonConstants.PSYCHO_DURATION_TICKS)
+                .cooldownItem(ModItems.PSYCHO_JASON)
                 /*
                  * 杰森模式只授予飞镐。复制默认 profile 后必须覆盖球棒列表，
                  * 否则会同时出现默认球棒和飞镐，和“手持武器使用飞镐”的需求冲突。

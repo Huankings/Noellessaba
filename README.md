@@ -900,3 +900,18 @@ NoellesRoles 接入要求：
 床效果服务端逻辑继续使用 Wathe `BedEffectRegistry`；客户端床粒子使用 `BedParticleRegistry.registerProvider` 注册。provider 通过 `BedParticleContext` 读取客户端床实体和观察者，按 priority 调度，不能通过 Mixin 注入 `TrimmedBedBlockEntity.clientTick`。
 
 NoellesRoles 使用 `client/bed/NoellesRolesBedParticles` 作为床粒子聚合入口，具体职业逻辑按 `client/roles/<role>/<RoleName>BedParticleHandler` 拆分。炸弹客的定时炸弹床黑烟现在由 `BomberBedParticleHandler` 注册，旧的 `TimedBombBedViewMixin` 已删除并从客户端 Mixin 配置移除；其杀手可见性、粒子位置和稀疏刷新行为保持不变。
+# 杀手皇后（killer_queen）
+
+杀手皇后是杀手侧中立职业，使用酸液和标记法杖标记好人/独立中立，通过共享的杀手死亡机会招募玩家，
+并在自己仍存活且所有存活合法目标均被标记时触发专属胜利。未完成标记不会阻止正常杀手或乘客结算。
+疯魔期间，标记法杖每首次标记两个有效目标会增加一层疯魔护盾；主动本能中的已标记目标使用独立紫色，
+与尚未标记但同样显示职业色的好人/独立中立区分。
+
+运行态由 `KillerQueenWorldComponent` 和 `KillerQueenPlayerComponent` 保存，并进入时停者快照：标记按杀手皇后
+UUID 独立保存；招募关系保存招募者与目标；疯魔暂停快照只在亡命时刻使用。影子小丑第四阶段和执照恶棍时刻
+优先级高于杀手皇后音乐，但不会暂停其服务端疯魔机制；亡命时刻会通过 Wathe `PsychoModeApi.pause/resume`
+暂时撤销武器、音乐和全局压制，恢复时继续同一次疯魔。
+
+本职业依赖 Wathe 的疯魔扩展 API：`cooldownItem`、`addRemainingTicks`、`addArmourLayers`、`ensureMinimumCooldown`、
+`PsychoModeState`、`pause/resume`。更新 Wathe 后必须先生成非 sources jar，替换本工程 `libs/wathe-*.jar`，
+然后再构建 NoellesRoles。

@@ -102,7 +102,9 @@
       "noellesroles:outlaw_player",
       "noellesroles:outlaw_world",
       "noellesroles:licensed_villain_moment"
-      ,"noellesroles:myers"
+      ,"noellesroles:myers",
+      "noellesroles:killer_queen_player",
+      "noellesroles:killer_queen"
     ]
   },
   "mixins": [

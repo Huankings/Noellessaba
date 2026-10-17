@@ -17,6 +17,7 @@ import org.agmas.noellesroles.framing.DelusionPlayerComponent;
 import org.agmas.noellesroles.roles.bartender.BartenderPlayerComponent;
 import org.agmas.noellesroles.roles.bomber.BomberPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenTrayEffectHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -32,6 +33,7 @@ public final class NoellesRolesTrayEffects {
     }
 
     public static void register() {
+        TrayEffectRegistry.register(new KillerQueenTrayEffectHandler());
         TrayEffectRegistry.register(new TrayEffectHandler() {
             @Override
             public net.minecraft.util.Identifier effectId() {

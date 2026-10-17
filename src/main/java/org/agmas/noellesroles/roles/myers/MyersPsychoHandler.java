@@ -36,6 +36,7 @@ public final class MyersPsychoHandler {
                 .shieldNameTranslationKey("psycho_shield.noellesroles.myers")
                 .endEventId(Wathe.id("psycho_mode_end"))
                 .durationTicks(MyersConstants.EVIL_POSSESS_DURATION_TICKS)
+                .cooldownItem(ModItems.EVIL_POSSESS)
                 .armour(1)
                 .grantedItems(List.of(ModItems.BUTCHER_KNIFE.getDefaultStack()))
                 .meleeKill(false, GameConstants.DeathReasons.KNIFE)

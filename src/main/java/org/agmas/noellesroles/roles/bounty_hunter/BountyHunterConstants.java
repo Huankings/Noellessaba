@@ -28,7 +28,7 @@ public final class BountyHunterConstants {
     public static final int BOUNTY_MODE_SHIELD_LAYERS = 0;
 
     public static final float BOUNTY_PISTOL_RANGE_BLOCKS = 15.0F;
-    public static final float BOUNTY_DERRINGER_RANGE_BLOCKS = 7.0F;
+    public static final float BOUNTY_DERRINGER_RANGE_BLOCKS = 15.0F;
 
     private BountyHunterConstants() {
     }

@@ -14,6 +14,7 @@ import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.myers.MyersConstants;
 import org.agmas.noellesroles.roles.myers.MyersEconomyHandler;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenConstants;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,7 +68,8 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.INITIATE,
                 NoellesRoleRegistry.LICENSED_VILLAIN,
                 NoellesRoleRegistry.TIMEKEEPER
-                ,NoellesRoleRegistry.MYERS
+                ,NoellesRoleRegistry.MYERS,
+                NoellesRoleRegistry.KILLER_QUEEN
         ));
 
         /*
@@ -124,6 +126,13 @@ public final class NoellesRolesEconomyBootstrap {
                 TaskCompletionApi.DEFAULT_PRIORITY,
                 context -> context.role() == NoellesRoleRegistry.INITIATE ? InitiateConstants.TASK_INCOME_COINS : 0
         );
+        /* 杀手皇后任务收入独立使用职业常量，后续改平衡不会被通用 50 金币名单绑死。 */
+        TaskCompletionApi.registerTaskIncomeProvider(
+                NoellesRolesCore.id("killer_queen_task_income"),
+                TaskCompletionApi.DEFAULT_PRIORITY,
+                context -> context.role() == NoellesRoleRegistry.KILLER_QUEEN
+                        ? KillerQueenConstants.TASK_INCOME_COINS : 0
+        );
 
         /*
          * 扒手的金币来源来自专属逻辑，不吃 Wathe 默认的通用被动收入。
@@ -147,7 +156,8 @@ public final class NoellesRolesEconomyBootstrap {
                 NoellesRoleRegistry.ENGINEER,
                 NoellesRoleRegistry.RECALLER,
                 NoellesRoleRegistry.COOK,
-                NoellesRoleRegistry.TIMEKEEPER
+                NoellesRoleRegistry.TIMEKEEPER,
+                NoellesRoleRegistry.KILLER_QUEEN
         ));
 
         TaskCompletionApi.AFTER_TASK_COMPLETE.register(context -> {

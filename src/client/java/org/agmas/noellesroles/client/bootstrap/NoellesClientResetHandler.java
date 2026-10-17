@@ -19,6 +19,7 @@ import org.agmas.noellesroles.client.roles.stalker.StalkerAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientController;
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperWatchInputHandler;
 import org.agmas.noellesroles.client.roles.vulture.VultureAbilityInputHandler;
+import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenMusicController;
 import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerState;
 import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
@@ -49,6 +50,7 @@ public final class NoellesClientResetHandler {
         ShadowJesterMusicController.reset(MinecraftClient.getInstance());
         LicensedVillainMusicController.reset(MinecraftClient.getInstance());
         OutlawMusicController.reset(MinecraftClient.getInstance());
+        KillerQueenMusicController.reset(MinecraftClient.getInstance());
         DualPersonalityClientState.resetTransientRenderState();
         DualPersonalityKeybinds.resetSyncedState();
         ExecutionerMoodHud.reset();

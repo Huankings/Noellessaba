@@ -66,6 +66,8 @@ import org.agmas.noellesroles.roles.outlaw.OutlawVictoryRule;
 import org.agmas.noellesroles.shop.NoellesRolesShopBootstrap;
 import org.agmas.noellesroles.tray.NoellesRolesTrayEffects;
 import org.agmas.noellesroles.visibility.NoellesTargetVisibilityHandlers;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenCommunicationManager;
+import org.agmas.noellesroles.roles.killer_queen.KillerQueenVictoryRule;
 
 /**
  * NoellesRoles 的总启动编排器。
@@ -147,6 +149,7 @@ public final class NoellesRolesBootstrap {
         ConvenerCommunicationManager.init();
         MorphlingCommunicationManager.init();
         JasonCommunicationManager.init();
+        KillerQueenCommunicationManager.init();
         ConvenerSummonHandler.init();
         ConvenerTaskShieldHandler.init();
         ConvenerVictoryRule.init();
@@ -154,6 +157,7 @@ public final class NoellesRolesBootstrap {
         ThiefVictoryRule.init();
         LicensedVillainVictoryRule.init();
         ShadowJesterVictoryRule.init();
+        KillerQueenVictoryRule.init();
         NoellesRoleLimitsBootstrap.initStaticLimits();
         NoellesRolesPayloadTypes.register();
         NoellesRolesShopBootstrap.init();

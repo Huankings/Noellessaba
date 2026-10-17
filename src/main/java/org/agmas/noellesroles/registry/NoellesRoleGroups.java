@@ -31,7 +31,8 @@ public final class NoellesRoleGroups {
             NoellesRoleRegistry.JESTER,
             NoellesRoleRegistry.EXECUTIONER,
             NoellesRoleRegistry.DREAMER,
-            NoellesRoleRegistry.HACKER
+            NoellesRoleRegistry.HACKER,
+            NoellesRoleRegistry.KILLER_QUEEN
     ));
     /*
      * Wathe/Harpy 的底层分配只区分 Faction.NEUTRAL 这一大类。
