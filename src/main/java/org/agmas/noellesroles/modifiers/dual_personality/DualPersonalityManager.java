@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -229,24 +228,6 @@ public final class DualPersonalityManager {
 
         pair.doubleActiveTicks += DualPersonalityConstants.DOUBLE_ACTIVE_KILL_BONUS_TICKS;
         component.sync();
-    }
-
-    public static boolean shouldBlockRevolverPickup(ServerPlayerEntity player, ItemEntity itemEntity) {
-        /*
-         * 用户确认“好人阵营不能捡枪”按 Wathe 的 isInnocent 判断。
-         * 所以这里不只挡普通乘客，也会挡义警等被 Wathe 归为 innocent 的身份。
-         */
-        if (player == null || itemEntity == null || !itemEntity.getStack().isOf(WatheItems.REVOLVER)) {
-            return false;
-        }
-        if (!isActiveRound(player.getWorld())) {
-            return false;
-        }
-        DualPersonalityComponent component = DualPersonalityComponent.KEY.get(player.getWorld());
-        if (!component.isDoubleActive(player.getUuid())) {
-            return false;
-        }
-        return GameWorldComponent.KEY.get(player.getWorld()).isInnocent(player);
     }
 
     public static boolean shouldSuppressInnocentRevolverPenalty(

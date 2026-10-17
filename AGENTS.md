@@ -60,7 +60,8 @@
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPayloadTypes.java`：payload codec 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPacketReceivers.java`：服务端 packet receiver 注册和能力分发。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEventBootstrap.java`：事件监听、server tick、回合清理、Harpy 禁用职业配置同步。
-- `src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`：Wathe `GunShotApi` 接入总引导，只调用各职业/词条自己的枪击、左轮惩罚和冷却 handler。
+- `src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`：Wathe `GunShotApi` 与 `KnifeCooldownApi` 接入总引导，只调用各职业/词条自己的枪击、左轮惩罚、枪械冷却和匕首冷却 handler。
+- `src/main/java/org/agmas/noellesroles/pickup/NoellesItemPickupHandlers.java`：Wathe `ItemPickupApi` 的掉落物拾取聚合注册器，只调用各职业/词条自己的拾取 handler。
 - `src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`：`AllowPlayerDeath` 保护链和 Wathe `DeathApi` 分阶段击杀流程接入总引导。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`：体力与移动速度修正总引导。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
@@ -186,7 +187,9 @@ NoellesRoles 的职业 / 词条运行时资源在源码中按所有者拆分，�
 - 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
 - 玩家体力：`PlayerStaminaApi`、`PlayerStaminaComponent`
 - 玩家移动速度：`PlayerMovementApi`
-- 枪击、目标覆写、左轮反火、冷却修正：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
+- 枪击、目标覆写、左轮反火、枪械冷却：`GunShotApi`、`GunShotContext`、`GunTargetContext`、`RevolverPenaltyContext`
+- 匕首冷却：`KnifeCooldownApi`、`KnifeCooldownContext`
+- 普通掉落物拾取：`ItemPickupApi`、`ItemPickupContext`、`ItemPickupResult`
 - 客户端武器目标选择：`WeaponTargetingApi`
 - 击杀/死亡分阶段流程、默认击杀奖励、尸体生成回调：`DeathApi`、`DeathContext`、`BodySpawnContext`
 - 背包按钮：`InventoryButtonApi`、`InventoryScreenType`、`InventoryButtonContext`、`InventoryPageState`、`InventoryPageSwitchWidget`
@@ -291,7 +294,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRolesReplayBootstrap.java`：新增回放 formatter 注册。
 - `NoellesRolesPsychoBootstrap.java`：新增疯魔 profile、护盾规则、声音/皮肤规则时，在这里调用对应职业 `*PsychoHandler.init()`；具体逻辑仍留在 `roles/<role>/`。
 - `NoellesPlayerCollisionHandlers.java`：新增玩家碰撞规则时，在这里调用对应职业 / 词条的 `*PlayerCollisionHandler.init()`；具体逻辑放在 `roles/<role>/` 或 `modifiers/<modifier>/`。
-- `NoellesRolesCombatBootstrap.java`：新增枪械开火接管、左轮目标覆写、左轮误伤惩罚或冷却修正规则时，在这里调用对应职业/词条 `*GunHandler` 或 `*GunCooldownHandler.init()`。
+- `NoellesRolesCombatBootstrap.java`：新增枪械开火接管、左轮目标覆写、左轮误伤惩罚、枪械冷却或匕首冷却规则时，在这里调用对应职业/词条 handler 的 `init()`。
+- `NoellesItemPickupHandlers.java`：新增掉落物拾取规则时，在这里调用对应职业/词条 `*ItemPickupHandler.init()`；具体判定不得写进聚合类。
 - `NoellesRolesDeathBootstrap.java`：新增死亡保护、反噬、击杀奖励、确认死亡后清理或尸体生成回调时，在这里按阶段接入对应 handler。
 - `NoellesRolesMovementBootstrap.java`：新增体力、速度加成 / 减速 / 覆盖规则时，在这里按职业 / 词条接入对应 handler。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
@@ -464,7 +468,9 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 
 ## 枪击与死亡 API
 
-枪击接管、左轮反火、客户端目标覆写、左轮冷却修正优先接 Wathe `GunShotApi`，不要再新增 `GunShootPayload`、`RevolverItem` 或 `DerringerItem` mixin。NoellesRoles 侧按职业/词条拆 handler，例如 `roles/robber/RobberGunHandler`、`roles/assassin/AssassinGunHandler`、`roles/coward/CowardGunCooldownHandler`、`roles/jester/JesterGunTargetHandler`、`roles/executioner/ExecutionerGunPenaltyHandler`，然后只在 `NoellesRolesCombatBootstrap` 里调用 `init()`。
+枪击接管、左轮反火、客户端目标覆写、左轮冷却修正优先接 Wathe `GunShotApi`，匕首冷却优先接 `KnifeCooldownApi`，不要再新增 `GunShootPayload`、`RevolverItem`、`DerringerItem` 或 `KnifeStabPayload.Receiver` mixin。NoellesRoles 侧按职业/词条拆 handler，然后只在 `NoellesRolesCombatBootstrap` 里调用 `init()`。
+
+普通掉落物拾取优先接 Wathe `ItemPickupApi`，不要再注入 `ItemEntity#onPlayerCollision`。`PASS` 回退 Wathe 默认枪械规则，`DENY` 取消拾取，`ALLOW` 只跳过 Wathe 限制并返回原版拾取流程。Jason 重伤、Killer Queen 招募等强制禁拾使用高于仇杀客 ALLOW 的 priority。
 
 客户端武器在准备发送命中包时统一使用 Wathe `dev.doctor4t.wathe.api.combat.WeaponTargetingApi`，不要在 NoellesRoles 里重新组合 `ProjectileUtil`、`GameFunctions.isPlayerAliveAndSurvival(...)` 和 `TargetVisibilityApi`：
 
@@ -507,7 +513,7 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 - 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，目标射线使用 `WeaponTargetingApi` 的 visible 入口，不要 mixin `CrosshairRenderer`。
 - 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
-- 枪击、左轮反火、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `WeaponTargetingApi` / `DeathApi`。
+- 枪击、左轮反火、匕首冷却、掉落物拾取、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `KnifeCooldownApi` / `ItemPickupApi` / `WeaponTargetingApi` / `DeathApi`。
 - 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
 - 服务端逻辑、死亡链、物品行为、任务处理放 `src/main/java`，并注册到 `noellesroles.mixins.json`。
 - mixin 条件必须尽量窄：判断玩家存活、当前职业、手持物品、世界是否 client/server、是否对局中。

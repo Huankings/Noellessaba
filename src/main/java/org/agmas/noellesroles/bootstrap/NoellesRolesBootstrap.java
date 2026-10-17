@@ -66,6 +66,7 @@ import org.agmas.noellesroles.roles.outlaw.OutlawVictoryRule;
 import org.agmas.noellesroles.shop.NoellesRolesShopBootstrap;
 import org.agmas.noellesroles.tray.NoellesRolesTrayEffects;
 import org.agmas.noellesroles.visibility.NoellesTargetVisibilityHandlers;
+import org.agmas.noellesroles.pickup.NoellesItemPickupHandlers;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenCommunicationManager;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenVictoryRule;
 
@@ -104,6 +105,7 @@ public final class NoellesRolesBootstrap {
         NoellesRolesBedEffects.register();
         NoellesBodyAppearanceHandlers.register();
         NoellesTargetVisibilityHandlers.init();
+        NoellesItemPickupHandlers.init();
         NoellesPlayerCollisionHandlers.init();
         NoellesRolesMovementBootstrap.init();
         NoellesRolesReplayBootstrap.register();

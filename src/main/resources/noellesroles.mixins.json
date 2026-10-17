@@ -5,17 +5,13 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "modifiers.RoundModifierStateResetMixin",
-    "modifiers.dual_personality.DualPersonalityItemPickupMixin",
-    "modifiers.dual_personality.DualPersonalityKnifeCooldownMixin",
     "roles.bartender.BartenderReseterMixin",
     "roles.bartender.CocktailItemMixin",
     "roles.winder.WinderReseterMixin",
     "roles.magician.MagicianReseterMixin",
-    "roles.executioner.ExecutionerGunPickupMixin",
     "host.MasterKeySmallDoorMixin",
     "host.MasterKeyTrainDoorMixin",
     "items.FakeGrenadeMixin",
-    "roles.jester.JesterItemEntityMixin",
     "roles.morphling.MorphlingReseterMixin",
     "roles.coroner.CoronerReseterMixin",
     "roles.prophet.ProphetReseterMixin",
@@ -54,7 +50,6 @@
     "roles.physician.PhysicianTipPoisonMixin",
     "modifiers.allergic.AllergicFinishUsingMixin",
     "roles.drugmaker.DrugmakerGiveCoinsMixin",
-    "roles.licensed_villain.LicensedVillainNoPickupMixin",
     "roles.robot.RobotNoPoisonMixin",
     "roles.robot.RobotBedPoisonMixin",
     "roles.convener.ItemCooldownManagerAccessor",
@@ -75,10 +70,6 @@
     "roles.jason.JasonAbilityDoorCollisionMixin",
     "roles.jason.JasonAbilityMovementParticleMixin",
     "roles.jason.JasonAbilityEntitySoundMixin",
-    "roles.jason.JasonKnifeExecutionCooldownMixin",
-    "roles.jason.JasonWoundedRevolverPickupMixin"
-    ,"roles.vecna.VecnaKnifeCooldownMixin",
-    "roles.outlaw.OutlawKnifeCooldownMixin",
     "roles.myers.MyersButcherUsePoseMixin"
 
   ],

@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -82,17 +81,6 @@ public final class JasonWoundManager {
                 && JasonWoundedPlayerComponent.KEY.get(player).isWounded();
     }
 
-    public static boolean shouldBlockRevolverPickup(@Nullable PlayerEntity player, @Nullable ItemEntity itemEntity) {
-        /*
-         * 左轮掉落后的拾取发生在 ItemEntity 碰撞入口，不会经过使用物品回调。
-         * 只对杰森重伤倒地玩家拦截 Wathe 左轮，避免误伤其它物品拾取和其它玩家捡枪。
-         */
-        return player != null
-                && itemEntity != null
-                && itemEntity.getStack().isOf(WatheItems.REVOLVER)
-                && isWoundedActionLocked(player);
-    }
-
     public static void handleThrowingWeaponHit(@NotNull ServerPlayerEntity thrower, @NotNull ServerPlayerEntity target, @NotNull ItemStack weaponStack) {
         if (!isAliveJason(thrower) || !GameFunctions.isPlayerAliveAndSurvival(target)) {
             return;
@@ -158,8 +146,9 @@ public final class JasonWoundManager {
                 && context.serverKiller() != null
                 && isAliveJason(context.serverKiller())) {
             /*
-             * Wathe 的匕首 payload 会在 killPlayer 之后才写冷却。
-             * 这里先记录“这次是杰森处决倒地玩家”，随后专门的 mixin 在 TAIL 消费该标记并清掉冷却。
+             * Wathe 的匕首 payload 会在 killPlayer 之后才调用 KnifeCooldownApi。
+             * 这里先记录“这次是杰森处决倒地玩家”，随后 JasonKnifeCooldownHandler
+             * 消费该一次性标记并返回 0 冷却。这样护盾或其它免死改写后不会误免冷却。
              */
             KNIFE_EXECUTION_NO_COOLDOWN_PLAYERS.add(context.serverKiller().getUuid());
         }

@@ -14,9 +14,13 @@ import org.agmas.noellesroles.roles.robber.RobberGunHandler;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterGunHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaGunHandler;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenGunHandler;
+import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityKnifeCooldownHandler;
+import org.agmas.noellesroles.roles.jason.JasonKnifeCooldownHandler;
+import org.agmas.noellesroles.roles.outlaw.OutlawKnifeCooldownHandler;
+import org.agmas.noellesroles.roles.vecna.VecnaKnifeCooldownHandler;
 
 /**
- * NoellesRoles 枪械 API 接入总引导器。
+ * NoellesRoles 枪械与匕首冷却 API 接入总引导器。
  *
  * <p>这里只编排初始化顺序；每个职业/词条的枪击逻辑仍放在自己的包里，
  * 避免重新把所有枪械规则塞回一个难维护的大类。</p>
@@ -34,8 +38,8 @@ public final class NoellesRolesCombatBootstrap {
         initialized = true;
 
         /*
-         * 注册顺序基本按“全局观察/记录 -> 自定义枪完整接管 -> 冷却/目标/反火规则”排列。
-         * GunShotApi 最终仍会按 priority 排序，因此这里主要承担可读性：
+         * 注册顺序基本按“全局观察/记录 -> 自定义枪完整接管 -> 枪械冷却/目标/反火 -> 匕首冷却”排列。
+         * GunShotApi 和 KnifeCooldownApi 最终仍会按 priority 排序，因此这里主要承担可读性：
          * 后续新增职业时，应继续只在这里调用对应职业自己的 init()。
          */
         MagicianGunHandler.init();
@@ -52,5 +56,9 @@ public final class NoellesRolesCombatBootstrap {
         MorphlingGunPenaltyHandler.init();
         VecnaGunHandler.init();
         KillerQueenGunHandler.init();
+        DualPersonalityKnifeCooldownHandler.init();
+        JasonKnifeCooldownHandler.init();
+        VecnaKnifeCooldownHandler.init();
+        OutlawKnifeCooldownHandler.init();
     }
 }
