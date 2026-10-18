@@ -235,11 +235,6 @@ public final class CookConstants {
     public static final float PSYCHO_COOK_MOOD_DRAIN_MULTIPLIER = 0.0F;
 
     /**
-     * 厨师疯魔期间临时附加的体力上限，用足够大的值模拟“无限体力”。
-     */
-    public static final float PSYCHO_COOK_STAMINA_MAX_BONUS = 100000.0F;
-
-    /**
      * 是否在厨师疯魔购买成功后给予夜视效果。
      * 默认开启；改为 false 时，厨师疯魔仍正常启动，但不会再额外获得夜视。
      */

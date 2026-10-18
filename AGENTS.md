@@ -26,6 +26,8 @@
 - `wathe/src/main/java/dev/doctor4t/wathe/cca/GameWorldComponent.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/cca/PlayerStaminaComponent.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/stamina/PlayerStaminaApi.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/api/mood/PlayerMoodTypeApi.java`
+- `wathe/src/main/java/dev/doctor4t/wathe/api/round/RoundEndFactionApi.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/movement/PlayerMovementApi.java`
 - `wathe/src/main/java/dev/doctor4t/wathe/api/client/tooltip/ItemTooltipApi.java`
 - `wathe/README_ITEM_TOOLTIP_API.md`
@@ -64,6 +66,8 @@
 - `src/main/java/org/agmas/noellesroles/pickup/NoellesItemPickupHandlers.java`：Wathe `ItemPickupApi` 的掉落物拾取聚合注册器，只调用各职业/词条自己的拾取 handler。
 - `src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`：`AllowPlayerDeath` 保护链和 Wathe `DeathApi` 分阶段击杀流程接入总引导。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`：体力与移动速度修正总引导。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMoodTypeBootstrap.java`：有效心情类型转换聚合入口，当前为空，具体规则按职业/词条拆 handler。
+- `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesRoundEndBootstrap.java`：结算阵营迁移聚合入口，当前为空，具体规则按职业/词条拆 handler。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesEconomyBootstrap.java`：金币 HUD、任务收入、被动收入和经济词条接入。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`：回放 formatter 注册。
 - `src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesPsychoBootstrap.java`：疯魔 API 接入分发器，只调用各职业自己的 `*PsychoHandler.init()`。
@@ -216,11 +220,22 @@ NoellesRoles 接入格式必须按职业或词条拆文件：`roles/<role>/<Role
 Wathe 已经公开了玩家体力和移动速度。NoellesRoles 侧如果要改这些数值，优先走公开 API，不要再 shadow `forwardSpeed` / `sidewaysSpeed`，也不要再把逻辑塞进 `travel()`、`jump()` 或 `getMovementSpeed()` 的大 mixin。
 
 - 体力读写用 `PlayerStaminaApi` / `PlayerStaminaComponent`；如果要清空、回满、增减体力或调整上限，统一从这里走。
+- 有限体力免消耗使用 `PlayerStaminaApi.registerConsumptionRule(...)` 返回 `PASS/CONSUME/SKIP`；正常能力成本用 `consumeStamina(..., CUSTOM)`，强制惩罚才用不受规则影响的 `drainStamina/clearStamina/setStamina`。免消耗不等于无限上限，也不解除低心情禁跑或 0 体力移动限制。
 - 速度叠加用 `PlayerMovementApi.registerSpeedModifier(...)`；它支持 `ADD`、`MULTIPLY`、`OVERRIDE` 和 `PASS`，适合职业 / 词条按优先级叠加加速和减速。
 - 中等和低落心情体力惩罚默认都关闭，开关在 `GameWorldComponent`，测试指令是 `/wathe:setMood` 和 `/wathe:moodStaminaPenalty`。
 - 低落惩罚开启时，`mood <= DEPRESSIVE_MOOD_THRESHOLD` 会禁跑，体力归零后不能自主水平移动和跳跃，但外力位移仍保留。
 - 中等惩罚开启时，`mood < MID_MOOD_THRESHOLD` 只在疾跑时扣体力；如果只开中等惩罚，低落心情也沿用中等规则。
 - 如果某个职业 / 词条真的需要特殊移动分支，就按职业或词条拆到 `roles/<role>/<RoleName>MovementHandler` 或 `modifiers/<modifier>/*MovementHandler`，再由 `NoellesRolesMovementBootstrap` 聚合注册。
+- 纯消耗规则可命名 `*StaminaHandler` 并继续由 MovementBootstrap 聚合。厨师疯魔只允许 `CookStaminaHandler` 跳过消耗，启动时回满一次；禁止恢复巨大体力上限、每 tick fill 或在 CookPlayerComponent 保存上限备份。
+
+### 动态心情类型与结算阵营
+
+- 玩家当前心情类型读取 `PlayerMoodTypeApi.resolveMoodType(player)`，不要用 `role.getMoodType()` 判断运行时状态，也不要改共享 Role。
+- resolver 在两端执行，只能读取已同步职业、Harpy 词条或 CCA 状态；不得依赖服务端 Map，不得在 resolver 内发任务、写组件、发包或调用会再次解析类型的 `getMood/isLowerThanMid`。FAKE 会归一心情为 1，再转 REAL 从满值开始；现有任务保留。HUD 用 `MoodHudContext.effectiveMoodType()`。
+- 具体心情转换放 `roles/<role>/*MoodTypeHandler` 或 `modifiers/<modifier>/*MoodTypeHandler`，由 `NoellesRolesMoodTypeBootstrap` 聚合。当前空入口不得擅自加入示例善良/内鬼词条。
+- 结算栏目迁移放 `roles/<role>/*RoundEndHandler` 或 `modifiers/<modifier>/*RoundEndHandler`，由 `NoellesRolesRoundEndBootstrap` 聚合。`RoundEndFactionApi` 在服务端快照阶段执行，保留真实职业名/颜色/死亡状态，不新增结算渲染 mixin。
+- 迁移同时改变普通阵营 didWin、音效与回放 is_winner；不改变局内职业阵营、杀手功能、商店、分配池或结束条件。CustomVictory/额外赢家优先。词条规则不能要求玩家仍存活，确保死亡成员仍迁移。
+- 新增真实转换状态时检查 Harpy 词条同步、回合清理、死亡时序和时停者快照；如果只读取已有同步词条，无需再建一份玩家 CCA 或静态 UUID 缓存。
 
 ### 疯魔 API 接入
 
@@ -301,6 +316,8 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesItemPickupHandlers.java`：新增掉落物拾取规则时，在这里调用对应职业/词条 `*ItemPickupHandler.init()`；具体判定不得写进聚合类。
 - `NoellesRolesDeathBootstrap.java`：新增死亡保护、反噬、击杀奖励、确认死亡后清理或尸体生成回调时，在这里按阶段接入对应 handler。
 - `NoellesRolesMovementBootstrap.java`：新增体力、速度加成 / 减速 / 覆盖规则时，在这里按职业 / 词条接入对应 handler。
+- `NoellesRolesMoodTypeBootstrap.java`：新增 REAL/FAKE/NONE 动态转换时，只调用各所有者的 `*MoodTypeHandler.init()`。
+- `NoellesRolesRoundEndBootstrap.java`：新增结算栏目迁移时，只调用各所有者的 `*RoundEndHandler.init()`。
 - `NoellesRoleLimitsBootstrap.java`：新增 Harpy 静态最大生成数。
 - `roles/<role>/<RoleName>RoleAssignmentRules.java`：新增 Harpy 职业分配互斥、单向排斥、绑定生成或阶段补位规则。
 - `modifiers/<modifier>/<ModifierName>ModifierAssignmentRules.java`：新增 Harpy 词条分配规则、词条与职业绑定/排斥、词条公告前强制配对或动态上限。

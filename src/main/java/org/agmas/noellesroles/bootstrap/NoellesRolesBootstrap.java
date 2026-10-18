@@ -111,6 +111,9 @@ public final class NoellesRolesBootstrap {
         NoellesRolesMovementBootstrap.init();
         NoellesRolesReplayBootstrap.register();
         NoellesRolesPsychoBootstrap.init();
+        // 心情类型与结算阵营属于独立职责，预留空分类入口；不在总入口堆入具体职业/词条判定。
+        NoellesRolesMoodTypeBootstrap.init();
+        NoellesRolesRoundEndBootstrap.init();
         NoellesRolesMoodTaskBootstrap.init();
         NoellesRolesBlackoutBootstrap.init();
         TimekeeperCommunicationManager.init();

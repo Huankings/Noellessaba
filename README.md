@@ -43,6 +43,8 @@
 - 掉落物拾取总引导：`src/main/java/org/agmas/noellesroles/pickup/NoellesItemPickupHandlers.java`
 - 死亡保护 / 击杀流程总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
 - 体力与移动速度修正总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`
+- 动态心情类型总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMoodTypeBootstrap.java`（当前为空，预留职业/词条分类接入）
+- 结算阵营迁移总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesRoundEndBootstrap.java`（当前为空，预留职业/词条分类接入）
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
 - 玩家碰撞总引导：`src/main/java/org/agmas/noellesroles/collision/NoellesPlayerCollisionHandlers.java`
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
@@ -312,6 +314,8 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 - `NoellesItemPickupHandlers.java` 负责统一调用 Wathe `ItemPickupApi` 的职业 / 词条拾取 handler，不承载具体职业判断。
 - `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath` 并接入 Wathe `DeathApi`，保持“先保命，再强制放行，再反噬”和“死亡阶段按优先级执行”的顺序。
 - `NoellesRolesMovementBootstrap.java` 负责统一接入 Wathe `PlayerStaminaApi` / `PlayerMovementApi`，把各职业 / 词条的体力、加速、减速和覆盖规则聚合到一起。
+- `NoellesRolesMoodTypeBootstrap.java` 只编排各职业 / 词条的 `*MoodTypeHandler.init()`；当前没有具体转换规则，不会改变现有职业。
+- `NoellesRolesRoundEndBootstrap.java` 只编排各职业 / 词条的 `*RoundEndHandler.init()`；当前没有具体迁移规则，不会改变现有结算。
 - `NoellesRolesShopBootstrap.java` 负责固定商店、动态商店和默认杀手商店改写。
 - `NoellesRolesShops.java` 负责支付、物品交付、特殊道具瞬发结算和购买回填。
 - `NoellesRolesEconomyBootstrap.java` 负责金币 HUD、任务收入、被动收入和经济类词条接入。
@@ -370,11 +374,40 @@ src/main/java/org/agmas/noellesroles/modifiers/<modifier>/<ModifierName>Modifier
 Wathe 已经把玩家体力和移动速度公开化了。NoellesRoles 侧不需要再 shadow `PlayerEntity` 的 `forwardSpeed` / `sidewaysSpeed`，也不要再自己重写 `travel()`、`jump()` 或 `getMovementSpeed()`。
 
 - 体力读写统一走 `PlayerStaminaApi` / `PlayerStaminaComponent`：清空、回满、增减当前体力、调整体力上限、判断是否还能疾跑 / 自主移动 / 跳跃，都从这里拿。
+- 正常体力成本使用 `consumeStamina(player, amount, cause)`；需要免除疾跑、低心情走路或扩展能力成本时，用 `registerConsumptionRule(...)` 返回 `SKIP`。强制惩罚仍用 `drainStamina/clearStamina/setStamina`，这些入口不会被免消耗规则拦截。
 - 速度叠加统一走 `PlayerMovementApi.registerSpeedModifier(...)`。它支持 `ADD`、`MULTIPLY`、`OVERRIDE` 和 `PASS`，扩展职业要做加速或减速就注册修正器，不要自己覆盖原版速度。
 - 当前体力基础值、三档消耗、三档恢复、心情阈值和两个默认关闭的惩罚开关都在 Wathe `GameConstants` / `GameWorldComponent` 里，NoellesRoles 只读不复制。
 - 中等心情惩罚开启后，`mood < MID_MOOD_THRESHOLD` 只在疾跑时扣体力；低落心情惩罚开启后，`mood <= DEPRESSIVE_MOOD_THRESHOLD` 会禁跑、走路耗体力，体力归零后无法自主水平移动和跳跃，但外力位移仍保留。
 - 两个惩罚开关默认都关闭，测试时可用 `/wathe:setMood` 和 `/wathe:moodStaminaPenalty`。
 - 如果某个职业或词条需要专属移动分支，按 `roles/<role>/<RoleName>MovementHandler.java` 或 `modifiers/<modifier>/*MovementHandler.java` 拆开，再由 `NoellesRolesMovementBootstrap` 聚合注册。
+- 厨师疯魔的实现位于 `roles/cook/CookStaminaHandler.java`：成功启动时只回满一次，之后跳过 Wathe 正常体力消耗。不得重新引入巨大临时上限、每 tick 回满或在 `CookPlayerComponent` 保存体力上限备份。
+
+## 动态心情类型与结算阵营接入
+
+Wathe 的 `PlayerMoodTypeApi` 负责按玩家转换 REAL、FAKE、NONE；`Role#getMoodType()` 只表示职业注册基础值。
+NoellesRoles 的规则必须按所有者拆分：
+
+```text
+src/main/java/org/agmas/noellesroles/roles/<role>/<RoleName>MoodTypeHandler.java
+src/main/java/org/agmas/noellesroles/modifiers/<modifier>/<ModifierName>MoodTypeHandler.java
+```
+
+再由 `NoellesRolesMoodTypeBootstrap` 调用各自 `init()`。resolver 同时用于服务端机制和客户端 HUD，
+因此条件必须读取 Harpy `WorldModifierComponent` 等两端已同步状态；不得只依赖服务端静态 Map，
+也不得在 resolver 内改组件、发任务或递归读取 `getMood()`。FAKE 会把底层心情归一为满值，转回 REAL 从满值开始；
+已有任务保留。自定义 HUD 判断运行时类型时使用 `MoodHudContext.effectiveMoodType()`，不要读取职业基础类型。
+
+Wathe 的 `RoundEndFactionApi` 只在服务端生成结算快照时迁移普通阵营栏目。NoellesRoles 文件格式为：
+
+```text
+src/main/java/org/agmas/noellesroles/roles/<role>/<RoleName>RoundEndHandler.java
+src/main/java/org/agmas/noellesroles/modifiers/<modifier>/<ModifierName>RoundEndHandler.java
+```
+
+由 `NoellesRolesRoundEndBootstrap` 聚合。迁移同时改变普通阵营个人胜负、音效和回放结果，但不会改变实时职业、
+杀手能力、商店、同伙关系、Harpy 分配池或 Murder 结束条件；需要完整阵营转换时应分别接入对应玩法 API。
+规则判断应覆盖死者，不要以“当前仍存活”为迁移前提。独立胜利继续由 `VictoryApi/CustomVictory` 处理。
+本次两个 bootstrap 有意为空：善良、内鬼只是未来应用示例，没有注册 Modifier、资源或实际规则。
 
 ## 时停者回溯快照接入
 

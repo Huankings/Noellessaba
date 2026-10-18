@@ -2,7 +2,6 @@ package org.agmas.noellesroles.roles.cook;
 
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
-import dev.doctor4t.wathe.api.stamina.PlayerStaminaApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -29,8 +28,6 @@ public class CookPlayerComponent implements AutoSyncedComponent, ServerTickingCo
 
     private final PlayerEntity player;
     private int eatTicks = 0;
-    private boolean psychoStaminaBonusApplied = false;
-    private float staminaBonusBeforePsycho = 0.0F;
 
     public CookPlayerComponent(@NotNull PlayerEntity player) {
         this.player = player;
@@ -50,43 +47,11 @@ public class CookPlayerComponent implements AutoSyncedComponent, ServerTickingCo
     }
 
     public void reset() {
-        /*
-         * 玩家重置可能发生在厨师疯魔还没自然结束时。
-         * 先恢复体力上限，再清厨师自己的状态，避免临时“无限体力”加成残留到下一局。
-         */
-        this.restorePsychoStaminaBonusIfNeeded();
+        // 体力免消耗直接依赖 Wathe 疯魔 profile，本组件只负责吃过食物的短暂标记。
         this.eatTicks = 0;
         this.sync();
     }
 
-    public void applyPsychoStaminaBonus() {
-        if (!this.psychoStaminaBonusApplied) {
-            /*
-             * Wathe 当前只提供一个全局 maxStaminaBonus 字段。
-             * 进入厨师疯魔时先记住原值，结束时再恢复，避免把其它未来机制写入的体力修正永久覆盖。
-             */
-            this.staminaBonusBeforePsycho = PlayerStaminaApi.getMaxStaminaBonus(this.player);
-            this.psychoStaminaBonusApplied = true;
-            this.sync();
-        }
-
-        PlayerStaminaApi.setMaxStaminaBonus(
-                this.player,
-                this.staminaBonusBeforePsycho + CookConstants.PSYCHO_COOK_STAMINA_MAX_BONUS
-        );
-        PlayerStaminaApi.fillStamina(this.player);
-    }
-
-    public void restorePsychoStaminaBonusIfNeeded() {
-        if (!this.psychoStaminaBonusApplied) {
-            return;
-        }
-
-        PlayerStaminaApi.setMaxStaminaBonus(this.player, this.staminaBonusBeforePsycho);
-        this.psychoStaminaBonusApplied = false;
-        this.staminaBonusBeforePsycho = 0.0F;
-        this.sync();
-    }
 
     @Override
     public void serverTick() {
@@ -114,14 +79,10 @@ public class CookPlayerComponent implements AutoSyncedComponent, ServerTickingCo
     @Override
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.@NotNull WrapperLookup registryLookup) {
         tag.putInt("eatTicks", this.eatTicks);
-        tag.putBoolean("psychoStaminaBonusApplied", this.psychoStaminaBonusApplied);
-        tag.putFloat("staminaBonusBeforePsycho", this.staminaBonusBeforePsycho);
     }
 
     @Override
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.@NotNull WrapperLookup registryLookup) {
         this.eatTicks = tag.contains("eatTicks") ? tag.getInt("eatTicks") : 0;
-        this.psychoStaminaBonusApplied = tag.contains("psychoStaminaBonusApplied") && tag.getBoolean("psychoStaminaBonusApplied");
-        this.staminaBonusBeforePsycho = tag.contains("staminaBonusBeforePsycho") ? tag.getFloat("staminaBonusBeforePsycho") : 0.0F;
     }
 }

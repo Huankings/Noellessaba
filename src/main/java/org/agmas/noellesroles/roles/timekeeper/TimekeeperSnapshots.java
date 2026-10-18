@@ -158,8 +158,8 @@ public final class TimekeeperSnapshots {
     private static final List<ComponentEntry> PLAYER_COMPONENTS = List.of(
             component("wathe:mood", PlayerMoodComponent.KEY),
             /*
-             * 厨师疯魔会临时提高体力上限并每 tick 回满体力。
-             * 体力本身是局内运行态，回溯到疯魔前/中/后都应该恢复当时的 stamina 和 maxStaminaBonus。
+             * 体力与扩展上限修正属于局内运行态，回溯时都要恢复。
+             * 厨师疯魔的免消耗规则直接读取同批恢复的 wathe:psycho profile，不另存上限模拟状态。
              */
             component("wathe:stamina", PlayerStaminaComponent.KEY),
             component("wathe:shop", PlayerShopComponent.KEY),

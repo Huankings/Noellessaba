@@ -4,12 +4,12 @@ import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.psycho.PsychoModeProfile;
 import dev.doctor4t.wathe.api.psycho.PsychoVisualSettings;
+import dev.doctor4t.wathe.api.stamina.PlayerStaminaApi;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
@@ -84,6 +84,12 @@ public final class CookPsychoHandler {
         boolean started = PsychoModeApi.start(player, PROFILE_ID);
         if (started) {
             /*
+             * 只在疯魔成功启动时回满一次有限体力，保证耗尽时购买疯魔也能立刻行动。
+             * 持续免消耗交给 CookStaminaHandler 的规则，不提高上限、不每 tick 回满；
+             * 因此其他技能在疯魔期间写入的体力惩罚仍能保留，不会被厨师 tick 悄悄覆盖。
+             */
+            PlayerStaminaApi.fillStamina(player);
+            /*
              * 厨师疯魔购买成功后按常量开关决定是否额外给予夜视。
              * 这样后续测试不同地图亮度或平衡性时，只需要改 CookConstants 里的布尔值。
              * 持续时间直接复用厨师疯魔 profile 的持续 tick，确保玩家看到的夜视窗口和疯魔倒计时一致。
@@ -110,16 +116,4 @@ public final class CookPsychoHandler {
         return PsychoModeApi.isActive(player, PROFILE_ID);
     }
 
-    public static void tickPsychoState(@NotNull ServerPlayerEntity player) {
-        CookPlayerComponent cookState = CookPlayerComponent.KEY.get(player);
-        if (isCookPsychoActive(player)) {
-            /*
-             * “无限体力”用 Wathe 公开体力 API 表达：
-             * 进入状态时加一个足够大的上限，每 tick 回满；退出时恢复原上限。
-             */
-            cookState.applyPsychoStaminaBonus();
-        } else {
-            cookState.restorePsychoStaminaBonusIfNeeded();
-        }
-    }
 }

@@ -128,7 +128,6 @@ public final class NoellesRolesEventBootstrap {
                         moodDrainMultiplier *= CookConstants.PSYCHO_COOK_MOOD_DRAIN_MULTIPLIER;
                     }
                     PlayerMoodComponent.KEY.get(player).setMoodDrainMultiplier(moodDrainMultiplier);
-                    CookPsychoHandler.tickPsychoState(player);
                 }
 
                 SwapperAbility.tickPendingSwaps(server);
