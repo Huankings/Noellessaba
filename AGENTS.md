@@ -689,3 +689,4 @@ HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`�
 - `ClientInputApi` 只负责客户端体验；攻击、物品使用和自定义 C2S packet 必须保留服务端校验。
 - 玩家级硬重置使用 Harpy `ResetPlayerEvent`，按职业放 `roles/<role>/*ResetHandler`；世界级开局前清理使用 Wathe `GameEvents.ON_BEGIN_INITIALIZE`。
 - 不得重新新增 `*ReseterMixin`、`RoundModifierStateResetMixin`，也不要直接注入 `GameFunctions.resetPlayer/initializeGame/finalizeGame`。
+- `NoellesRolesEventBootstrap` 不得重新集中注册职业 `ResetPlayerEvent` 或维护 `registerRoundCleanup` 大块；玩家组件、世界组件和职业实体清理必须放回对应职业/词条 `*ResetHandler`，再由 `NoellesRolesResetBootstrap` 聚合。

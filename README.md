@@ -973,3 +973,8 @@ NoellesRoles 的职业输入限制已统一迁移到 Wathe `ClientInputApi`。�
 `ResetPlayerEvent`。恋人和双重人格等世界级状态使用 Wathe `GameEvents.ON_BEGIN_INITIALIZE`
 在职业/词条分配前清理，并在 `ON_FINISH_FINALIZE` 完成结算后的收尾。旧的 `*ReseterMixin` 和
 `RoundModifierStateResetMixin` 已删除。
+
+后续整理中，原本残留在 `NoellesRolesEventBootstrap` 的玩家组件重置和
+`registerRoundCleanup` 也已全部按所有者迁移：玩家状态由各职业 `*ResetHandler` 注册
+`ResetPlayerEvent`，世界组件与临时实体由对应职业 handler 注册 `ON_FINISH_FINALIZE`。
+`NoellesRolesEventBootstrap` 不再直接认识这些组件或实体，只保留真正的全局事件与 server tick 编排。
