@@ -396,6 +396,7 @@ Harpy 会在 `refreshRoles()` 中自动给非特殊职业生成 announcement；N
 - 世界状态：在 `registerWorldComponentFactories`
 - 只给本人看的状态：`shouldSyncWith` 限制为本人。
 - 所有人可见的被动透视/标记：`shouldSyncWith` 可以同步给所有人，再由客户端 handler 判断观看者身份。
+- Wathe 私有玩家组件若只有少数职业需要观察，使用 `PlayerComponentSyncApi.registerObserverRule(...)` 注册窄范围收件人；毒药观察规则按职业放在 `roles/<role>/<RoleName>PoisonSyncHandler`，`NoellesPoisonSyncHandler` 只聚合注册与统一刷新，禁止把职业判断堆回聚合类或将 `PlayerPoisonComponent` 恢复成全员同步。
 - 重置入口：`ResetPlayerEvent`、职业分配 handler、回合结束 `GameEvents.ON_FINISH_FINALIZE`。
 
 时停者回溯会按 `TimekeeperSnapshots` 的快照白名单恢复组件 NBT。新增组件时按下面规则处理：

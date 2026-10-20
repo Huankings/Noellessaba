@@ -43,6 +43,8 @@
 - 掉落物拾取总引导：`src/main/java/org/agmas/noellesroles/pickup/NoellesItemPickupHandlers.java`
 - 死亡保护 / 击杀流程总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
 - 体力与移动速度修正总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`
+- Wathe 玩家组件选择性同步：`poison/NoellesPoisonSyncHandler` 只负责聚合与刷新，制毒师、医师、酒保分别在自己的 `roles/<role>/<RoleName>PoisonSyncHandler` 注册目标毒药观察规则，不恢复全员广播
+- 毒药观察权限在通用服务端入口注册，职业分配结束后补发已有目标；不触发分配事件的 soft 转职、死亡和回溯由 Wathe 每秒检查权限变化，权限未变化不发包。该缓存只属于网络连接，不加入时停快照。详见 Wathe `README_PLAYER_COMPONENT_SYNC_API.md`。
 - 动态心情类型总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMoodTypeBootstrap.java`（当前为空，预留职业/词条分类接入）
 - 结算阵营迁移总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesRoundEndBootstrap.java`（当前为空，预留职业/词条分类接入）
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`

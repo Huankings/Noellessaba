@@ -56,6 +56,8 @@ import org.agmas.noellesroles.roles.commoner.CommonerRoleAssignedHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawRoleAssignedHandler;
 import org.agmas.noellesroles.roles.myers.MyersRoleAssignedHandler;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenRoleAssignedHandler;
+import org.agmas.noellesroles.poison.NoellesPoisonSyncHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * noellesroles 的职业分配事件总引导器。
@@ -147,6 +149,14 @@ public final class NoellesRolesRoleAssignedBootstrap {
             OutlawRoleAssignedHandler.onRoleAssigned(player, role);
             MyersRoleAssignedHandler.onRoleAssigned(player, role);
             KillerQueenRoleAssignedHandler.onRoleAssigned(player, role);
+
+            /*
+             * 正常开局时目标通常还没有中毒；这个补发主要覆盖局中 /setRole、状态转职等场景。
+             * PlayerComponentSyncApi 会再次走目标组件的观察者规则，非制毒师/医师/酒保不会收到包。
+             */
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                NoellesPoisonSyncHandler.syncTrackedTargetsAfterRoleAssigned(serverPlayer);
+            }
         });
     }
 
