@@ -14,6 +14,7 @@ import org.agmas.noellesroles.roles.robber.RobberGunHandler;
 import org.agmas.noellesroles.roles.shadow_jester.ShadowJesterGunHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaGunHandler;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenGunHandler;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalCombatHandler;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityKnifeCooldownHandler;
 import org.agmas.noellesroles.roles.jason.JasonKnifeCooldownHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawKnifeCooldownHandler;
@@ -56,6 +57,7 @@ public final class NoellesRolesCombatBootstrap {
         MorphlingGunPenaltyHandler.init();
         VecnaGunHandler.init();
         KillerQueenGunHandler.init();
+        PartyAnimalCombatHandler.init();
         DualPersonalityKnifeCooldownHandler.init();
         JasonKnifeCooldownHandler.init();
         VecnaKnifeCooldownHandler.init();

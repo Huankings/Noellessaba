@@ -10,6 +10,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 
 /**
  * 杰森对汽油目标的橙色本能透视。
@@ -29,8 +30,23 @@ public final class JasonInstinctHandler {
                      */
                     if (GameFunctions.isPlayerAliveAndSurvival(viewer)
                             && target instanceof PlayerEntity targetPlayer
-                            && JasonAbilityRules.isAbilityActiveLike(targetPlayer)) {
+                            && JasonAbilityRules.isAbilityActiveLike(targetPlayer)
+                            && !canProjectingSpiritualistObserveJason(viewer)) {
                         return InstinctApi.HighlightResult.hide();
+                    }
+                    return InstinctApi.HighlightResult.pass();
+                }
+        );
+
+        InstinctApi.registerHighlight(
+                NoellesInstinctHandlers.id("jason_spiritualist_projection"),
+                JasonConstants.ABILITY_INSTINCT_SUPPRESSION_PRIORITY + 1,
+                (viewer, target) -> {
+                    /* 灵魂出窍期间对无恶不在杰森持续显示职业色，不依赖本能按键。 */
+                    if (target instanceof PlayerEntity targetPlayer
+                            && JasonAbilityRules.isAbilityActiveLike(targetPlayer)
+                            && canProjectingSpiritualistObserveJason(viewer)) {
+                        return InstinctApi.HighlightResult.color(NoellesRoleRegistry.JASON.color());
                     }
                     return InstinctApi.HighlightResult.pass();
                 }
@@ -61,5 +77,12 @@ public final class JasonInstinctHandler {
                     return InstinctApi.HighlightResult.color(JasonConstants.GASOLINE_INSTINCT_COLOR);
                 }
         );
+    }
+
+    /** 只有仍存活且正在灵魂出窍的灵术师可以穿透杰森的本能隐藏规则。 */
+    private static boolean canProjectingSpiritualistObserveJason(PlayerEntity viewer) {
+        return GameFunctions.isPlayerAliveAndSurvival(viewer)
+                && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.SPIRITUALIST)
+                && SpiritualistPlayerComponent.KEY.get(viewer).isProjecting();
     }
 }

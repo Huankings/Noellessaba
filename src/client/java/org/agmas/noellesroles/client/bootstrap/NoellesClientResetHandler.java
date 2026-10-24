@@ -20,6 +20,7 @@ import org.agmas.noellesroles.client.roles.spiritualist.SpiritualistClientContro
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperWatchInputHandler;
 import org.agmas.noellesroles.client.roles.vulture.VultureAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenMusicController;
+import org.agmas.noellesroles.client.roles.party_animal.PartyAnimalVoiceChatClientAudioHandler;
 import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserPlayerWidget;
 import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerState;
 import org.agmas.noellesroles.client.ui.roles.operator.OperatorPlayerWidget;
@@ -59,5 +60,6 @@ public final class NoellesClientResetHandler {
         VultureAbilityInputHandler.reset();
         NoellesRolesGrenadeInputHandler.reset();
         TimekeeperWatchInputHandler.reset();
+        PartyAnimalVoiceChatClientAudioHandler.reset();
     }
 }

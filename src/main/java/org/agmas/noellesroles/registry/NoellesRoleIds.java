@@ -93,6 +93,8 @@ public final class NoellesRoleIds {
     public static final Identifier OUTLAW_ID = NoellesRolesCore.id("outlaw");
     /** 杀手皇后职业稳定 id。 */
     public static final Identifier KILLER_QUEEN_ID = NoellesRolesCore.id("killer_queen");
+    /** 派对狂职业稳定 id。 */
+    public static final Identifier PARTY_ANIMAL_ID = NoellesRolesCore.id("party_animal");
 
     private NoellesRoleIds() {
     }

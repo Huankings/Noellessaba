@@ -1,7 +1,10 @@
 package org.agmas.noellesroles.roles.jason;
 
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
+import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 /**
@@ -25,6 +28,21 @@ public final class JasonTargetVisibilityHandler {
                 context -> {
                     if (context.viewer().getUuid().equals(context.target().getUuid())) {
                         return TargetVisibilityApi.Decision.PASS;
+                    }
+
+                    /*
+                     * 灵术师灵魂出窍时可以看见无恶不在的杰森本体；只放开渲染，
+                     * 目标选择、交互和攻击仍由下面的幽魂规则拒绝，避免绕过出窍期间的能力限制。
+                     */
+                    if (JasonAbilityRules.isAbilityActiveLike(context.target())
+                            && SpiritualistPlayerComponent.KEY.get(context.viewer()).isProjecting()
+                            && GameFunctions.isPlayerAliveAndSurvival(context.viewer())
+                            && GameFunctions.isPlayerAliveAndSurvival(context.target())
+                            && GameWorldComponent.KEY.get(context.viewer().getWorld()).isRole(context.viewer(), NoellesRoleRegistry.SPIRITUALIST)) {
+                        if (context.action() == TargetVisibilityApi.Action.RENDER) {
+                            return TargetVisibilityApi.Decision.ALLOW;
+                        }
+                        return TargetVisibilityApi.Decision.DENY;
                     }
 
                     /*

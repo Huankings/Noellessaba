@@ -75,6 +75,8 @@ import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
 import org.agmas.noellesroles.roles.vecna.VecnaPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalPlayerComponent;
+import org.agmas.noellesroles.roles.party_animal.HeliumBuzzPlayerComponent;
 import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
 import org.jetbrains.annotations.NotNull;
@@ -155,6 +157,8 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, JasonAbilityBlindnessComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(JasonAbilityBlindnessComponent::new);
         /* 酸液速度和晕眩都是局内时间线状态，复活不复制，由时停者快照负责回滚。 */
         registry.beginRegistration(PlayerEntity.class, KillerQueenPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(KillerQueenPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, PartyAnimalPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(PartyAnimalPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, HeliumBuzzPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(HeliumBuzzPlayerComponent::new);
     }
 
     @Override

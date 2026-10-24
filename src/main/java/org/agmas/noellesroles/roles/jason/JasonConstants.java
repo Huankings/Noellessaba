@@ -285,6 +285,12 @@ public final class JasonConstants {
      */
     public static final int ABILITY_INITIAL_COOLDOWN_TICKS = GameConstants.getInTicks(0, 40);
 
+    /** 无恶不在期间给每名存活平民/义警的金币发放间隔；100 tick 即 5 秒，首次奖励也需等满该间隔。 */
+    public static final int ABILITY_GOOD_FACTION_REWARD_INTERVAL_TICKS = GameConstants.getInTicks(0, 5);
+
+    /** 无恶不在期间每次发给符合阵营条件玩家的金币数量；奖励不在发动瞬间提前发放。 */
+    public static final int ABILITY_GOOD_FACTION_REWARD_COINS = 25;
+
     /**
      * 无恶不在正常解除后的冷却。
      * 用户指定为 15 秒；只有该冷却允许在杰森确认击杀后被立即清零。

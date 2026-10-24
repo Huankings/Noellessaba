@@ -97,6 +97,8 @@ import org.agmas.noellesroles.roles.outlaw.OutlawPlayerComponent;
 import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
 import org.agmas.noellesroles.roles.outlaw.OutlawWorldComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
+import org.agmas.noellesroles.roles.party_animal.HeliumBuzzPlayerComponent;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalPlayerComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistHostComponent;
 import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 import org.agmas.noellesroles.roles.stalker.StalkerPlayerComponent;
@@ -138,7 +140,13 @@ public final class TimekeeperSnapshots {
             "noellesroles:morphling",
             "noellesroles:morph_mark_player",
             "noellesroles:convener_disguise",
-            "noellesroles:insane_damned_paranoid_killer"
+            "noellesroles:insane_damned_paranoid_killer",
+            /*
+             * 变声等级决定观察者的被动透视颜色，以及原始说话人本机麦克风的语音倍率。
+             * 回溯播放中需要显示历史帧对应的等级，因此该组件需要中间帧同步；
+             * 派对狂自己的选择/标记组件仍只在最终帧统一刷新。
+             */
+            "noellesroles:helium_buzz"
     );
     private static final Set<String> INTERMEDIATE_WORLD_SYNC_IDS = Set.of(
             "noellesroles:morph_body_disguise_world"
@@ -170,6 +178,10 @@ public final class TimekeeperSnapshots {
             component("wathe:instinct", PlayerInstinctComponent.KEY),
             component("wathe:note", PlayerNoteComponent.KEY),
             component("noellesroles:ability", AbilityPlayerComponent.KEY),
+            /* 派对狂的类型选择、标记目标和倒计时都属于局内时间线。 */
+            component("noellesroles:party_animal", PartyAnimalPlayerComponent.KEY),
+            /* 普通变声等级决定语音、被动透视和击杀增益，必须随历史帧回滚；调试等级由快照专用读写保留为永久配置。 */
+            component("noellesroles:helium_buzz", HeliumBuzzPlayerComponent.KEY),
             component("noellesroles:death_process", DeathProcessComponent.KEY),
             component("noellesroles:delusion", DelusionPlayerComponent.KEY),
             component("noellesroles:doused", DousedPlayerComponent.KEY),
@@ -938,7 +950,12 @@ public final class TimekeeperSnapshots {
             RegistryWrapper.WrapperLookup registryLookup
     ) {
         NbtCompound tag = new NbtCompound();
-        key.get(provider).writeToNbt(tag, registryLookup);
+        if (key == HeliumBuzzPlayerComponent.KEY && provider instanceof net.minecraft.entity.player.PlayerEntity player) {
+            /* 调试等级是永久保存的配置，不能被时间回溯覆盖；快照只取普通时间线字段。 */
+            HeliumBuzzPlayerComponent.KEY.get(player).writeTimekeeperSnapshot(tag);
+        } else {
+            key.get(provider).writeToNbt(tag, registryLookup);
+        }
         return tag;
     }
 
@@ -951,7 +968,12 @@ public final class TimekeeperSnapshots {
             boolean syncClientState
     ) {
         Component component = key.get(provider);
-        component.readFromNbt(tag.copy(), registryLookup);
+        if (key == HeliumBuzzPlayerComponent.KEY && provider instanceof net.minecraft.entity.player.PlayerEntity player) {
+            /* 恢复普通变声时保留当前调试等级，满足调试等级永久、全局有效的约定。 */
+            HeliumBuzzPlayerComponent.KEY.get(player).readTimekeeperSnapshot(tag.copy());
+        } else {
+            component.readFromNbt(tag.copy(), registryLookup);
+        }
         if (syncClientState) {
             ((ComponentKey) key).sync(provider);
         }

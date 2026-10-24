@@ -44,6 +44,7 @@ import org.agmas.noellesroles.roles.outlaw.OutlawDeathHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawDeathProtectionHandler;
 import org.agmas.noellesroles.roles.myers.MyersDeathHandler;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenDeathHandler;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalDeathHandler;
 
 /**
  * noellesroles 的死亡事件总引导器。
@@ -127,6 +128,7 @@ public final class NoellesRolesDeathBootstrap {
         OutlawDeathHandler.init();
         MyersDeathHandler.init();
         KillerQueenDeathHandler.init();
+        PartyAnimalDeathHandler.init();
     }
 
     /**

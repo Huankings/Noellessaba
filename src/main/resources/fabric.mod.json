@@ -23,7 +23,8 @@
       "org.agmas.noellesroles.NoellesRolesComponents"
     ],
     "voicechat": [
-      "org.agmas.noellesroles.voice.NoellesrolesVoiceChatPlugin"
+      "org.agmas.noellesroles.voice.NoellesrolesVoiceChatPlugin",
+      "org.agmas.noellesroles.voice.HeliumBuzzVoicechatPlugin"
     ]
   },
 
@@ -105,6 +106,8 @@
       ,"noellesroles:myers",
       "noellesroles:killer_queen_player",
       "noellesroles:killer_queen"
+      ,"noellesroles:party_animal"
+      ,"noellesroles:helium_buzz"
     ]
   },
   "mixins": [

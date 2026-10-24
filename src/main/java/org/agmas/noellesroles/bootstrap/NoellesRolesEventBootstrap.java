@@ -43,6 +43,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperRiftHandler;
 import org.agmas.noellesroles.roles.swapper.SwapperAbility;
 import org.agmas.noellesroles.roles.outlaw.OutlawManager;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenManager;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalAbility;
 
 /**
  * NoellesRoles 的事件和生命周期总引导器。
@@ -103,6 +104,7 @@ public final class NoellesRolesEventBootstrap {
                 LicensedVillainMomentManager.tickWorld(world);
                 KillerQueenManager.tickWorld(world);
                 for (ServerPlayerEntity player : world.getPlayers()) {
+                    PartyAnimalAbility.tick(player);
                     float moodDrainMultiplier;
                     if (gameWorld.isRole(player, NoellesRoleRegistry.ANGEL)) {
                         moodDrainMultiplier = AngelConstants.MOOD_DRAIN_MULTIPLIER;

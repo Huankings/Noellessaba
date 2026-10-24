@@ -22,6 +22,7 @@ import org.agmas.noellesroles.roles.timekeeper.TimekeeperConstants;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.agmas.noellesroles.roles.myers.MyersConstants;
+import org.agmas.noellesroles.roles.party_animal.HeliumBuzzPlayerComponent;
 
 /**
  * NoellesRoles 调试/配置指令入口。
@@ -94,7 +95,23 @@ public final class NoellesRolesCommand {
                                         .executes(NoellesRolesCommand::removeLovers)))
                         .then(CommandManager.literal("shadow_jester")
                                 .then(CommandManager.argument("player", EntityArgumentType.player())
-                                        .executes(NoellesRolesCommand::removeShadowJester)))));
+                                        .executes(NoellesRolesCommand::removeShadowJester))))
+                .then(CommandManager.literal("party_animal")
+                        .then(CommandManager.literal("set")
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .then(CommandManager.argument("level", IntegerArgumentType.integer(-3, 3))
+                                                .executes(NoellesRolesCommand::setPartyAnimalLevel))))
+                        .then(CommandManager.literal("set_self")
+                                .then(CommandManager.argument("level", IntegerArgumentType.integer(-3, 3))
+                                        .executes(NoellesRolesCommand::setPartyAnimalSelfLevel)))
+                        .then(CommandManager.literal("set_all")
+                                .then(CommandManager.argument("level", IntegerArgumentType.integer(-3, 3))
+                                        .executes(NoellesRolesCommand::setPartyAnimalAllLevel)))
+                        .then(CommandManager.literal("clear")
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(NoellesRolesCommand::clearPartyAnimalLevel)))
+                        .then(CommandManager.literal("clear_all")
+                                .executes(NoellesRolesCommand::clearPartyAnimalAllLevels))));
     }
 
     private static int setLovers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -343,6 +360,46 @@ public final class NoellesRolesCommand {
                 ),
                 true
         );
+        return 1;
+    }
+
+    private static int setPartyAnimalLevel(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        int level = IntegerArgumentType.getInteger(context, "level");
+        HeliumBuzzPlayerComponent.KEY.get(player).setDebugLevel(level);
+        context.getSource().sendFeedback(() -> Text.translatable("commands.noellesroles.party_animal.level_set", player.getDisplayName(), level), true);
+        return 1;
+    }
+
+    private static int setPartyAnimalSelfLevel(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        int level = IntegerArgumentType.getInteger(context, "level");
+        HeliumBuzzPlayerComponent.KEY.get(player).setDebugLevel(level);
+        context.getSource().sendFeedback(() -> Text.translatable("commands.noellesroles.party_animal.self_level_set", level), true);
+        return 1;
+    }
+
+    private static int setPartyAnimalAllLevel(CommandContext<ServerCommandSource> context) {
+        int level = IntegerArgumentType.getInteger(context, "level");
+        for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
+            HeliumBuzzPlayerComponent.KEY.get(player).setDebugLevel(level);
+        }
+        context.getSource().sendFeedback(() -> Text.translatable("commands.noellesroles.party_animal.all_level_set", level), true);
+        return 1;
+    }
+
+    private static int clearPartyAnimalLevel(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        HeliumBuzzPlayerComponent.KEY.get(player).setDebugLevel(0);
+        context.getSource().sendFeedback(() -> Text.translatable("commands.noellesroles.party_animal.level_cleared", player.getDisplayName()), true);
+        return 1;
+    }
+
+    private static int clearPartyAnimalAllLevels(CommandContext<ServerCommandSource> context) {
+        for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
+            HeliumBuzzPlayerComponent.KEY.get(player).setDebugLevel(0);
+        }
+        context.getSource().sendFeedback(() -> Text.translatable("commands.noellesroles.party_animal.all_levels_cleared"), true);
         return 1;
     }
 }

@@ -2,7 +2,9 @@ package org.agmas.noellesroles.roles.jason;
 
 import dev.doctor4t.wathe.api.death.DeathContext;
 import dev.doctor4t.wathe.api.death.DeathDecision;
+import dev.doctor4t.wathe.api.Faction;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -276,6 +278,10 @@ public final class JasonAbilityManager {
             }
 
             component.tickPhase();
+            if (component.isFullyActive()
+                    && component.getActiveTicks() % JasonConstants.ABILITY_GOOD_FACTION_REWARD_INTERVAL_TICKS == 0) {
+                grantGoodFactionAbilityReward(world, gameWorld);
+            }
             clearAbilityFire(player);
             if (player.isUsingItem()) {
                 /*
@@ -306,6 +312,28 @@ public final class JasonAbilityManager {
                 recordExitFinished(player);
                 triggerScare(player);
             }
+        }
+    }
+
+    /**
+     * 无恶不在每累计 5 秒，为仍然存活的平民和义警发放一次金币。
+     * 只依据 Wathe 显式阵营判断，且奖励目标只包含本世界中仍存活的玩家。
+     */
+    private static void grantGoodFactionAbilityReward(
+            @NotNull ServerWorld world,
+            @NotNull GameWorldComponent gameWorld
+    ) {
+        for (ServerPlayerEntity recipient : world.getPlayers()) {
+            if (!GameFunctions.isPlayerAliveAndSurvival(recipient)) {
+                continue;
+            }
+
+            var role = gameWorld.getRole(recipient);
+            if (role == null || (role.getFaction() != Faction.CIVILIAN && role.getFaction() != Faction.VIGILANTE)) {
+                continue;
+            }
+
+            PlayerShopComponent.KEY.get(recipient).addToBalance(JasonConstants.ABILITY_GOOD_FACTION_REWARD_COINS);
         }
     }
 

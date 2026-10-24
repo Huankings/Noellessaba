@@ -246,6 +246,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - 服务端启动疯魔用 `PsychoModeApi.start(player, profileId)`，提前结束或回合清理用 `PsychoModeApi.stop(player, recordReplay)`；不要直接写 `PlayerPsychoComponent#psychoTicks`、`armour` 或手动增减 `psychosActive`。
 - 增加疯魔剩余时间必须用 `PsychoModeApi.addRemainingTicks`，动态增加疯魔护盾必须用 `PsychoModeApi.addArmourLayers`；两个入口都会校验当前 profile 并同步组件。高优先级特殊时刻暂时让位时使用 `pause/resume`；暂停不是结束，不应记录结束回放或清理该轮职业历史。
 - 跨职业强制疯魔冷却使用 profile 的 `cooldownItem` 配合 `ensureMinimumCooldown`，已有更长冷却不得缩短。修改 Wathe 疯魔 API 后先构建 Wathe、复制非 sources jar 到本工程 `libs`，再编译 NoellesRoles。
+- 需要清理全部疯魔类型的购买图标冷却时使用 `PsychoModeApi.clearRegisteredProfileCooldowns(player)`；该入口会遍历所有已注册 profile 的 `cooldownItem`，不得只清 `WatheItems.PSYCHO_MODE`，也不得在 NoellesRoles 中硬编码其它扩展图标。
 - 判断状态用 `PsychoModeApi.isActive(...)`、`getRemainingTicks(...)`、`getArmour(...)`；只有 `TimekeeperSnapshots` 这种组件快照白名单才应直接引用 Wathe 的 CCA key。
 - 疯魔护盾的穿透/强制抵挡用 `PsychoModeApi.registerShieldRule(...)`，不要再 mixin `PlayerPsychoComponent#getArmour()`。
 - 静音或自定义音乐用 profile 的 `hitSound(null)`、`backgroundSound(sound, false/true)`；客户端新增音乐时再调用 `PsychoModeClientApi.registerBackgroundAmbience(...)`。

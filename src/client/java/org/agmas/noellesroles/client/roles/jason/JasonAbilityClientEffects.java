@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.client.roles.jason;
 
 import dev.doctor4t.wathe.game.GameFunctions;
+import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -10,6 +11,8 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.roles.jason.JasonAbilityRules;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.spiritualist.SpiritualistPlayerComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +21,8 @@ import java.util.UUID;
 /**
  * 杰森无恶不在的纯客户端视觉效果。
  *
- * <p>红色提示粒子只给杰森本人看，不写 CCA、不发网络包，也不参与回放。
- * 服务端只负责同步“杰森是否处于无恶不在”，客户端再根据周围玩家的本地位置变化生成提示。</p>
+ * <p>红色提示粒子只在本地生成，不写 CCA、不发网络包，也不参与回放。
+ * 无恶不在杰森用它观察其他玩家；正常或附身状态的灵术师则用它观察无恶不在杰森。</p>
  */
 public final class JasonAbilityClientEffects {
     private static final DustParticleEffect REVEAL_PARTICLE =
@@ -31,20 +34,33 @@ public final class JasonAbilityClientEffects {
     }
 
     public static void tick(MinecraftClient client) {
-        if (client == null || client.world == null || client.player == null || !JasonAbilityRules.isAbilityActiveLike(client.player)) {
+        if (client == null || client.world == null || client.player == null) {
             reset();
             return;
         }
 
-        if (client.currentScreen instanceof LimitedInventoryScreen) {
+        ClientPlayerEntity viewer = client.player;
+        boolean jasonObserver = JasonAbilityRules.isAbilityActiveLike(viewer);
+        boolean spiritualistObserver = GameFunctions.isPlayerAliveAndSurvival(viewer)
+                && GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.SPIRITUALIST)
+                /* NORMAL 与 POSSESSING 都允许显示；PROJECTING 明确排除。 */
+                && !SpiritualistPlayerComponent.KEY.get(viewer).isProjecting();
+        if (!jasonObserver && !spiritualistObserver) {
+            reset();
+            return;
+        }
+
+        if (jasonObserver && client.currentScreen instanceof LimitedInventoryScreen) {
             client.setScreen(null);
         }
 
-        ClientPlayerEntity viewer = client.player;
         particleTickCounter++;
 
         for (PlayerEntity target : client.world.getPlayers()) {
-            if (target.getUuid().equals(viewer.getUuid()) || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+            boolean validTarget = jasonObserver
+                    ? !target.getUuid().equals(viewer.getUuid()) && GameFunctions.isPlayerAliveAndSurvival(target)
+                    : JasonAbilityRules.isAbilityActiveLike(target);
+            if (!validTarget) {
                 continue;
             }
 

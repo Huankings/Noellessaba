@@ -15,6 +15,7 @@ import org.agmas.noellesroles.client.ui.roles.perceiver.PerceiverInventoryButton
 import org.agmas.noellesroles.client.ui.roles.swapper.SwapperInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.voodoo.VoodooInventoryButtons;
 import org.agmas.noellesroles.client.ui.roles.winder.WinderInventoryButtons;
+import org.agmas.noellesroles.client.ui.roles.party_animal.PartyAnimalInventoryButtons;
 
 /**
  * NoellesRoles 背包按钮注册入口。
@@ -42,5 +43,6 @@ public final class NoellesInventoryButtons {
         GuesserInventoryButtons.register();
         CorpsemakerInventoryButtons.register();
         ConvenerInventoryButtons.register();
+        PartyAnimalInventoryButtons.register();
     }
 }

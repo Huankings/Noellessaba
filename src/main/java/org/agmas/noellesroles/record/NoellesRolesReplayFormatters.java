@@ -142,6 +142,28 @@ public final class NoellesRolesReplayFormatters {
         return actor == null ? null : Text.translatable("replay.global.noellesroles.licensed_villain_moment_ended", actor);
     }
 
+    @Nullable
+    public static Text formatPartyAnimalMark(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.party_animal_mark", actor, target);
+    }
+
+    @Nullable
+    public static Text formatPartyAnimalSelfPitch(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        return actor == null ? null : Text.translatable("replay.global.noellesroles.party_animal_self_pitch", actor,
+                Text.translatable(event.data().getString("type_key")), Math.abs(event.data().getInt("level")));
+    }
+
+    @Nullable
+    public static Text formatPartyAnimalTargetPitch(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text actor = actorText(event, match);
+        Text target = targetText(event, match);
+        return actor == null || target == null ? null : Text.translatable("replay.global.noellesroles.party_animal_target_pitch", actor, target,
+                Text.translatable(event.data().getString("type_key")), Math.abs(event.data().getInt("level")));
+    }
+
     private static Text whiteBracketedItem(NbtCompound data, ServerWorld world) {
         /*
          * 用户希望飞斧回放变成“[%s]”的通用模板，并且中括号内用白色显示。

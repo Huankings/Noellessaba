@@ -38,6 +38,7 @@ import org.agmas.noellesroles.roles.waiter.WaiterConstants;
 import org.agmas.noellesroles.roles.commoner.CommonerConstants;
 import org.agmas.noellesroles.roles.outlaw.OutlawConstants;
 import org.agmas.noellesroles.roles.perceiver.PerceiverConstants;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalConstants;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -168,6 +169,8 @@ public final class NoellesRoleRegistry {
     public static final Role MYERS = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.MYERS_ID, MyersConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, -1, true));
     //交换者(杀手)：交换任意两个玩家的位置
     public static final Role SWAPPER = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.SWAPPER_ID, new Color(57, 4, 170).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
+    // 派对狂(杀手)：给玩家叠加升调或降调变声，击杀变声目标时获得额外收益。
+    public static final Role PARTY_ANIMAL = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.PARTY_ANIMAL_ID, PartyAnimalConstants.ROLE_COLOR, false, true, Role.MoodType.FAKE, WatheRoles.KILLER.getMaxSprintTime(), true));
     //亡语杀手(杀手)：能听到死者说话的声音
     public static final Role THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES = WatheRoles.registerKillerRole(new Role(NoellesRoleIds.THE_INSANE_DAMNED_PARANOID_KILLER_OF_DOOM_DEATH_DESTRUCTION_AND_WAFFLES_ID, new Color(255, 0, 0, 192).getRGB(), false, true, Role.MoodType.FAKE, -1, true));
 

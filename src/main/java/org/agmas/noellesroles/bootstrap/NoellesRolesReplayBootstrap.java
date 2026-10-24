@@ -233,6 +233,9 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.SHADOW_JESTER_STAGE_EVENT, NoellesRolesReplayFormatters::formatShadowJesterStage);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICENSED_VILLAIN_MOMENT_STARTED_EVENT, NoellesRolesReplayFormatters::formatLicensedVillainMomentStarted);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICENSED_VILLAIN_MOMENT_ENDED_EVENT, NoellesRolesReplayFormatters::formatLicensedVillainMomentEnded);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PARTY_ANIMAL_MARK_EVENT, NoellesRolesReplayFormatters::formatPartyAnimalMark);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PARTY_ANIMAL_SELF_PITCH_EVENT, NoellesRolesReplayFormatters::formatPartyAnimalSelfPitch);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.PARTY_ANIMAL_TARGET_PITCH_EVENT, NoellesRolesReplayFormatters::formatPartyAnimalTargetPitch);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_SKELETON_HIT_EVENT, NoellesRolesReplayFormatters::formatLichSkeletonHit);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_CAST_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierCast);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.LICH_MAGIC_BARRIER_DISAPPEAR_EVENT, NoellesRolesReplayFormatters::formatLichMagicBarrierDisappear);

@@ -1114,8 +1114,34 @@
   "psycho_shield.noellesroles.myers": "恶灵护盾",
   "hud.noellesroles.myers.ready": "按下%s键汲取恶意值(可汲取玩家数：%s)",
   "hud.noellesroles.myers.absorbing": "汲取中...(汲取玩家数：%s)",
-  "replay.global.noellesroles.myers_door_broken": "%s撞坏了一扇门"
-  ,"commands.noellesroles.add_malice.success": "已为%s增加%s恶意值（%s）"
+  "replay.global.noellesroles.myers_door_broken": "%s撞坏了一扇门",
+  "commands.noellesroles.add_malice.success": "已为%s增加%s恶意值（%s）",
+  "announcement.goals.noellesroles.party_animal": "派对开幕，让他们的声音被你扭曲！",
+  "announcement.role.noellesroles.party_animal": "派对狂",
+  "hud.noellesroles.party_animal.cooldown": "能力在 %s 秒后可用",
+  "hud.noellesroles.party_animal.self_hint": "按下 %s 键对自己进行%s",
+  "hud.noellesroles.party_animal.mark_hint": "按下 %s 键对该玩家进行变声标记",
+  "hud.noellesroles.party_animal.confirm": "按下 %s 键对该玩家进行%s(标记时间剩余%s秒)",
+  "hud.noellesroles.party_animal.self_max": "当前自己%s等级达到最大%s级而无法对自己使用技能",
+  "hud.noellesroles.party_animal.target_max": "当前该玩家%s类型等级达到最大%s级而无法对该玩家进行标记",
+  "hud.noellesroles.party_animal.pitch_up": "升调",
+  "hud.noellesroles.party_animal.pitch_down": "降调",
+  "hud.noellesroles.party_animal.type_separator": "：",
+  "ui.noellesroles.party_animal.pitch_up": "升调",
+  "ui.noellesroles.party_animal.pitch_down": "降调",
+  "ui.noellesroles.party_animal.select_type": "请选择你指定变声的类型",
+  "ui.noellesroles.party_animal.current_type": "变声类型：%s",
+  "hud.noellesroles.party_animal.marked": "你选择标记了%s",
+  "hud.noellesroles.party_animal.cast_self": "你对自己释放了%s，当前变声等级为%s级",
+  "hud.noellesroles.party_animal.cast_target": "你对%s释放了%s变声，当前该玩家等级为%s",
+  "replay.global.noellesroles.party_animal_mark": "%s 标记了变声目标 %s",
+  "replay.global.noellesroles.party_animal_self_pitch": "%s 对自己发动了%s变声，当前等级为%s",
+  "replay.global.noellesroles.party_animal_target_pitch": "%s 选择对 %s 进行%s变声，当前等级为%s",
+  "commands.noellesroles.party_animal.level_set": "已设置%s的派对狂调试变声等级为%s",
+  "commands.noellesroles.party_animal.self_level_set": "自己的派对狂调试变声等级已设置为%s",
+  "commands.noellesroles.party_animal.all_level_set": "所有玩家的派对狂调试变声等级已设置为%s",
+  "commands.noellesroles.party_animal.level_cleared": "已清除玩家%s的派对狂调试变声等级",
+  "commands.noellesroles.party_animal.all_levels_cleared": "已清除所有玩家的派对狂调试变声等级"
 }
 
 

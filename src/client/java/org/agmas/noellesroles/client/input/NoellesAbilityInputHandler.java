@@ -12,6 +12,7 @@ import org.agmas.noellesroles.client.roles.vecna.VecnaAbilityInputHandler;
 import org.agmas.noellesroles.client.roles.killer_queen.KillerQueenAbilityInputHandler;
 import org.agmas.noellesroles.packet.host.AbilityC2SPacket;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import net.minecraft.util.hit.EntityHitResult;
 
 /** 公共 G 能力键的按下分发器，具体职业输入仍由各职业 API 提供目标。 */
 public final class NoellesAbilityInputHandler {
@@ -41,6 +42,11 @@ public final class NoellesAbilityInputHandler {
             targetId = VecnaAbilityInputHandler.resolveTargetId(client.player);
         } else if (gameWorld.isRole(client.player, NoellesRoleRegistry.KILLER_QUEEN)) {
             targetId = KillerQueenAbilityInputHandler.resolveTargetId(client.player);
+        } else if (gameWorld.isRole(client.player, NoellesRoleRegistry.PARTY_ANIMAL)
+                && client.crosshairTarget instanceof EntityHitResult hit
+                && hit.getEntity() instanceof PlayerEntity
+                && hit.getEntity().distanceTo(client.player) <= 2.5F) {
+            targetId = hit.getEntity().getId();
         }
         ClientPlayNetworking.send(new AbilityC2SPacket(targetId));
     }

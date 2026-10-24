@@ -78,6 +78,9 @@ import org.agmas.noellesroles.roles.winder.WinderTargetAbility;
 import org.agmas.noellesroles.roles.vecna.VecnaAbility;
 import org.agmas.noellesroles.roles.voodoo.VoodooTargetAbility;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenAbility;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalAbility;
+import org.agmas.noellesroles.packet.role.party_animal.PartyAnimalTypeC2SPacket;
+import org.agmas.noellesroles.roles.party_animal.PartyAnimalPlayerComponent;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityManager;
 
 /**
@@ -90,6 +93,15 @@ public final class NoellesRolesPacketReceivers {
     }
 
     public static void register() {
+        ServerPlayNetworking.registerGlobalReceiver(PartyAnimalTypeC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
+            ServerPlayerEntity player = context.player();
+            if (GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.PARTY_ANIMAL)
+                    && org.agmas.noellesroles.roles.party_animal.PartyAnimalPlayerComponent.PITCH_DOWN == payload.type()) {
+                PartyAnimalPlayerComponent.KEY.get(player).setSelectedType(PartyAnimalPlayerComponent.PITCH_DOWN);
+            } else if (GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.PARTY_ANIMAL)) {
+                PartyAnimalPlayerComponent.KEY.get(player).setSelectedType(PartyAnimalPlayerComponent.PITCH_UP);
+            }
+        }));
         ServerPlayNetworking.registerGlobalReceiver(StalkerGazeC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
             if (shouldBlockTimeRiftAction(context.player())) {
                 return;
@@ -302,6 +314,8 @@ public final class NoellesRolesPacketReceivers {
                 VecnaAbility.handle(player, payload.targetId());
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.KILLER_QUEEN)) {
                 KillerQueenAbility.handle(player, payload.targetId());
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.PARTY_ANIMAL)) {
+                PartyAnimalAbility.handle(player, payload.targetId());
             }
         }));
     }

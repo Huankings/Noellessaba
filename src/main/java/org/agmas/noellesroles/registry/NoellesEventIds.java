@@ -227,6 +227,12 @@ public final class NoellesEventIds {
     public static final Identifier OUTLAW_SHIELD_SOURCE = NoellesRolesCore.id("outlaw");
     /** 迈尔斯屠刀冲刺撞坏 Wathe 门的回放事件。 */
     public static final Identifier MYERS_DOOR_BROKEN_EVENT = NoellesRolesCore.id("myers_door_broken");
+    /** 派对狂标记变声目标事件。 */
+    public static final Identifier PARTY_ANIMAL_MARK_EVENT = NoellesRolesCore.id("party_animal_mark");
+    /** 派对狂对自己释放变声事件。 */
+    public static final Identifier PARTY_ANIMAL_SELF_PITCH_EVENT = NoellesRolesCore.id("party_animal_self_pitch");
+    /** 派对狂对目标释放变声事件。 */
+    public static final Identifier PARTY_ANIMAL_TARGET_PITCH_EVENT = NoellesRolesCore.id("party_animal_target_pitch");
 
     private NoellesEventIds() {
     }

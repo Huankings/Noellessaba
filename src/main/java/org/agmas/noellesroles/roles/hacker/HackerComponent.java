@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import dev.doctor4t.wathe.api.Role;
+import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -216,7 +217,12 @@ public class HackerComponent implements AutoSyncedComponent, ServerTickingCompon
 
             serverPlayer.sendMessage(Text.translatable("tip.noellesroles.hacker.ability_cooldown_refresh").withColor(Color.GREEN.getRGB()), true);
             serverPlayer.playSoundToPlayer(SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 1.0F, 1.0F);
-            serverPlayer.getItemCooldownManager().remove(WatheItems.PSYCHO_MODE);
+            /*
+             * 每种疯魔 profile 都能绑定自己的商店图标作为冷却物品。
+             * 由 Wathe API 枚举已注册 profile 并统一清理，避免只清掉默认 PSYCHO_MODE，
+             * 也避免 NoellesRoles 硬编码其它扩展的专属疯魔图标。
+             */
+            PsychoModeApi.clearRegisteredProfileCooldowns(serverPlayer);
             AbilityPlayerComponent.KEY.get(serverPlayer).setCooldown(0);
         }
         return true;

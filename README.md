@@ -59,6 +59,8 @@
 - 客户端物品显示与输入：`src/client/java/org/agmas/noellesroles/client/items/`
 - 客户端外观缓存：`src/client/java/org/agmas/noellesroles/client/appearance/`
 - 杰森客户端雾效 provider：`src/client/java/org/agmas/noellesroles/client/roles/jason/JasonAbilityFogHandler.java`
+- 杰森无恶不在：每累计 5 秒给仍存活的平民/义警 25 金币；正常或附身状态的灵术师可看见杰森移动提示红粒子，灵魂出窍时改为直接看见杰森并以职业色被动透视。
+- 黑客技能冷却清理通过 Wathe `PsychoModeApi.clearRegisteredProfileCooldowns` 覆盖所有已登记 `cooldownItem` 的疯魔 profile，不再只清原生 `PSYCHO_MODE` 图标。
 - 通用 HUD 注册入口：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudHandlers.java`
 - 通用 HUD 辅助：`src/client/java/org/agmas/noellesroles/client/hud/NoellesHudSupport.java`
 - 低心情幻觉手持物预留注册：`src/client/java/org/agmas/noellesroles/client/mood/NoellesPsychosisHandlers.java`

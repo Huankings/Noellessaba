@@ -40,6 +40,7 @@ import org.agmas.noellesroles.client.instinct.roles.vecna.VecnaInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.outlaw.OutlawInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.perceiver.PerceiverInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.killer_queen.KillerQueenInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.party_animal.PartyAnimalInstinctHandler;
 
 public final class NoellesInstinctHandlers {
     public static final int PRIORITY_HIGH_INSTINCT_COLOR = 100;
@@ -93,6 +94,7 @@ public final class NoellesInstinctHandlers {
         DualPersonalityInstinctHandler.register();
         KillerNeutralInstinctHandler.register();
         KillerQueenInstinctHandler.register();
+        PartyAnimalInstinctHandler.register();
     }
 
     public static Identifier id(String path) {
