@@ -222,6 +222,7 @@ Wathe 已经公开了玩家体力和移动速度。NoellesRoles 侧如果要改�
 - 体力读写用 `PlayerStaminaApi` / `PlayerStaminaComponent`；如果要清空、回满、增减体力或调整上限，统一从这里走。
 - 有限体力免消耗使用 `PlayerStaminaApi.registerConsumptionRule(...)` 返回 `PASS/CONSUME/SKIP`；正常能力成本用 `consumeStamina(..., CUSTOM)`，强制惩罚才用不受规则影响的 `drainStamina/clearStamina/setStamina`。免消耗不等于无限上限，也不解除低心情禁跑或 0 体力移动限制。
 - 速度叠加用 `PlayerMovementApi.registerSpeedModifier(...)`；它支持 `ADD`、`MULTIPLY`、`OVERRIDE` 和 `PASS`，适合职业 / 词条按优先级叠加加速和减速。
+- 原版固定 `0.2` 的疾跑起跳水平冲量由 Wathe `PlayerMovementApi.resolveExtraSprintJumpSpeed(...)` 和 `/wathe:extrajumpspeed` 统一管理，默认 `0.0`；NoellesRoles 不要为普通跑跳加成新增 `LivingEntity#jump()` mixin。原版该冲量不乘速度/缓慢药水倍率。
 - 中等和低落心情体力惩罚默认都关闭，开关在 `GameWorldComponent`，测试指令是 `/wathe:setMood` 和 `/wathe:moodStaminaPenalty`。
 - 低落惩罚开启时，`mood <= DEPRESSIVE_MOOD_THRESHOLD` 会禁跑，体力归零后不能自主水平移动和跳跃，但外力位移仍保留。
 - 中等惩罚开启时，`mood < MID_MOOD_THRESHOLD` 只在疾跑时扣体力；如果只开中等惩罚，低落心情也沿用中等规则。

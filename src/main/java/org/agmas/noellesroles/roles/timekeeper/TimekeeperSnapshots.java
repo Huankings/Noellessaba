@@ -33,6 +33,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.AbilityPlayerComponent;
+import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.api.timekeeper.TimekeeperRewindListener;
 import org.agmas.noellesroles.api.timekeeper.TimekeeperSnapshotParticipant;
 import org.agmas.noellesroles.death.DeathProcessComponent;
@@ -109,6 +110,8 @@ import org.agmas.noellesroles.roles.vulture.VulturePlayerComponent;
 import org.agmas.noellesroles.roles.waiter.WaiterPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WindMarkPlayerComponent;
 import org.agmas.noellesroles.roles.winder.WinderPlayerComponent;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
+import org.agmas.noellesroles.roles.thief.ThiefPlayerComponent;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.Component;
@@ -146,7 +149,8 @@ public final class TimekeeperSnapshots {
              * 回溯播放中需要显示历史帧对应的等级，因此该组件需要中间帧同步；
              * 派对狂自己的选择/标记组件仍只在最终帧统一刷新。
              */
-            "noellesroles:helium_buzz"
+            "noellesroles:helium_buzz",
+            "noellesroles:thief_player"
     );
     private static final Set<String> INTERMEDIATE_WORLD_SYNC_IDS = Set.of(
             "noellesroles:morph_body_disguise_world"
@@ -178,6 +182,8 @@ public final class TimekeeperSnapshots {
             component("wathe:instinct", PlayerInstinctComponent.KEY),
             component("wathe:note", PlayerNoteComponent.KEY),
             component("noellesroles:ability", AbilityPlayerComponent.KEY),
+            /* 悦灵召唤冷却、号数和 HUD 状态必须与悦灵实体处于同一历史帧。 */
+            component("noellesroles:thief_player", ThiefPlayerComponent.KEY),
             /* 派对狂的类型选择、标记目标和倒计时都属于局内时间线。 */
             component("noellesroles:party_animal", PartyAnimalPlayerComponent.KEY),
             /* 普通变声等级决定语音、被动透视和击杀增益，必须随历史帧回滚；调试等级由快照专用读写保留为永久配置。 */
@@ -478,6 +484,7 @@ public final class TimekeeperSnapshots {
         private final Map<UUID, Map<String, NbtCompound>> participantPlayerData = new HashMap<>();
         private final Map<UUID, NbtCompound> bodyEntityData = new HashMap<>();
         private final Map<UUID, NbtCompound> itemEntityData = new HashMap<>();
+        private final Map<UUID, NbtCompound> thiefAllayEntityData = new HashMap<>();
         private final TimekeeperWorldStateSnapshot worldStateSnapshot;
 
         private GlobalSnapshot(@NotNull ServerWorld world) {
@@ -508,6 +515,17 @@ public final class TimekeeperSnapshots {
                     this.itemEntityData.put(item.getUuid(), itemNbt);
                 }
             }
+
+            for (ThiefAllayEntity allay : world.getEntitiesByType(
+                    NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE,
+                    entity -> !entity.isRemoved()
+            )) {
+                /*
+                 * 悦灵是可保存实体，但这里直接调用 writeNbt，明确捕获目标、状态、手持物、位置和无进展计时。
+                 * 回溯时不会重新执行召唤或偷窃逻辑，因此也不会产生重复回放。
+                 */
+                this.thiefAllayEntityData.put(allay.getUuid(), allay.writeNbt(new NbtCompound()));
+            }
         }
 
         private GlobalSnapshot(@NotNull GlobalSnapshot other) {
@@ -519,6 +537,7 @@ public final class TimekeeperSnapshots {
             copyNestedNbtMap(other.participantPlayerData, this.participantPlayerData);
             copyNbtMap(other.bodyEntityData, this.bodyEntityData);
             copyNbtMap(other.itemEntityData, this.itemEntityData);
+            copyNbtMap(other.thiefAllayEntityData, this.thiefAllayEntityData);
         }
 
         public @NotNull GlobalSnapshot copy() {
@@ -551,6 +570,7 @@ public final class TimekeeperSnapshots {
             this.worldStateSnapshot.restore(world);
             restoreBodyEntities(world);
             restoreItemEntities(world);
+            restoreThiefAllayEntities(world);
 
             for (ServerPlayerEntity player : world.getPlayers()) {
                 if (protectedPlayers.contains(player.getUuid())) {
@@ -710,6 +730,37 @@ public final class TimekeeperSnapshots {
                 item.readNbt(entry.getValue().copy());
                 if (!item.isRemoved()) {
                     world.spawnEntity(item);
+                }
+            }
+        }
+
+        private void restoreThiefAllayEntities(@NotNull ServerWorld world) {
+            Set<UUID> restored = new HashSet<>();
+            for (ThiefAllayEntity allay : world.getEntitiesByType(
+                    NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE,
+                    entity -> true
+            )) {
+                NbtCompound targetNbt = this.thiefAllayEntityData.get(allay.getUuid());
+                if (targetNbt == null) {
+                    /* 这是目标历史帧之后才召唤的未来实体，静默删除以免制造死亡回放和掉落物。 */
+                    allay.discardSilently();
+                    continue;
+                }
+                allay.readNbt(targetNbt.copy());
+                restored.add(allay.getUuid());
+            }
+
+            for (Map.Entry<UUID, NbtCompound> entry : this.thiefAllayEntityData.entrySet()) {
+                if (restored.contains(entry.getKey())) {
+                    continue;
+                }
+                ThiefAllayEntity allay = NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE.create(world);
+                if (allay == null) {
+                    continue;
+                }
+                allay.readNbt(entry.getValue().copy());
+                if (!allay.isRemoved()) {
+                    world.spawnEntity(allay);
                 }
             }
         }

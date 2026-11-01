@@ -35,6 +35,8 @@ import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapAuraWorldComponent;
 import org.agmas.noellesroles.roles.spring_trap.SpringTrapConstants;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
+import org.agmas.noellesroles.roles.thief.ThiefAllayCombatHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -157,6 +159,17 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
             // 这里不只检查最近命中的一个实体，而是扫描整个飞行段上的全部玩家。
             Box searchBox = this.getBoundingBox().stretch(velocity).expand(HIT_SCAN_BOX_EXPAND);
             for (Entity entity : this.getWorld().getOtherEntities(this, searchBox)) {
+                if (entity instanceof ThiefAllayEntity allay) {
+                    if (!allay.isOperationallyAlive() || this.hitEntities.contains(allay.getId())) {
+                        continue;
+                    }
+                    Box targetBox = allay.getBoundingBox().expand(allay.getTargetingMargin() + PLAYER_HITBOX_EXPAND);
+                    if (targetBox.raycast(currentPos, nextPos).isPresent()) {
+                        this.hitEntities.add(allay.getId());
+                        this.onEntityHit(new EntityHitResult(allay));
+                    }
+                    continue;
+                }
                 if (!(entity instanceof ServerPlayerEntity serverPlayer)) {
                     continue;
                 }
@@ -234,6 +247,20 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
                 NoellesDeathReasons.DEATH_REASON_THROWING_AXE,
                 MagicianServerHooks.getWeaponName(this.getItemStack())
         )) {
+            this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
+            this.setVelocity(this.getVelocity().multiply(0.9D, 0.9D, 0.9D));
+            return;
+        }
+
+        if (entity instanceof ThiefAllayEntity allay) {
+            ItemStack replayStack = this.getItemStack().isEmpty()
+                    ? ModItems.THROWING_AXE.getDefaultStack()
+                    : this.getItemStack().copyWithCount(1);
+            allay.killByWeapon(
+                    killer,
+                    replayStack,
+                    ThiefAllayCombatHandler.resolveDeathReason(replayStack)
+            );
             this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
             this.setVelocity(this.getVelocity().multiply(0.9D, 0.9D, 0.9D));
             return;
@@ -328,6 +355,15 @@ public class ThrowingAxeEntity extends PersistentProjectileEntity {
                 continue;
             }
             GameFunctions.killPlayer(target, true, killer, GameConstants.DeathReasons.GRENADE, replayData.copy());
+        }
+        for (ThiefAllayEntity allay : world.getEntitiesByType(
+                org.agmas.noellesroles.NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE,
+                entity -> entity.isOperationallyAlive()
+                        && entity.squaredDistanceTo(this.getPos())
+                        <= SpringTrapConstants.THROWING_BOMB_AXE_EXPLOSION_RADIUS
+                        * SpringTrapConstants.THROWING_BOMB_AXE_EXPLOSION_RADIUS
+        )) {
+            allay.killByWeapon(killer, stack.copyWithCount(1), GameConstants.DeathReasons.GRENADE);
         }
     }
 

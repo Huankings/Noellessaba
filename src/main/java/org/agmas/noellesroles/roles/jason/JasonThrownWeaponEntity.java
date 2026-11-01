@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -121,6 +122,17 @@ public class JasonThrownWeaponEntity extends PersistentProjectileEntity {
             Box searchBox = this.getBoundingBox().stretch(velocity).expand(JasonConstants.HIT_SCAN_BOX_EXPAND);
 
             for (Entity entity : this.getWorld().getOtherEntities(this, searchBox)) {
+                if (entity instanceof ThiefAllayEntity allay) {
+                    if (!allay.isOperationallyAlive() || this.hitEntities.contains(allay.getId())) {
+                        continue;
+                    }
+                    Box targetBox = allay.getBoundingBox().expand(allay.getTargetingMargin() + JasonConstants.PLAYER_HITBOX_EXPAND);
+                    if (targetBox.raycast(currentPos, nextPos).isPresent()) {
+                        this.hitEntities.add(allay.getId());
+                        this.onEntityHit(new EntityHitResult(allay));
+                    }
+                    continue;
+                }
                 if (!(entity instanceof ServerPlayerEntity target)) {
                     continue;
                 }
@@ -179,6 +191,20 @@ public class JasonThrownWeaponEntity extends PersistentProjectileEntity {
                 NoellesDeathReasons.JASON_THROWING_WEAPON_DEATH_REASON,
                 MagicianServerHooks.getWeaponName(this.getItemStack())
         )) {
+            this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
+            this.setVelocity(this.getVelocity().multiply(0.92D, 0.92D, 0.92D));
+            return;
+        }
+
+        if (entity instanceof ThiefAllayEntity allay) {
+            ItemStack weapon = this.getItemStack().isEmpty()
+                    ? ModItems.THROWING_BLOOD_AXE.getDefaultStack()
+                    : this.getItemStack().copyWithCount(1);
+            allay.killByWeapon(
+                    thrower,
+                    weapon,
+                    NoellesDeathReasons.JASON_THROWING_WEAPON_DEATH_REASON
+            );
             this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
             this.setVelocity(this.getVelocity().multiply(0.92D, 0.92D, 0.92D));
             return;

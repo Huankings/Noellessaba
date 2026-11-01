@@ -483,6 +483,86 @@ public final class NoellesRolesReplayFormatters {
     }
 
     @Nullable
+    public static Text formatThiefAllaySummon(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text thief = actorText(event, match);
+        Text target = playerFromKey(event, match, "target_player");
+        return thief == null || target == null ? null : Text.translatable(
+                "replay.global.noellesroles.thief_allay_summon",
+                thief,
+                event.data().getInt("allay_count"),
+                target
+        );
+    }
+
+    @Nullable
+    public static Text formatThiefAllayRetarget(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "target_player");
+        return target == null ? null : Text.translatable(
+                "replay.global.noellesroles.thief_allay_retarget",
+                event.data().getInt("allay_number"),
+                target
+        );
+    }
+
+    @Nullable
+    public static Text formatThiefAllayStealSuccess(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "target_player");
+        return target == null ? null : Text.translatable(
+                "replay.global.noellesroles.thief_allay_steal_success",
+                event.data().getInt("allay_number"),
+                target,
+                whiteBracketedItem(event.data(), world)
+        );
+    }
+
+    @Nullable
+    public static Text formatThiefAllayStealFail(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text target = playerFromKey(event, match, "target_player");
+        return target == null ? null : Text.translatable(
+                "replay.global.noellesroles.thief_allay_steal_fail",
+                event.data().getInt("allay_number"),
+                target
+        );
+    }
+
+    public static Text formatThiefAllayKilled(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        int number = event.data().getInt("allay_number");
+        Text killer = actorText(event, match);
+        boolean hasDamage = event.data().contains("item")
+                || event.data().contains("item_name")
+                || !event.data().getString("death_reason").isEmpty();
+        if (!hasDamage) {
+            return Text.translatable("replay.global.noellesroles.thief_allay_killed.generic", number);
+        }
+        Text damage = event.data().contains("item") || event.data().contains("item_name")
+                ? whiteBracketedItem(event.data(), world)
+                : DefaultReplayFormatters.formatBlockedDamageName(event.data(), world);
+        return killer == null
+                ? Text.translatable("replay.global.noellesroles.thief_allay_killed.by_damage", number, damage)
+                : Text.translatable("replay.global.noellesroles.thief_allay_killed.by_player", number, killer, damage);
+    }
+
+    @Nullable
+    public static Text formatThiefAllayDelivery(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text thief = playerFromKey(event, match, "thief_player");
+        return thief == null ? null : Text.translatable(
+                "replay.global.noellesroles.thief_allay_delivery",
+                event.data().getInt("allay_number"),
+                whiteBracketedItem(event.data(), world),
+                thief
+        );
+    }
+
+    @Nullable
+    public static Text formatThiefAllayOwnerPurge(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
+        Text thief = actorText(event, match);
+        return thief == null ? null : Text.translatable(
+                "replay.global.noellesroles.thief_allay_owner_purge",
+                thief
+        );
+    }
+
+    @Nullable
     public static Text formatStarstruckAbilityEnd(GameRecordEvent event, GameRecordManager.MatchRecord match, ServerWorld world) {
         Text actor = actorText(event, match);
         return actor == null ? null : Text.translatable("replay.global.noellesroles.starstruck_end", actor);

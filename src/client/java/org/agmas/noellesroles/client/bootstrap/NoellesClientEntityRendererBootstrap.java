@@ -4,6 +4,7 @@ import dev.doctor4t.wathe.client.WatheClient;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
+import net.minecraft.client.render.entity.AllayEntityRenderer;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.client.renderer.CaptureDeviceEntityRenderer;
 import org.agmas.noellesroles.client.renderer.JasonThrownWeaponEntityRenderer;
@@ -18,6 +19,7 @@ public final class NoellesClientEntityRendererBootstrap {
     }
 
     public static void register() {
+        EntityRendererRegistry.register(NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE, AllayEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.ROLE_MINE_ENTITY_ENTITY_TYPE, RoleMineEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.CAPTURE_DEVICE_ENTITY_TYPE, CaptureDeviceEntityRenderer::new);
         EntityRendererRegistry.register(NoellesRolesEntities.THROWING_AXE_ENTITY_TYPE, ThrowingAxeEntityRenderer::new);

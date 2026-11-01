@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -61,7 +62,25 @@ public record HuntingKnifeC2SPacket(int target) implements CustomPayload {
             if (!player.getMainHandStack().isOf(ModItems.HUNTING_KNIFE) || !hunter.canAcceptReleasedHit()) {
                 return;
             }
-            if (!(player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)
+            net.minecraft.entity.Entity rawTarget = player.getServerWorld().getEntityById(payload.target());
+            if (rawTarget instanceof ThiefAllayEntity allay) {
+                if (allay.isOperationallyAlive()
+                        && allay.distanceTo(player) <= HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                        && TargetVisibilityApi.canAttackEntity(player, allay)) {
+                    hunter.reset();
+                    if (!GameFunctions.isPlayerSpectatingOrCreative(player)) {
+                        player.getItemCooldownManager().set(
+                                ModItems.HUNTING_KNIFE,
+                                HunterConstants.HUNTING_KNIFE_COOLDOWN_TICKS
+                        );
+                    }
+                    allay.killByWeapon(player, player.getMainHandStack().copy(), GameConstants.DeathReasons.KNIFE);
+                    allay.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0F, 1.0F);
+                    player.swingHand(Hand.MAIN_HAND, true);
+                }
+                return;
+            }
+            if (!(rawTarget instanceof PlayerEntity target)
                     || !GameFunctions.isPlayerAliveAndSurvival(target)
                     || target.distanceTo(player) > HunterConstants.HUNTING_KNIFE_TARGET_RANGE
                     /*

@@ -18,6 +18,7 @@ import org.agmas.noellesroles.roles.party_animal.PartyAnimalCombatHandler;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityKnifeCooldownHandler;
 import org.agmas.noellesroles.roles.jason.JasonKnifeCooldownHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawKnifeCooldownHandler;
+import org.agmas.noellesroles.roles.thief.ThiefAllayCombatHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaKnifeCooldownHandler;
 
 /**
@@ -44,6 +45,7 @@ public final class NoellesRolesCombatBootstrap {
          * 后续新增职业时，应继续只在这里调用对应职业自己的 init()。
          */
         MagicianGunHandler.init();
+        ThiefAllayCombatHandler.init();
         BountyHunterGunHandler.init();
         RobberGunHandler.init();
         AssassinGunHandler.init();

@@ -179,6 +179,13 @@ public final class NoellesEventIds {
     public static final Identifier THIEF_ATTEMPT_EVENT = NoellesRolesCore.id("thief_attempt");
     public static final Identifier THIEF_SUCCESS_EVENT = NoellesRolesCore.id("thief_success");
     public static final Identifier THIEF_FAIL_EVENT = NoellesRolesCore.id("thief_fail");
+    public static final Identifier THIEF_ALLAY_SUMMON_EVENT = NoellesRolesCore.id("thief_allay_summon");
+    public static final Identifier THIEF_ALLAY_RETARGET_EVENT = NoellesRolesCore.id("thief_allay_retarget");
+    public static final Identifier THIEF_ALLAY_STEAL_SUCCESS_EVENT = NoellesRolesCore.id("thief_allay_steal_success");
+    public static final Identifier THIEF_ALLAY_STEAL_FAIL_EVENT = NoellesRolesCore.id("thief_allay_steal_fail");
+    public static final Identifier THIEF_ALLAY_KILLED_EVENT = NoellesRolesCore.id("thief_allay_killed");
+    public static final Identifier THIEF_ALLAY_DELIVERY_EVENT = NoellesRolesCore.id("thief_allay_delivery");
+    public static final Identifier THIEF_ALLAY_OWNER_PURGE_EVENT = NoellesRolesCore.id("thief_allay_owner_purge");
     public static final Identifier TIMEKEEPER_WATCH_USED_EVENT = NoellesRolesCore.id("timekeeper_watch_used");
     public static final Identifier TIMEKEEPER_WATCH_BROKEN_EVENT = NoellesRolesCore.id("timekeeper_watch_broken");
     public static final Identifier TIMEKEEPER_WATCH_REPAIRED_EVENT = NoellesRolesCore.id("timekeeper_watch_repaired");

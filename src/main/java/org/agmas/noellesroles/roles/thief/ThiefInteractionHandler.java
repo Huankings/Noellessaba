@@ -26,7 +26,6 @@ import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityActionGu
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,7 +70,7 @@ public final class ThiefInteractionHandler {
         attemptExtra.putUuid("target_player", target.getUuid());
         GameRecordManager.recordGlobalEvent(thief.getServerWorld(), NoellesEventIds.THIEF_ATTEMPT_EVENT, thief, attemptExtra);
 
-        List<Integer> stealableSlots = getStealableSlots(target);
+        List<Integer> stealableSlots = ThiefStealService.getStealableSlots(target);
         if (stealableSlots.isEmpty()) {
             ability.setCooldown(ThiefConstants.FAILED_STEAL_COOLDOWN_TICKS);
             thief.sendMessage(Text.translatable("message.noellesroles.thief.no_items", target.getName()).withColor(NoellesRoleRegistry.THIEF.color()), false);
@@ -110,17 +109,6 @@ public final class ThiefInteractionHandler {
         GameRecordManager.recordGlobalEvent(thief.getServerWorld(), NoellesEventIds.THIEF_SUCCESS_EVENT, thief, successExtra);
         thief.sendMessage(Text.translatable("message.noellesroles.thief.success", target.getName()).withColor(NoellesRoleRegistry.THIEF.color()), false);
         thief.playSoundToPlayer(SoundEvents.ITEM_ARMOR_EQUIP_CHAIN.value(), SoundCategory.PLAYERS, 1.0F, 1.0F);
-    }
-
-    private static List<Integer> getStealableSlots(ServerPlayerEntity target) {
-        List<Integer> slots = new ArrayList<>();
-        for (int i = 0; i < target.getInventory().main.size(); i++) {
-            ItemStack stack = target.getInventory().main.get(i);
-            if (!stack.isEmpty() && ThiefItemRules.canTake(stack.getItem())) {
-                slots.add(i);
-            }
-        }
-        return slots;
     }
 
     public static boolean validateStealAttempt(PlayerEntity thief, PlayerEntity target, AbilityPlayerComponent ability) {

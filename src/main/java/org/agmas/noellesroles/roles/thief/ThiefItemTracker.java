@@ -11,6 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.agmas.noellesroles.NoellesRolesEntities;
 
 public final class ThiefItemTracker {
     // 记录掉落的物品
@@ -85,7 +86,7 @@ public final class ThiefItemTracker {
             refreshAll(world.getServer().getWorlds());
             return;
         }
-        weaponAvailable = hasTrackedEntityWeapon() || hasInventoryWeapon(world);
+        weaponAvailable = hasTrackedEntityWeapon() || hasInventoryWeapon(world) || hasAllayHeldWeapon(world);
     }
 
     private static void refreshAll(Iterable<ServerWorld> worlds) {
@@ -94,7 +95,7 @@ public final class ThiefItemTracker {
             return;
         }
         for (ServerWorld world : worlds) {
-            if (hasInventoryWeapon(world)) {
+            if (hasInventoryWeapon(world) || hasAllayHeldWeapon(world)) {
                 weaponAvailable = true;
                 return;
             }
@@ -133,6 +134,23 @@ public final class ThiefItemTracker {
                 if (!stack.isEmpty() && ThiefItemRules.isKeepGameGoing(stack.getItem())) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 悦灵偷到武器后，物品会暂时离开玩家背包且尚未成为地面 ItemEntity。
+     * 如果不扫描悦灵主手，小偷残局保活规则会在运输途中错误认为场上已经没有可用武器。
+     */
+    private static boolean hasAllayHeldWeapon(ServerWorld world) {
+        for (ThiefAllayEntity allay : world.getEntitiesByType(
+                NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE,
+                entity -> entity.isOperationallyAlive()
+        )) {
+            ItemStack stack = allay.getMainHandStack();
+            if (!stack.isEmpty() && ThiefItemRules.isKeepGameGoing(stack.getItem())) {
+                return true;
             }
         }
         return false;

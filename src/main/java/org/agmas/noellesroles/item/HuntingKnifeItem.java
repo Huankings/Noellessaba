@@ -6,6 +6,7 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheSounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.CustomPayload;
@@ -17,6 +18,7 @@ import net.minecraft.world.World;
 import org.agmas.noellesroles.packet.item.HuntingKnifeC2SPacket;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
 import org.agmas.noellesroles.roles.hunter.HunterPlayerComponent;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -63,7 +65,22 @@ public class HuntingKnifeItem extends Item {
         setTemporaryCooldown(world, player);
 
         if (world.isClient && remainingUseTicks > HunterConstants.HUNTING_KNIFE_CLIENT_SEND_GRACE_TICKS) {
-            EntityHitResult hitResult = WeaponTargetingApi.getAttackableAlivePlayerTarget(player, HunterConstants.HUNTING_KNIFE_TARGET_RANGE);
+            EntityHitResult hitResult = null;
+            var allayHit = ProjectileUtil.getCollision(
+                    player,
+                    entity -> (entity instanceof PlayerEntity target && GameFunctions.isPlayerAliveAndSurvival(target))
+                            || (entity instanceof ThiefAllayEntity allay && allay.isOperationallyAlive()),
+                    HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+            );
+            if (allayHit instanceof EntityHitResult entityHitResult
+                    && entityHitResult.getEntity() instanceof ThiefAllayEntity) {
+                hitResult = entityHitResult;
+            } else {
+                hitResult = WeaponTargetingApi.getAttackableAlivePlayerTarget(
+                        player,
+                        HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                );
+            }
             if (hitResult != null) {
                 sendPacket(new HuntingKnifeC2SPacket(hitResult.getEntity().getId()));
             }

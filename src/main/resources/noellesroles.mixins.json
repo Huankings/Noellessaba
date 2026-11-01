@@ -15,6 +15,8 @@
     "roles.magician.MagicianRecordEntityInteractionMixin",
     "roles.magician.MagicianRecordAttackMixin",
     "roles.magician.MagicianKnifeStabMixin",
+    "roles.thief.ThiefAllayKnifeHitMixin",
+    "roles.thief.ThiefAllayGrenadeHitMixin",
     "roles.magician.MagicianBayonetStabMixin",
     "roles.magician.MagicianReplayRecordMixin",
     "roles.magician.MagicianGrenadePlaybackHitMixin",

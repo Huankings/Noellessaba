@@ -37,6 +37,7 @@ import org.agmas.noellesroles.packet.role.timekeeper.TimekeeperWatchModeC2SPacke
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 import org.agmas.noellesroles.packet.role.myers.MyersAbsorbC2SPacket;
 import org.agmas.noellesroles.packet.role.party_animal.PartyAnimalTypeC2SPacket;
+import org.agmas.noellesroles.packet.role.thief.ThiefAllaySummonC2SPacket;
 
 /**
  * 客户端/服务端自定义 payload codec 注册。
@@ -46,6 +47,7 @@ public final class NoellesRolesPayloadTypes {
     }
 
     public static void register() {
+        PayloadTypeRegistry.playC2S().register(ThiefAllaySummonC2SPacket.ID, ThiefAllaySummonC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(MorphC2SPacket.ID, MorphC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(AbilityC2SPacket.ID, AbilityC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SwapperC2SPacket.ID, SwapperC2SPacket.CODEC);

@@ -53,6 +53,7 @@ import org.agmas.noellesroles.roles.winder.WinderResetHandler;
 import org.agmas.noellesroles.roles.waiter.WaiterResetHandler;
 import org.agmas.noellesroles.roles.arsonist.ArsonistResetHandler;
 import org.agmas.noellesroles.roles.party_animal.PartyAnimalResetHandler;
+import org.agmas.noellesroles.roles.thief.ThiefResetHandler;
 
 /**
  * NoellesRoles 玩家/回合重置规则的聚合初始化入口。
@@ -118,6 +119,7 @@ public final class NoellesRolesResetBootstrap {
         StalkerResetHandler.init();
         SwapperResetHandler.init();
         TimekeeperResetHandler.init();
+        ThiefResetHandler.init();
         TrapperResetHandler.init();
         VecnaResetHandler.init();
         VoodooResetHandler.init();

@@ -79,6 +79,7 @@ import org.agmas.noellesroles.roles.party_animal.PartyAnimalPlayerComponent;
 import org.agmas.noellesroles.roles.party_animal.HeliumBuzzPlayerComponent;
 import org.agmas.noellesroles.roles.myers.MyersPlayerComponent;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainMomentWorldComponent;
+import org.agmas.noellesroles.roles.thief.ThiefPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
@@ -98,6 +99,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, VoodooPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(VoodooPlayerComponent::new);
         registry.beginRegistration(PlayerBodyEntity.class, BodyDeathReasonComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(BodyDeathReasonComponent::new);
         registry.beginRegistration(PlayerEntity.class, AbilityPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AbilityPlayerComponent::new);
+        registry.beginRegistration(PlayerEntity.class, ThiefPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(ThiefPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, DousedPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DousedPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, ConvenerPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(ConvenerPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, ConvenerDisguiseComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(ConvenerDisguiseComponent::new);

@@ -15,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -54,7 +55,23 @@ public record BayonetStabC2SPacket(int target) implements CustomPayload {
             if (player.getItemCooldownManager().isCoolingDown(ModItems.BAYONET)) {
                 return;
             }
-            if (!(player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target)
+            net.minecraft.entity.Entity rawTarget = player.getServerWorld().getEntityById(payload.target());
+            if (rawTarget instanceof ThiefAllayEntity allay) {
+                if (allay.isOperationallyAlive()
+                        && allay.distanceTo(player) <= 3.0F
+                        && TargetVisibilityApi.canAttackEntity(player, allay)) {
+                    player.swingHand(Hand.MAIN_HAND, true);
+                    allay.killByWeapon(player, player.getMainHandStack().copy(), GameConstants.DeathReasons.KNIFE);
+                    if (!player.isCreative()) {
+                        player.getItemCooldownManager().set(
+                                ModItems.BAYONET,
+                                GameConstants.ITEM_COOLDOWNS.getOrDefault(ModItems.BAYONET, 0)
+                        );
+                    }
+                }
+                return;
+            }
+            if (!(rawTarget instanceof PlayerEntity target)
                     || !GameFunctions.isPlayerAliveAndSurvival(target)) {
                 return;
             }

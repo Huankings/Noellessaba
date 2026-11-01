@@ -18,8 +18,20 @@ import org.agmas.noellesroles.roles.lich.LichConstants;
 import org.agmas.noellesroles.roles.lich.LichMagicBarrierEntity;
 import org.agmas.noellesroles.roles.lich.LichSkeletonSkullEntity;
 import org.agmas.noellesroles.roles.magician.MagicianConstants;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
+import org.agmas.noellesroles.roles.thief.ThiefConstants;
+import net.minecraft.entity.passive.AllayEntity;
 
 public class NoellesRolesEntities {
+    public static final EntityType<ThiefAllayEntity> THIEF_ALLAY_ENTITY_TYPE = Registry.register(
+            Registries.ENTITY_TYPE,
+            Identifier.of(NoellesRolesCore.MOD_ID, "thief_allay"),
+            EntityType.Builder.<ThiefAllayEntity>create(ThiefAllayEntity::new, SpawnGroup.MISC)
+                    .dimensions(ThiefConstants.ALLAY_ENTITY_WIDTH, ThiefConstants.ALLAY_ENTITY_HEIGHT)
+                    .maxTrackingRange(ThiefConstants.ALLAY_TRACKING_RANGE)
+                    .trackingTickInterval(ThiefConstants.ALLAY_TRACKING_INTERVAL_TICKS)
+                    .build("thief_allay")
+    );
     public static final EntityType<RoleMineEntity> ROLE_MINE_ENTITY_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
             Identifier.of(NoellesRolesCore.MOD_ID, "cube"),
@@ -78,6 +90,11 @@ public class NoellesRolesEntities {
     );
 
     public static void init() {
+        /* 专属悦灵复用原版悦灵的生命、飞行速度和跟随距离等基础属性。 */
+        FabricDefaultAttributeRegistry.register(
+                THIEF_ALLAY_ENTITY_TYPE,
+                AllayEntity.createAllayAttributes()
+        );
         /*
          * 魔术师皮套虽然是自定义 LivingEntity，
          * 但仍然需要像尸体、怪物那样注册一份基础属性，

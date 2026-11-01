@@ -17,6 +17,7 @@
     "roles.magician.MagicianRevolverTargetMixin",
     "roles.magician.MagicianDerringerTargetMixin",
     "roles.magician.MagicianKnifeTargetMixin",
+    "roles.thief.ThiefAllayKnifeTargetMixin",
     "roles.magician.MagicianSniperVisibleTargetMixin",
     "roles.phantom.PhantomRattatoulieMixin",
     "roles.vulture.VultureEatenBodyMixin",

@@ -58,6 +58,7 @@ import org.agmas.noellesroles.roles.starstruck.StarstruckAbility;
 import org.agmas.noellesroles.roles.thief.ThiefInteractionHandler;
 import org.agmas.noellesroles.roles.thief.ThiefItemTracker;
 import org.agmas.noellesroles.roles.thief.ThiefVictoryRule;
+import org.agmas.noellesroles.roles.thief.ThiefTaskCompletionHandler;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperCommunicationManager;
 import org.agmas.noellesroles.roles.waiter.WaiterInteractionHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawManager;
@@ -142,6 +143,7 @@ public final class NoellesRolesBootstrap {
         ShadowJesterRoleAssignmentRules.init();
         ThiefInteractionHandler.init();
         ThiefItemTracker.init();
+        ThiefTaskCompletionHandler.init();
         MagicianPlaybackManager.init();
         AmnesiacRoleSelectionHandler.init();
         OilDousingHandler.init();

@@ -18,6 +18,8 @@ public final class ThiefRoleAssignedHandler {
              * 按 StupidExpress 源码迁移：小偷开局时偷窃能力先进入完整 70 秒冷却。
              */
             AbilityPlayerComponent.KEY.get(player).setCooldown(ThiefConstants.STEAL_COOLDOWN_TICKS);
+            /* 悦灵背包能力使用独立组件和80秒开局冷却，不与空手偷窃互相覆盖。 */
+            ThiefPlayerComponent.KEY.get(player).initializeForRole();
         }
     }
 }

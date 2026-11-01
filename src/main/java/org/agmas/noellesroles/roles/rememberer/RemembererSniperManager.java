@@ -16,6 +16,7 @@ import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.agmas.noellesroles.roles.magician.MagicianReplayActorContext;
 import org.agmas.noellesroles.roles.magician.MagicianServerHooks;
+import org.agmas.noellesroles.roles.thief.ThiefAllayEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -226,6 +227,29 @@ public final class RemembererSniperManager {
                             deathData
                     );
                 }
+            }
+
+            /* 狙击弹道同样贯穿悦灵，并保留真实狙击枪物品和开枪玩家作为回放来源。 */
+            Box allaySearchBox = new Box(segmentStart, segmentEnd).expand(RemembererConstants.SNIPER_HITBOX_EXPANSION);
+            for (ThiefAllayEntity allay : this.world.getEntitiesByType(
+                    NoellesRolesEntities.THIEF_ALLAY_ENTITY_TYPE,
+                    entity -> entity.isOperationallyAlive()
+                            && allaySearchBox.intersects(entity.getBoundingBox())
+            )) {
+                if (this.hitPlayers.contains(allay.getUuid())
+                        || !intersectsSegment(
+                        allay.getBoundingBox().expand(RemembererConstants.SNIPER_HITBOX_EXPANSION),
+                        segmentStart,
+                        segmentEnd
+                )) {
+                    continue;
+                }
+                this.hitPlayers.add(allay.getUuid());
+                allay.killByWeapon(
+                        killCreditOwner,
+                        this.replayStack,
+                        NoellesDeathReasons.DEATH_REASON_SNIPER_RIFLE
+                );
             }
 
             /*

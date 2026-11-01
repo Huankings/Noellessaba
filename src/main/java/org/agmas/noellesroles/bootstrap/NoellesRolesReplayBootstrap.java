@@ -214,6 +214,13 @@ public final class NoellesRolesReplayBootstrap {
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ATTEMPT_EVENT, NoellesRolesReplayFormatters::formatThiefAttempt);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_SUCCESS_EVENT, NoellesRolesReplayFormatters::formatThiefSuccess);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_FAIL_EVENT, NoellesRolesReplayFormatters::formatThiefFail);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_SUMMON_EVENT, NoellesRolesReplayFormatters::formatThiefAllaySummon);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_RETARGET_EVENT, NoellesRolesReplayFormatters::formatThiefAllayRetarget);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_STEAL_SUCCESS_EVENT, NoellesRolesReplayFormatters::formatThiefAllayStealSuccess);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_STEAL_FAIL_EVENT, NoellesRolesReplayFormatters::formatThiefAllayStealFail);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_KILLED_EVENT, NoellesRolesReplayFormatters::formatThiefAllayKilled);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_DELIVERY_EVENT, NoellesRolesReplayFormatters::formatThiefAllayDelivery);
+        ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.THIEF_ALLAY_OWNER_PURGE_EVENT, NoellesRolesReplayFormatters::formatThiefAllayOwnerPurge);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_USED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchUsed);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_BROKEN_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchBroken);
         ReplayRegistry.registerGlobalEventFormatter(NoellesEventIds.TIMEKEEPER_WATCH_REPAIRED_EVENT, NoellesRolesReplayFormatters::formatTimekeeperWatchRepaired);

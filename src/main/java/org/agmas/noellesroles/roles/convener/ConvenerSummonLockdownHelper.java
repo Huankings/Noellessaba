@@ -13,6 +13,8 @@ import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownEntryAccessor;
 import org.agmas.noellesroles.mixin.roles.convener.ItemCooldownManagerAccessor;
+import org.agmas.noellesroles.registry.NoellesRoleRegistry;
+import org.agmas.noellesroles.roles.thief.ThiefPlayerComponent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -92,6 +94,16 @@ public final class ConvenerSummonLockdownHelper {
         AbilityPlayerComponent noellesAbility = AbilityPlayerComponent.KEY.get(player);
         if (noellesAbility.cooldown < ConvenerConstants.ABILITY_COOLDOWN_TICKS) {
             noellesAbility.setCooldown(ConvenerConstants.ABILITY_COOLDOWN_TICKS);
+        }
+
+        /*
+         * 小偷的悦灵召唤是独立背包冷却，不能再依赖通用 AbilityPlayerComponent。
+         * 召集者封控按现有语义只保证至少60秒：如果小偷本来处于120/180秒冷却，不得反向缩短。
+         */
+        if (dev.doctor4t.wathe.cca.GameWorldComponent.KEY.get(player.getWorld())
+                .isRole(player, NoellesRoleRegistry.THIEF)) {
+            ThiefPlayerComponent.KEY.get(player)
+                    .ensureMinimumSummonCooldown(ConvenerConstants.ABILITY_COOLDOWN_TICKS);
         }
 
         if (FabricLoader.getInstance().isModLoaded(MOD_KINS_WATHE)) {

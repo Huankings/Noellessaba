@@ -82,6 +82,8 @@ import org.agmas.noellesroles.roles.party_animal.PartyAnimalAbility;
 import org.agmas.noellesroles.packet.role.party_animal.PartyAnimalTypeC2SPacket;
 import org.agmas.noellesroles.roles.party_animal.PartyAnimalPlayerComponent;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityManager;
+import org.agmas.noellesroles.packet.role.thief.ThiefAllaySummonC2SPacket;
+import org.agmas.noellesroles.roles.thief.ThiefAllayAbility;
 
 /**
  * NoellesRoles 所有网络包接收器的注册中心。
@@ -93,6 +95,12 @@ public final class NoellesRolesPacketReceivers {
     }
 
     public static void register() {
+        ServerPlayNetworking.registerGlobalReceiver(ThiefAllaySummonC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
+            if (shouldBlockTimeRiftAction(context.player())) {
+                return;
+            }
+            ThiefAllayAbility.handleSummon(payload, context.player());
+        }));
         ServerPlayNetworking.registerGlobalReceiver(PartyAnimalTypeC2SPacket.ID, (payload, context) -> context.server().execute(() -> {
             ServerPlayerEntity player = context.player();
             if (GameWorldComponent.KEY.get(player.getWorld()).isRole(player, NoellesRoleRegistry.PARTY_ANIMAL)
@@ -316,6 +324,8 @@ public final class NoellesRolesPacketReceivers {
                 KillerQueenAbility.handle(player, payload.targetId());
             } else if (gameWorld.isRole(player, NoellesRoleRegistry.PARTY_ANIMAL)) {
                 PartyAnimalAbility.handle(player, payload.targetId());
+            } else if (gameWorld.isRole(player, NoellesRoleRegistry.THIEF)) {
+                ThiefAllayAbility.handleKillAllays(player);
             }
         }));
     }

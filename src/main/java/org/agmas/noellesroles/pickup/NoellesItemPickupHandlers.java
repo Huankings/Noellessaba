@@ -6,6 +6,7 @@ import org.agmas.noellesroles.roles.jason.JasonItemPickupHandler;
 import org.agmas.noellesroles.roles.jester.JesterItemPickupHandler;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenItemPickupHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainItemPickupHandler;
+import org.agmas.noellesroles.roles.thief.ThiefAllayItemPickupHandler;
 
 /**
  * NoellesRoles 掉落物拾取 API 的聚合注册器。
@@ -35,5 +36,6 @@ public final class NoellesItemPickupHandlers {
         JesterItemPickupHandler.init();
         LicensedVillainItemPickupHandler.init();
         ExecutionerItemPickupHandler.init();
+        ThiefAllayItemPickupHandler.init();
     }
 }
