@@ -4,14 +4,13 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.client.items.NoellesRolesGrenadeInputHandler;
 import org.agmas.noellesroles.client.roles.timekeeper.TimekeeperWatchInputHandler;
 
 /**
  * 左键预攻击接管入口。
  *
- * <p>这里只有“是否吞掉原版攻击”的编排；怀表、手雷和狙击枪的具体规则
- * 分别放在对应物品处理器中，避免输入机制重新堆回客户端主类。</p>
+ * <p>这里只有“是否吞掉原版攻击”的编排；扩展手雷已经由 Wathe GrenadeApi 统一识别，
+ * 因此这里只保留怀表和狙击枪自己的特殊左键逻辑。</p>
  */
 public final class NoellesClientPreAttackHandlers {
     private NoellesClientPreAttackHandlers() {
@@ -29,6 +28,6 @@ public final class NoellesClientPreAttackHandlers {
         if (TimekeeperWatchInputHandler.handleModeSwitch(player)) {
             return true;
         }
-        return NoellesRolesGrenadeInputHandler.handleModeSwitch(player);
+        return false;
     }
 }

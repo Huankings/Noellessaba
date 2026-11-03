@@ -39,7 +39,7 @@
 - 回放 formatter 注册引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesReplayBootstrap.java`
 - Harpy 角色上限引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRoleLimitsBootstrap.java`
 - 职业分配总引导：`src/main/java/org/agmas/noellesroles/roleassign/NoellesRolesRoleAssignedBootstrap.java`
-- 枪械 / 左轮反火 / 匕首冷却总引导：`src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`
+- 枪械 / 匕首 / 手雷战斗 API 总引导：`src/main/java/org/agmas/noellesroles/combat/NoellesRolesCombatBootstrap.java`
 - 掉落物拾取总引导：`src/main/java/org/agmas/noellesroles/pickup/NoellesItemPickupHandlers.java`
 - 死亡保护 / 击杀流程总引导：`src/main/java/org/agmas/noellesroles/death/NoellesRolesDeathBootstrap.java`
 - 体力与移动速度修正总引导：`src/main/java/org/agmas/noellesroles/bootstrap/NoellesRolesMovementBootstrap.java`
@@ -50,7 +50,7 @@
 - 商店总引导：`src/main/java/org/agmas/noellesroles/shop/NoellesRolesShopBootstrap.java`
 - 玩家碰撞总引导：`src/main/java/org/agmas/noellesroles/collision/NoellesPlayerCollisionHandlers.java`
 - 物品：`src/main/java/org/agmas/noellesroles/item/`
-- Wathe 客户端武器目标 API：`dev.doctor4t.wathe.api.combat.WeaponTargetingApi`
+- Wathe 战斗 API：`GunShotApi`、`KnifeAttackApi`、`KnifeCooldownApi`、`GrenadeApi`、`WeaponTargetingApi`
 - 职业逻辑：`src/main/java/org/agmas/noellesroles/roles/<role>/`
 - 客户端：`src/client/java/org/agmas/noellesroles/client/`
 - 客户端 Fabric 主入口：`src/client/java/org/agmas/noellesroles/client/NoellesrolesClient.java`，只负责初始化编排。
@@ -240,9 +240,9 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 - 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerDeathHandler` 在 DeathApi 流程里解除附体并结算目标连锁，客户端 mixin 负责输入与显示。
 - 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathHandler` 在真实死亡后补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
 - 强盗：`RobberGunHandler` 通过 Wathe `GunShotApi` 完整接管强盗手枪开火，命中后按目标阵营决定保留、掉左轮或消失；`RobberShopHandler` 改写默认杀手商店，`RobberRoleAssignedHandler` 开局发强盗手枪和撬棍。
-- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinBodySpawnHandler` 实现无声刺杀、击退和隐藏尸体；隐藏尸体的渲染、准心不可选中和服务端交互拦截通过 `AssassinTargetVisibilityHandler` 接入 Wathe `TargetVisibilityApi`；`AssassinGunHandler` 通过 `GunShotApi` 接管无声左轮，`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
+- 刺客：`BayonetItem` + `AssassinPlayerComponent` + `AssassinBayonetAttackMixin` / `AssassinBodySpawnHandler` 实现无声刺杀、击退和隐藏尸体；隐藏尸体通过 `AssassinTargetVisibilityHandler` 接入 Wathe `TargetVisibilityApi`；`AssassinGunHandler` 接管无声左轮，`AssassinGrenadeHandler` 通过 `GrenadeApi` 实现无声手雷，`AssassinShopHandler` 负责刺刀、冷却刷新和商店改写。
 - 变形怪：`MorphlingMorphAbility` 和 `MorphlingPlayerComponent` 负责变形成任意存活玩家、变形时长和冷却，选人包复用统一的 `MorphC2SPacket`。
-- 魔术师：先录一段玩家操作，再用播放实体重放；`MagicianPlayerComponent` 存录像，`MagicianPlaybackManager`、`MagicianPlaybackEntity`、`MagicianServerHooks` 执行回放，`MagicianGunHandler` 通过 `GunShotApi` 记录枪击，`MagicianPlaybackDeathHandler` 通过 `DeathApi` 改写播放体击杀归属，其余动作记录 mixin 负责刀、手雷和交互时间线。
+- 魔术师：先录一段玩家操作，再用播放实体重放；`MagicianPlayerComponent` 存录像，`MagicianPlaybackManager`、`MagicianPlaybackEntity`、`MagicianServerHooks` 执行回放；`MagicianGunHandler`、`MagicianKnifeHandler`、`MagicianGrenadeHandler` 分别通过 Wathe 枪/刀/手雷 API 处理目标与播放体命中，`MagicianPlaybackDeathHandler` 通过 `DeathApi` 改写播放体击杀归属，其余交互时间线才保留窄 mixin。
 - 交换者：`SwapperC2SPacket` 加 `SwapperAbility` 先选两人，再按随机延迟交换位置，执行结果也会写回放。
 - 幻灵：`PhantomAbility` 提供短时隐身，`PhantomPlayerComponent` 管倒计时，`PhantomConstants` 控制 35 秒隐身和 90 秒冷却。
 - 洗脑师：`BrainwasherAbility` 能把目标平民洗成随机杀手角色，成功后清商店并广播；`BrainwasherRoleAssignedHandler` 只负责开局冷却初始化。
@@ -314,7 +314,7 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 - `TimekeeperRiftHandler.java` 负责时间狭缝入口、动态失效检测，以及“狭缝玩家不应继续阻塞胜利结算”时的提前收束。
 - `TimekeeperSnapshots.java` 负责把 Wathe / Noelles 的内置可回溯运行态写成快照并恢复；外部扩展应通过 `TimekeeperSnapshotApi` 注册玩家组件、世界组件或非 CCA participant，否则回溯时该组件会停留在“回溯前未来状态”。
 - `NoellesRolesRoleAssignedBootstrap.java` 负责统一监听 `ModdedRoleAssigned`，先写通用能力冷却，再按固定顺序分发到各职业。
-- `NoellesRolesCombatBootstrap.java` 负责统一接入 Wathe `GunShotApi` 与 `KnifeCooldownApi`，只调用各职业 / 词条自己的枪击、左轮反火、冷却和匕首冷却 handler。
+- `NoellesRolesCombatBootstrap.java` 负责统一接入 Wathe `GunShotApi`、`KnifeAttackApi`、`KnifeCooldownApi` 与 `GrenadeApi`，只调用各职业 / 词条 / 物品自己的 handler。
 - `NoellesItemPickupHandlers.java` 负责统一调用 Wathe `ItemPickupApi` 的职业 / 词条拾取 handler，不承载具体职业判断。
 - `NoellesRolesDeathBootstrap.java` 负责统一监听 `AllowPlayerDeath` 并接入 Wathe `DeathApi`，保持“先保命，再强制放行，再反噬”和“死亡阶段按优先级执行”的顺序。
 - `NoellesRolesMovementBootstrap.java` 负责统一接入 Wathe `PlayerStaminaApi` / `PlayerMovementApi`，把各职业 / 词条的体力、加速、减速和覆盖规则聚合到一起。
@@ -552,14 +552,18 @@ NoellesRoles 的职业机制优先遵循以下原则：
 - 目标职业/词条玩家正常存活时，仍能按自己的规则阻拦或触发独立胜利。
 - 目标职业/词条玩家死亡并进入时间狭缝时，如果排除狭缝玩家后已经只剩一个可获胜阵营，狭缝应立即收束为真死亡，普通结算不应被拖住。
 
-## 枪械与死亡 API 接入方式
+## 枪械、匕首、手雷与死亡 API 接入方式
 
-NoellesRoles 的枪击接管、左轮反火、击杀流程、匕首冷却和掉落物拾取已经迁移到 Wathe 公开 API。新增或维护同类机制时，默认不要再 mixin `GunShootPayload`、`RevolverItem`、`DerringerItem`、`KnifeStabPayload.Receiver` 、`ItemEntity#onPlayerCollision` 或 `GameFunctions.killPlayer(...)`。
+NoellesRoles 的枪击、匕首目标/命中/冷却、手雷模式/爆炸、击杀流程和掉落物拾取已经迁移到 Wathe 公开 API。新增或维护同类机制时，默认不要再 mixin `GunShootPayload`、`RevolverItem`、`DerringerItem`、`KnifeItem`、`KnifeStabPayload.Receiver`、`GrenadeThrowModePayload.Receiver`、`GrenadeEntity#onCollision`、`ItemEntity#onPlayerCollision` 或 `GameFunctions.killPlayer(...)`。
 
 Wathe 侧公开入口：
 
 - `dev.doctor4t.wathe.api.combat.GunShotApi`
 - `dev.doctor4t.wathe.api.combat.GunShotContext`
+- `dev.doctor4t.wathe.api.combat.KnifeAttackApi`
+- `dev.doctor4t.wathe.api.combat.KnifeStabContext`
+- `dev.doctor4t.wathe.api.combat.GrenadeApi`
+- `dev.doctor4t.wathe.api.combat.GrenadeExplosionContext`
 - `dev.doctor4t.wathe.api.combat.WeaponTargetingApi`
 - `dev.doctor4t.wathe.api.combat.RevolverPenaltyContext`
 - `dev.doctor4t.wathe.api.combat.KnifeCooldownApi`
@@ -588,7 +592,9 @@ NoellesRoles 侧接入入口：
 - `roles/licensed_villain/LicensedVillainGunPenaltyHandler.java`：执照恶棍左轮惩罚豁免。
 - `roles/morphling/MorphlingGunPenaltyHandler.java`：变形试剂伪装下的左轮惩罚豁免。
 
-匕首冷却按职业/词条拆分为 `DualPersonalityKnifeCooldownHandler`、`JasonKnifeCooldownHandler`、`VecnaKnifeCooldownHandler` 和 `OutlawKnifeCooldownHandler`，由 `NoellesRolesCombatBootstrap` 只调用 `init()`。拾取限制按职业/词条拆分为各自的 `*ItemPickupHandler`，由 `NoellesItemPickupHandlers` 聚合注册。Jason 重伤和 Killer Queen 招募是 priority 300 的强制禁拾，Jester 与 Licensed Villain 是 200，Dual Personality 是 150，Executioner 的枪械 ALLOW 为 100；因此强制缴械会高于仇杀客拾枪特权。
+匕首目标/命中按所有者拆到 `MagicianKnifeHandler` 与 `ThiefAllayKnifeHandler`，冷却继续拆为 `DualPersonalityKnifeCooldownHandler`、`JasonKnifeCooldownHandler`、`VecnaKnifeCooldownHandler` 和 `OutlawKnifeCooldownHandler`。手雷爆炸按所有者拆到 `FakeGrenadeExplosionHandler`、`AssassinGrenadeHandler`、`MagicianGrenadeHandler` 与 `ThiefAllayGrenadeHandler`。它们都由 `NoellesRolesCombatBootstrap` 只调用 `init()`，禁止重新集中成一个大处理类。
+
+假手雷和无声手雷现在继承 Wathe `GrenadeItem` 的公共直投/蓄力、生成实体、统计、回放、冷却和消耗流程，只覆写飞行实体携带的真实物品栈。Wathe 客户端与服务端会通过 `GrenadeApi` 统一识别扩展手雷，因此 NoellesRoles 不再维护第二套左键模式状态机。
 
 ### 武器目标判定
 
@@ -927,7 +933,7 @@ Wathe 的 `/wathe:shopCooldownBypass <true|false>` 默认关闭。开启后，No
 
 背包内玩家选择按钮不是 mixin。它们应通过 `NoellesInventoryButtons` 注册，再由各职业包里的 `*InventoryButtons.java` 接入 Wathe `InventoryButtonApi`。
 普通屏幕 HUD 也不是 mixin。它们应通过 `NoellesHudHandlers` 注册，再由各职业包里的 `*StatusHud.java` 接入 Wathe `HudOverlayApi`；只有相机、输入控制、物品渲染等缺少公开 API 的场景才保留窄 mixin。
-枪击接管、左轮反火、匕首冷却、掉落物拾取、默认击杀收益、确认死亡后清理和尸体生成回调都不是 mixin；它们应通过 `NoellesRolesCombatBootstrap` / `NoellesItemPickupHandlers` / `NoellesRolesDeathBootstrap` 调用各职业 handler 接入 Wathe `GunShotApi` / `KnifeCooldownApi` / `ItemPickupApi` / `WeaponTargetingApi` / `DeathApi`。
+枪击接管、左轮反火、匕首目标/命中/冷却、手雷爆炸、掉落物拾取、默认击杀收益、确认死亡后清理和尸体生成回调都不是 mixin；它们应通过 `NoellesRolesCombatBootstrap` / `NoellesItemPickupHandlers` / `NoellesRolesDeathBootstrap` 调用各所有者 handler 接入 Wathe `GunShotApi` / `KnifeAttackApi` / `KnifeCooldownApi` / `GrenadeApi` / `ItemPickupApi` / `WeaponTargetingApi` / `DeathApi`。
 Harpy 开局职业 / 词条分配规则也不是 mixin；同局互斥、绑定生成、词条公告前强制配对应通过 `HackerRoleAssignmentRules`、`InitiateRoleAssignmentRules`、`LoversModifierAssignmentRules`、`DualPersonalityModifierAssignmentRules` 这类小类接入 Harpy assignment API。
 
 ### 10. 需要回放和文本时

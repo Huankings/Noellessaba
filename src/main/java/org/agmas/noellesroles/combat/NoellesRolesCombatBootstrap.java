@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.combat;
 
 import org.agmas.noellesroles.roles.assassin.AssassinGunHandler;
+import org.agmas.noellesroles.roles.assassin.AssassinGrenadeHandler;
 import org.agmas.noellesroles.roles.bounty_hunter.BountyHunterGunHandler;
 import org.agmas.noellesroles.roles.coward.CowardGunCooldownHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerGunPenaltyHandler;
@@ -8,6 +9,8 @@ import org.agmas.noellesroles.roles.jester.JesterGunTargetHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainGunPenaltyHandler;
 import org.agmas.noellesroles.roles.licensed_villain.LicensedVillainGunCooldownHandler;
 import org.agmas.noellesroles.roles.magician.MagicianGunHandler;
+import org.agmas.noellesroles.roles.magician.MagicianGrenadeHandler;
+import org.agmas.noellesroles.roles.magician.MagicianKnifeHandler;
 import org.agmas.noellesroles.roles.morphling.MorphlingGunPenaltyHandler;
 import org.agmas.noellesroles.roles.perceiver.PerceiverGunCooldownHandler;
 import org.agmas.noellesroles.roles.robber.RobberGunHandler;
@@ -19,7 +22,10 @@ import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityKnifeCoo
 import org.agmas.noellesroles.roles.jason.JasonKnifeCooldownHandler;
 import org.agmas.noellesroles.roles.outlaw.OutlawKnifeCooldownHandler;
 import org.agmas.noellesroles.roles.thief.ThiefAllayCombatHandler;
+import org.agmas.noellesroles.roles.thief.ThiefAllayGrenadeHandler;
+import org.agmas.noellesroles.roles.thief.ThiefAllayKnifeHandler;
 import org.agmas.noellesroles.roles.vecna.VecnaKnifeCooldownHandler;
+import org.agmas.noellesroles.item.FakeGrenadeExplosionHandler;
 
 /**
  * NoellesRoles 枪械与匕首冷却 API 接入总引导器。
@@ -46,6 +52,12 @@ public final class NoellesRolesCombatBootstrap {
          */
         MagicianGunHandler.init();
         ThiefAllayCombatHandler.init();
+        MagicianKnifeHandler.init();
+        ThiefAllayKnifeHandler.init();
+        MagicianGrenadeHandler.init();
+        ThiefAllayGrenadeHandler.init();
+        FakeGrenadeExplosionHandler.init();
+        AssassinGrenadeHandler.init();
         BountyHunterGunHandler.init();
         RobberGunHandler.init();
         AssassinGunHandler.init();

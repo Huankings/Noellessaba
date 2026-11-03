@@ -3,8 +3,15 @@ package org.agmas.noellesroles.roles.magician;
 import dev.doctor4t.wathe.api.combat.GunShotApi;
 import dev.doctor4t.wathe.api.combat.GunShotContext;
 import dev.doctor4t.wathe.api.combat.GunShotResult;
+import dev.doctor4t.wathe.api.combat.GunTargetContext;
+import dev.doctor4t.wathe.api.combat.GunTargetResult;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.index.tag.WatheItemTags;
+import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
@@ -12,6 +19,8 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
  * 魔术师对枪击动作的录制，以及“枪击命中皮套就打断播放”的处理。
  */
 public final class MagicianGunHandler {
+    private static final int PRIORITY = 1_100;
+    private static final double DISTANCE_EPSILON = 1.0E-4D;
     private static boolean initialized = false;
 
     private MagicianGunHandler() {
@@ -28,9 +37,41 @@ public final class MagicianGunHandler {
          */
         GunShotApi.registerShotHandler(
                 NoellesRolesCore.id("magician_gun_record_and_break"),
-                1100,
+                PRIORITY,
                 MagicianGunHandler::handleShot
         );
+        /*
+         * Wathe 枪械已经公开客户端目标覆写，不再分别 mixin RevolverItem 与 DerringerItem。
+         * context.range() 会自动带入左轮 20 格、德林杰 7 格及扩展枪自己的射程。
+         */
+        GunShotApi.registerTargetRule(
+                NoellesRolesCore.id("magician_playback_gun_target"),
+                PRIORITY,
+                MagicianGunHandler::resolveTarget
+        );
+    }
+
+    private static GunTargetResult resolveTarget(GunTargetContext context) {
+        if (!isSupportedGun(context.stack())) {
+            return GunTargetResult.pass();
+        }
+        HitResult playbackHit = ProjectileUtil.getCollision(
+                context.user(),
+                entity -> entity instanceof MagicianPlaybackEntity,
+                context.range()
+        );
+        if (!(playbackHit instanceof EntityHitResult)) {
+            return GunTargetResult.pass();
+        }
+        HitResult defaultTarget = context.defaultTarget();
+        if (defaultTarget != null && defaultTarget.getType() != HitResult.Type.MISS) {
+            double playbackDistance = context.user().getEyePos().squaredDistanceTo(playbackHit.getPos());
+            double defaultDistance = context.user().getEyePos().squaredDistanceTo(defaultTarget.getPos());
+            if (defaultDistance + DISTANCE_EPSILON < playbackDistance) {
+                return GunTargetResult.pass();
+            }
+        }
+        return GunTargetResult.target(playbackHit);
     }
 
     private static GunShotResult handleShot(GunShotContext context) {
@@ -39,10 +80,7 @@ public final class MagicianGunHandler {
          * Wathe 默认枪械走标签；Noelles 自定义强盗手枪/无声左轮没有必要强塞进 Wathe 标签，
          * 所以这里额外列出，保证录制层能先看到它们。
          */
-        boolean supportedGun = context.stack().isIn(WatheItemTags.GUNS)
-                || context.stack().isOf(ModItems.ROBBER_PISTOL)
-                || context.stack().isOf(ModItems.SILENCED_REVOLVER);
-        if (!supportedGun) {
+        if (!isSupportedGun(context.stack())) {
             return GunShotResult.PASS;
         }
 
@@ -70,5 +108,11 @@ public final class MagicianGunHandler {
             return GunShotResult.CANCEL;
         }
         return GunShotResult.PASS;
+    }
+
+    private static boolean isSupportedGun(ItemStack stack) {
+        return stack.isIn(WatheItemTags.GUNS)
+                || stack.isOf(ModItems.ROBBER_PISTOL)
+                || stack.isOf(ModItems.SILENCED_REVOLVER);
     }
 }

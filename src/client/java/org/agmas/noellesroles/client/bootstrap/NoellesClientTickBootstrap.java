@@ -5,7 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceClientState;
 import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverClientState;
 import org.agmas.noellesroles.client.input.NoellesAbilityInputHandler;
-import org.agmas.noellesroles.client.items.NoellesRolesGrenadeInputHandler;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientEffects;
 import org.agmas.noellesroles.client.roles.jason.JasonAbilityClientSoundController;
@@ -46,10 +45,8 @@ public final class NoellesClientTickBootstrap {
         StalkerAbilityInputHandler.tick(client);
         VultureAbilityInputHandler.tick(client);
         NoellesAbilityInputHandler.tick(client);
-        NoellesRolesGrenadeInputHandler.tick(client);
         NoellesAppearanceClientState.refresh(client);
         InsaneObserverClientState.tick();
-        NoellesRolesGrenadeInputHandler.releaseIfAttackNotHeld(client.options.attackKey.isPressed());
         TimekeeperWatchInputHandler.releaseIfAttackNotHeld(client.options.attackKey.isPressed());
     }
 }

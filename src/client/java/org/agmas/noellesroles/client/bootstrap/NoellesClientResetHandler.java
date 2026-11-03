@@ -3,7 +3,6 @@ package org.agmas.noellesroles.client.bootstrap;
 import net.minecraft.client.MinecraftClient;
 import org.agmas.noellesroles.client.appearance.NoellesAppearanceClientState;
 import org.agmas.noellesroles.client.appearance.roles.insane_observer.InsaneObserverClientState;
-import org.agmas.noellesroles.client.items.NoellesRolesGrenadeInputHandler;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityClientState;
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityKeybinds;
 import org.agmas.noellesroles.client.roles.coward.CowardClientEffects;
@@ -58,7 +57,6 @@ public final class NoellesClientResetHandler {
         MyersAbilityInputHandler.reset();
         StalkerAbilityInputHandler.reset();
         VultureAbilityInputHandler.reset();
-        NoellesRolesGrenadeInputHandler.reset();
         TimekeeperWatchInputHandler.reset();
         PartyAnimalVoiceChatClientAudioHandler.reset();
     }

@@ -4,6 +4,7 @@ import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityK
 import org.agmas.noellesroles.client.modifiers.dual_personality.DualPersonalityTimeHud;
 import org.agmas.noellesroles.client.roles.convener.ConvenerMoodHud;
 import org.agmas.noellesroles.client.roles.cook.CookMoodHud;
+import org.agmas.noellesroles.client.roles.coward.CowardGunTargetHandler;
 import org.agmas.noellesroles.client.roles.dreamer.DreamerMoodHud;
 import org.agmas.noellesroles.client.roles.executioner.ExecutionerMoodHud;
 import org.agmas.noellesroles.client.roles.hacker.HackerMoodHud;
@@ -32,6 +33,7 @@ public final class NoellesClientRoleBootstrap {
     }
 
     public static void register() {
+        CowardGunTargetHandler.init();
         DualPersonalityTimeHud.register();
         OutlawTimeHud.register();
         DualPersonalityKeybinds.init();

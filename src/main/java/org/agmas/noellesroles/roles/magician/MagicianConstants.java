@@ -31,7 +31,7 @@ public final class MagicianConstants {
     /**
      * 一次播放结束后进入 90 秒冷却。
      */
-    public static final int PLAYBACK_COOLDOWN_TICKS = GameConstants.getInTicks(1, 30);
+    public static final int PLAYBACK_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);
 
     /**
      * 其他玩家强制打碎魔术师皮套时，补偿给魔术师的金币数。

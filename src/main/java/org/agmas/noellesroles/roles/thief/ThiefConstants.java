@@ -84,7 +84,7 @@ public final class ThiefConstants {
     public static final double ALLAY_DELIVERY_DISTANCE = 1.5D;
 
     /** 悦灵飞向目标或返回主人时使用的导航速度。 */
-    public static final double ALLAY_NAVIGATION_SPEED = 1.65D;
+    public static final double ALLAY_NAVIGATION_SPEED = 1.45D;
 
     /** 悦灵重新向移动中的目标请求路径的间隔 tick。 */
     public static final int ALLAY_PATH_REFRESH_INTERVAL_TICKS = 10;
