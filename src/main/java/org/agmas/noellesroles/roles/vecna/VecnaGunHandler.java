@@ -8,7 +8,7 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 
 /** 维克那标记好人使用普通左轮误伤好人时的免罚与奖励。 */
 public final class VecnaGunHandler {
@@ -37,10 +37,10 @@ public final class VecnaGunHandler {
         var targetRole = context.game().getRole(context.target());
         boolean shooterGood = shooterRole != null && (shooterRole.getFaction() == Faction.CIVILIAN
                 || shooterRole.getFaction() == Faction.VIGILANTE
-                || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(shooterRole));
+                || NeutralRoleCategoryApi.isIndependentNeutral(shooterRole));
         boolean targetGood = targetRole != null && (targetRole.getFaction() == Faction.CIVILIAN
                 || targetRole.getFaction() == Faction.VIGILANTE
-                || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(targetRole));
+                || NeutralRoleCategoryApi.isIndependentNeutral(targetRole));
         if (!shooterGood || !targetGood) return RevolverPenaltyResult.PASS;
         var owner = context.shooter().getServer() == null ? null
                 : context.shooter().getServer().getPlayerManager().getPlayer(mark.getMarker());

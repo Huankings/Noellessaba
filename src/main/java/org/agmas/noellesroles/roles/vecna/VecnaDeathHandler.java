@@ -8,7 +8,7 @@ import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.agmas.noellesroles.registry.NoellesDeathReasons;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 /**
@@ -50,13 +50,13 @@ public final class VecnaDeathHandler {
 
     private static boolean isKillerSide(GameWorldComponent game, ServerPlayerEntity player) {
         var role = game.getRole(player);
-        return role != null && (role.getFaction() == Faction.KILLER || NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role));
+        return role != null && (role.getFaction() == Faction.KILLER || NeutralRoleCategoryApi.isKillerNeutral(role));
     }
 
     private static boolean isGoodSide(GameWorldComponent game, ServerPlayerEntity player) {
         var role = game.getRole(player);
         return role != null && (role.getFaction() == Faction.CIVILIAN || role.getFaction() == Faction.VIGILANTE
-                || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role));
+                || NeutralRoleCategoryApi.isIndependentNeutral(role));
     }
 
     private static void rewardMarker(ServerPlayerEntity source, java.util.UUID marker, int coins) {

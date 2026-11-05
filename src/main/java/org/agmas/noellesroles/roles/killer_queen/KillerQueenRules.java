@@ -5,7 +5,7 @@ import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,12 +26,12 @@ public final class KillerQueenRules {
         if (role == null) return false;
         return role.getFaction() == Faction.CIVILIAN
                 || role.getFaction() == Faction.VIGILANTE
-                || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role);
+                || NeutralRoleCategoryApi.isIndependentNeutral(role);
     }
 
     public static boolean isKillerOrKillerSidedNeutral(@Nullable Role role) {
         return role != null && (role.getFaction() == Faction.KILLER
-                || NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role));
+                || NeutralRoleCategoryApi.isKillerNeutral(role));
     }
 
     public static boolean isKillerQueen(PlayerEntity player) {

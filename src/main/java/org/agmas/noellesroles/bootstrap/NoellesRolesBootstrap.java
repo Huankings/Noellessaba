@@ -17,7 +17,7 @@ import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityVictoryR
 import org.agmas.noellesroles.modifiers.lovers.LoversModifierAssignmentRules;
 import org.agmas.noellesroles.modifiers.lovers.LoversVictoryRule;
 import org.agmas.noellesroles.registry.NoellesFramingShopEntries;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.noellesroles.registry.NoellesNeutralRoleCategories;
 import org.agmas.noellesroles.reset.NoellesRolesResetBootstrap;
 import org.agmas.noellesroles.roles.amnesiac.AmnesiacRoleSelectionHandler;
 import org.agmas.noellesroles.roles.arsonist.ArsonistReplayTracker;
@@ -90,7 +90,7 @@ public final class NoellesRolesBootstrap {
         }
         initialized = true;
 
-        NoellesRoleGroups.init();
+        NoellesNeutralRoleCategories.init();
         NoellesRolesConfig.HANDLER.load();
         NoellesRolesCommand.init();
         NoellesRolesSounds.initialize();

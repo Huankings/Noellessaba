@@ -20,7 +20,7 @@ import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityComponen
 import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesModifierRegistry;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
@@ -376,7 +376,7 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
         if (role.getFaction() == Faction.CIVILIAN || role.getFaction() == Faction.VIGILANTE) {
             return !role.equals(NoellesRoleRegistry.MIMIC);
         }
-        return NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role);
+        return NeutralRoleCategoryApi.isIndependentNeutral(role);
     }
 
     @Override

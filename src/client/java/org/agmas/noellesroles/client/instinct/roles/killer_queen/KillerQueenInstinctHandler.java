@@ -8,8 +8,8 @@ import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenConstants;
 import org.agmas.noellesroles.roles.killer_queen.KillerQueenPsychoHandler;
@@ -60,8 +60,8 @@ public final class KillerQueenInstinctHandler {
              * 只有前两组暴露目标职业色；独立中立与好人统一显示杀手皇后职业色。
              * 上方 Mimic 的原有特殊颜色分支仍优先保留。
              */
-            if (NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role)
-                    || NoellesRoleGroups.ORDINARY_NEUTRALS.contains(role)) {
+            if (NeutralRoleCategoryApi.isKillerNeutral(role)
+                    || NeutralRoleCategoryApi.isOrdinaryNeutral(role)) {
                 return InstinctApi.HighlightResult.color(role.color());
             }
             return InstinctApi.HighlightResult.color(KillerQueenConstants.ROLE_COLOR);

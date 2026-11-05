@@ -26,7 +26,7 @@ public final class InitiateInstinctHandler {
                     && WatheClient.isInstinctEnabled()
                     && gameWorld.canUseKillerFeatures(viewer)) {
                 /*
-                 * 初学者是普通中立，通用 KillerNeutralInstinctHandler 会在较低优先级
+                 * 初学者是普通中立，NoellesRoles 的 KillerOtherNeutralInstinctHandler 会在较低优先级
                  * 把普通中立染成固定绿色。这里使用“特殊中立职业色”优先级先接住初学者，
                  * 否则同优先级且后注册的通用规则会提前返回，杀手就永远看不到初学者职业色。
                  *

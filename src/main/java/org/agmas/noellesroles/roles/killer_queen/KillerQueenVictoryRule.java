@@ -5,7 +5,7 @@ import dev.doctor4t.wathe.api.win.CustomVictory;
 import dev.doctor4t.wathe.api.win.VictoryApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
@@ -39,7 +39,7 @@ public final class KillerQueenVictoryRule {
                     Set<UUID> winners = new LinkedHashSet<>();
                     winners.add(queen.getUuid());
                     for (var role : dev.doctor4t.wathe.api.WatheRoles.ROLES) {
-                        if (role.getFaction() == Faction.KILLER || NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role)) {
+                        if (role.getFaction() == Faction.KILLER || NeutralRoleCategoryApi.isKillerNeutral(role)) {
                             winners.addAll(context.gameWorld().getAllWithRole(role));
                         }
                     }

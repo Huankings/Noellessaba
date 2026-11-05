@@ -1,6 +1,6 @@
 package org.agmas.noellesroles.client.instinct.roles.hacker;
 
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
@@ -51,7 +51,7 @@ public final class HackerInstinctHandler {
             if (gameWorld.canUseKillerFeatures(targetPlayer) || gameWorld.isRole(targetPlayer, NoellesRoleRegistry.MIMIC)) {
                 return InstinctApi.HighlightResult.color(MathHelper.hsvToRgb(0.0F, 1.0F, 0.6F));
             }
-            if (NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(targetRole)) {
+            if (NeutralRoleCategoryApi.isKillerNeutral(targetRole)) {
                 return InstinctApi.HighlightResult.color(targetRole.color());
             }
             if (HackerComponent.KEY.get(targetPlayer).hackingTime >= HackerConstants.HACKING_TIME_TICKS) {

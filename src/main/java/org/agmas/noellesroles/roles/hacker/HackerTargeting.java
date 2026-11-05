@@ -1,6 +1,6 @@
 package org.agmas.noellesroles.roles.hacker;
 
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
@@ -25,6 +25,6 @@ public final class HackerTargeting {
                 && (gameWorld.canUseKillerFeatures(player)
                 || gameWorld.isRole(player, NoellesRoleRegistry.HACKER)
                 || gameWorld.isRole(player, NoellesRoleRegistry.MIMIC)
-                || NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role));
+                || NeutralRoleCategoryApi.isKillerNeutral(role));
     }
 }

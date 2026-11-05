@@ -5,8 +5,8 @@ import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.instinct.InstinctApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.entity.player.PlayerEntity;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.client.instinct.NoellesInstinctHandlers;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
 import org.agmas.noellesroles.roles.insane_damned_paranoid_killer.InsaneDamnedKillerPlayerComponent;
 
 /**
@@ -42,7 +42,7 @@ public final class InsaneDamnedKillerInstinctHandler {
                      */
                     boolean shouldHide = viewerRole.getFaction() == Faction.CIVILIAN
                             || viewerRole.getFaction() == Faction.VIGILANTE
-                            || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(viewerRole);
+                            || NeutralRoleCategoryApi.isIndependentNeutral(viewerRole);
                     return shouldHide ? InstinctApi.HighlightResult.hide() : InstinctApi.HighlightResult.pass();
                 }
         );

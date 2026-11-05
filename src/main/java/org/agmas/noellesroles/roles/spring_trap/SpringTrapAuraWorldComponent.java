@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -154,12 +154,12 @@ public final class SpringTrapAuraWorldComponent implements Component, ServerTick
         if (role == null) {
             return EffectSide.NONE;
         }
-        if (role.getFaction() == Faction.KILLER || NoellesRoleGroups.KILLER_SIDED_NEUTRALS.contains(role)) {
+        if (role.getFaction() == Faction.KILLER || NeutralRoleCategoryApi.isKillerNeutral(role)) {
             return EffectSide.ALLY;
         }
         if (role.getFaction() == Faction.CIVILIAN
                 || role.getFaction() == Faction.VIGILANTE
-                || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role)) {
+                || NeutralRoleCategoryApi.isIndependentNeutral(role)) {
             return EffectSide.ENEMY;
         }
         return EffectSide.NONE;

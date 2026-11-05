@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.joml.Vector3f;
 
@@ -278,7 +278,7 @@ public class LichMagicBarrierEntity extends Entity {
         Faction faction = role.getFaction();
         return faction == Faction.CIVILIAN
                 || faction == Faction.VIGILANTE
-                || NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role);
+                || NeutralRoleCategoryApi.isIndependentNeutral(role);
     }
 
     private void refreshTargetCooldowns(PlayerEntity player) {

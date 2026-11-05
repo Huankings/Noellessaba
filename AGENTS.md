@@ -55,7 +55,7 @@
 - `src/main/java/org/agmas/noellesroles/registry/NoellesRoleIds.java`：职业和词条的稳定 id。
 - `src/main/java/org/agmas/noellesroles/registry/NoellesRoleRegistry.java`：Wathe `Role` 实例和显式阵营注册。
 - `src/main/java/org/agmas/noellesroles/registry/NoellesModifierRegistry.java`：Harpy 词条注册。
-- `src/main/java/org/agmas/noellesroles/registry/NoellesRoleGroups.java`：跨系统共享角色分组，例如 `KILLER_SIDED_NEUTRALS`；它不再从 `Noellesroles.X` 导出。
+- `src/main/java/org/agmas/noellesroles/registry/NoellesNeutralRoleCategories.java`：把 NoellesRoles 的杀手中立、普通中立、独立中立职业注册到 Harpy 公共分类 API；不再维护本地可变分组集合。
 - `src/main/java/org/agmas/noellesroles/registry/NoellesDeathReasons.java`：专属死亡原因 id。
 - `src/main/java/org/agmas/noellesroles/registry/NoellesEventIds.java`：回放事件、托盘/床效果和护盾来源 id。
 - `src/main/java/org/agmas/noellesroles/registry/NoellesFramingShopEntries.java`：伪装商店共享条目。
@@ -259,7 +259,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 ### 停电 API 接入
 
 - 统一使用 Wathe `BlackoutApi`，不要再写 `WorldBlackoutComponentAccessor` 或客户端监听停电音效计时黑幕。
-- `NoellesRolesBlackoutBootstrap` 当前注册两个分组规则：`KILLER_SIDED_NEUTRALS` 获得停电夜视，`INDEPENDENT_NEUTRALS` 获得停电失明。
+- `NoellesRolesBlackoutBootstrap` 当前按 Harpy `NeutralRoleCategoryApi` 注册两个分类规则：杀手中立获得停电夜视，独立中立获得停电失明。
 - 工程师恢复供电调用 `BlackoutApi.restorePower(world)`；这个入口会恢复灯光、同步 Wathe 黑幕并清理 Wathe 自己发放的停电药水。
 - 后续具体职业或词条需要特殊停电规则时，按 `roles/<role>/<RoleName>BlackoutHandler` 或 `modifiers/<modifier>/*BlackoutHandler` 拆文件，再由 bootstrap 调用 `init()`。
 - 时停者快照恢复 `wathe:blackout` 世界组件即可；Wathe 组件 NBT 已包含 ticks、总时长、恢复事件标记、黑幕不透明度和药水开关，不要再额外 accessor 私有字段。
@@ -304,7 +304,7 @@ NoellesRoles 里的疯魔相关改动必须按职业拆分，不要把所有规�
 - `NoellesRoleIds.java`：新增职业 / 词条的稳定 `Identifier`。
 - `NoellesRoleRegistry.java`：新增 `Role` 实例，并用 `WatheRoles.registerCivilianRole/registerVigilanteRole/registerKillerRole/registerNeutralRole` 显式登记阵营。
 - `NoellesModifierRegistry.java`：新增或调整 Harpy 词条。
-- `NoellesRoleGroups.java`：新增跨系统共享角色集合，例如杀手侧中立、本能/HUD 分组等。
+- `NoellesNeutralRoleCategories.java`：新增或调整 NoellesRoles 职业的中立细分类注册；共享查询统一使用 Harpy `NeutralRoleCategoryApi`。
 - `NoellesDeathReasons.java`：新增死亡原因 id。
 - `NoellesEventIds.java`：新增回放事件、托盘/床效果、护盾来源等稳定事件 id。
 - `NoellesRolesBootstrap.java`：新增全局初始化器时，在这里按顺序调用。
@@ -377,7 +377,9 @@ public static final Role SOME_ROLE = WatheRoles.registerCivilianRole(new Role(
 ));
 ```
 
-不要再把 `Identifier`、`Role` 或兼容导出字段加回 `Noellesroles.java`。其他扩展需要反射 NoellesRoles 职业时，应读取 `org.agmas.noellesroles.registry.NoellesRoleRegistry`；需要读取 `KILLER_SIDED_NEUTRALS` 时，应读取 `org.agmas.noellesroles.registry.NoellesRoleGroups`。
+不要再把 `Identifier`、`Role` 或兼容导出字段加回 `Noellesroles.java`。其他扩展需要读取 NoellesRoles 职业时，应使用 `org.agmas.noellesroles.registry.NoellesRoleRegistry`；需要判断中立细分类时，应使用 Harpy `NeutralRoleCategoryApi`，不要反射 NoellesRoles 的内部注册入口。
+
+新增中立职业时，除 `WatheRoles.registerNeutralRole(...)` 外，还必须在 `NoellesNeutralRoleCategories` 登记为杀手中立、普通中立或独立中立。杀手中立的“杀手本能显示职业色”和单向“杀手同伙”由 Harpy 公共分类能力统一提供；Hacker、Executioner、Killer Queen 这类双向识别例外仍在各自职业 handler 内注册，禁止把双向资格扩散给整个杀手中立分类。
 
 常见阵营语义：
 

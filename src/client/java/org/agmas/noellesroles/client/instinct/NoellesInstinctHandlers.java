@@ -3,7 +3,7 @@ package org.agmas.noellesroles.client.instinct;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import net.minecraft.util.Identifier;
-import org.agmas.noellesroles.client.instinct.killer.KillerNeutralInstinctHandler;
+import org.agmas.noellesroles.client.instinct.killer.KillerOtherNeutralInstinctHandler;
 import org.agmas.noellesroles.client.instinct.modifiers.allergic.AllergicInstinctHandler;
 import org.agmas.noellesroles.client.instinct.modifiers.dual_personality.DualPersonalityInstinctHandler;
 import org.agmas.noellesroles.client.instinct.modifiers.lovers.LoversInstinctHandler;
@@ -92,7 +92,7 @@ public final class NoellesInstinctHandlers {
         AllergicInstinctHandler.register();
         LoversInstinctHandler.register();
         DualPersonalityInstinctHandler.register();
-        KillerNeutralInstinctHandler.register();
+        KillerOtherNeutralInstinctHandler.register();
         KillerQueenInstinctHandler.register();
         PartyAnimalInstinctHandler.register();
     }

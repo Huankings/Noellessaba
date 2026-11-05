@@ -26,7 +26,7 @@
 - 职业 / 词条 id：`src/main/java/org/agmas/noellesroles/registry/NoellesRoleIds.java`
 - 职业注册：`src/main/java/org/agmas/noellesroles/registry/NoellesRoleRegistry.java`
 - 词条注册：`src/main/java/org/agmas/noellesroles/registry/NoellesModifierRegistry.java`
-- 跨系统职业分组：`src/main/java/org/agmas/noellesroles/registry/NoellesRoleGroups.java`
+- 中立细分类注册：`src/main/java/org/agmas/noellesroles/registry/NoellesNeutralRoleCategories.java`，分类所有权与查询 API 位于 HarpyModLoader。
 - 死亡原因 id：`src/main/java/org/agmas/noellesroles/registry/NoellesDeathReasons.java`
 - 回放 / 托盘 / 床 / 护盾来源事件 id：`src/main/java/org/agmas/noellesroles/registry/NoellesEventIds.java`
 - 伪装商店条目：`src/main/java/org/agmas/noellesroles/registry/NoellesFramingShopEntries.java`
@@ -170,7 +170,9 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 
 注意：
 - `Faction.NEUTRAL` 是真正的中立阵营。
-- `KILLER_SIDED_NEUTRALS` 只是“杀手侧中立”显示和本能识别集合，不等于阵营本身；它现在位于 `NoellesRoleGroups`，不再通过 `Noellesroles.X` 导出。
+- 杀手中立、普通中立、独立中立只是 Harpy 扩展层细分类，不等于 Wathe 的真实 `Faction`。NoellesRoles 在 `NoellesNeutralRoleCategories` 注册职业，所有玩法通过 Harpy `NeutralRoleCategoryApi` 查询，不再导出本地集合。
+
+当前注册关系：Vulture、Jester、Executioner、Dreamer、Hacker、Killer Queen 属于杀手中立；Amnesiac、Initiate 属于普通中立；Arsonist、Convener、Thief、Licensed Villain、Shadow Jester、Outlaw 属于独立中立。杀手中立默认由 Harpy 提供“存活杀手本能显示目标职业色”和单向“杀手同伙”；Mimic 仍是 NoellesRoles 自己的伪同伙特例，Hacker、Executioner、Killer Queen 的双向同伙资格也继续由各自 handler 维护。
 
 ## 职业总览
 
@@ -276,7 +278,7 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 - 追忆者：`RemembererInteractionHandler` 负责摸取回忆书，`RemembererPlayerComponent` 管回忆和狙击冷却，`RemembererSniperManager`、`SniperRifleItem`、`SniperRifleBulletItem` 实现狙击枪，`RemembererReplayBookBuilder` 负责把三分钟内的事件写成书。
 - 时停者：`TimekeeperPlayerComponent` 保存光阴收入计时、怀表三模式冷却、回溯保护和时间狭缝状态；`TimekeeperWorldComponent` 每 4 tick 采样一次局内快照，保留 120 秒历史并按 30 秒深度倒放；`TimekeeperSnapshots` 负责恢复玩家运行态、背包、物品冷却、尸体、掉落物、门/火等可控状态，后续新增组件时必须同步检查它的快照清单。
 - 服务员：`WaiterInteractionHandler` 判断玩家当前缺什么并递送，`WaiterShopHandler` 提供随机饮品、食物、药水、吧凳、钓鱼竿、唱片、篝火、烟熏炉、睡袋和书，`WaiterConstants` 里集中定义互动距离、价格和奖励。
-- 模仿者：`MimicRoleAssignedHandler` 只发假匕首，但杀手侧会把它当同伙看；`MimicBackfireDeathHandler` 在无辜者被推下列车时反噬自己，`KillerNeutralInstinctHandler` 和 `MimicInstinctHandler` 负责杀手视角提示。
+- 模仿者：`MimicRoleAssignedHandler` 只发假匕首，但杀手侧会把它当同伙看；`MimicBackfireDeathHandler` 在无辜者被推下列车时反噬自己，`MimicCohortTargetHudHandler` 和 `MimicInstinctHandler` 负责杀手视角提示。
 
 ### 义警阵营
 
@@ -298,7 +300,7 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 - `NoellesRoleIds.java` 保存所有职业 / 词条稳定 id；新增 id 先放这里。
 - `NoellesRoleRegistry.java` 保存所有 `Role` 实例和 Wathe 显式阵营注册；新增职业不要再写进 `Noellesroles.java`。
 - `NoellesModifierRegistry.java` 保存 Harpy 词条注册。
-- `NoellesRoleGroups.java` 保存跨系统共享分组，例如原版角色列表和 `KILLER_SIDED_NEUTRALS`。
+- `NoellesNeutralRoleCategories.java` 只负责把本模组职业登记进 Harpy 公共中立分类；跨系统共享查询使用 `NeutralRoleCategoryApi`。
 - `NoellesDeathReasons.java` 保存 NoellesRoles 专属死亡原因 id。
 - `NoellesEventIds.java` 保存回放事件、托盘/床效果和护盾来源 id。
 - `NoellesRolesPayloadTypes.java` 负责注册自定义 payload codec。
@@ -641,8 +643,8 @@ Wathe 的停电黑幕、停电夜视/失明和恢复电力现在统一由 `dev.d
 
 已有规则：
 
-- `NoellesRoleGroups.KILLER_SIDED_NEUTRALS` 停电期间获得夜视。
-- `NoellesRoleGroups.INDEPENDENT_NEUTRALS` 停电期间获得失明。
+- Harpy `NeutralRoleCategoryApi.isKillerNeutral(...)` 分类在停电期间获得夜视。
+- Harpy `NeutralRoleCategoryApi.isIndependentNeutral(...)` 分类在停电期间获得失明。
 
 新增职业如果要改变停电效果或时长，不要把逻辑直接写进大 bootstrap。按职业新建：
 
@@ -778,7 +780,7 @@ cd "D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - �
 
 - 在 `NoellesRoleIds.java` 里新增稳定 `Identifier`。
 - 在 `NoellesRoleRegistry.java` 里新增 `Role` 实例，并用 Wathe 的显式阵营注册方法。
-- 如果这是词条，改 `NoellesModifierRegistry.java`；如果它需要共享分组，再改 `NoellesRoleGroups.java`。
+- 如果这是词条，改 `NoellesModifierRegistry.java`；如果这是中立职业，再在 `NoellesNeutralRoleCategories.java` 注册 Harpy 中立细分类。
 
 推荐写法：
 

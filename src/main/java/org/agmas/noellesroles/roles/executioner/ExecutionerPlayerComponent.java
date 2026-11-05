@@ -2,7 +2,7 @@ package org.agmas.noellesroles.roles.executioner;
 
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesModifierRegistry;
-import org.agmas.noellesroles.registry.NoellesRoleGroups;
+import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
@@ -226,6 +226,6 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
         if (role.getFaction() == Faction.CIVILIAN || role.getFaction() == Faction.VIGILANTE) {
             return !role.equals(NoellesRoleRegistry.MIMIC);
         }
-        return NoellesRoleGroups.INDEPENDENT_NEUTRALS.contains(role);
+        return NeutralRoleCategoryApi.isIndependentNeutral(role);
     }
 }
