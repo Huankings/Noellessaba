@@ -20,7 +20,6 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.CrossbowItem;
@@ -41,9 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.Map;
-import java.util.Collections;
 import java.util.Optional;
-import java.util.WeakHashMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -70,9 +67,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
     private static final Map<UUID, CompletableFuture<SkinTextures>> FETCHED_SKIN_TEXTURE_CACHE = new ConcurrentHashMap<>();
     /** 记录每个目标下一次可重试时间，避免暂时缺失的 CSL 离线皮肤结果被永久缓存。 */
     private static final Map<UUID, Long> FETCH_RETRY_AFTER = new ConcurrentHashMap<>();
-    /** 每个皮套按渲染阶段保存最近一次诊断状态，只在状态变化时写日志，避免逐帧刷屏。 */
-    private static final Map<MagicianPlaybackEntity, Map<String, String>> CAPE_DIAGNOSTIC_STATES =
-            Collections.synchronizedMap(new WeakHashMap<>());
     /** EMF 通过 Mixin 注入到 PlayerEntityModel 上的独立 player_cape.jem 根部件字段名。 */
     private static final String EMF_CAPE_MODEL_FIELD_NAME = "emf$capeModelPart";
     /** 按模型运行时类型缓存 EMF 可选字段，避免每帧重复反射搜索。 */
@@ -127,7 +121,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
             VertexConsumerProvider vertexConsumers,
             int light
     ) {
-        logCapeDiagnostic(entity, "renderer", "renderer-enter", null, false);
         this.model = resolveSkinTextures(entity).model() == SkinTextures.Model.SLIM ? this.slimModel : this.classicModel;
         this.setModelPose(entity);
         matrices.push();
@@ -529,20 +522,16 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
                 float headPitch
         ) {
             if (entity.isInvisible()) {
-                logCapeDiagnostic(entity, "feature", "skip-invisible", null, false);
                 return;
             }
             if (!shouldShowDisguiseCape(entity)) {
-                logCapeDiagnostic(entity, "feature", "skip-cape-part-disabled", null, false);
                 return;
             }
             Identifier capeTexture = MagicianPlaybackEntityRenderer.this.resolveSkinTextures(entity).capeTexture();
             if (capeTexture == null) {
-                logCapeDiagnostic(entity, "feature", "skip-no-cape-texture", null, true);
                 return;
             }
             if (entity.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.ELYTRA)) {
-                logCapeDiagnostic(entity, "feature", "skip-chest-elytra", capeTexture, true);
                 return;
             }
 
@@ -551,11 +540,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
             boolean useEmfCapeModel = emfCapePart != null && hasRenderableCapeGeometry(emfCapePart);
             ModelPart capePart = useEmfCapeModel ? emfCapePart : MagicianPlaybackEntityRenderer.this.vanillaCapePart;
             RenderLayer capeLayer = RenderLayer.getEntitySolid(capeTexture);
-            AbstractTexture loadedTexture = MinecraftClient.getInstance().getTextureManager().getOrDefault(capeTexture, null);
-            String renderSource = useEmfCapeModel
-                    ? "emf-player_cape.jem"
-                    : emfCapePart == null ? "vanilla-fallback:emf-model-unavailable" : "vanilla-fallback:emf-cape-geometry-empty";
-
             matrices.push();
             // 两种模型都从玩家背后开始；资源包和兜底模型使用相同的基础朝向。
             matrices.translate(0.0F, 0.0F, 0.125F);
@@ -600,9 +584,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - sidewaysSwing / 2.0F));
             }
 
-            String renderDetails = "source=" + renderSource + ","
-                    + describeCapeRenderState(capePart, capeLayer, loadedTexture, vertexConsumers);
-            logCapeDiagnostic(entity, "model-before", "about-to-render-model-part", capeTexture, true, renderDetails);
             var vertexConsumer = vertexConsumers.getBuffer(capeLayer);
             if (useEmfCapeModel) {
                 /*
@@ -617,8 +598,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
                 capePart.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
             }
             matrices.pop();
-            logCapeDiagnostic(entity, "model-after", "cape-part-render-returned", capeTexture, true, renderDetails);
-            logCapeDiagnostic(entity, "feature", "draw-submitted", capeTexture, true, renderDetails);
         }
 
         /** 在线目标以实时玩家实体的 CAPE 位为准；目标离线时回退到服务端同步的最后快照。 */
@@ -632,101 +611,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
                     ? entity.isDisguiseCapeVisible()
                     : onlinePlayer.isPartVisible(net.minecraft.entity.player.PlayerModelPart.CAPE);
         }
-    }
-
-    /**
-     * 记录一次披风诊断状态。状态按皮套和阶段去重；日志可用于区分未进入渲染器、纹理缺失、
-     * 披风选项关闭、鞘翅遮挡以及已向 Minecraft 顶点缓冲提交绘制等情况。
-     */
-    private static void logCapeDiagnostic(
-            @NotNull MagicianPlaybackEntity entity,
-            @NotNull String phase,
-            @NotNull String outcome,
-            @Nullable Identifier resolvedCapeTexture,
-            boolean textureChecked
-    ) {
-        logCapeDiagnostic(entity, phase, outcome, resolvedCapeTexture, textureChecked, "none");
-    }
-
-    private static void logCapeDiagnostic(
-            @NotNull MagicianPlaybackEntity entity,
-            @NotNull String phase,
-            @NotNull String outcome,
-            @Nullable Identifier resolvedCapeTexture,
-            boolean textureChecked,
-            @NotNull String renderDetails
-    ) {
-        UUID targetUuid = entity.getDisguisePlayerUuid();
-        MinecraftClient client = MinecraftClient.getInstance();
-        PlayerListEntry playerListEntry = null;
-        if (targetUuid != null && client.player != null && client.player.networkHandler != null) {
-            playerListEntry = client.player.networkHandler.getPlayerListEntry(targetUuid);
-        }
-
-        SkinTextures stableTextures = targetUuid == null
-                ? null
-                : PlayerHeadTextureHelper.resolveStableSkinTextures(targetUuid, playerListEntry);
-        AbstractClientPlayerEntity onlinePlayer = targetUuid == null
-                ? null
-                : MagicianPlaybackEntityRenderer.resolveOnlinePlayer(client, targetUuid);
-        SkinTextures onlineTextures = onlinePlayer == null ? null : onlinePlayer.getSkinTextures();
-        CompletableFuture<SkinTextures> fetchedFuture = targetUuid == null
-                ? null
-                : FETCHED_SKIN_TEXTURE_CACHE.get(targetUuid);
-        String fetchState = describeFetchState(fetchedFuture);
-        String onlineCapePart = onlinePlayer == null
-                ? "unknown"
-                : Boolean.toString(onlinePlayer.isPartVisible(net.minecraft.entity.player.PlayerModelPart.CAPE));
-        String chestItem = net.minecraft.registry.Registries.ITEM.getId(
-                entity.getEquippedStack(EquipmentSlot.CHEST).getItem()
-        ).toString();
-        String resolvedCape = !textureChecked
-                ? "not-checked"
-                : resolvedCapeTexture == null ? "null" : resolvedCapeTexture.toString();
-
-        String signature = "outcome=" + outcome
-                + " target=" + targetUuid
-                + " name=" + entity.getDisguisePlayerName()
-                + " online=" + (onlinePlayer != null)
-                + " playerListEntry=" + (playerListEntry != null)
-                + " stableCape=" + describeCape(stableTextures)
-                + " onlineCape=" + describeCape(onlineTextures)
-                + " fetched=" + fetchState
-                + " snapshotCapePart=" + entity.isDisguiseCapeVisible()
-                + " onlineCapePart=" + onlineCapePart
-                + " invisible=" + entity.isInvisible()
-                + " chest=" + chestItem
-                + " resolvedCape=" + resolvedCape
-                + " details=" + renderDetails;
-
-        synchronized (CAPE_DIAGNOSTIC_STATES) {
-            Map<String, String> phaseStates = CAPE_DIAGNOSTIC_STATES.computeIfAbsent(entity, ignored -> new java.util.HashMap<>());
-            if (signature.equals(phaseStates.put(phase, signature))) {
-                return;
-            }
-        }
-
-        NoellesRolesCore.LOGGER.info("[MagicianCapeTrace] phase={} entityId={} {}", phase, entity.getId(), signature);
-    }
-
-    private static String describeCapeRenderState(
-            @NotNull ModelPart capePart,
-            @NotNull RenderLayer capeLayer,
-            @Nullable AbstractTexture loadedTexture,
-            @NotNull VertexConsumerProvider vertexConsumers
-    ) {
-        String textureState = loadedTexture == null
-                ? "not-registered"
-                : loadedTexture.getClass().getName() + "#glId=" + loadedTexture.getGlId();
-        return "model=" + capePart.getClass().getName()
-                + ",cloakVisible=" + capePart.visible
-                + ",cloakHidden=" + capePart.hidden
-                + ",cloakEmpty=" + capePart.isEmpty()
-                + ",cloakPivot=" + capePart.pivotX + "/" + capePart.pivotY + "/" + capePart.pivotZ
-                + ",cloakRotation=" + capePart.pitch + "/" + capePart.yaw + "/" + capePart.roll
-                + ",layer=" + capeLayer
-                + ",texture=" + textureState
-                + ",provider=" + vertexConsumers.getClass().getName();
     }
 
     /**
@@ -769,27 +653,6 @@ public class MagicianPlaybackEntityRenderer extends LivingEntityRenderer<Magicia
         return TexturedModelData.of(PlayerEntityModel.getTexturedModelData(Dilation.NONE, false), 64, 64)
                 .createModel()
                 .getChild("cloak");
-    }
-
-    private static String describeCape(@Nullable SkinTextures textures) {
-        if (textures == null) {
-            return "no-skin-textures";
-        }
-        return textures.capeTexture() == null ? "null" : textures.capeTexture().toString();
-    }
-
-    private static String describeFetchState(@Nullable CompletableFuture<SkinTextures> future) {
-        if (future == null) {
-            return "not-started";
-        }
-        if (!future.isDone()) {
-            return "pending";
-        }
-        try {
-            return "done:" + describeCape(future.getNow(null));
-        } catch (RuntimeException exception) {
-            return "failed:" + exception.getClass().getSimpleName();
-        }
     }
 
     private static @Nullable AbstractClientPlayerEntity resolveOnlinePlayer(
