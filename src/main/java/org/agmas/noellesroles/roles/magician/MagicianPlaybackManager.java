@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
@@ -560,9 +561,12 @@ public final class MagicianPlaybackManager {
 
             MagicianPlaybackEntity visibleEntity = new MagicianPlaybackEntity(org.agmas.noellesroles.NoellesRolesEntities.MAGICIAN_PLAYBACK_ENTITY_TYPE, world);
             visibleEntity.setPlaybackIdentity(magician.getUuid(), disguiseUuid, disguiseName);
+            ServerPlayerEntity onlineDisguisePlayer = magician.getServer().getPlayerManager().getPlayer(disguiseUuid);
+            visibleEntity.setDisguiseCapeVisible(onlineDisguisePlayer != null
+                    ? onlineDisguisePlayer.isPartVisible(PlayerModelPart.CAPE)
+                    : component.selectedTargetCapeVisible);
             visibleEntity.refreshPositionAndAngles(firstFrame.x(), firstFrame.y(), firstFrame.z(), firstFrame.yaw(), firstFrame.pitch());
             visibleEntity.setHeadYaw(firstFrame.headYaw());
-            visibleEntity.bodyYaw = firstFrame.bodyYaw();
             visibleEntity.setReplaySitting(firstFrame.sitting());
             firstFrame.syncVisibleEquipmentTo(visibleEntity);
             applyEntityUseState(visibleEntity, firstFrame, false);
@@ -628,6 +632,14 @@ public final class MagicianPlaybackManager {
                 return true;
             }
 
+            // 播放期间持续记住在线目标的最新披风开关，确保目标随后掉线时仍遵循最后一次设置。
+            ServerPlayerEntity disguisePlayer = this.magician.getServer().getPlayerManager().getPlayer(this.disguiseUuid);
+            if (disguisePlayer != null) {
+                boolean capeVisible = disguisePlayer.isPartVisible(PlayerModelPart.CAPE);
+                this.component.selectedTargetCapeVisible = capeVisible;
+                this.visibleEntity.setDisguiseCapeVisible(capeVisible);
+            }
+
             MagicianReplayFrame frame = this.frames.get(this.frameIndex);
             List<MagicianRecordedAction> actions = this.actionsByTick.get(this.frameIndex);
             applyFrame(frame, hasReleaseUseAction(actions));
@@ -659,7 +671,6 @@ public final class MagicianPlaybackManager {
             frame.syncVisibleEquipmentTo(entity);
             entity.refreshPositionAndAngles(frame.x(), frame.y(), frame.z(), frame.yaw(), frame.pitch());
             entity.setHeadYaw(frame.headYaw());
-            entity.bodyYaw = frame.bodyYaw();
             entity.setSneaking(frame.sneaking());
             entity.setSprinting(frame.sprinting());
             entity.setOnGround(frame.onGround());

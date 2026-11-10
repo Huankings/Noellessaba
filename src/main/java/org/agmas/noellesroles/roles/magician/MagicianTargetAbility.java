@@ -4,6 +4,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import com.mojang.authlib.GameProfile;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
 import org.agmas.noellesroles.packet.role.morphling.MorphC2SPacket;
@@ -30,7 +31,12 @@ public final class MagicianTargetAbility {
         UUID targetUuid = payload.player();
         String targetName = resolveTargetName(player, targetUuid);
         GameProfile profileSnapshot = copyProfileSnapshot(player, targetUuid, targetName);
-        MagicianPlayerComponent.KEY.get(player).setSelectedTarget(targetUuid, targetName, profileSnapshot);
+        MagicianPlayerComponent component = MagicianPlayerComponent.KEY.get(player);
+        ServerPlayerEntity onlineTarget = player.getServer().getPlayerManager().getPlayer(targetUuid);
+        boolean capeVisible = onlineTarget != null
+                ? onlineTarget.isPartVisible(PlayerModelPart.CAPE)
+                : targetUuid.equals(component.getSelectedTarget()) && component.selectedTargetCapeVisible;
+        component.setSelectedTarget(targetUuid, targetName, profileSnapshot, capeVisible);
     }
 
     private static String resolveTargetName(ServerPlayerEntity player, UUID targetUuid) {

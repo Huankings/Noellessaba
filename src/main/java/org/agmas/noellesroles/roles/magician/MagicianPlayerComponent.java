@@ -9,6 +9,7 @@ import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -57,6 +58,9 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
      * <p>这样即使目标在之后掉线，播放开始时仍然能继续使用稳定名字。</p>
      */
     public String selectedTargetName = "";
+
+    /** 目标玩家披风部位开关的快照；目标离线后仍遵循其最后一次已知设置。 */
+    public boolean selectedTargetCapeVisible = true;
 
     /**
      * 记录最后一次成功选择时的 GameProfile 快照。
@@ -129,6 +133,7 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
         this.player = player;
         this.selectedTarget = player.getUuid();
         this.selectedTargetName = this.getSafeOwnName();
+        this.selectedTargetCapeVisible = player.isPartVisible(PlayerModelPart.CAPE);
         this.selectedTargetProfileSnapshot = this.createOwnProfileSnapshot();
     }
 
@@ -148,6 +153,7 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
         MagicianPlaybackManager.clearCachedRecording(this.player);
         this.selectedTarget = this.player.getUuid();
         this.selectedTargetName = this.getSafeOwnName();
+        this.selectedTargetCapeVisible = this.player.isPartVisible(PlayerModelPart.CAPE);
         this.selectedTargetProfileSnapshot = this.createOwnProfileSnapshot();
         this.clearTransientRecordingState();
         this.stage = MagicianStage.IDLE;
@@ -155,10 +161,16 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
         this.sync();
     }
 
-    public void setSelectedTarget(@NotNull UUID targetUuid, @NotNull String targetName, @Nullable GameProfile profileSnapshot) {
+    public void setSelectedTarget(
+            @NotNull UUID targetUuid,
+            @NotNull String targetName,
+            @Nullable GameProfile profileSnapshot,
+            boolean capeVisible
+    ) {
         this.selectedTarget = targetUuid;
         this.selectedTargetName = targetName;
         this.selectedTargetProfileSnapshot = profileSnapshot;
+        this.selectedTargetCapeVisible = capeVisible;
         this.sync();
     }
 
@@ -504,6 +516,7 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
             tag.putUuid("selectedTarget", this.selectedTarget);
         }
         tag.putString("selectedTargetName", this.getSelectedTargetName());
+        tag.putBoolean("selectedTargetCapeVisible", this.selectedTargetCapeVisible);
         tag.putString("stage", this.stage.name());
         tag.putInt("stageTicksRemaining", this.stageTicksRemaining);
     }
@@ -512,6 +525,8 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
     public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.selectedTarget = tag.containsUuid("selectedTarget") ? tag.getUuid("selectedTarget") : this.player.getUuid();
         this.selectedTargetName = tag.getString("selectedTargetName");
+        // 旧数据没有披风开关时默认开启，避免升级后无故隐藏已选目标披风。
+        this.selectedTargetCapeVisible = !tag.contains("selectedTargetCapeVisible") || tag.getBoolean("selectedTargetCapeVisible");
         try {
             this.stage = tag.contains("stage")
                     ? MagicianStage.valueOf(tag.getString("stage"))

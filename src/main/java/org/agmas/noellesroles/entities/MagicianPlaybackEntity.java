@@ -44,6 +44,9 @@ public class MagicianPlaybackEntity extends LivingEntity {
             DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final TrackedData<String> DISGUISE_NAME =
             DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.STRING);
+    /** 同步目标玩家是否开启披风部位；目标离线时客户端使用该快照保持其显示设置。 */
+    private static final TrackedData<Boolean> DISGUISE_CAPE_VISIBLE =
+            DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> REPLAY_SITTING =
             DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> REPLAY_USING_ITEM =
@@ -72,6 +75,27 @@ public class MagicianPlaybackEntity extends LivingEntity {
     private static final int REPLAY_SWING_DURATION_TICKS = 8;
     private int replaySwingTicks = 0;
     private Hand replaySwingHand = Hand.MAIN_HAND;
+    /** 披风跟随皮套位置的比例，复刻 1.21.1 PlayerEntity.updateCapeAngles 的四分之一平滑。 */
+    private static final double CAPE_POSITION_FOLLOW = 0.25D;
+    /** 披风与皮套相差超过此距离时重置历史位置，单位为方块。 */
+    private static final double CAPE_POSITION_RESET_DISTANCE = 10.0D;
+    /** 原版玩家用于披风步态振幅的最大水平速度。 */
+    private static final float CAPE_STRIDE_SPEED_LIMIT = 0.1F;
+    /** 原版玩家步幅振幅向当前水平速度收敛的比例。 */
+    private static final float CAPE_STRIDE_FOLLOW = 0.4F;
+    /** 上一 tick 的披风世界坐标，供渲染器做帧间插值。 */
+    private double prevCapeX;
+    private double prevCapeY;
+    private double prevCapeZ;
+    /** 当前经过平滑的披风世界坐标，用于产生跟随滞后。 */
+    private double capeX;
+    private double capeY;
+    private double capeZ;
+    /** 避免首次更新时从世界原点开始插值。 */
+    private boolean capePositionInitialized;
+    /** 原版 PlayerEntity 的前后步幅振幅；LivingEntity 没有这两个玩家专属字段，因此在皮套侧复刻。 */
+    private float prevCapeStrideDistance;
+    private float capeStrideDistance;
 
     public MagicianPlaybackEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -85,6 +109,7 @@ public class MagicianPlaybackEntity extends LivingEntity {
         builder.add(MAGICIAN_OWNER, Optional.empty());
         builder.add(DISGUISE_PLAYER, Optional.empty());
         builder.add(DISGUISE_NAME, "未知玩家");
+        builder.add(DISGUISE_CAPE_VISIBLE, true);
         builder.add(REPLAY_SITTING, false);
         builder.add(REPLAY_USING_ITEM, false);
         builder.add(REPLAY_ACTIVE_OFF_HAND, false);
@@ -125,6 +150,36 @@ public class MagicianPlaybackEntity extends LivingEntity {
 
     public String getDisguisePlayerName() {
         return this.dataTracker.get(DISGUISE_NAME);
+    }
+
+    /** 设置目标玩家的披风部位显示标记，并通过实体数据追踪同步给观察者。 */
+    public void setDisguiseCapeVisible(boolean visible) {
+        this.dataTracker.set(DISGUISE_CAPE_VISIBLE, visible);
+    }
+
+    /** 读取目标离线时保留的披风显示标记。 */
+    public boolean isDisguiseCapeVisible() {
+        return this.dataTracker.get(DISGUISE_CAPE_VISIBLE);
+    }
+
+    /** 读取插值后的披风 X 坐标。 */
+    public double getCapeX(float tickDelta) {
+        return net.minecraft.util.math.MathHelper.lerp(tickDelta, this.prevCapeX, this.capeX);
+    }
+
+    /** 读取插值后的披风 Y 坐标。 */
+    public double getCapeY(float tickDelta) {
+        return net.minecraft.util.math.MathHelper.lerp(tickDelta, this.prevCapeY, this.capeY);
+    }
+
+    /** 读取插值后的披风 Z 坐标。 */
+    public double getCapeZ(float tickDelta) {
+        return net.minecraft.util.math.MathHelper.lerp(tickDelta, this.prevCapeZ, this.capeZ);
+    }
+
+    /** 读取插值后的原版等价步幅振幅。 */
+    public float getCapeStrideDistance(float tickDelta) {
+        return net.minecraft.util.math.MathHelper.lerp(tickDelta, this.prevCapeStrideDistance, this.capeStrideDistance);
     }
 
     public void setReplaySitting(boolean sitting) {
@@ -220,9 +275,66 @@ public class MagicianPlaybackEntity extends LivingEntity {
         this.noClip = true;
         this.setNoGravity(true);
         this.fallDistance = 0.0f;
+        if (this.getWorld().isClient()) {
+            this.tickCapePosition();
+            this.tickCapeStrideDistance();
+        }
         if (this.getWorld().isClient() && this.replaySwingTicks > 0) {
             this.replaySwingTicks--;
         }
+    }
+
+    /**
+     * 用 1.21.1 原版玩家的披风位置平滑规则维护动画历史；播放轨迹发生大幅跳变时重置，
+     * 避免传送或实体校正把披风拖过场景。
+     */
+    private void tickCapePosition() {
+        double x = this.getX();
+        double y = this.getY();
+        double z = this.getZ();
+        if (!this.capePositionInitialized) {
+            this.prevCapeX = this.capeX = x;
+            this.prevCapeY = this.capeY = y;
+            this.prevCapeZ = this.capeZ = z;
+            this.capePositionInitialized = true;
+            return;
+        }
+
+        this.prevCapeX = this.capeX;
+        this.prevCapeY = this.capeY;
+        this.prevCapeZ = this.capeZ;
+
+        double deltaX = x - this.capeX;
+        double deltaY = y - this.capeY;
+        double deltaZ = z - this.capeZ;
+        if (Math.abs(deltaX) > CAPE_POSITION_RESET_DISTANCE) {
+            this.capeX = this.prevCapeX = x;
+        }
+        if (Math.abs(deltaY) > CAPE_POSITION_RESET_DISTANCE) {
+            this.capeY = this.prevCapeY = y;
+        }
+        if (Math.abs(deltaZ) > CAPE_POSITION_RESET_DISTANCE) {
+            this.capeZ = this.prevCapeZ = z;
+        }
+
+        this.capeX += deltaX * CAPE_POSITION_FOLLOW;
+        this.capeY += deltaY * CAPE_POSITION_FOLLOW;
+        this.capeZ += deltaZ * CAPE_POSITION_FOLLOW;
+    }
+
+    /**
+     * 复刻 1.21.1 PlayerEntity.tick 中的步幅振幅更新，保证披风随步速及步态自然摆动。
+     */
+    private void tickCapeStrideDistance() {
+        this.prevCapeStrideDistance = this.capeStrideDistance;
+        // 皮套位置来自服务端轨迹插值，速度向量不一定随位置包更新，因此用实际水平位移还原回放步速。
+        double deltaX = this.getX() - this.prevX;
+        double deltaZ = this.getZ() - this.prevZ;
+        float horizontalStep = (float) Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+        float targetStrideDistance = !this.isOnGround() || this.isDead() || this.isSwimming()
+                ? 0.0F
+                : Math.min(CAPE_STRIDE_SPEED_LIMIT, horizontalStep);
+        this.capeStrideDistance += (targetStrideDistance - this.capeStrideDistance) * CAPE_STRIDE_FOLLOW;
     }
 
     @Override
