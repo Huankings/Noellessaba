@@ -18,7 +18,7 @@ public final class BartenderShopHandler {
         List<ShopEntry> entries = new ArrayList<>();
 
         // 防御药剂：提供一次额外承伤。
-        entries.add(new ShopEntry(ModItems.DEFENSE_VIAL.getDefaultStack(), 150, ShopEntry.Type.POISON));
+        entries.add(new ShopEntry(ModItems.DEFENSE_VIAL.getDefaultStack(), 125, ShopEntry.Type.POISON));
 
         return entries;
     }

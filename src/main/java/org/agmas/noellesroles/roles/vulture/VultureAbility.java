@@ -26,7 +26,6 @@ import org.agmas.harpymodloader.Harpymodloader;
 import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.harpymodloader.events.ModdedRoleAssigned;
 import org.agmas.noellesroles.AbilityPlayerComponent;
-import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.agmas.noellesroles.packet.role.vulture.VultureEatC2SPacket;
 
 import java.util.ArrayList;
@@ -69,10 +68,10 @@ public final class VultureAbility {
             return;
         }
 
-        BodyDeathReasonComponent deathReason = BodyDeathReasonComponent.KEY.get(body);
+        BodyConsumedComponent consumed = BodyConsumedComponent.KEY.get(body);
 
         // 尸体未被吞噬过
-        if (deathReason.vultured) return;
+        if (consumed.consumed) return;
 
         // 设置冷却
         ability.cooldown = GameConstants.getInTicks(0, 20); // 20秒
@@ -137,7 +136,7 @@ public final class VultureAbility {
         }
 
         // 标记尸体为已吞噬
-        deathReason.vultured = true;
-        deathReason.sync();
+        consumed.consumed = true;
+        consumed.sync();
     }
 }

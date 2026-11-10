@@ -585,7 +585,7 @@
   "item.noellesroles.pill.tooltip": "右键食用\n让玩家额外承受一次可被护盾抵挡的伤害\n一次性物品，冷却 3 分钟",
   "item.noellesroles.tape": "胶带",
   "item.noellesroles.tape.tooltip": "用来封住其它玩家的嘴\n被封住嘴的玩家在外面待太久会窒息\n其他人无法看到手中的胶带",
-  "item.noellesroles.defense_vial": "去毒试剂",
+  "item.noellesroles.defense_vial": "防御试剂",
   "item.noellesroles.defense_vial.tooltip": "右键点击食物/饮品托盘以使用\n清除托盘上已施加的毒药\n让食用的玩家可以额外承受一次伤害。",
   "item.noellesroles.wind_mark": "风之印记",
   "item.noellesroles.wind_mark.tooltip": "对准其他玩家右键可直接使用，给该玩家进行一次烙印\n若不对准玩家，则右键蓄力1s后给自己烙印使用\n被烙印的玩家在户外的时候则可以被透视可见\n当被烙印的玩家附近有人举起匕首的时候，则会消耗烙印进行一次升空避免危险\n一次性物品，烙印后在180秒后消失或者触发条件消失",

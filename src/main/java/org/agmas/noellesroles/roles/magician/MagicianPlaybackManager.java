@@ -6,6 +6,8 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import com.mojang.authlib.GameProfile;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
+import dev.doctor4t.wathe.api.body.PlayerBodyInfoApi;
+import dev.doctor4t.wathe.api.body.PlayerBodyInfoSnapshot;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheEntities;
 import dev.doctor4t.wathe.record.GameRecordManager;
@@ -22,7 +24,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
-import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -428,7 +429,17 @@ public final class MagicianPlaybackManager {
             return;
         }
 
-        body.setPlayerUuid(playback.disguiseUuid);
+        PlayerBodyInfoApi.initializeSynthetic(body, new PlayerBodyInfoSnapshot(
+                playback.disguiseUuid,
+                playback.disguiseName,
+                hitInfo.deathReason(),
+                NoellesRoleRegistry.MAGICIAN.identifier(),
+                null,
+                null,
+                null,
+                true,
+                playback.disguiseUuid
+        ));
         body.refreshPositionAndAngles(
                 playback.visibleEntity.getX(),
                 playback.visibleEntity.getY(),
@@ -444,10 +455,6 @@ public final class MagicianPlaybackManager {
         body.bodyYaw = playback.visibleEntity.bodyYaw;
         playback.magician.getWorld().spawnEntity(body);
 
-        BodyDeathReasonComponent deathComponent = BodyDeathReasonComponent.KEY.get(body);
-        deathComponent.deathReason = hitInfo.deathReason();
-        deathComponent.playerRole = NoellesRoleRegistry.MAGICIAN.identifier();
-        deathComponent.sync();
     }
 
     private enum StopReason {

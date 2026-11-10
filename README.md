@@ -237,7 +237,7 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 
 ### 杀手阵营
 
-- 造尸怪：能伪造尸体、假身份和假死因；源码入口是 `CorpsemakerC2SPacket`、`CorpsemakerAbility` 和 `CorpsemakerRoleAssignedHandler`，尸体信息通过 `BodyDeathReasonComponent` 和 `NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT` 记录。
+- 造尸怪：能伪造尸体、假身份和假死因；源码入口是 `CorpsemakerC2SPacket`、`CorpsemakerAbility` 和 `CorpsemakerRoleAssignedHandler`，尸体快照通过 Wathe `PlayerBodyInfoApi.initializeSynthetic(...)` 写入，回放继续使用 `NoellesEventIds.CORPSEMAKER_FORGED_BODY_EVENT`。
 - 潜行者：三阶段成长，靠凝视攒能量，二阶段拿刀，三阶段进入处刑突进；核心状态都在 `StalkerPlayerComponent`，技能包在 `StalkerGazeC2SPacket` / `StalkerDashC2SPacket`，免死在 `StalkerDeathProtectionHandler`，商店动态切换在 `StalkerShopHandler`。
 - 附体师：通过 `ControllerPossessC2SPacket` 选人，`ControllerPossessAbility` 交换位置并给目标隐身和缓落，`ControllerPlayerComponent` 负责附体计时、伪装目标和一次性护甲，`ControllerDeathProtectionHandler` 负责挡一次死，`ControllerDeathHandler` 在 DeathApi 流程里解除附体并结算目标连锁，客户端 mixin 负责输入与显示。
 - 炸弹客：`TimedBombItem` 会把活动炸弹放到目标身上，`BomberPlayerComponent` 维护静默期、滴滴期、传递和爆炸，`BomberDeathHandler` 在真实死亡后补结算和清理，`NoellesRolesTrayEffects` 与 `NoellesRolesBedEffects` 支持把炸弹埋进托盘和床。
@@ -627,7 +627,7 @@ HitResult gunTarget =
 - `roles/bounty_hunter/BountyHunterDeathHandler.java`：赏金猎人击杀奖励。
 - `roles/controller/ControllerDeathHandler.java`：附体死亡连锁。
 - `roles/voodoo/VoodooDeathHandler.java`：巫毒死亡连锁。
-- `roles/coroner/CoronerBodySpawnHandler.java`：尸体死因数据。
+- 尸体通用死因/职业/凶手由 Wathe `PlayerBodyInfoApi` 自动写入；NoellesRoles 只保留秃鹫 `BodyConsumedComponent` 和各职业 `PlayerBodyHudApi` 权限规则。
 - `roles/assassin/AssassinBodySpawnHandler.java`：刺客隐藏尸体登记。
 - `roles/assassin/AssassinTargetVisibilityHandler.java`：刺客隐藏尸体的渲染、准心选中和服务端交互拦截。
 
@@ -713,8 +713,20 @@ NoellesRoles 的普通屏幕 HUD 已经迁移到 Wathe 公开 API，不再通过
 - 通用注册入口：在 `NoellesHudHandlers.register()` 里调用该职业 `*StatusHud.register()`。
 - 重复布局和存活职业过滤：使用 `NoellesHudSupport.registerAliveRole(...)`、`drawBottomRightLine(...)` 或 `drawBottomRightLines(...)`。
 - 准心图标、武器锁定和准心下方小进度条：新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>Crosshair.java`，并在 `NoellesCrosshairHandlers.register()` 里调用；通过 Wathe `CrosshairHudApi.registerProvider(...)` 或 `registerOverlay(...)` 接入，目标选择使用 `WeaponTargetingApi` 的 visible 入口。
-- 准心名字、尸体信息、目标旁边的小提示：使用 Wathe `RoleNameHudApi.registerExtraHud(...)`、`registerName(...)` 或 `registerEntityName(...)`。
+- 准心玩家名字、非尸体实体名牌和普通目标提示：使用 Wathe `RoleNameHudApi.registerExtraHud(...)`、`registerName(...)` 或 `registerEntityName(...)`。
+- 尸体死因、身份、阵营、凶手和所有尸体操作提示：使用 Wathe `PlayerBodyInfoApi` / `PlayerBodyHudApi`；尸体提示注册 additional lines，不再用 `RoleNameHudApi.registerExtraHud(...)` 固定坐标自绘。
 - 狙击镜、黑屏控制、绑架提示这类全屏叠加：使用 `HudOverlayApi.register(...)` 并选择合适的 `HudOverlayLayer`。
+
+尸体信息职责现已拆分：Wathe 保存死者名字、死因、职业、凶手和可回溯死亡时间；Harpy 保存死亡时词条并显示
+中立细分类；NoellesRoles 的验尸官/盗墓者只开放 `DEATH / IDENTITY / AFFILIATION`，医师和秃鹫只开放
+`DEATH`。所有存活职业均不能看到 `NAME`。秃鹫吞噬后，存活的验尸官、盗墓者、医师和秃鹫本人看到的
+已授权信息都会通过 `OBFUSCATE` 变成稳定乱码；非存活观察者继续看到全部真实信息。
+
+`CoronerBodyExamineHudHandler`、`VultureBodyHudHandler`、`AmnesiacBodyHudHandler`、
+`NecromancerBodyHudHandler`、`ConvenerBodyHudHandler` 均注册为 additional lines，由 Wathe 自动排在固定信息下方。
+`BodyConsumedComponent` 只保存吞噬状态，继续沿用旧组件 ID `noellesroles:body_death_reason` 以兼容存档，
+但不再保存 death reason 或 role。时停者进入狭缝时使用 `PlayerLifeStateApi.setForensicallyDead(true)`，
+退出、复活或回溯后清除；双重人格等其它特殊存活旁观不会被误判为死亡。
 
 普通职业状态推荐写法：
 

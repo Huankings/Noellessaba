@@ -25,6 +25,7 @@ import org.agmas.noellesroles.client.appearance.roles.physician.PhysicianBodyHud
 import org.agmas.noellesroles.client.appearance.roles.shadow_jester.ShadowJesterAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.spiritualist.SpiritualistAppearanceHandler;
 import org.agmas.noellesroles.client.appearance.roles.timekeeper.TimekeeperRiftAppearanceHandler;
+import org.agmas.noellesroles.client.appearance.roles.vulture.VultureBodyHudHandler;
 import org.agmas.noellesroles.client.appearance.shared.InvisibleNameHudHandler;
 
 /**
@@ -58,6 +59,7 @@ public final class NoellesAppearanceHandlers {
         HackerTargetHudHandler.register();
         DetectiveTargetHudHandler.register();
         PhysicianBodyHudHandler.register();
+        VultureBodyHudHandler.register();
         NecromancerBodyHudHandler.register();
         MuzzlerSilencedTipHudHandler.register();
         AmnesiacBodyHudHandler.register();

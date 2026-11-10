@@ -11,7 +11,7 @@ public final class PhysicianConstants {
     public static final int MAX_SPRINT_TIME_NUMERATOR = 3;
     public static final int MAX_SPRINT_TIME_DENOMINATOR = 2;
     public static final int MEDICAL_KIT_COOLDOWN_TICKS = GameConstants.getInTicks(1, 0);
-    public static final int PILL_COOLDOWN_TICKS = GameConstants.getInTicks(3, 0);
+    public static final int PILL_COOLDOWN_TICKS = GameConstants.getInTicks(1, 0);
     public static final int PILL_ARMOR_AMOUNT = 1;
     public static final int PILL_SHOP_PRICE = 150;
     public static final int MEDICAL_KIT_REWARD = 50;

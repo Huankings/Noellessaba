@@ -13,7 +13,6 @@ import org.agmas.noellesroles.roles.controller.ControllerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.controller.ControllerDeathHandler;
 import org.agmas.noellesroles.roles.convener.ConvenerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.cook.CookDeathProtectionHandler;
-import org.agmas.noellesroles.roles.coroner.CoronerBodySpawnHandler;
 import org.agmas.noellesroles.roles.dreamer.DreamerDeathProtectionHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerBackfireDeathHandler;
 import org.agmas.noellesroles.roles.executioner.ExecutionerDeathHandler;
@@ -117,7 +116,6 @@ public final class NoellesRolesDeathBootstrap {
         BomberDeathHandler.init();
         AngelDeathCleanupHandler.init();
         ProphetDeathCleanupHandler.init();
-        CoronerBodySpawnHandler.init();
         AssassinBodySpawnHandler.init();
         NoisemakerBodySpawnHandler.init();
         MagicianPlaybackDeathHandler.init();

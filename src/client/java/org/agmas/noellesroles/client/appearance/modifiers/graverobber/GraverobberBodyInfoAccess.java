@@ -26,7 +26,6 @@ public final class GraverobberBodyInfoAccess {
         GameWorldComponent gameWorld = GameWorldComponent.KEY.get(viewer.getWorld());
         return GameFunctions.isPlayerSpectatingOrCreative(viewer)
                 || gameWorld.isRole(viewer, NoellesRoleRegistry.CORONER)
-                || gameWorld.isRole(viewer, NoellesRoleRegistry.VULTURE)
                 || isGraverobber(viewer);
     }
 

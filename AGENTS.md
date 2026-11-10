@@ -183,6 +183,7 @@ NoellesRoles 的职业 / 词条运行时资源在源码中按所有者拆分，�
 - 客户端最终雾效 / Iris 兼容：`FogOverrideApi`
 - 准心图标 / 准心下方小进度条：`CrosshairHudApi`
 - 准心名字 / 实体名牌 / 准心额外 HUD：`RoleNameHudApi`
+- 尸体死因/身份/阵营/凶手快照与动态附加行：`PlayerBodyInfoApi`、`PlayerBodyHudApi`
 - 玩家 / 尸体隐藏、不可选中、不可交互和不可攻击：`TargetVisibilityApi`
 - 手持物品隐藏：`HeldItemInvisibilityApi`
 - 低心情幻觉手持物：`PsychosisItemApi`；当前由 `client/mood/NoellesPsychosisHandlers` 预留空注册入口，后续职业/词条按 provider 与 priority 接入。
@@ -511,7 +512,7 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 
 这四个入口已经分别处理 `TARGET` 和 `ATTACK` 语义，并且枪械入口会继续经过 Wathe `GunShotApi` 的目标覆写链。尸体伪装可以隐藏准心变化，但不会因为隐藏 `TARGET` 而获得攻击免疫。客户端目标只负责准备实体 id，服务端 packet / `GunShotContext` 仍必须重新校验职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。`NoellesItemTargeting` 这类扩展侧重复 helper 不应重新创建。
 
-击杀奖励、重复死亡保护、致死确认前转化、确认死亡后清理、心情重置前处理、尸体生成回调优先接 Wathe `DeathApi`，不要再新增 `GameFunctions.killPlayer(...)` mixin。NoellesRoles 侧按职业或词条拆 handler，例如 `roles/timekeeper/TimekeeperDeathHandler`、`modifiers/dual_personality/DualPersonalityDeathHandler`、`roles/bounty_hunter/BountyHunterDeathHandler`、`roles/coroner/CoronerBodySpawnHandler`，然后只在 `NoellesRolesDeathBootstrap` 里注册。
+击杀奖励、重复死亡保护、致死确认前转化、确认死亡后清理、心情重置前处理、尸体生成回调优先接 Wathe `DeathApi`，不要再新增 `GameFunctions.killPlayer(...)` mixin。NoellesRoles 侧按职业或词条拆 handler，例如 `roles/timekeeper/TimekeeperDeathHandler`、`modifiers/dual_personality/DualPersonalityDeathHandler`、`roles/bounty_hunter/BountyHunterDeathHandler`，然后只在 `NoellesRolesDeathBootstrap` 里注册。通用尸体死因和职业已经由 Wathe 自动写入，不得重新增加 `CoronerBodySpawnHandler` 或私有死因组件。
 
 死亡优先级以 Wathe `DeathApi` 常量为准：重复死亡吞噬最高，其次是特殊存活保护、死亡流程状态、回放上下文、致死确认前拦截、普通逻辑、确认死亡后的奖励/二段机制、最终清理。priority 越大越先执行；同 priority 后注册的规则先执行。新增 handler 时必须在中文注释里说明它选用该阶段和 priority 的原因，避免反火、免死、赏金、时间狭缝和双重人格转化互相抢顺序。
 
@@ -541,7 +542,7 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 - 普通屏幕 HUD 放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*StatusHud.java`，通过 `NoellesHudHandlers` 注册到 Wathe `HudOverlayApi`，不要注册到 `noellesroles.client.mixins.json`。
 - 职业专属雾效放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*FogHandler.java`，通过 Wathe `FogOverrideApi` 在 `NoellesClientRoleBootstrap` 注册；不要在 NoellesRoles 再直接注入 `WorldRenderer.render` 覆盖雾距。
 - 准心图标、武器锁定和准心下方小进度条放 `src/client/java/org/agmas/noellesroles/client/roles/<role>/*Crosshair.java`，通过 `NoellesCrosshairHandlers` 注册到 Wathe `CrosshairHudApi`，目标射线使用 `WeaponTargetingApi` 的 visible 入口，不要 mixin `CrosshairRenderer`。
-- 准心名字、尸体提示、准心附近额外文字通过 Wathe `RoleNameHudApi` 注册。
+- 准心玩家名字、实体名牌和普通目标提示通过 Wathe `RoleNameHudApi` 注册；尸体固定五行和尸体职业操作提示必须通过 `PlayerBodyHudApi` 注册。
 - 背包玩家选择界面不再写 `LimitedInventoryScreen` / `LimitedHandledScreen` mixin，优先接 Wathe `InventoryButtonApi`。
 - 枪击、左轮反火、匕首目标/命中/冷却、手雷爆炸、掉落物拾取、击杀奖励和尸体生成回调不再写通用流程 mixin，优先接 Wathe `GunShotApi` / `KnifeAttackApi` / `KnifeCooldownApi` / `GrenadeApi` / `ItemPickupApi` / `WeaponTargetingApi` / `DeathApi`。
 - 相机、输入控制、手臂动作、物品渲染等尚无公开 API 的客户端钩子才放 `src/client/java` 并注册到 `noellesroles.client.mixins.json`。
@@ -578,6 +579,16 @@ Iris 兼容边界：
 ## HUD 接入
 
 Wathe API 定义在 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\hud`、`D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\gui\RoleNameHudApi.java` 和 `D:\哈比快车最新源码\wathe\Wathe - 副本1\src\main\java\dev\doctor4t\wathe\api\client\gui\CrosshairHudApi.java`。NoellesRoles 只是调用这些 API，当前工程自己的接入代码在 `D:\哈比快车最新源码\noellesroles\NoellesRoles - 副本 - 副本 - 副本5.7.1\src\client\java\org\agmas\noellesroles\client\hud`、`client/crosshair` 和各职业 `client/roles/<role>` 包里。
+
+尸体 HUD 另由 Wathe `PlayerBodyHudApi` 统一排版。验尸官/盗墓者、医师、秃鹫只注册逐行权限和
+`OBFUSCATE`，不得自行读取死因或固定坐标绘制；所有存活职业都不得开放 `NAME`。尸体操作提示使用
+`registerAdditionalLines(...)`。Noelles 只用 `BodyConsumedComponent` 保存秃鹫吞噬状态，组件 ID 为兼容旧存档
+继续沿用 `noellesroles:body_death_reason`，但不得重新添加 deathReason/playerRole 字段。
+
+人工伪尸体在 spawn 前调用 `PlayerBodyInfoApi.initializeSynthetic(...)`，凶手留空为未知；Harpy 会按
+`modifierSourceUuid` 对应玩家本局词条数量和伪造职业资格生成随机假词条。时停者进入时间狭缝时设置
+`PlayerLifeStateApi.setForensicallyDead(true)`，所有退出/复活/回溯路径必须清除；双重人格等其它特殊存活
+spectator 不得设置该标记。
 
 - 新职业普通右下角状态新建 `src/client/java/org/agmas/noellesroles/client/roles/<role>/<RoleName>StatusHud.java`。
 - 新词条固定屏幕 HUD 新建 `src/client/java/org/agmas/noellesroles/client/hud/modifiers/<modifier>/<ModifierName>Hud.java`。

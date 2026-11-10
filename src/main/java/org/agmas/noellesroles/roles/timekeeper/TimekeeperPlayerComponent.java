@@ -90,6 +90,7 @@ public class TimekeeperPlayerComponent implements AutoSyncedComponent, ServerTic
         this.inTimeRift = false;
         this.timeRiftTicksLeft = 0;
         PlayerLifeStateApi.clearAliveOverride(this.player);
+        PlayerLifeStateApi.setForensicallyDead(this.player, false);
         sync();
     }
 
@@ -192,6 +193,11 @@ public class TimekeeperPlayerComponent implements AutoSyncedComponent, ServerTic
         this.timeRiftTicksLeft = TimekeeperConstants.RIFT_DURATION_TICKS;
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             PlayerLifeStateApi.changeGameModeAsGameplayAlive(serverPlayer, GameMode.SPECTATOR);
+            /*
+             * 狭缝玩家在胜负与操作层仍按特殊存活处理，但尸体 HUD 的凶手状态必须显示“已死亡”。
+             * 该标记由 Wathe 生命状态组件同步给所有观察者，避免客户端只能看到自己的时停组件。
+             */
+            PlayerLifeStateApi.setForensicallyDead(serverPlayer, true);
             TrainVoicePlugin.resetPlayer(serverPlayer.getUuid());
         }
         sync();
@@ -204,6 +210,7 @@ public class TimekeeperPlayerComponent implements AutoSyncedComponent, ServerTic
 
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             PlayerLifeStateApi.clearAliveOverride(serverPlayer);
+            PlayerLifeStateApi.setForensicallyDead(serverPlayer, false);
             serverPlayer.changeGameMode(GameMode.SPECTATOR);
             TrainVoicePlugin.addPlayer(serverPlayer.getUuid());
             if (wasInRift) {
@@ -228,6 +235,7 @@ public class TimekeeperPlayerComponent implements AutoSyncedComponent, ServerTic
         this.timeRiftTicksLeft = 0;
 
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
+            PlayerLifeStateApi.setForensicallyDead(serverPlayer, false);
             TrainVoicePlugin.resetPlayer(serverPlayer.getUuid());
             if (wasInRift) {
                 serverPlayer.sendMessage(coloredActionbar("message.noellesroles.timekeeper.rift_ended"), true);
@@ -247,6 +255,7 @@ public class TimekeeperPlayerComponent implements AutoSyncedComponent, ServerTic
         this.timeRiftTicksLeft = 0;
         if (this.player instanceof ServerPlayerEntity serverPlayer) {
             PlayerLifeStateApi.clearAliveOverride(serverPlayer);
+            PlayerLifeStateApi.setForensicallyDead(serverPlayer, false);
             TrainVoicePlugin.resetPlayer(serverPlayer.getUuid());
             if (wasInRift) {
                 serverPlayer.sendMessage(coloredActionbar("message.noellesroles.timekeeper.rift_ended"), true);

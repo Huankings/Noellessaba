@@ -7,6 +7,8 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.body.PlayerBodyInfoApi;
+import dev.doctor4t.wathe.api.body.PlayerBodyInfoSnapshot;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.entity.PlayerBodyEntity;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -27,7 +29,6 @@ import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.ModItems;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
-import org.agmas.noellesroles.roles.coroner.BodyDeathReasonComponent;
 import org.agmas.noellesroles.packet.role.corpsemaker.CorpsemakerC2SPacket;
 
 public final class CorpsemakerAbility {
@@ -86,7 +87,17 @@ public final class CorpsemakerAbility {
         Vec3d spawnPos = player.getPos().add(player.getRotationVector().normalize().multiply(1));
         float yaw = player.getYaw();
 
-        body.setPlayerUuid(target.getUuid());
+        PlayerBodyInfoApi.initializeSynthetic(body, new PlayerBodyInfoSnapshot(
+                target.getUuid(),
+                target.getGameProfile().getName(),
+                Identifier.of(payload.deathReason()),
+                matchedRole.identifier(),
+                null,
+                null,
+                null,
+                true,
+                target.getUuid()
+        ));
         body.refreshPositionAndAngles(spawnPos.getX(), player.getY(), spawnPos.getZ(), yaw, 0f);
         body.setYaw(yaw);
         body.setHeadYaw(yaw);
@@ -99,12 +110,6 @@ public final class CorpsemakerAbility {
         body.age = 0;
 
         target.getWorld().spawnEntity(body);
-
-        // 保存死亡原因和伪造角色
-        BodyDeathReasonComponent deathComp = BodyDeathReasonComponent.KEY.get(body);
-        deathComp.deathReason = Identifier.of(payload.deathReason());
-        deathComp.playerRole = matchedRole.identifier();  // 使用完整 Identifier
-        deathComp.sync();
 
         // 如果伪造的角色是大嗓门，让尸体发光60秒
         if (matchedRole == NoellesRoleRegistry.NOISEMAKER) {
