@@ -3,6 +3,8 @@ package org.agmas.noellesroles.roles.magician;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameMode;
+import org.agmas.noellesroles.mixin.roles.magician.MagicianPlaybackGameModeInvoker;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -61,5 +63,17 @@ public class MagicianPlaybackFakePlayer extends FakePlayer {
          * 播放时由录制帧把剩余使用时间写回来，松手释放时才能拿到正确的蓄力时长。
          */
         this.itemUseTimeLeft = Math.max(0, ticks);
+    }
+
+    /**
+     * 静默恢复录制帧的游戏模式，不向客户端广播这个不可见代理的玩家列表状态。
+     */
+    public void setReplayGameMode(@NotNull GameMode gameMode) {
+        GameMode currentGameMode = this.interactionManager.getGameMode();
+        if (currentGameMode == gameMode) {
+            return;
+        }
+        ((MagicianPlaybackGameModeInvoker) this.interactionManager)
+                .noellesroles$setReplayGameMode(gameMode, currentGameMode);
     }
 }

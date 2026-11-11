@@ -4,8 +4,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +48,15 @@ public record MagicianReplayFrame(
         boolean sprinting,
         boolean onGround,
         boolean sitting,
+        GameMode gameMode,
+        boolean swimming,
+        boolean touchingWater,
+        boolean fallFlying,
+        int fallFlyingTicks,
+        float leaningPitch,
+        double velocityX,
+        double velocityY,
+        double velocityZ,
         int selectedSlot,
         List<ItemStack> mainStacks,
         List<ItemStack> armorStacks,
@@ -52,6 +64,7 @@ public record MagicianReplayFrame(
         boolean usingItem,
         @Nullable Hand activeHand,
         int itemUseTimeLeft,
+        int itemUseMaxTime,
         @Nullable BlockPos sleepingPosition
 ) {
     public MagicianReplayFrame {
@@ -60,10 +73,21 @@ public record MagicianReplayFrame(
         armorStacks = copyStacks(armorStacks);
         offHandStacks = copyStacks(offHandStacks);
         itemUseTimeLeft = Math.max(0, itemUseTimeLeft);
+        itemUseMaxTime = Math.max(0, itemUseMaxTime);
+        fallFlyingTicks = Math.max(0, fallFlyingTicks);
     }
 
     public static @NotNull MagicianReplayFrame capture(@NotNull PlayerEntity player) {
         PlayerInventory inventory = player.getInventory();
+        Vec3d velocity = player.getVelocity();
+        /*
+         * 录制只会在服务端真实玩家上执行，但保留 DEFAULT 兜底可以避免测试实体或未来调用者传入
+         * 普通 PlayerEntity 时产生空值。游戏模式必须逐帧保存，播放代理才能严格遵守当时的
+         * 冒险/生存/创造交互权限，而不是使用 FakePlayer 默认的生存模式。
+         */
+        GameMode gameMode = player instanceof ServerPlayerEntity serverPlayer
+                ? serverPlayer.interactionManager.getGameMode()
+                : GameMode.DEFAULT;
         return new MagicianReplayFrame(
                 player.getX(),
                 player.getY(),
@@ -77,6 +101,15 @@ public record MagicianReplayFrame(
                 player.isSprinting(),
                 player.isOnGround(),
                 player.hasVehicle(),
+                gameMode,
+                player.isSwimming(),
+                player.isTouchingWater(),
+                player.isFallFlying(),
+                player.getFallFlyingTicks(),
+                player.getLeaningPitch(1.0F),
+                velocity.x,
+                velocity.y,
+                velocity.z,
                 inventory.selectedSlot,
                 inventory.main,
                 inventory.armor,
@@ -84,6 +117,7 @@ public record MagicianReplayFrame(
                 player.isUsingItem(),
                 player.isUsingItem() ? player.getActiveHand() : null,
                 player.isUsingItem() ? player.getItemUseTimeLeft() : 0,
+                player.isUsingItem() ? player.getActiveItem().getMaxUseTime(player) : 0,
                 player.getSleepingPosition().orElse(null)
         );
     }

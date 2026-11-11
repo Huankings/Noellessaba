@@ -37,7 +37,7 @@ public abstract class MagicianRecordInteractionMixin {
             CallbackInfoReturnable<ActionResult> cir
     ) {
         if (cir.getReturnValue().isAccepted()) {
-            MagicianServerHooks.recordUse(this.player, hand, stack);
+            MagicianServerHooks.recordItemUse(this.player, hand, stack);
         }
     }
 

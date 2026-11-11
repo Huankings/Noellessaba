@@ -349,6 +349,21 @@ public class MagicianPlayerComponent implements AutoSyncedComponent, ServerTicki
     }
 
     /**
+     * 记录纯视觉吃喝动作，并复用普通 use 的同 tick 同手去重规则。
+     */
+    public void recordVisualConsumeAction(@NotNull Hand hand) {
+        if (!this.isRecording()) {
+            return;
+        }
+        if (this.lastRecordedUseTick == this.recordedTicks && this.lastRecordedUseHand == hand) {
+            return;
+        }
+        this.lastRecordedUseTick = this.recordedTicks;
+        this.lastRecordedUseHand = hand;
+        this.recordAction(MagicianRecordedAction.visualConsume(this.recordedTicks, hand));
+    }
+
+    /**
      * 记录一条方块右键语义，并保存真实命中的方块位置。
      *
      * <p>Wathe 的小门、按钮、床等方块交互很依赖玩家当时点中的方块面。

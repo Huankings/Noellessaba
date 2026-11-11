@@ -19,19 +19,19 @@ public final class MagicianConstants {
     public static final int ROLE_COLOR = (107 << 16) | (23 << 8) | 176;
 
     /**
-     * 开局第一次可录制前，需要等待 30 秒。
+     * 开局第一次可录制前，需要等待的时间。
      */
     public static final int INITIAL_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);
 
     /**
-     * 一次录制的最长时长：30 秒。
+     * 一次录制的最长时长。
      */
     public static final int RECORD_DURATION_TICKS = GameConstants.getInTicks(0, 30);
 
     /**
-     * 一次播放结束后进入 90 秒冷却。
+     * 一次播放结束后进入多长的冷却。
      */
-    public static final int PLAYBACK_COOLDOWN_TICKS = GameConstants.getInTicks(0, 30);
+    public static final int PLAYBACK_COOLDOWN_TICKS = GameConstants.getInTicks(0, 20);
 
     /**
      * 其他玩家强制打碎魔术师皮套时，补偿给魔术师的金币数。

@@ -27,6 +27,8 @@ public final class MagicianRecordedAction {
         ATTACK,
         USE_MAIN_HAND,
         USE_OFF_HAND,
+        VISUAL_CONSUME_MAIN_HAND,
+        VISUAL_CONSUME_OFF_HAND,
         RELEASE_USE_ITEM,
         SWING_MAIN_HAND,
         SWING_OFF_HAND,
@@ -106,6 +108,21 @@ public final class MagicianRecordedAction {
                 hitPos.y,
                 hitPos.z,
                 hitResult.isInsideBlock()
+        );
+    }
+
+    /**
+     * 记录一次只允许复刻动作、声音和粒子的食用/饮用。
+     *
+     * <p>播放阶段绝不能让可见皮套或 FakePlayer 真正完成食用，否则厨师、酒保、过敏等
+     * 只面向真实玩家的完成使用逻辑可能被错误触发。</p>
+     */
+    public static MagicianRecordedAction visualConsume(int tick, Hand hand) {
+        return createSimple(
+                tick,
+                hand == Hand.MAIN_HAND ? Type.VISUAL_CONSUME_MAIN_HAND : Type.VISUAL_CONSUME_OFF_HAND,
+                hand,
+                0
         );
     }
 

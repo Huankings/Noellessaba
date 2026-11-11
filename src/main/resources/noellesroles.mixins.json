@@ -15,6 +15,7 @@
     "roles.magician.MagicianRecordAttackMixin",
     "roles.magician.MagicianBayonetStabMixin",
     "roles.magician.MagicianReplayRecordMixin",
+    "roles.magician.MagicianPlaybackGameModeInvoker",
     "roles.assassin.AssassinBayonetAttackMixin",
     "roles.hunter.HunterLockSlotMixin",
     "roles.rememberer.SniperRifleSelectedSlotCooldownMixin",

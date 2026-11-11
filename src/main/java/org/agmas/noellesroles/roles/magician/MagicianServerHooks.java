@@ -73,6 +73,35 @@ public final class MagicianServerHooks {
         component.recordUseAction(hand);
     }
 
+    /**
+     * 记录服务端已经接受的“对空气使用物品”。
+     *
+     * <p>食物和饮料必须与普通右键分开：它们在播放阶段只允许复刻原版动作、声音和粒子，
+     * 不能再次调用物品 use/finishUsing，从而避免触发厨师、酒保、过敏或其他扩展的真实效果。</p>
+     */
+    public static void recordItemUse(
+            @Nullable ServerPlayerEntity player,
+            @NotNull Hand hand,
+            @NotNull ItemStack stack
+    ) {
+        MagicianPlayerComponent component = getRecordingComponent(player);
+        if (component == null) {
+            return;
+        }
+        UseAction useAction = stack.getUseAction();
+        if (useAction == UseAction.EAT || useAction == UseAction.DRINK) {
+            /*
+             * 不依赖返回时 player.isUsingItem：部分扩展饮食物可能是瞬时完成，或在 use 返回前
+             * 自己清掉使用状态。只要物品声明为吃/喝，就一律按纯视觉动作录制。
+             */
+            component.recordVisualConsumeAction(hand);
+            return;
+        }
+        if (!shouldSkipGenericUseRecording(stack)) {
+            component.recordUseAction(hand);
+        }
+    }
+
     public static void recordUseBlock(
             @Nullable ServerPlayerEntity player,
             @NotNull Hand hand,
@@ -80,9 +109,14 @@ public final class MagicianServerHooks {
             @NotNull BlockHitResult hitResult
     ) {
         MagicianPlayerComponent component = getRecordingComponent(player);
-        if (component == null || shouldSkipGenericUseRecording(stack)) {
+        if (component == null) {
             return;
         }
+        /*
+         * 已被方块成功消费的右键必须优先保留，即使手里拿的是枪械、刺刀或狙击枪。
+         * 否则拿着这些物品开 Wathe 小门、列车门或灯时，方块交互和挥手都会一起丢失。
+         * 专属武器去重只适用于 interactItem，不适用于已经成功的 interactBlock。
+         */
         component.recordUseBlockAction(hand, hitResult);
     }
 
@@ -100,11 +134,11 @@ public final class MagicianServerHooks {
         }
 
         ItemStack stack = player.getStackInHand(hand);
-        if (player.isUsingItem() || stack.getUseAction() != UseAction.NONE || shouldSkipVisualSwingRecording(stack)) {
+        if (player.isUsingItem() || shouldSkipVisualSwingRecording(stack)) {
             /*
-             * 匕首、手雷、飞斧等长按物品已经由每帧的 usingItem/UseAction 复刻举起姿势。
-             * 如果再把客户端起手挥手包录进去，播放时会先压一下手臂，
-             * 看起来就像“停顿一下才举起来”。因此长按类物品不录纯挥手。
+             * 已进入长按状态的物品由每帧 usingItem/UseAction 复刻举起姿势，不能叠加挥手。
+             * 但不能再按“物品具有 UseAction”直接过滤：玩家拿着食物、药水等物品左键空挥时
+             * 并没有进入使用状态，这次攻击键动作仍然必须被皮套还原。
              *
              * 枪械开火也不能录纯挥手；Wathe 的左轮/短枪视觉重点是开火音效与命中，
              * 如果额外回放挥手，会表现成“开枪时抡了一下手”。

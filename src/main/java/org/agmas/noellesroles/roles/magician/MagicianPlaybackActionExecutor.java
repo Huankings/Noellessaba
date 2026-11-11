@@ -80,6 +80,12 @@ public final class MagicianPlaybackActionExecutor {
                 case ATTACK -> performAttack(magician, proxy, visibleEntity);
                 case USE_MAIN_HAND -> performUse(magician, proxy, visibleEntity, Hand.MAIN_HAND, action.createRecordedBlockHitResult());
                 case USE_OFF_HAND -> performUse(magician, proxy, visibleEntity, Hand.OFF_HAND, action.createRecordedBlockHitResult());
+                case VISUAL_CONSUME_MAIN_HAND, VISUAL_CONSUME_OFF_HAND -> {
+                    /*
+                     * 吃喝状态、声音和粒子由逐帧状态与可见皮套客户端安全复刻。
+                     * 这里故意不调用 FakePlayer.interactItem，防止产生真实食用效果。
+                     */
+                }
                 case RELEASE_USE_ITEM -> performRelease(magician, proxy, visibleEntity);
                 case SWING_MAIN_HAND -> performVisualSwing(proxy, visibleEntity, Hand.MAIN_HAND);
                 case SWING_OFF_HAND -> performVisualSwing(proxy, visibleEntity, Hand.OFF_HAND);
@@ -108,6 +114,11 @@ public final class MagicianPlaybackActionExecutor {
             @NotNull MagicianPlaybackFakePlayer proxy,
             @NotNull MagicianPlaybackEntity visibleEntity
     ) {
+        /*
+         * 攻击键本身就应产生挥手，不能等目标解析成功后才播放。
+         * 后续武器分支可能再次请求挥手，播放实体会按同 tick 同手去重。
+         */
+        swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);
         EntityHitResult entityHitResult = getAttackEntityTarget(proxy, MELEE_TARGET_RANGE);
         if (entityHitResult == null) {
             return;
@@ -140,7 +151,6 @@ public final class MagicianPlaybackActionExecutor {
                     3.0F,
                     1.0F
             );
-            swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);
             return;
         }
 
@@ -150,7 +160,6 @@ public final class MagicianPlaybackActionExecutor {
         }
 
         proxy.attack(target);
-        swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);
     }
 
     private static void performUse(
@@ -162,7 +171,14 @@ public final class MagicianPlaybackActionExecutor {
     ) {
         ItemStack heldStack = proxy.getStackInHand(hand);
 
-        if (recordedBlockHitResult != null && tryInteractRecordedBlock(magician, proxy, visibleEntity, hand, heldStack, recordedBlockHitResult)) {
+        if (recordedBlockHitResult != null) {
+            /*
+             * 方块动作只能复刻录制时的原方块、原方块面和原命中坐标。
+             * 即使回放时目标状态变化、距离失效或游戏模式拒绝，也必须到此结束；
+             * 禁止继续重新射线，否则冒险模式下原本失败的头颅/方块会在别处被意外放置。
+             */
+            tryInteractRecordedBlock(magician, proxy, visibleEntity, hand, heldStack, recordedBlockHitResult);
+            swingReplayHand(proxy, visibleEntity, hand);
             return;
         }
 
@@ -249,7 +265,7 @@ public final class MagicianPlaybackActionExecutor {
          * 如果对皮套调用 stopUsingItem，某些物品的 onStoppedUsing/finishUsing 链路会把它当真实实体处理。
          */
         visibleEntity.setReplayUseState(false, null);
-        visibleEntity.setReplayItemUseTimeLeft(0);
+        visibleEntity.setReplayItemUseTime(0, 0);
 
         if (releasedStack.isOf(WatheItems.KNIFE) && usedTicks >= 10) {
             performKnifeStab(magician, proxy, visibleEntity);
@@ -665,7 +681,6 @@ public final class MagicianPlaybackActionExecutor {
          * 录制方块命中点成功时，直接认为这次交互已经复刻完成。
          * 对空手按钮、未上锁门、床这类交互来说，关键就是不能因为 heldStack 为空提前退出。
          */
-        swingReplayHand(proxy, visibleEntity, hand);
         if (!heldStack.isEmpty() && hand == Hand.MAIN_HAND) {
             tryHandleBayonetStabAfterUse(magician, proxy, visibleEntity, heldStack, blockHitResult);
         }

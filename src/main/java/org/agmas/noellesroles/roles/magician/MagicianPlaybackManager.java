@@ -567,7 +567,17 @@ public final class MagicianPlaybackManager {
                     : component.selectedTargetCapeVisible);
             visibleEntity.refreshPositionAndAngles(firstFrame.x(), firstFrame.y(), firstFrame.z(), firstFrame.yaw(), firstFrame.pitch());
             visibleEntity.setHeadYaw(firstFrame.headYaw());
+            visibleEntity.bodyYaw = firstFrame.bodyYaw();
             visibleEntity.setReplaySitting(firstFrame.sitting());
+            visibleEntity.setVelocity(firstFrame.velocityX(), firstFrame.velocityY(), firstFrame.velocityZ());
+            visibleEntity.setReplayMovementState(
+                    firstFrame.swimming(),
+                    firstFrame.touchingWater(),
+                    firstFrame.fallFlying(),
+                    firstFrame.fallFlyingTicks(),
+                    firstFrame.leaningPitch()
+            );
+            visibleEntity.setPose(parsePose(firstFrame.poseName()));
             firstFrame.syncVisibleEquipmentTo(visibleEntity);
             applyEntityUseState(visibleEntity, firstFrame, false);
 
@@ -588,6 +598,10 @@ public final class MagicianPlaybackManager {
             proxyPlayer.refreshPositionAndAngles(firstFrame.x(), firstFrame.y(), firstFrame.z(), firstFrame.yaw(), firstFrame.pitch());
             proxyPlayer.setHeadYaw(firstFrame.headYaw());
             proxyPlayer.bodyYaw = firstFrame.bodyYaw();
+            proxyPlayer.setReplayGameMode(firstFrame.gameMode());
+            proxyPlayer.setVelocity(firstFrame.velocityX(), firstFrame.velocityY(), firstFrame.velocityZ());
+            proxyPlayer.setSwimming(firstFrame.swimming());
+            proxyPlayer.setPose(parsePose(firstFrame.poseName()));
             firstFrame.applyInventoryTo(proxyPlayer);
             applyPlayerUseState(proxyPlayer, firstFrame, false);
             MagicianPlaybackActionExecutor.syncTransientState(magician, proxyPlayer);
@@ -671,10 +685,19 @@ public final class MagicianPlaybackManager {
             frame.syncVisibleEquipmentTo(entity);
             entity.refreshPositionAndAngles(frame.x(), frame.y(), frame.z(), frame.yaw(), frame.pitch());
             entity.setHeadYaw(frame.headYaw());
+            entity.bodyYaw = frame.bodyYaw();
+            entity.setVelocity(frame.velocityX(), frame.velocityY(), frame.velocityZ());
             entity.setSneaking(frame.sneaking());
             entity.setSprinting(frame.sprinting());
             entity.setOnGround(frame.onGround());
             entity.setReplaySitting(frame.sitting());
+            entity.setReplayMovementState(
+                    frame.swimming(),
+                    frame.touchingWater(),
+                    frame.fallFlying(),
+                    frame.fallFlyingTicks(),
+                    frame.leaningPitch()
+            );
             applySleepingState(entity, frame);
             entity.setPose(parsePose(frame.poseName()));
             applyEntityUseState(entity, frame, false);
@@ -686,13 +709,20 @@ public final class MagicianPlaybackManager {
                 @NotNull MagicianReplayFrame frame,
                 boolean deferStoppingUseUntilAction
         ) {
+            /*
+             * 必须在恢复背包和执行本 tick 动作之前写入游戏模式。
+             * BlockItem/ItemUsageContext 会读取 interactionManager 和玩家能力共同判断冒险模式权限。
+             */
+            proxyPlayer.setReplayGameMode(frame.gameMode());
             frame.applyInventoryTo(proxyPlayer);
             proxyPlayer.refreshPositionAndAngles(frame.x(), frame.y(), frame.z(), frame.yaw(), frame.pitch());
             proxyPlayer.setHeadYaw(frame.headYaw());
             proxyPlayer.bodyYaw = frame.bodyYaw();
+            proxyPlayer.setVelocity(frame.velocityX(), frame.velocityY(), frame.velocityZ());
             proxyPlayer.setSneaking(frame.sneaking());
             proxyPlayer.setSprinting(frame.sprinting());
             proxyPlayer.setOnGround(frame.onGround());
+            proxyPlayer.setSwimming(frame.swimming());
             applySleepingState(proxyPlayer, frame);
             proxyPlayer.setPose(parsePose(frame.poseName()));
             applyPlayerUseState(proxyPlayer, frame, deferStoppingUseUntilAction);
@@ -737,7 +767,10 @@ public final class MagicianPlaybackManager {
              * 真正的服务端交互/蓄力/投掷仍交给 proxyPlayer 处理。
              */
             entity.setReplayUseState(frame.usingItem(), frame.activeHand());
-            entity.setReplayItemUseTimeLeft(frame.usingItem() && frame.activeHand() != null ? frame.itemUseTimeLeft() : 0);
+            entity.setReplayItemUseTime(
+                    frame.usingItem() && frame.activeHand() != null ? frame.itemUseTimeLeft() : 0,
+                    frame.usingItem() && frame.activeHand() != null ? frame.itemUseMaxTime() : 0
+            );
         }
 
         private static void applyUseState(
@@ -768,12 +801,15 @@ public final class MagicianPlaybackManager {
             MagicianInventorySnapshot.syncVisibleEquipment(proxyPlayer, visibleEntity);
             if (!proxyPlayer.isUsingItem()) {
                 visibleEntity.setReplayUseState(false, null);
-                visibleEntity.setReplayItemUseTimeLeft(0);
+                visibleEntity.setReplayItemUseTime(0, 0);
                 return;
             }
 
             Hand activeHand = proxyPlayer.getActiveHand();
-            visibleEntity.setReplayItemUseTimeLeft(proxyPlayer.getItemUseTimeLeft());
+            visibleEntity.setReplayItemUseTime(
+                    proxyPlayer.getItemUseTimeLeft(),
+                    visibleEntity.getReplayItemUseMaxTime()
+            );
             visibleEntity.setReplayUseState(true, activeHand);
         }
 

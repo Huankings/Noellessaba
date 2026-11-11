@@ -14,8 +14,11 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +58,21 @@ public class MagicianPlaybackEntity extends LivingEntity {
             DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> REPLAY_ITEM_USE_TIME_LEFT =
             DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    /** 录制玩家计算出的物品总使用时长；避免用非玩家皮套重新调用扩展物品的时长逻辑。 */
+    private static final TrackedData<Integer> REPLAY_ITEM_USE_MAX_TIME =
+            DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    /** 录制位置当时是否处于水中，用来区分游泳和一格高匍匐。 */
+    private static final TrackedData<Boolean> REPLAY_TOUCHING_WATER =
+            DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    /** 录制帧是否处于真正的鞘翅滑翔，而不只是使用 FALL_FLYING 姿态。 */
+    private static final TrackedData<Boolean> REPLAY_FALL_FLYING =
+            DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    /** 录制玩家已经持续滑翔的 tick 数，保证播放从中途开始时立刻进入完整滑翔骨骼。 */
+    private static final TrackedData<Integer> REPLAY_FALL_FLYING_TICKS =
+            DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    /** 原版玩家游泳/匍匐由 0 到 1 的身体前倾进度。 */
+    private static final TrackedData<Float> REPLAY_LEANING_PITCH =
+            DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> REPLAY_SWING_SEQUENCE =
             DataTracker.registerData(MagicianPlaybackEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> REPLAY_SWING_OFF_HAND =
@@ -72,9 +90,44 @@ public class MagicianPlaybackEntity extends LivingEntity {
     };
     private ItemStack mainHand = ItemStack.EMPTY;
     private ItemStack offHand = ItemStack.EMPTY;
+    /** 一次普通玩家挥手动画持续的 tick 数。 */
     private static final int REPLAY_SWING_DURATION_TICKS = 8;
+    /** 原版开始周期性播放吃喝效果所需的已使用时长比例。 */
+    private static final float CONSUMPTION_EFFECT_START_FRACTION = 0.21875F;
+    /** 原版吃喝过程中两次声音/粒子效果之间的 tick 间隔。 */
+    private static final int CONSUMPTION_EFFECT_INTERVAL_TICKS = 4;
+    /** 原版吃喝过程每次产生的普通粒子数量。 */
+    private static final int CONSUMPTION_PARTICLE_COUNT = 5;
+    /** 原版完成食用时产生的加强粒子数量。 */
+    private static final int CONSUMPTION_FINAL_PARTICLE_COUNT = 16;
     private int replaySwingTicks = 0;
     private Hand replaySwingHand = Hand.MAIN_HAND;
+    /** 服务端最近一次已发出的挥手所在世界 tick，用于合并语义动作与挥手包。 */
+    private long lastReplaySwingWorldTime = Long.MIN_VALUE;
+    /** 与最近一次服务端挥手对应的手；只有同 tick 同手才视为重复。 */
+    private Hand lastReplaySwingServerHand = Hand.MAIN_HAND;
+    /** 客户端最近一次已经播放吃喝效果的剩余时长，避免网络帧重复时重复发声。 */
+    private int lastConsumptionEffectTimeLeft = Integer.MIN_VALUE;
+    /** 客户端最近一次吃喝效果对应的手。 */
+    private Hand lastConsumptionEffectHand = Hand.MAIN_HAND;
+    /** 客户端最近一次吃喝效果对应的物品副本。 */
+    private ItemStack lastConsumptionEffectStack = ItemStack.EMPTY;
+    /** 客户端上一 tick 的平滑前倾进度，供渲染帧插值。 */
+    private float previousReplayLeaningPitch;
+    /** 客户端当前平滑前倾进度；不会直接跳到服务端数据追踪目标。 */
+    private float replayLeaningPitch;
+    /** 原版身体俯冲动画约在前 10 tick 内完成，因此客户端只追踪这段有效滑翔时间。 */
+    private static final float FALL_FLYING_TRANSITION_TICKS = 10.0F;
+    /** 客户端上一 tick 的鞘翅过渡时间，供渲染帧插值。 */
+    private float previousReplayFallFlyingTransitionTicks;
+    /** 客户端当前鞘翅过渡时间；进入与退出都以每 tick 1.0 的原版时间速度变化。 */
+    private float replayFallFlyingTransitionTicks;
+    /** 蹲下或站起时每游戏 tick 推进的过渡比例；五 tick 完成一次完整动作。 */
+    private static final float SNEAKING_TRANSITION_STEP = 0.2F;
+    /** 客户端上一 tick 的蹲姿混合进度，供渲染帧插值。 */
+    private float previousReplaySneakingTransition;
+    /** 客户端当前蹲姿混合进度，0 为站立，1 为完整蹲姿。 */
+    private float replaySneakingTransition;
     /** 披风跟随皮套位置的比例，复刻 1.21.1 PlayerEntity.updateCapeAngles 的四分之一平滑。 */
     private static final double CAPE_POSITION_FOLLOW = 0.25D;
     /** 披风与皮套相差超过此距离时重置历史位置，单位为方块。 */
@@ -114,6 +167,11 @@ public class MagicianPlaybackEntity extends LivingEntity {
         builder.add(REPLAY_USING_ITEM, false);
         builder.add(REPLAY_ACTIVE_OFF_HAND, false);
         builder.add(REPLAY_ITEM_USE_TIME_LEFT, 0);
+        builder.add(REPLAY_ITEM_USE_MAX_TIME, 0);
+        builder.add(REPLAY_TOUCHING_WATER, false);
+        builder.add(REPLAY_FALL_FLYING, false);
+        builder.add(REPLAY_FALL_FLYING_TICKS, 0);
+        builder.add(REPLAY_LEANING_PITCH, 0.0F);
         builder.add(REPLAY_SWING_SEQUENCE, 0);
         builder.add(REPLAY_SWING_OFF_HAND, false);
     }
@@ -207,6 +265,113 @@ public class MagicianPlaybackEntity extends LivingEntity {
         return Math.max(0, this.dataTracker.get(REPLAY_ITEM_USE_TIME_LEFT));
     }
 
+    public int getReplayItemUseMaxTime() {
+        return Math.max(0, this.dataTracker.get(REPLAY_ITEM_USE_MAX_TIME));
+    }
+
+    /**
+     * 同步游泳、匍匐和鞘翅渲染所需的玩家专属状态。
+     */
+    public void setReplayMovementState(
+            boolean swimming,
+            boolean touchingWater,
+            boolean fallFlying,
+            int fallFlyingTicks,
+            float leaningPitch
+    ) {
+        this.setSwimming(swimming);
+        this.dataTracker.set(REPLAY_TOUCHING_WATER, touchingWater);
+        this.dataTracker.set(REPLAY_FALL_FLYING, fallFlying);
+        this.dataTracker.set(REPLAY_FALL_FLYING_TICKS, Math.max(0, fallFlyingTicks));
+        this.dataTracker.set(REPLAY_LEANING_PITCH, Math.max(0.0F, Math.min(1.0F, leaningPitch)));
+    }
+
+    public boolean isReplayTouchingWater() {
+        return this.dataTracker.get(REPLAY_TOUCHING_WATER);
+    }
+
+    @Override
+    public boolean isFallFlying() {
+        if (!this.getWorld().isClient()) {
+            return this.dataTracker.get(REPLAY_FALL_FLYING);
+        }
+        /*
+         * 退出滑翔后继续保持到本地过渡归零，让身体和翅膀有时间收回；
+         * 开始滑翔的第一个同步帧则由追踪值立即打开动画分支。
+         */
+        return this.dataTracker.get(REPLAY_FALL_FLYING) || this.replayFallFlyingTransitionTicks > 0.0F;
+    }
+
+    @Override
+    public int getFallFlyingTicks() {
+        if (!this.getWorld().isClient()) {
+            return this.isFallFlying() ? this.dataTracker.get(REPLAY_FALL_FLYING_TICKS) : 0;
+        }
+        return Math.round(this.replayFallFlyingTransitionTicks);
+    }
+
+    /**
+     * 返回 0 到 1 的鞘翅过渡进度。
+     *
+     * <p>先在上一/当前 tick 间线性插值，再使用原版 PlayerEntityRenderer 的
+     * {@code ticks * ticks / 100} 二次曲线，因此起飞初段较缓、随后自然加速。</p>
+     */
+    public float getReplayFallFlyingTransition(float tickDelta) {
+        float transitionTicks = net.minecraft.util.math.MathHelper.lerp(
+                tickDelta,
+                this.previousReplayFallFlyingTransitionTicks,
+                this.replayFallFlyingTransitionTicks
+        );
+        return net.minecraft.util.math.MathHelper.clamp(
+                transitionTicks * transitionTicks
+                        / (FALL_FLYING_TRANSITION_TICKS * FALL_FLYING_TRANSITION_TICKS),
+                0.0F,
+                1.0F
+        );
+    }
+
+    /**
+     * 返回经过客户端 tick 追踪和渲染帧插值后的蹲姿进度。
+     */
+    public float getReplaySneakingTransition(float tickDelta) {
+        return net.minecraft.util.math.MathHelper.lerp(
+                tickDelta,
+                this.previousReplaySneakingTransition,
+                this.replaySneakingTransition
+        );
+    }
+
+    /**
+     * 返回与 FA+Player {@code var.sneak} 相同的双余弦蹲姿缓动。
+     *
+     * <p>第一层余弦负责慢入慢出，第二层对进度开平方后再做余弦，形成资源包使用的
+     * 前段蓄力、后段自然收束效果。未启用 EMF 时，Noelles 的兜底模型也使用相同节奏。</p>
+     */
+    public float getReplaySneakingEasedTransition(float tickDelta) {
+        float progress = net.minecraft.util.math.MathHelper.clamp(
+                this.getReplaySneakingTransition(tickDelta),
+                0.0F,
+                1.0F
+        );
+        float cosineEase = 0.5F - 0.5F * net.minecraft.util.math.MathHelper.cos(progress * (float) Math.PI);
+        float squareRootCosineEase = 0.5F - 0.5F * net.minecraft.util.math.MathHelper.cos(
+                net.minecraft.util.math.MathHelper.sqrt(progress) * (float) Math.PI
+        );
+        return cosineEase * squareRootCosineEase;
+    }
+
+    @Override
+    public float getLeaningPitch(float tickDelta) {
+        if (!this.getWorld().isClient()) {
+            return this.dataTracker.get(REPLAY_LEANING_PITCH);
+        }
+        return net.minecraft.util.math.MathHelper.lerp(
+                tickDelta,
+                this.previousReplayLeaningPitch,
+                this.replayLeaningPitch
+        );
+    }
+
     @Override
     public boolean isUsingItem() {
         /*
@@ -247,13 +412,29 @@ public class MagicianPlaybackEntity extends LivingEntity {
     @Override
     public int getItemUseTime() {
         if (this.getWorld().isClient() && this.isReplayUsingItem()) {
-            ItemStack activeItem = this.getActiveItem();
-            return activeItem.isEmpty() ? 0 : Math.max(0, activeItem.getMaxUseTime(this) - this.getReplayItemUseTimeLeft());
+            return Math.max(0, this.getReplayItemUseMaxTime() - this.getReplayItemUseTimeLeft());
         }
         return super.getItemUseTime();
     }
 
+    /**
+     * 让 LivingEntityRenderer、原版玩家模型和动作兼容模组都能读到可靠的回放挥手进度。
+     * 之前只有自定义模型内部读取本地计时，EMF 等在更早阶段读取实体进度时会得到 0。
+     */
+    @Override
+    public float getHandSwingProgress(float tickDelta) {
+        return Math.max(super.getHandSwingProgress(tickDelta), this.getReplaySwingProgress(tickDelta));
+    }
+
     public void playReplaySwing(Hand hand) {
+        if (!this.getWorld().isClient()) {
+            long worldTime = this.getWorld().getTime();
+            if (this.lastReplaySwingWorldTime == worldTime && this.lastReplaySwingServerHand == hand) {
+                return;
+            }
+            this.lastReplaySwingWorldTime = worldTime;
+            this.lastReplaySwingServerHand = hand;
+        }
         /*
          * 原版 swingHand 会给客户端发 EntityAnimationS2CPacket，但自定义播放体在复杂整合环境里
          * 偶尔会出现客户端没有明显挥手的情况。这里额外发一个数据追踪脉冲，
@@ -276,12 +457,144 @@ public class MagicianPlaybackEntity extends LivingEntity {
         this.setNoGravity(true);
         this.fallDistance = 0.0f;
         if (this.getWorld().isClient()) {
+            this.tickReplayLeaningPitch();
+            this.tickReplayFallFlyingTransition();
+            this.tickReplaySneakingTransition();
             this.tickCapePosition();
             this.tickCapeStrideDistance();
+            this.tickReplayConsumptionEffects();
         }
         if (this.getWorld().isClient() && this.replaySwingTicks > 0) {
             this.replaySwingTicks--;
         }
+    }
+
+    /**
+     * 按原版 LivingEntity 每 tick 0.09 的速度追赶录制目标，并保留上一 tick 数值供帧间插值。
+     * 即使网络一次合并了多个数据追踪更新，也不会让身体突然跳到水平或站立姿态。
+     */
+    private void tickReplayLeaningPitch() {
+        this.previousReplayLeaningPitch = this.replayLeaningPitch;
+        float target = this.dataTracker.get(REPLAY_LEANING_PITCH);
+        if (this.replayLeaningPitch < target) {
+            this.replayLeaningPitch = Math.min(target, this.replayLeaningPitch + 0.09F);
+        } else if (this.replayLeaningPitch > target) {
+            this.replayLeaningPitch = Math.max(target, this.replayLeaningPitch - 0.09F);
+        }
+    }
+
+    /**
+     * 以原版游戏 tick 速度追踪鞘翅展开/收拢，并保留上一 tick 状态用于渲染帧插值。
+     * 服务端偶尔合并数据包时也只会每客户端 tick 前进一步，不会突然跳过整段过渡。
+     */
+    private void tickReplayFallFlyingTransition() {
+        this.previousReplayFallFlyingTransitionTicks = this.replayFallFlyingTransitionTicks;
+        float targetTicks = this.dataTracker.get(REPLAY_FALL_FLYING)
+                ? Math.min(FALL_FLYING_TRANSITION_TICKS, this.dataTracker.get(REPLAY_FALL_FLYING_TICKS))
+                : 0.0F;
+        if (this.replayFallFlyingTransitionTicks < targetTicks) {
+            this.replayFallFlyingTransitionTicks = Math.min(
+                    targetTicks,
+                    this.replayFallFlyingTransitionTicks + 1.0F
+            );
+        } else if (this.replayFallFlyingTransitionTicks > targetTicks) {
+            this.replayFallFlyingTransitionTicks = Math.max(
+                    targetTicks,
+                    this.replayFallFlyingTransitionTicks - 1.0F
+            );
+        }
+    }
+
+    /**
+     * 在站立和蹲姿之间按固定游戏 tick 速度追踪，并保存上一 tick 供高帧率渲染插值。
+     * 不直接使用布尔姿态作为模型终值，避免 EMF 动作资源包看到身体和鞘翅瞬间跳变。
+     */
+    private void tickReplaySneakingTransition() {
+        this.previousReplaySneakingTransition = this.replaySneakingTransition;
+        float target = this.isInSneakingPose() ? 1.0F : 0.0F;
+        if (this.replaySneakingTransition < target) {
+            this.replaySneakingTransition = Math.min(
+                    target,
+                    this.replaySneakingTransition + SNEAKING_TRANSITION_STEP
+            );
+        } else if (this.replaySneakingTransition > target) {
+            this.replaySneakingTransition = Math.max(
+                    target,
+                    this.replaySneakingTransition - SNEAKING_TRANSITION_STEP
+            );
+        }
+    }
+
+    /**
+     * 只在客户端复刻原版吃喝声音与粒子，绝不调用 ItemStack.finishUsing。
+     *
+     * <p>使用时长上限来自真实录制玩家，而不是让扩展物品用非玩家皮套重新计算，
+     * 从而同时规避被动触发和不安全类型转换。</p>
+     */
+    private void tickReplayConsumptionEffects() {
+        if (!this.isReplayUsingItem()) {
+            this.resetReplayConsumptionEffectState();
+            return;
+        }
+
+        Hand activeHand = this.getReplayActiveHand();
+        ItemStack activeStack = this.getStackInHand(activeHand);
+        UseAction useAction = activeStack.getUseAction();
+        if (activeStack.isEmpty() || (useAction != UseAction.EAT && useAction != UseAction.DRINK)) {
+            this.resetReplayConsumptionEffectState();
+            return;
+        }
+
+        if (this.lastConsumptionEffectHand != activeHand
+                || !ItemStack.areItemsAndComponentsEqual(this.lastConsumptionEffectStack, activeStack)) {
+            this.lastConsumptionEffectTimeLeft = Integer.MIN_VALUE;
+            this.lastConsumptionEffectHand = activeHand;
+            this.lastConsumptionEffectStack = activeStack.copy();
+        }
+
+        int maxUseTime = this.getReplayItemUseMaxTime();
+        int timeLeft = this.getReplayItemUseTimeLeft();
+        int usedTicks = Math.max(0, maxUseTime - timeLeft);
+        int effectStartTick = (int) (maxUseTime * CONSUMPTION_EFFECT_START_FRACTION);
+        if (maxUseTime <= 0
+                || usedTicks <= effectStartTick
+                || timeLeft == this.lastConsumptionEffectTimeLeft
+                || timeLeft % CONSUMPTION_EFFECT_INTERVAL_TICKS != 0) {
+            return;
+        }
+
+        this.lastConsumptionEffectTimeLeft = timeLeft;
+        int particleCount = timeLeft <= CONSUMPTION_EFFECT_INTERVAL_TICKS
+                ? CONSUMPTION_FINAL_PARTICLE_COUNT
+                : CONSUMPTION_PARTICLE_COUNT;
+        this.spawnConsumptionEffects(activeStack, particleCount);
+        this.playReplayConsumptionSound(activeStack, useAction);
+    }
+
+    /**
+     * 从皮套实体位置直接播放客户端跟随声音。
+     *
+     * <p>{@link #spawnConsumptionEffects(ItemStack, int)} 内部调用的 Entity.playSound 会进入
+     * {@code ClientWorld.playSound(except, ...)}；其 except 为 null，不等于本地玩家，因此客户端会
+     * 丢弃声音但仍生成粒子。这里改走 ClientWorld 覆写的实体跟随声音入口，吃与喝都能正确听见。</p>
+     */
+    private void playReplayConsumptionSound(ItemStack stack, UseAction useAction) {
+        SoundEvent sound;
+        float pitch;
+        if (useAction == UseAction.DRINK) {
+            sound = stack.getDrinkSound();
+            pitch = 0.9F + this.random.nextFloat() * 0.1F;
+        } else {
+            sound = stack.getEatSound();
+            pitch = 0.5F + 0.5F * this.random.nextInt(2)
+                    + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
+        }
+        this.getWorld().playSoundFromEntity(this, sound, SoundCategory.PLAYERS, 0.5F, pitch);
+    }
+
+    private void resetReplayConsumptionEffectState() {
+        this.lastConsumptionEffectTimeLeft = Integer.MIN_VALUE;
+        this.lastConsumptionEffectStack = ItemStack.EMPTY;
     }
 
     /**
@@ -444,15 +757,19 @@ public class MagicianPlaybackEntity extends LivingEntity {
         }
     }
 
-    public void setReplayItemUseTimeLeft(int ticks) {
+    public void setReplayItemUseTime(int ticksLeft, int maxTicks) {
         /*
          * 皮套实体只负责给客户端看，但举刀、蓄力这类动画会读 LivingEntity 的使用状态。
          * 因此播放帧同步 active hand 后，也要同步剩余使用时间，避免动画每 tick 被重置。
          */
-        int safeTicks = Math.max(0, ticks);
-        this.itemUseTimeLeft = safeTicks;
-        if (!this.dataTracker.get(REPLAY_ITEM_USE_TIME_LEFT).equals(safeTicks)) {
-            this.dataTracker.set(REPLAY_ITEM_USE_TIME_LEFT, safeTicks);
+        int safeTicksLeft = Math.max(0, ticksLeft);
+        int safeMaxTicks = Math.max(0, maxTicks);
+        this.itemUseTimeLeft = safeTicksLeft;
+        if (!this.dataTracker.get(REPLAY_ITEM_USE_TIME_LEFT).equals(safeTicksLeft)) {
+            this.dataTracker.set(REPLAY_ITEM_USE_TIME_LEFT, safeTicksLeft);
+        }
+        if (!this.dataTracker.get(REPLAY_ITEM_USE_MAX_TIME).equals(safeMaxTicks)) {
+            this.dataTracker.set(REPLAY_ITEM_USE_MAX_TIME, safeMaxTicks);
         }
     }
 
