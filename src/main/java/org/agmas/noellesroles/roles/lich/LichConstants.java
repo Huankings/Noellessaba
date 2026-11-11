@@ -201,9 +201,6 @@ public final class LichConstants {
     /** 门音效播放点的高度偏移，使声音更接近双格门的中部。 */
     public static final double DOOR_CONTROL_SOUND_Y_OFFSET = 1.0D;
 
-    /** 控门术修复破门时用于清空 Wathe 门被破坏状态的计时值。 */
-    public static final int DOOR_CONTROL_REPAIRED_TIMER_TICKS = 0;
-
     /** 控门术扫描和回放计数使用的“没有门/没有影响”基准值。 */
     public static final int DOOR_CONTROL_EMPTY_COUNT = 0;
 

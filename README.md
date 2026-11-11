@@ -294,6 +294,18 @@ src/main/owned-resources/roles/rememberer/assets/noellesroles/
 
 ## 通用系统
 
+### Wathe 门组 API 接入
+
+NoellesRoles 中会改变 Wathe 门状态的逻辑统一使用 `dev.doctor4t.wathe.api.door.DoorApi`。双门虽然有两个方块实体，但必须作为一个门组提交明确目标状态，不能再分别写 `blasted/jammed/closeCountdown` 或逐侧调用 `toggle()`。
+
+- `ToolboxItem` 使用 `DoorApi.repair(..., RepairMode.CLOSE)`，点击任意一侧都会修复并关闭整组门。
+- `LichAbility` 先按门组去重；任意一侧被撬坏时整组修复关闭，否则整组关闭并刷新 30 秒锁定。同一个双门组不会在一次技能中先修复又锁上。
+- `ColorfulAxeItem` 和 `MyersPlayerComponent` 使用 `DoorApi.pryOpen`，双门两侧都会永久打开。
+- kinssaba 扳手有意保留不同表现，使用 `RepairMode.OPEN_THEN_AUTOCLOSE`，修复后整组打开并恢复 Wathe 默认自动关门倒计时。
+- 时停者仍按 Wathe 门方块实体 NBT 保存精确历史状态；所有新门状态入口必须保证快照捕获前双门已经一致。
+
+门 API 的完整状态优先级、服务端边界和回归清单见 Wathe `README_DOOR_API.md`。
+
 - `Noellesroles.java` 现在只是 Fabric entrypoint，唯一职责是调用 `NoellesRolesBootstrap.init()`。
 - `NoellesRolesBootstrap.java` 负责维护初始化顺序，把配置、物品、实体、托盘/床效果、回放、商店、经济、事件和 packet 引导串起来。
 - `NoellesRolesCore.java` 保存 `MOD_ID`、日志器和 `Identifier` 工具方法，避免再把入口类当公共常量仓库。

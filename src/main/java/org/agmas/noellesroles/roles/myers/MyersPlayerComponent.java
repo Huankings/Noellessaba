@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.roles.myers;
 
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
+import dev.doctor4t.wathe.api.door.DoorApi;
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerShopComponent;
@@ -218,10 +219,10 @@ public final class MyersPlayerComponent implements AutoSyncedComponent, ServerTi
         );
 
         DoorBlockEntity door = findDoor(nextBox);
-        if (door != null && !door.isBlasted()) {
+        if (door != null && !DoorApi.isBlasted(door)) {
             player.getWorld().playSound(null, door.getPos(), WatheSounds.ITEM_CROWBAR_PRY,
                     net.minecraft.sound.SoundCategory.BLOCKS, 2.5F, 1.0F);
-            door.blast();
+            DoorApi.pryOpen(door);
             GameRecordManager.recordGlobalEvent(serverPlayer.getServerWorld(), NoellesEventIds.MYERS_DOOR_BROKEN_EVENT, serverPlayer, null);
             finishDash();
             return;

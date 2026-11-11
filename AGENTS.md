@@ -190,6 +190,7 @@ NoellesRoles 的职业 / 词条运行时资源在源码中按所有者拆分，�
 - 疯魔模式：`PsychoModeApi`、`PsychoModeProfile`、`PsychoShieldContext`、`PsychoShieldResult`，客户端皮肤/音乐用 `PsychoModeClientApi`
 - 疯魔加时、增加护盾、最低冷却与临时暂停：使用 Wathe `PsychoModeApi.addRemainingTicks`、`addArmourLayers`、`ensureMinimumCooldown`、`pause/resume` 和 `PsychoModeState`；有独立购买图标的 profile 必须登记 `cooldownItem`。完整说明见 Wathe `README_PSYCHO_MODE_API.md`。
 - 停电机制：`BlackoutApi`、`BlackoutDuration`、`BlackoutEffectResult`；恢复供电、改停电时长、分配停电夜视/失明都走这里，不要 mixin `WorldBlackoutComponent` ticks。
+- 门组事务：`DoorApi`、`DoorApi.RepairMode`、`DoorApi.OperationResult`；撬门、锁门和修门必须整组提交，不要直接组合门实体 setter。完整说明见 Wathe `README_DOOR_API.md`。
 - 玩家物理碰撞：`PlayerCollisionApi`、`PlayerCollisionMode`；硬阻挡、原版推挤可穿过、完全无碰撞无推挤都走这里，不要再 mixin `Entity#collidesWith`、`EntityView#getEntityCollisions` 或推挤方法。
 - 客户端输入与最终动作：`ClientInputApi`；KeyBinding、键盘、鼠标、滚轮、攻击、使用、选取方块和挖掘都走这里，不要再 mixin 原版输入类或 `MinecraftClient` 动作方法。
 - 玩家体力：`PlayerStaminaApi`、`PlayerStaminaComponent`
@@ -216,6 +217,15 @@ Harpy 分配规则也优先走公开 API，不要再 mixin `ModdedMurderGameMode
 - 强制恋人、强制双重人格、动态词条上限：用 `registerBeforeAssignmentHandler(...)` / `registerBeforeAnnouncementHandler(...)` / `registerAfterAssignmentHandler(...)` 替代词条分配 mixin。
 
 NoellesRoles 接入格式必须按职业或词条拆文件：`roles/<role>/<RoleName>RoleAssignmentRules`、`modifiers/<modifier>/<ModifierName>ModifierAssignmentRules`，再由 `NoellesRolesBootstrap.init()` 调用。不要把多个职业/词条的 Harpy 规则塞进一个公共大类。
+
+### 门组 API 接入
+
+- Wathe 双门由两个独立方块实体组成，但扩展必须通过 `DoorApi` 作为一个门组处理。禁止分别写 `setBlasted`、`setJammed`、`setCloseCountdown`，也禁止对两侧逐个 `toggle()`。
+- 撬门统一调用 `DoorApi.pryOpen(...)`，最终状态必须是整组打开且永久损坏。彩虹斧和迈尔斯撞门已经接入该入口。
+- 临时锁门调用 `DoorApi.jamClosed(...)`，它会强制关闭整组并统一刷新锁定时间；永久撬开状态优先，不能被临时锁门覆盖。
+- NoellesRoles 工具箱和巫妖修复使用 `DoorApi.repair(..., RepairMode.CLOSE)`，修复后整组关闭。kinssaba 扳手有意使用 `OPEN_THEN_AUTOCLOSE`，修复后整组打开并恢复 Wathe 默认自动关门倒计时，不要把这两类表现合并。
+- 巫妖范围扫描仍可按门扇计入 HUD/回放，但执行前必须用 `DoorApi.getGroupMembers(...)` 去重；同一双门组不能在一次技能中先修复又锁上。
+- 客户端只返回交互反馈，门状态、冷却、音效和回放在服务端结算。完整说明和回归清单见 Wathe `README_DOOR_API.md`。
 
 ### 玩家体力与移动接入
 

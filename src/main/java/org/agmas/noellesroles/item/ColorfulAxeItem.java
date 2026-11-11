@@ -1,6 +1,7 @@
 package org.agmas.noellesroles.item;
 
 import dev.doctor4t.wathe.api.event.AllowPlayerOpenLockedDoor;
+import dev.doctor4t.wathe.api.door.DoorApi;
 import dev.doctor4t.wathe.block.SmallDoorBlock;
 import dev.doctor4t.wathe.block.TrainDoorBlock;
 import dev.doctor4t.wathe.block_entity.DoorBlockEntity;
@@ -61,7 +62,7 @@ public class ColorfulAxeItem extends Item {
         }
 
         DoorLookup lookup = findDoor(world, clickedPos);
-        if (lookup == null || lookup.door().isBlasted()) {
+        if (lookup == null || DoorApi.isBlasted(lookup.door())) {
             return ActionResult.PASS;
         }
 
@@ -83,7 +84,7 @@ public class ColorfulAxeItem extends Item {
         if (!world.isClient) {
             world.playSound(null, clickedPos, WatheSounds.ITEM_CROWBAR_PRY, SoundCategory.BLOCKS, 2.5F, 1.0F);
             player.swingHand(Hand.MAIN_HAND, true);
-            lookup.door().blast();
+            DoorApi.pryOpen(lookup.door());
             if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
                 NbtCompound extra = new NbtCompound();
                 extra.putString("mode", "pry");
@@ -118,7 +119,7 @@ public class ColorfulAxeItem extends Item {
         if (player.isCreative() || AllowPlayerOpenLockedDoor.EVENT.invoker().allowOpen(player)) {
             return false;
         }
-        if (door.isJammed()) {
+        if (DoorApi.isJammed(door)) {
             return true;
         }
         if (lookup.state().getBlock() instanceof TrainDoorBlock && TrainWorldComponent.KEY.get(world).getSpeed() != 0) {

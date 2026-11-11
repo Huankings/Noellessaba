@@ -1,6 +1,8 @@
 package org.agmas.noellesroles.roles.lich;
 
+import dev.doctor4t.wathe.api.door.DoorApi;
 import dev.doctor4t.wathe.block.SmallDoorBlock;
+import dev.doctor4t.wathe.block_entity.DoorBlockEntity;
 import dev.doctor4t.wathe.block_entity.SmallDoorBlockEntity;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheSounds;
@@ -16,8 +18,11 @@ import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 巫妖能力键：控门术。
@@ -47,13 +52,27 @@ public final class LichAbility {
 
         int repaired = LichConstants.DOOR_CONTROL_EMPTY_COUNT;
         int locked = LichConstants.DOOR_CONTROL_EMPTY_COUNT;
+        Set<BlockPos> processedGroupMembers = new HashSet<>();
         for (SmallDoorBlockEntity door : doors.values()) {
-            if (door.isBlasted()) {
-                repairDoor(door);
-                repaired++;
+            List<DoorBlockEntity> group = DoorApi.getGroupMembers(door);
+            if (group.stream().anyMatch(member -> processedGroupMembers.contains(member.getPos()))) {
+                continue;
+            }
+            group.forEach(member -> processedGroupMembers.add(member.getPos().toImmutable()));
+
+            // 回放继续按扫描半径内实际命中的门扇计数，但同一个双门组只执行一次状态事务和一次声音。
+            int scannedDoorCount = (int) group.stream()
+                    .filter(member -> doors.containsKey(member.getPos()))
+                    .count();
+            DoorApi.GroupState state = DoorApi.inspect(door);
+            if (state.blasted()) {
+                DoorApi.repair(door, DoorApi.RepairMode.CLOSE);
+                repaired += scannedDoorCount;
+                playDoorControlSound(door, WatheSounds.ITEM_CROWBAR_PRY);
             } else {
-                lockDoor(door);
-                locked++;
+                DoorApi.jamClosed(door, LichConstants.DOOR_CONTROL_JAM_TICKS);
+                locked += scannedDoorCount;
+                playDoorControlSound(door, WatheSounds.ITEM_LOCKPICK_DOOR);
             }
         }
 
@@ -98,42 +117,14 @@ public final class LichAbility {
         return findNearbyDoors(new PlayerEntityLike(player.getWorld(), player.getBlockPos()));
     }
 
-    private static void repairDoor(@NotNull SmallDoorBlockEntity door) {
-        door.setBlasted(false);
-        door.setJammed(LichConstants.DOOR_CONTROL_REPAIRED_TIMER_TICKS);
-        door.setCloseCountdown(LichConstants.DOOR_CONTROL_REPAIRED_TIMER_TICKS);
-        door.sync();
+    private static void playDoorControlSound(@NotNull DoorBlockEntity door, net.minecraft.sound.SoundEvent sound) {
         if (door.getWorld() != null) {
             door.getWorld().playSound(
                     null,
                     door.getPos().getX() + LichConstants.DOOR_CONTROL_SOUND_CENTER_OFFSET,
                     door.getPos().getY() + LichConstants.DOOR_CONTROL_SOUND_Y_OFFSET,
                     door.getPos().getZ() + LichConstants.DOOR_CONTROL_SOUND_CENTER_OFFSET,
-                    WatheSounds.ITEM_CROWBAR_PRY,
-                    SoundCategory.BLOCKS,
-                    LichConstants.DOOR_CONTROL_SOUND_VOLUME,
-                    LichConstants.DOOR_CONTROL_SOUND_PITCH
-            );
-        }
-    }
-
-    private static void lockDoor(@NotNull SmallDoorBlockEntity door) {
-        door.setJammed(LichConstants.DOOR_CONTROL_JAM_TICKS);
-        if (door.isOpen()) {
-            /*
-             * DoorBlockEntity#toggle 会同步方块状态并播放门声。
-             * 这里传 false，让玩家听到控门术确实影响了门；随后再播锁门音作为技能提示。
-             */
-            door.toggle(false);
-        }
-        door.sync();
-        if (door.getWorld() != null) {
-            door.getWorld().playSound(
-                    null,
-                    door.getPos().getX() + LichConstants.DOOR_CONTROL_SOUND_CENTER_OFFSET,
-                    door.getPos().getY() + LichConstants.DOOR_CONTROL_SOUND_Y_OFFSET,
-                    door.getPos().getZ() + LichConstants.DOOR_CONTROL_SOUND_CENTER_OFFSET,
-                    WatheSounds.ITEM_LOCKPICK_DOOR,
+                    sound,
                     SoundCategory.BLOCKS,
                     LichConstants.DOOR_CONTROL_SOUND_VOLUME,
                     LichConstants.DOOR_CONTROL_SOUND_PITCH
