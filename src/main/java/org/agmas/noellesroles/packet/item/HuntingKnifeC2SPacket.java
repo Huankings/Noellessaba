@@ -2,6 +2,7 @@ package org.agmas.noellesroles.packet.item;
 
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -14,7 +15,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.roles.hunter.HunterConstants;
@@ -65,7 +65,15 @@ public record HuntingKnifeC2SPacket(int target) implements CustomPayload {
             net.minecraft.entity.Entity rawTarget = player.getServerWorld().getEntityById(payload.target());
             if (rawTarget instanceof ThiefAllayEntity allay) {
                 if (allay.isOperationallyAlive()
-                        && allay.distanceTo(player) <= HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                        /*
+                         * 猎刀客户端三格射线命中的是悦灵碰撞箱表面；服务端使用相同的
+                         * 眼睛到碰撞箱距离，避免准心/发包已经命中但中心点距离仍超限。
+                         */
+                        && WeaponTargetingApi.isWithinTargetingRange(
+                                player,
+                                allay,
+                                HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                        )
                         && TargetVisibilityApi.canAttackEntity(player, allay)) {
                     hunter.reset();
                     if (!GameFunctions.isPlayerSpectatingOrCreative(player)) {
@@ -76,13 +84,20 @@ public record HuntingKnifeC2SPacket(int target) implements CustomPayload {
                     }
                     allay.killByWeapon(player, player.getMainHandStack().copy(), GameConstants.DeathReasons.KNIFE);
                     allay.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0F, 1.0F);
-                    player.swingHand(Hand.MAIN_HAND, true);
                 }
                 return;
             }
             if (!(rawTarget instanceof PlayerEntity target)
                     || !GameFunctions.isPlayerAliveAndSurvival(target)
-                    || target.distanceTo(player) > HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                    /*
+                     * 这里不能继续比较两个实体的位置点。客户端按目标碰撞箱选中玩家，
+                     * 服务端也按 Wathe 公共碰撞箱口径校验，三格极限处才不会出现假锁定。
+                     */
+                    || !WeaponTargetingApi.isWithinTargetingRange(
+                            player,
+                            target,
+                            HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+                    )
                     /*
                      * 服务端兜底检查目标可攻击性，避免尸体伪装玩家被伪造的猎刀命中包穿透。
                      */
@@ -111,7 +126,6 @@ public record HuntingKnifeC2SPacket(int target) implements CustomPayload {
             }
             GameFunctions.killPlayer(target, true, player, GameConstants.DeathReasons.KNIFE);
             target.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0F, 1.0F);
-            player.swingHand(Hand.MAIN_HAND, true);
         }
     }
 }

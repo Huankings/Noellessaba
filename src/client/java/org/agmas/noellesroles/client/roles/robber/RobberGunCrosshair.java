@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.client.roles.robber;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.item.RevolverItem;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +32,10 @@ public final class RobberGunCrosshair {
             return CrosshairHudApi.Result.PASS;
         }
 
+        HitResult visibleTarget = RevolverItem.getGunTarget(context.player());
+        HitResult attackTarget = RevolverItem.getGunAttackTarget(context.player());
         boolean target = !context.player().getItemCooldownManager().isCoolingDown(context.mainHandStack().getItem())
-                && RevolverItem.getGunTarget(context.player()) instanceof EntityHitResult;
+                && WeaponTargetingApi.isSameEntityTarget(visibleTarget, attackTarget);
         CrosshairHudApi.renderStandardCrosshair(context, target);
         return CrosshairHudApi.Result.HANDLED;
     }

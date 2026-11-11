@@ -611,12 +611,20 @@ EntityHitResult visibleTarget =
 EntityHitResult attackTarget =
         WeaponTargetingApi.getAttackableAlivePlayerTarget(player, range);
 
+// “可命中”准心必须让 VISIBLE 与 ATTACK 同时指向同一实体。
+boolean ready = WeaponTargetingApi.isSameEntityTarget(visibleTarget, attackTarget);
+
 // 枪械需要继续接入 GunShotApi 的目标覆写链时，使用带 stack 的枪械入口。
 HitResult gunTarget =
         WeaponTargetingApi.resolveAttackableGunTarget(player, stack, range);
+
+// 服务端收到目标 id 后，按眼睛到目标可瞄准碰撞箱的最近距离复核。
+boolean inRange = WeaponTargetingApi.isWithinTargetingRange(player, target, range);
 ```
 
-枪械准心对应使用 `resolveVisibleGunTarget(player, stack, range)`，真实发包对应使用 `resolveAttackableGunTarget(player, stack, range)`。枪械 `stack` 应使用当前 `use()` / `onStoppedUsing()` 收到的手持物品，避免副手物品误读主手状态。客户端只负责准备目标实体 id，服务端仍要重新校验目标类型、职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。
+枪械准心对应使用 `resolveVisibleGunTarget(player, stack, range)`，真实发包对应使用 `resolveAttackableGunTarget(player, stack, range)`。枪械 `stack` 应使用当前 `use()` / `onStoppedUsing()` 收到的手持物品，避免副手物品误读主手状态。客户端只负责准备目标实体 id，服务端仍要重新校验目标类型、职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。服务端距离不能使用 `Entity#distanceTo(...)` 对照客户端射线：射线命中的是目标碰撞箱表面，而 `distanceTo` 比较实体位置点，会让极限距离准心先变化却无法命中。猎刀普通发包和灵术师附身代用路径都必须调用 `isWithinTargetingRange(...)`。
+
+NoellesRoles 猎刀使用 `UseAction.SPEAR` 表现举刀与收刀，成功击杀玩家或悦灵后只保留刺中声音，不再追加 `swingHand(...)`。灵术师附身代用 Wathe 匕首或 Noelles 猎刀也遵循同一表现规则；其它左键近战、击退和平底锅动画不受影响。
 
 扩展武器不要再各自维护 `NoellesItemTargeting` 或重复拼接 `ProjectileUtil` + `TargetVisibilityApi`。具体武器仍按职业 / 词条放在自己的 `item` 或 `roles/<role>/` 包中，公共注册入口只负责调用对应 handler，不要把所有职业目标判定塞进一个大类。
 

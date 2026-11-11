@@ -5,6 +5,7 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheGameModes;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.api.psycho.PsychoModeApi;
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -981,7 +982,11 @@ public final class SpiritualistManager {
             return;
         }
 
-        if (target.distanceTo(host) > 3.0f) {
+        /*
+         * 附身模式虽然在服务端重新做射线，但仍要用 Wathe 与客户端一致的碰撞箱距离验收；
+         * 使用实体中心 distanceTo 会重新引入普通匕首已经修复的极限距离假准心问题。
+         */
+        if (!WeaponTargetingApi.isWithinTargetingRange(host, target, GameConstants.KNIFE_TARGET_RANGE)) {
             return;
         }
 
@@ -997,7 +1002,6 @@ public final class SpiritualistManager {
 
         GameFunctions.killPlayer(target, true, host, GameConstants.DeathReasons.KNIFE);
         target.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0f, 1.0f);
-        host.swingHand(Hand.MAIN_HAND);
 
         if (!host.isCreative() && GameWorldComponent.KEY.get(host.getWorld()).getGameMode() != WatheGameModes.LOOSE_ENDS) {
             host.getItemCooldownManager().set(WatheItems.KNIFE, GameConstants.ITEM_COOLDOWNS.get(WatheItems.KNIFE));
@@ -1204,7 +1208,12 @@ public final class SpiritualistManager {
         if (!(collision instanceof EntityHitResult entityHitResult) || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
             return;
         }
-        if (target.distanceTo(host) > HunterConstants.HUNTING_KNIFE_TARGET_RANGE) {
+        /* 附身猎刀与普通猎刀共用 Wathe 的眼睛到目标碰撞箱距离口径。 */
+        if (!WeaponTargetingApi.isWithinTargetingRange(
+                host,
+                target,
+                HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+        )) {
             return;
         }
 
@@ -1233,7 +1242,6 @@ public final class SpiritualistManager {
         }
         GameFunctions.killPlayer(target, true, host, GameConstants.DeathReasons.KNIFE);
         target.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0f, 1.0f);
-        host.swingHand(Hand.MAIN_HAND, true);
     }
 
     private static void tryHandleNoellesPanRelease(

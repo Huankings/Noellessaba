@@ -5,6 +5,7 @@ import dev.doctor4t.wathe.api.combat.GunShotContext;
 import dev.doctor4t.wathe.api.combat.GunShotResult;
 import dev.doctor4t.wathe.api.combat.GunTargetContext;
 import dev.doctor4t.wathe.api.combat.GunTargetResult;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -83,7 +84,15 @@ public final class ThiefAllayCombatHandler {
         }
         if (context.isCoolingDown()
                 || !allay.isOperationallyAlive()
-                || allay.distanceTo(context.shooter()) > resolveGunRange(context.stack())) {
+                /*
+                 * 枪械准心通过射线命中悦灵碰撞箱，因此服务端也使用 Wathe 的碰撞箱距离。
+                 * 这同时覆盖普通左轮和两把赏金枪，避免它们在各自极限射程产生假锁定。
+                 */
+                || !WeaponTargetingApi.isWithinTargetingRange(
+                        context.shooter(),
+                        allay,
+                        resolveGunRange(context.stack())
+                )) {
             return GunShotResult.HANDLED;
         }
 

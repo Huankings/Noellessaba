@@ -509,8 +509,12 @@ NoellesRoles 的网络优化以“状态变化才同步、收件人尽量收窄�
 - 普通近战或物品真实命中使用 `WeaponTargetingApi.getAttackableAlivePlayerTarget(player, range)`。
 - 枪械准心使用 `WeaponTargetingApi.resolveVisibleGunTarget(player, stack, range)`。
 - 枪械真实发包使用 `WeaponTargetingApi.resolveAttackableGunTarget(player, stack, range)`。
+- 只有 `WeaponTargetingApi.isSameEntityTarget(visibleTarget, attackTarget)` 为真时，准心才应显示“当前可以命中”。
+- 服务端收到目标 id 后使用 `WeaponTargetingApi.isWithinTargetingRange(source, target, range)` 按眼睛到目标可瞄准碰撞箱最近点复核；禁止再用 `Entity#distanceTo(...)` 对照客户端射线距离。
 
-这四个入口已经分别处理 `TARGET` 和 `ATTACK` 语义，并且枪械入口会继续经过 Wathe `GunShotApi` 的目标覆写链。尸体伪装可以隐藏准心变化，但不会因为隐藏 `TARGET` 而获得攻击免疫。客户端目标只负责准备实体 id，服务端 packet / `GunShotContext` 仍必须重新校验职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。`NoellesItemTargeting` 这类扩展侧重复 helper 不应重新创建。
+这些入口已经分别处理 `TARGET` 和 `ATTACK` 语义，并且枪械入口会继续经过 Wathe `GunShotApi` 的目标覆写链。尸体伪装可以隐藏准心变化，但不会因为隐藏 `TARGET` 而获得攻击免疫。客户端目标只负责准备实体 id，服务端 packet / `GunShotContext` 仍必须重新校验职业、存活、冷却、距离和 `TargetVisibilityApi.canAttackPlayer(...)`。`isWithinTargetingRange(...)` 只统一距离几何口径，不替代主手、墙体或权限检查。`NoellesItemTargeting` 这类扩展侧重复 helper 不应重新创建。
+
+猎刀和其它 `UseAction.SPEAR` 蓄力刺杀在命中后不再调用 `swingHand(...)`，避免收刀后追加一次普通挥手；普通猎刀、命中悦灵和灵术师附身代用路径必须保持一致。其它左键攻击或明确以挥手表达动作的武器不受此规则影响。
 
 击杀奖励、重复死亡保护、致死确认前转化、确认死亡后清理、心情重置前处理、尸体生成回调优先接 Wathe `DeathApi`，不要再新增 `GameFunctions.killPlayer(...)` mixin。NoellesRoles 侧按职业或词条拆 handler，例如 `roles/timekeeper/TimekeeperDeathHandler`、`modifiers/dual_personality/DualPersonalityDeathHandler`、`roles/bounty_hunter/BountyHunterDeathHandler`，然后只在 `NoellesRolesDeathBootstrap` 里注册。通用尸体死因和职业已经由 Wathe 自动写入，不得重新增加 `CoronerBodySpawnHandler` 或私有死因组件。
 

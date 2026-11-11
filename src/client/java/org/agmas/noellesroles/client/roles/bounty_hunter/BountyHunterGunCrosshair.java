@@ -1,8 +1,9 @@
 package org.agmas.noellesroles.client.roles.bounty_hunter;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.item.BountyDerringerItem;
 import org.agmas.noellesroles.item.BountyPistolItem;
@@ -35,10 +36,14 @@ public final class BountyHunterGunCrosshair {
         }
 
         ClientPlayerEntity player = context.player();
+        HitResult visibleTarget = holdingBountyPistol
+                ? BountyPistolItem.getGunTarget(player)
+                : BountyDerringerItem.getGunTarget(player);
+        HitResult attackTarget = holdingBountyPistol
+                ? BountyPistolItem.getGunAttackTarget(player)
+                : BountyDerringerItem.getGunAttackTarget(player);
         boolean target = !player.getItemCooldownManager().isCoolingDown(context.mainHandStack().getItem())
-                && (holdingBountyPistol
-                ? BountyPistolItem.getGunTarget(player) instanceof EntityHitResult
-                : BountyDerringerItem.getGunTarget(player) instanceof EntityHitResult);
+                && WeaponTargetingApi.isSameEntityTarget(visibleTarget, attackTarget);
         CrosshairHudApi.renderStandardCrosshair(context, target);
         return CrosshairHudApi.Result.HANDLED;
     }

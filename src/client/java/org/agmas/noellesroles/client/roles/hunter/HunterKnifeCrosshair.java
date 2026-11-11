@@ -1,13 +1,10 @@
 package org.agmas.noellesroles.client.roles.hunter;
 
 import dev.doctor4t.wathe.api.client.gui.CrosshairHudApi;
-import dev.doctor4t.wathe.api.visibility.TargetVisibilityApi;
+import dev.doctor4t.wathe.api.combat.WeaponTargetingApi;
 import dev.doctor4t.wathe.game.GameFunctions;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
@@ -38,11 +35,17 @@ public final class HunterKnifeCrosshair {
 
         ClientPlayerEntity player = context.player();
         ItemCooldownManager manager = player.getItemCooldownManager();
-        HitResult hitResult = ProjectileUtil.getCollision(
+        /*
+         * VISIBLE 决定准心能否暴露目标，ATTACK 决定松手时是否真的允许发送命中。
+         * 只有两条语义命中同一实体才点亮准心，避免目标可见但处于不可攻击状态时
+         * 给玩家错误的“已经锁定”反馈。
+         */
+        HitResult visibleTarget = WeaponTargetingApi.getVisibleAlivePlayerTarget(
                 player,
-                entity -> entity instanceof PlayerEntity targetPlayer
-                        && GameFunctions.isPlayerAliveAndSurvival(targetPlayer)
-                        && TargetVisibilityApi.canTargetPlayer(player, targetPlayer),
+                HunterConstants.HUNTING_KNIFE_TARGET_RANGE
+        );
+        HitResult attackTarget = WeaponTargetingApi.getAttackableAlivePlayerTarget(
+                player,
                 HunterConstants.HUNTING_KNIFE_TARGET_RANGE
         );
         /*
@@ -51,7 +54,7 @@ public final class HunterKnifeCrosshair {
          */
         boolean ignoresCooldown = GameFunctions.isPlayerSpectatingOrCreative(player);
         boolean target = (ignoresCooldown || !manager.isCoolingDown(ModItems.HUNTING_KNIFE))
-                && hitResult instanceof EntityHitResult;
+                && WeaponTargetingApi.isSameEntityTarget(visibleTarget, attackTarget);
         float progress = 1.0F - manager.getCooldownProgress(ModItems.HUNTING_KNIFE, context.tickDelta());
         CrosshairHudApi.renderKnifeProgressCrosshair(context, target, target, progress);
         return CrosshairHudApi.Result.HANDLED;
