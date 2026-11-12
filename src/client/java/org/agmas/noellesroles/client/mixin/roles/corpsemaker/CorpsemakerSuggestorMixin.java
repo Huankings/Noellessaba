@@ -2,16 +2,11 @@ package org.agmas.noellesroles.client.mixin.roles.corpsemaker;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
-import dev.doctor4t.wathe.api.WatheRoles;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import org.agmas.harpymodloader.Harpymodloader;
-import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.noellesroles.client.ui.roles.corpsemaker.CorpsemakerRoleInputWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,18 +42,7 @@ public abstract class CorpsemakerSuggestorMixin {
     void onRefresh(@NotNull CallbackInfo ci) {
         if (textField instanceof CorpsemakerRoleInputWidget) {
             messages.clear();
-            WatheRoles.ROLES.forEach((role) -> {
-                if (HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().toString())) return;
-                String rolePath = role.identifier().getPath();
-                if (rolePath.startsWith(textField.getText()) || textField.getText().isEmpty()) {
-                    MutableText s = Text.literal(rolePath);
-                    // 如果不是英语，添加中文名
-                    if (!MinecraftClient.getInstance().getLanguageManager().getLanguage().startsWith("en_")) {
-                        s.append(Text.literal(" (").append(Harpymodloader.getRoleName(role)).append(")"));
-                    }
-                    messages.add(s.withColor(role.color()).asOrderedText());
-                }
-            });
+            messages.addAll(((CorpsemakerRoleInputWidget) textField).getSuggestionMessages());
             x = textField.getX();
             width = textField.getWidth();
             window = null;

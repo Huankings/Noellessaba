@@ -14,6 +14,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.ModItems;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityComponent;
@@ -23,9 +24,11 @@ import org.agmas.noellesroles.registry.NoellesModifierRegistry;
 import org.agmas.harpymodloader.api.neutral.NeutralRoleCategoryApi;
 import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentProvider;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.ClientTickingComponent;
@@ -35,13 +38,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * 赏金猎人的玩家状态。
  *
- * <p>这个组件只同步给赏金猎人本人：悬赏目标、赏金模式锁槽和开局冷却都属于个人信息，
- * 其他客户端不需要知道，也不应该借同步数据反推出赏金猎人的目标。</p>
+ * <p>悬赏目标仍然不会同步给存活玩家；但普通非存活观察者需要在准心 HUD 中查看目标，
+ * 因此组件会对正在追踪该实体的观察者开放最小范围同步。赏金模式锁槽等字段虽然一并位于
+ * 组件包中，但不会改变服务端玩法，存活玩家也不会获得这份同步数据。</p>
  */
 public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
     public static final ComponentKey<BountyHunterPlayerComponent> KEY = ComponentRegistry.getOrCreate(
@@ -53,6 +59,8 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
     private UUID target;
     private boolean bountyModeActive = false;
     private int bountyDerringerSlot = -1;
+    /** 已经收到当前组件数据的普通非存活观察者，用于检测视角切换并发送补发/清理包。 */
+    private final Set<UUID> syncedObservers = new HashSet<>();
 
     public BountyHunterPlayerComponent(PlayerEntity player) {
         this.player = player;
@@ -70,6 +78,7 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
          */
         stopBountyMode(true);
         this.target = this.player.getUuid();
+        this.syncedObservers.clear();
         this.player.getItemCooldownManager().remove(ModItems.BOUNTY_PISTOL);
         this.player.getItemCooldownManager().remove(ModItems.BOUNTY_DERRINGER);
         this.player.getItemCooldownManager().remove(ModItems.BOUNTY_MODE);
@@ -193,8 +202,11 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
             if (this.bountyModeActive) {
                 stopBountyMode(true);
             }
+            clearObserverSync();
             return;
         }
+
+        refreshObserverSync();
 
         tickBountyMode(gameWorld);
         tickTargetSelection(gameWorld);
@@ -365,9 +377,17 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
     }
 
     private static boolean isValidBountyTarget(GameWorldComponent gameWorld, PlayerEntity target, Role role) {
-        if (target == null || role == null || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+        if (target == null
+                || role == null
+                || !GameFunctions.isPlayerAliveAndSurvival(target)
+                || TimekeeperPlayerComponent.KEY.get(target).isInTimeRift()) {
             return false;
         }
+        /*
+         * 时间狭缝玩家虽然通过 PlayerLifeStateApi 暂时满足“玩法存活”，但已经完成过一次真实死亡。
+         * 他们只能等待回溯或狭缝结束，不能成为新的悬赏目标；否则赏金猎人会再次锁定一个当前
+         * 无法正常击杀的特殊旁观玩家。
+         */
         /*
          * 悬赏目标筛选沿用仇杀客语义：
          * 平民/义警是主要猎物，独立中立也能作为独胜阵营的猎物；
@@ -381,7 +401,64 @@ public class BountyHunterPlayerComponent implements AutoSyncedComponent, ServerT
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
-        return this.player.equals(player);
+        if (!this.player.getWorld().equals(player.getWorld())) {
+            return false;
+        }
+        return this.player.equals(player) || GameFunctions.isPlayerSpectatingOrCreative(player);
+    }
+
+    /**
+     * CCA 默认只会在组件主动 sync 或开始追踪时重新判断收件人。
+     * 玩家死亡切换为旁观、或管理员把玩家切回存活模式时，目标本身可能没有变化，
+     * 所以这里按追踪关系增量补发真实包或空包，避免 HUD 读到旧状态或一直拿不到目标。
+     */
+    private void refreshObserverSync() {
+        if (!(this.player instanceof ServerPlayerEntity serverOwner)) {
+            return;
+        }
+
+        Set<UUID> currentObservers = new HashSet<>();
+        for (ServerPlayerEntity recipient : PlayerLookup.tracking(serverOwner)) {
+            if (GameFunctions.isPlayerSpectatingOrCreative(recipient)) {
+                currentObservers.add(recipient.getUuid());
+                if (this.syncedObservers.add(recipient.getUuid())) {
+                    KEY.syncWith(recipient, (ComponentProvider) serverOwner);
+                }
+            }
+        }
+
+        for (UUID previousObserver : new HashSet<>(this.syncedObservers)) {
+            if (!currentObservers.contains(previousObserver)) {
+                ServerPlayerEntity recipient = serverOwner.getServer().getPlayerManager().getPlayer(previousObserver);
+                if (recipient != null && PlayerLookup.tracking(serverOwner).contains(recipient)) {
+                    KEY.syncWith(recipient, (ComponentProvider) serverOwner,
+                            (buf, ignored) -> {
+                                buf.writeBoolean(false);
+                                buf.writeBoolean(false);
+                            }, ignored -> true);
+                }
+                this.syncedObservers.remove(previousObserver);
+            }
+        }
+    }
+
+    /** 职业离开赏金猎人状态时清理观察者客户端缓存。 */
+    private void clearObserverSync() {
+        if (!(this.player instanceof ServerPlayerEntity serverOwner)) {
+            this.syncedObservers.clear();
+            return;
+        }
+        for (UUID observerUuid : new HashSet<>(this.syncedObservers)) {
+            ServerPlayerEntity recipient = serverOwner.getServer().getPlayerManager().getPlayer(observerUuid);
+            if (recipient != null && PlayerLookup.tracking(serverOwner).contains(recipient)) {
+                KEY.syncWith(recipient, (ComponentProvider) serverOwner,
+                        (buf, ignored) -> {
+                            buf.writeBoolean(false);
+                            buf.writeBoolean(false);
+                        }, ignored -> true);
+            }
+        }
+        this.syncedObservers.clear();
     }
 
     @Override

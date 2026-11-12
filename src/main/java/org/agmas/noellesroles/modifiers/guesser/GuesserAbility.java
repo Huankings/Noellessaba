@@ -5,7 +5,6 @@ import org.agmas.noellesroles.registry.NoellesEventIds;
 import org.agmas.noellesroles.registry.NoellesModifierRegistry;
 
 import dev.doctor4t.wathe.api.Role;
-import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.game.GameConstants;
 import dev.doctor4t.wathe.game.GameFunctions;
@@ -22,6 +21,7 @@ import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.AbilityPlayerComponent;
 import org.agmas.noellesroles.config.NoellesRolesConfig;
 import org.agmas.noellesroles.packet.modifiers.GuessC2SPacket;
+import org.agmas.noellesroles.util.RoleInputResolver;
 
 public final class GuesserAbility {
 
@@ -63,11 +63,7 @@ public final class GuesserAbility {
         }
 
         boolean wrong = gameWorld.getRole(target) == null;
-        String guessedRoleId = guess.toLowerCase(java.util.Locale.ROOT);
-        Role guessedRole = WatheRoles.ROLES.stream()
-                .filter(role -> role.identifier().getPath().equalsIgnoreCase(guessedRoleId))
-                .findFirst()
-                .orElse(null);
+        Role guessedRole = RoleInputResolver.resolve(guess);
 
         /*
          * 猜测提交本身也需要留痕。
@@ -90,7 +86,7 @@ public final class GuesserAbility {
         if (!wrong) {
             // 比较猜测的角色路径（忽略大小写）
             Role targetRole = gameWorld.getRole(target);
-            wrong = !targetRole.identifier().getPath().equalsIgnoreCase(guess);
+            wrong = guessedRole == null || !targetRole.identifier().equals(guessedRole.identifier());
 
             // 特殊角色（如原版角色）不允许猜测
             if (Harpymodloader.SPECIAL_ROLES.contains(targetRole)) {

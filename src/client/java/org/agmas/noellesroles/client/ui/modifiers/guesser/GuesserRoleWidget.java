@@ -1,6 +1,6 @@
 package org.agmas.noellesroles.client.ui.modifiers.guesser;
 
-import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -10,10 +10,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
-import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
+import net.minecraft.text.OrderedText;
+import org.agmas.noellesroles.client.ui.common.LocalizedRoleInputSupport;
 import org.agmas.noellesroles.packet.modifiers.GuessC2SPacket;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,12 +41,13 @@ public class GuesserRoleWidget extends TextFieldWidget {
                 false,
                 0x00000000 // 完全透明背景，解决原半透明底色遮挡UI问题
         );
-        suggestor.refresh();
+        refreshSuggestions();
     }
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
         boolean original = super.charTyped(chr, modifiers);
+        suggestionState.selectedRole = null;
         refreshSuggestions(); // 抽离公共方法，统一刷新逻辑
         return original;
     }
@@ -55,7 +56,9 @@ public class GuesserRoleWidget extends TextFieldWidget {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         // Tab键 循环补全提示文本 (键盘码258是Tab的标准键值)
         if (keyCode == 258 && !suggestionState.matchedRoles.isEmpty()) {
-            this.setText(suggestionState.matchedRoles.get(suggestionState.currentIndex));
+            LocalizedRoleInputSupport.Candidate candidate = suggestionState.matchedRoles.get(suggestionState.currentIndex);
+            suggestionState.selectedRole = candidate.role();
+            this.setText(candidate.completionText());
             suggestionState.currentIndex = (suggestionState.currentIndex + 1) % suggestionState.matchedRoles.size();
             this.setSuggestion("");
             return true; // 消费事件，防止穿透触发其他逻辑
@@ -81,7 +84,11 @@ public class GuesserRoleWidget extends TextFieldWidget {
             UUID selectedPlayer = GuesserPlayerWidget.selectedPlayer;
             // 原修复：判空+非空校验，防止发送空请求/空玩家ID导致服务端报错
             if (selectedPlayer != null && !this.getText().isBlank()) {
-                ClientPlayNetworking.send(new GuessC2SPacket(selectedPlayer, getText().trim()));
+                Role resolvedRole = resolveSubmittedRole();
+                ClientPlayNetworking.send(new GuessC2SPacket(
+                        selectedPlayer,
+                        resolvedRole == null ? getText().trim() : resolvedRole.identifier().toString()
+                ));
                 screen.close();
                 // 重置状态，防止残留导致下次打开异常
                 this.setText("");
@@ -92,9 +99,9 @@ public class GuesserRoleWidget extends TextFieldWidget {
 
         // 退格键/删除键 触发联想刷新
         boolean parentResult = super.keyPressed(keyCode, scanCode, modifiers);
-        if (keyCode == 259 || keyCode == 14) { // 259=退格，14=删除
-            refreshSuggestions();
-        }
+        suggestionState.selectedRole = null;
+        // 输入法提交、粘贴、退格和删除都可能通过父类修改文本，统一刷新而不是只监听两个键码。
+        refreshSuggestions();
         return parentResult;
     }
 
@@ -119,7 +126,7 @@ public class GuesserRoleWidget extends TextFieldWidget {
             if (!suggestionState.matchedRoles.isEmpty()) {
                 suggestionState.currentIndex = Math.max(0, Math.min(suggestionState.currentIndex, suggestionState.matchedRoles.size() - 1));
                 String inputText = this.getText();
-                String matchText = suggestionState.matchedRoles.get(suggestionState.currentIndex);
+                String matchText = suggestionState.matchedRoles.get(suggestionState.currentIndex).completionText();
                 // ✅ 关键修改：删除长度判断，输入为空/输入前缀 都实时显示完整后缀联想，无任何条件限制
                 this.setSuggestion(matchText.substring(inputText.length()));
             } else {
@@ -135,52 +142,57 @@ public class GuesserRoleWidget extends TextFieldWidget {
 
     // ======== 核心优化：抽离【公共刷新方法】 ========
     private void refreshSuggestions() {
-        suggestionState.reset();
+        suggestionState.currentIndex = 0;
+        suggestionState.selectedRole = null;
+        fillMatchedRoles(MinecraftClient.getInstance());
         this.suggestor.refresh();
     }
 
     // ======== 核心优化：抽离【职业匹配逻辑】 ========
     private void fillMatchedRoles(MinecraftClient client) {
-        suggestionState.matchedRoles.clear();
-        String inputText = this.getText().toLowerCase(); // 原修复：忽略大小写匹配，体验优化
-        GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(client.player.getWorld());
-        boolean isPlayerInnocent = gameWorldComponent.isInnocent(client.player);
-
-        // 遍历所有职业，筛选符合条件的职业名称
-        WatheRoles.ROLES.forEach(role -> {
-
-            // 过滤被禁用（关闭）的职业
-            if (HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().toString())) {
-                return;
-            }
-            // 核心匹配规则：输入为空 或 职业ID以输入内容开头
-            String rolePath = role.identifier().getPath();
-            if (inputText.isEmpty() || rolePath.startsWith(inputText)) {
-                suggestionState.matchedRoles.add(rolePath);
-            }
-
-
-        });
+        suggestionState.matchedRoles = LocalizedRoleInputSupport.findCandidates(this.getText(), this::isRoleAllowedForViewer);
     }
 
     // ✅ 新增：内部静态类 - 统一封装「匹配列表+选中索引」，状态整合管理
     private static class SuggestionState {
         // 存储匹配的职业名称列表
-        public final List<String> matchedRoles = new ArrayList<>();
+        public List<LocalizedRoleInputSupport.Candidate> matchedRoles = List.of();
         // 当前选中的补全索引
         public int currentIndex = 0;
+        public Role selectedRole;
 
         // 提供统一的重置方法，一键清空状态，避免分散重置代码
         public void reset() {
             this.currentIndex = 0;
-            this.matchedRoles.clear();
+            this.matchedRoles = List.of();
+            this.selectedRole = null;
         }
     }
     private String getSuggestionSuffix() {
         if (suggestionState.matchedRoles.isEmpty()) return "";
         String inputText = this.getText();
-        String matchText = suggestionState.matchedRoles.get(suggestionState.currentIndex);
+        String matchText = suggestionState.matchedRoles.get(suggestionState.currentIndex).completionText();
         return inputText.length() < matchText.length() ? matchText.substring(inputText.length()) : "";
+    }
+
+    public List<OrderedText> getSuggestionMessages() {
+        return suggestionState.matchedRoles.stream().map(LocalizedRoleInputSupport::toSuggestionMessage).toList();
+    }
+
+    private boolean isRoleAllowedForViewer(Role role) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player == null) {
+            return false;
+        }
+        GameWorldComponent gameWorld = GameWorldComponent.KEY.get(client.player.getWorld());
+        return gameWorld.isInnocent(client.player) || !role.canUseKiller();
+    }
+
+    private Role resolveSubmittedRole() {
+        if (suggestionState.selectedRole != null) {
+            return suggestionState.selectedRole;
+        }
+        return LocalizedRoleInputSupport.resolveExact(getText(), this::isRoleAllowedForViewer);
     }
 
 }

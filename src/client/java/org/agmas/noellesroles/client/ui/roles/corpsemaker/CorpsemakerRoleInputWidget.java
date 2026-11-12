@@ -1,6 +1,6 @@
 package org.agmas.noellesroles.client.ui.roles.corpsemaker;
 
-import dev.doctor4t.wathe.api.WatheRoles;
+import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.client.gui.screen.ingame.LimitedInventoryScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -9,18 +9,19 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
-import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
+import net.minecraft.text.OrderedText;
+import org.agmas.noellesroles.client.ui.common.LocalizedRoleInputSupport;
 import org.agmas.noellesroles.packet.role.corpsemaker.CorpsemakerC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CorpsemakerRoleInputWidget extends TextFieldWidget {
     private final LimitedInventoryScreen screen;
     private final ChatInputSuggestor suggestor;
-    private final List<String> matchedRoles = new ArrayList<>();
+    private List<LocalizedRoleInputSupport.Candidate> matchedRoles = List.of();
     private int currentSuggestionIndex = 0;
+    private Role selectedRole;
 
     public CorpsemakerRoleInputWidget(LimitedInventoryScreen screen, TextRenderer textRenderer, int x, int y) {
         super(textRenderer, x, y, 200, 16, Text.literal(""));
@@ -49,6 +50,7 @@ public class CorpsemakerRoleInputWidget extends TextFieldWidget {
     @Override
     public boolean charTyped(char chr, int modifiers) {
         boolean result = super.charTyped(chr, modifiers);
+        selectedRole = null;
         refreshMatchedRoles();
         suggestor.refresh();
         return result;
@@ -60,7 +62,9 @@ public class CorpsemakerRoleInputWidget extends TextFieldWidget {
         if (keyCode == GLFW.GLFW_KEY_TAB) {
             refreshMatchedRoles(); // 确保列表最新
             if (!matchedRoles.isEmpty()) {
-                setText(matchedRoles.get(currentSuggestionIndex));
+                LocalizedRoleInputSupport.Candidate candidate = matchedRoles.get(currentSuggestionIndex);
+                selectedRole = candidate.role();
+                setText(candidate.completionText());
                 setCursorToEnd(false);
                 refreshMatchedRoles(); // 重新计算匹配列表
                 normalizeSuggestionIndex(); // 确保索引有效
@@ -92,16 +96,18 @@ public class CorpsemakerRoleInputWidget extends TextFieldWidget {
         // 处理回车
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             if (!getText().isBlank() && CorpsemakerState.selectedPlayerUuid != null && CorpsemakerState.selectedDeathReason != null) {
+                Role resolvedRole = resolveSubmittedRole();
                 ClientPlayNetworking.send(new CorpsemakerC2SPacket(
                         CorpsemakerState.selectedPlayerUuid,
                         CorpsemakerState.selectedDeathReason,
-                        getText().trim()
+                        resolvedRole == null ? getText().trim() : resolvedRole.identifier().toString()
                 ));
                 screen.close();
             }
             return true;
         }
         boolean result = super.keyPressed(keyCode, scanCode, modifiers);
+        selectedRole = null;
         refreshMatchedRoles();
         suggestor.refresh();
         return result;
@@ -110,6 +116,7 @@ public class CorpsemakerRoleInputWidget extends TextFieldWidget {
     @Override
     public void eraseCharacters(int characterOffset) {
         super.eraseCharacters(characterOffset);
+        selectedRole = null;
         refreshMatchedRoles();
         suggestor.refresh();
     }
@@ -124,18 +131,7 @@ public class CorpsemakerRoleInputWidget extends TextFieldWidget {
     }
 
     private void refreshMatchedRoles() {
-        matchedRoles.clear();
-        String input = getText().toLowerCase();
-        for (var role : WatheRoles.ROLES) {
-            if (HarpyModLoaderConfig.HANDLER.instance().disabled.contains(role.identifier().toString())) {
-                continue;
-            }
-            String rolePath = role.identifier().getPath();
-            if (input.isEmpty() || rolePath.startsWith(input)) {
-                matchedRoles.add(rolePath);
-            }
-        }
-        matchedRoles.sort(String::compareToIgnoreCase);
+        matchedRoles = LocalizedRoleInputSupport.findCandidates(getText(), role -> true);
     }
 
     private void normalizeSuggestionIndex() {
@@ -156,11 +152,23 @@ public class CorpsemakerRoleInputWidget extends TextFieldWidget {
             return;
         }
         String input = getText();
-        String match = matchedRoles.get(currentSuggestionIndex);
+        String match = matchedRoles.get(currentSuggestionIndex).completionText();
         if (input.length() < match.length()) {
             setSuggestion(match.substring(input.length()));
         } else {
             setSuggestion("");
         }
+    }
+
+    /** ChatInputSuggestor mixin 只负责排版，候选来源统一由本控件维护。 */
+    public List<OrderedText> getSuggestionMessages() {
+        return matchedRoles.stream().map(LocalizedRoleInputSupport::toSuggestionMessage).toList();
+    }
+
+    private Role resolveSubmittedRole() {
+        if (selectedRole != null) {
+            return selectedRole;
+        }
+        return LocalizedRoleInputSupport.resolveExact(getText(), role -> true);
     }
 }

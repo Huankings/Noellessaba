@@ -49,6 +49,7 @@
       "noellesroles:wind_mark",
       "noellesroles:config",
       "noellesroles:body_death_reason",
+      "noellesroles:corpsemaker_body",
       "noellesroles:executioner",
       "noellesroles:recaller",
       "noellesroles:prophet",

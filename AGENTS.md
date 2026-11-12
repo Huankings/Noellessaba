@@ -742,3 +742,13 @@ HUD/UI/准星/本能/心情图标：普通屏幕 HUD 优先走 `HudOverlayApi`�
 - 玩家级硬重置使用 Harpy `ResetPlayerEvent`，按职业放 `roles/<role>/*ResetHandler`；世界级开局前清理使用 Wathe `GameEvents.ON_BEGIN_INITIALIZE`。
 - 不得重新新增 `*ReseterMixin`、`RoundModifierStateResetMixin`，也不要直接注入 `GameFunctions.resetPlayer/initializeGame/finalizeGame`。
 - `NoellesRolesEventBootstrap` 不得重新集中注册职业 `ResetPlayerEvent` 或维护 `registerRoundCleanup` 大块；玩家组件、世界组件和职业实体清理必须放回对应职业/词条 `*ResetHandler`，再由 `NoellesRolesResetBootstrap` 聚合。
+
+### 准心动态附加行规则
+
+- 准心关系信息统一使用 Wathe `RoleNameHudApi.registerAdditionalLine(...)`。
+- `ObserverRoleDetailsHudHandler` 的职业与词条必须保持同一行组合格式：`职业[词条][词条]`；不要误拆成多行职业详情。
+- 附加关系行由 Wathe 自动排在名字和“杀手同伙”之后；需要排在名字上方的提示使用 `Placement.ABOVE_NAME`。
+- provider 只返回文字、24 位 RGB、缩放和位置，不得直接操作矩阵或写固定 Y 坐标。
+- 所有观察者信息必须使用 `GameFunctions.isPlayerSpectatingOrCreative(viewer)`，特殊存活授权玩家不属于观察者。
+- 赏金猎人目标是受限同步数据：只向普通非存活观察者发送，观察者恢复存活或目标职业变化时必须清理客户端缓存。
+- 新增或迁移准心 HUD 时按职业/词条拆 handler，并在对应客户端 bootstrap 注册；不要重新使用旧固定坐标 `registerExtraHud`。

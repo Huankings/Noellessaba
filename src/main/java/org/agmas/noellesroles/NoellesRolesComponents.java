@@ -20,6 +20,7 @@ import org.agmas.noellesroles.roles.engineer.StunnedPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControlledPlayerComponent;
 import org.agmas.noellesroles.roles.controller.ControllerPlayerComponent;
 import org.agmas.noellesroles.roles.cook.CookPlayerComponent;
+import org.agmas.noellesroles.roles.corpsemaker.CorpsemakerBodyComponent;
 import org.agmas.noellesroles.roles.coward.CowardPlayerComponent;
 import org.agmas.noellesroles.roles.coward.SedativePlayerComponent;
 import org.agmas.noellesroles.roles.vulture.BodyConsumedComponent;
@@ -98,6 +99,7 @@ public class NoellesRolesComponents implements EntityComponentInitializer, World
         registry.beginRegistration(PlayerEntity.class, DelusionPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DelusionPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, VoodooPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(VoodooPlayerComponent::new);
         registry.beginRegistration(PlayerBodyEntity.class, BodyConsumedComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(BodyConsumedComponent::new);
+        registry.beginRegistration(PlayerBodyEntity.class, CorpsemakerBodyComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(CorpsemakerBodyComponent::new);
         registry.beginRegistration(PlayerEntity.class, AbilityPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(AbilityPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, ThiefPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(ThiefPlayerComponent::new);
         registry.beginRegistration(PlayerEntity.class, DousedPlayerComponent.KEY).respawnStrategy(RespawnCopyStrategy.NEVER_COPY).end(DousedPlayerComponent::new);

@@ -330,6 +330,7 @@
   "hud.noellesroles.magician.playing": "播放中，剩余 %s 秒后结束",
   "hud.noellesroles.magician.stop_recording": "按下 %s 键以提前结束录制",
   "hud.noellesroles.magician.stop_playback": "按下 %s 键已提前结束播放",
+  "hud.noellesroles.magician.playback_label": "[皮套]",
 
   "announcement.goals.noellesroles.spiritualist": "用你灵魂脱离肉身的能力，穿行于人群，附身于他人！",
   "announcement.role.noellesroles.spiritualist": "灵术师",
@@ -456,6 +457,9 @@
   "announcement.goals.noellesroles.executioner": "当你的目标死于非杀手之手后，你将随机获得其他杀手身份。",
   "announcement.role.noellesroles.executioner": "仇杀客",
   "hud.executioner.target": "仇杀目标 %s",
+  "hud.noellesroles.executioner.observer_target": "仇杀目标:%s",
+  "hud.noellesroles.bounty_hunter.observer_target": "赏金目标:%s",
+  "hud.noellesroles.shadow_jester.observer_partner": "另一半:%s",
 
   "announcement.goals.noellesroles.trapper": "调查其他玩家的身份。",
   "announcement.role.noellesroles.trapper": "调查官",
@@ -1031,7 +1035,8 @@
   "game.win.noellesroles.lovers": "当我们因爱而相聚，唯有我们存活的世界早已注定",
   "tip.noellesroles.lovers.partner": "你的伴侣是 %s",
   "hud.noellesroles.lovers.partner": "伴侣",
-  "hud.noellesroles.lovers.in_love": "爱上了 %s",
+  "hud.noellesroles.lovers.in_love": "爱上了%s",
+  "hud.noellesroles.dual_personality.observer_partner": "双重人格:%s",
   "hud.noellesroles.lovers.notification": "你爱上了列车上的某人！",
   "death_reason.noellesroles.broken_heart": "殉情而亡",
   "replay.death.noellesroles.broken_heart.died": "%s 因伴侣死亡而一同殉情",

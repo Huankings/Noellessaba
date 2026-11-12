@@ -20,6 +20,7 @@ import org.agmas.harpymodloader.component.WorldModifierComponent;
 import org.agmas.noellesroles.modifiers.dual_personality.DualPersonalityComponent;
 import org.agmas.noellesroles.modifiers.lovers.LoversPairComponent;
 import org.agmas.noellesroles.roles.timekeeper.TimekeeperWorldComponent;
+import org.agmas.noellesroles.roles.timekeeper.TimekeeperPlayerComponent;
 import org.jetbrains.annotations.NotNull;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -214,9 +215,16 @@ public class ExecutionerPlayerComponent implements AutoSyncedComponent, ServerTi
     }
 
     private static boolean isValidExecutionTarget(GameWorldComponent gameWorldComponent, PlayerEntity target, Role role) {
-        if (target == null || role == null || !GameFunctions.isPlayerAliveAndSurvival(target)) {
+        if (target == null
+                || role == null
+                || !GameFunctions.isPlayerAliveAndSurvival(target)
+                || TimekeeperPlayerComponent.KEY.get(target).isInTimeRift()) {
             return false;
         }
+        /*
+         * 时间狭缝中的玩家只是被 Wathe 临时授权为“玩法存活旁观”，并不是真正可仇杀的活人。
+         * 显式排除后，仇杀目标确认死亡时会立刻换到不在狭缝中的正常存活玩家。
+         */
         /*
          * 仇杀客的目标不再只看 Role#isInnocent：
          * 1. 平民阵营和义警阵营仍然是原本意义上的“好人目标”；

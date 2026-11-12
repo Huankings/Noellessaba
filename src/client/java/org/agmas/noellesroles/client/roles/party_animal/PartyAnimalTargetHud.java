@@ -19,30 +19,27 @@ public final class PartyAnimalTargetHud {
     private PartyAnimalTargetHud() {}
 
     public static void register() {
-        RoleNameHudApi.registerExtraHud(NoellesRolesCore.id("role_name/party_animal/pitch"), RoleNameHudApi.DEFAULT_PRIORITY - 20,
+        RoleNameHudApi.registerAdditionalLine(NoellesRolesCore.id("role_name/party_animal/pitch"),
+                RoleNameHudApi.DEFAULT_PRIORITY - 20,
                 PartyAnimalTargetHud::render);
     }
 
-    private static void render(RoleNameHudApi.Context context) {
+    private static RoleNameHudApi.AdditionalLine render(RoleNameHudApi.Context context) {
         ClientPlayerEntity viewer = context.player();
         PlayerEntity target = context.targetPlayer();
         if (!GameFunctions.isPlayerAliveAndSurvival(viewer) || target == null
                 || !GameFunctions.isPlayerAliveAndSurvival(target)
-                || !GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.PARTY_ANIMAL)) return;
+                || !GameWorldComponent.KEY.get(viewer.getWorld()).isRole(viewer, NoellesRoleRegistry.PARTY_ANIMAL)) return null;
         int level = HeliumBuzzPlayerComponent.KEY.get(target).getEffectiveLevel();
-        if (level == 0) return;
+        if (level == 0) return null;
         Text type = Text.translatable(level > 0
                 ? "hud.noellesroles.party_animal.pitch_up"
                 : "hud.noellesroles.party_animal.pitch_down");
         int color = levelColor(level);
         MutableText text = type.copy().append(Text.translatable("hud.noellesroles.party_animal.type_separator")).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(PartyAnimalConstants.ROLE_COLOR)))
                 .append(Text.literal(Math.abs(level) + "级").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color))));
-        var matrices = context.drawContext().getMatrices();
-        matrices.push();
-        matrices.translate(context.drawContext().getScaledWindowWidth() / 2.0F, context.drawContext().getScaledWindowHeight() / 2.0F - 35.0F, 0.0F);
-        matrices.scale(0.6F, 0.6F, 1.0F);
-        context.drawContext().drawTextWithShadow(context.renderer(), text, -context.renderer().getWidth(text) / 2, 48, 0xFFFFFFFF);
-        matrices.pop();
+        // 统一布局会把该行放在名字上方；scale=1 与玩家名字保持同样字号。
+        return RoleNameHudApi.AdditionalLine.aboveName(text, 0xFFFFFF, 0.9F);
     }
 
     private static int levelColor(int level) {

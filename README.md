@@ -1056,3 +1056,18 @@ NoellesRoles 的职业输入限制已统一迁移到 Wathe `ClientInputApi`。�
 `registerRoundCleanup` 也已全部按所有者迁移：玩家状态由各职业 `*ResetHandler` 注册
 `ResetPlayerEvent`，世界组件与临时实体由对应职业 handler 注册 `ON_FINISH_FINALIZE`。
 `NoellesRolesEventBootstrap` 不再直接认识这些组件或实体，只保留真正的全局事件与 server tick 编排。
+
+## 准心关系信息与动态排版
+
+准心玩家信息统一使用 Wathe `RoleNameHudApi.registerAdditionalLine(...)`。Wathe 会按“职业与
+词条组合行、阵营、名字、杀手同伙、附加关系行”的顺序动态计算坐标；NoellesRoles 的 provider
+不得自行绘制固定 Y 坐标。普通非存活观察者使用 `GameFunctions.isPlayerSpectatingOrCreative`
+判定，不能把具有特殊存活授权的 spectator/creative 当作观察者。
+
+当前关系行包括仇杀客、赏金猎人、影子小丑、恋人、双重人格和魔术师皮套。关系目标名称尚未
+同步到客户端时隐藏该行，不显示 UUID。赏金猎人目标组件仍不向存活玩家同步，只对正在追踪
+赏金猎人实体的普通非存活观察者补发，并在观察者恢复存活或职业变化时清理客户端缓存。
+
+`PartyAnimalTargetHud` 使用 `Placement.ABOVE_NAME` 且保持与名字相同字号；其它能力提示按
+`Placement.BELOW_COHORT` 统一排版。新增关系行应继续按职业/词条拆分 handler，由客户端 bootstrap
+负责注册顺序，不要恢复旧的固定坐标 `registerExtraHud` 实现。

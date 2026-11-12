@@ -2,17 +2,11 @@ package org.agmas.noellesroles.client.mixin.modifiers.guesser;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
-import dev.doctor4t.wathe.api.WatheRoles;
-import dev.doctor4t.wathe.cca.GameWorldComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import org.agmas.harpymodloader.Harpymodloader;
-import org.agmas.harpymodloader.config.HarpyModLoaderConfig;
 import org.agmas.noellesroles.client.ui.modifiers.guesser.GuesserRoleWidget;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -47,25 +41,7 @@ public abstract class GuesserSuggestorMixin {
     void a(CallbackInfo ci) {
         if (textField instanceof GuesserRoleWidget) {
             messages.clear();
-            WatheRoles.ROLES.forEach((m) -> {
-
-                GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(MinecraftClient.getInstance().player.getWorld());
-                if (!gameWorldComponent.isInnocent(MinecraftClient.getInstance().player)) {
-
-                    if (m.canUseKiller()) return;
-                }
-                // 过滤被禁用（关闭）的职业
-                if (HarpyModLoaderConfig.HANDLER.instance().disabled.contains(m.identifier().toString())) {
-                    return;
-                }
-                if (m.identifier().getPath().startsWith(textField.getText()) || textField.getText().isEmpty()) {
-                    MutableText s = Text.literal(m.identifier().getPath());
-                    if (!MinecraftClient.getInstance().getLanguageManager().getLanguage().startsWith("en_")) {
-                        s.append(Text.literal(" (").append((Harpymodloader.getRoleName(m)).append(")")));
-                    }
-                    messages.add(s.withColor(m.color()).asOrderedText());
-                }
-            });
+            messages.addAll(((GuesserRoleWidget) textField).getSuggestionMessages());
             x = textField.getX();
             width = this.textField.getWidth();
 

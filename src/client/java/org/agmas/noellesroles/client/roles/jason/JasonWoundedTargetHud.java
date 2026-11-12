@@ -2,8 +2,6 @@ package org.agmas.noellesroles.client.roles.jason;
 
 import dev.doctor4t.wathe.api.client.gui.RoleNameHudApi;
 import dev.doctor4t.wathe.game.GameFunctions;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -11,7 +9,6 @@ import org.agmas.noellesroles.registry.NoellesRolesCore;
 import org.agmas.noellesroles.roles.jason.JasonConstants;
 import org.agmas.noellesroles.roles.jason.JasonWoundManager;
 import org.agmas.noellesroles.roles.jason.JasonWoundedPlayerComponent;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 准心指向杰森重伤倒地玩家时的救治提示。
@@ -24,7 +21,7 @@ public final class JasonWoundedTargetHud {
     }
 
     public static void register() {
-        RoleNameHudApi.registerExtraHud(
+        RoleNameHudApi.registerAdditionalLine(
                 NoellesRolesCore.id("role_name/jason/wounded_rescue"),
                 RoleNameHudApi.DEFAULT_PRIORITY - 10,
                 context -> {
@@ -33,12 +30,12 @@ public final class JasonWoundedTargetHud {
                     if (!GameFunctions.isPlayerAliveAndSurvival(viewer)
                             || target == null
                             || !GameFunctions.isPlayerAliveAndSurvival(target)) {
-                        return;
+                        return null;
                     }
 
                     JasonWoundedPlayerComponent wounded = JasonWoundedPlayerComponent.KEY.get(target);
                     if (!wounded.isWounded()) {
-                        return;
+                        return null;
                     }
 
                     Text text;
@@ -59,26 +56,12 @@ public final class JasonWoundedTargetHud {
                                 JasonWoundManager.getRemainingBleedSeconds(wounded)
                         );
                     }
-                    drawCentered(context.renderer(), context.drawContext(), text);
+                    return RoleNameHudApi.AdditionalLine.below(
+                            text,
+                            JasonConstants.ROLE_COLOR,
+                            1.0F
+                    );
                 }
         );
-    }
-
-    private static void drawCentered(@NotNull TextRenderer renderer, @NotNull DrawContext context, @NotNull Text text) {
-        context.getMatrices().push();
-        context.getMatrices().translate(
-                context.getScaledWindowWidth() / 2.0F,
-                context.getScaledWindowHeight() / 2.0F + 6.0F,
-                0.0F
-        );
-        context.getMatrices().scale(JasonConstants.ROLE_NAME_HUD_SCALE, JasonConstants.ROLE_NAME_HUD_SCALE, 1.0F);
-        context.drawTextWithShadow(
-                renderer,
-                text,
-                -renderer.getWidth(text) / 2,
-                JasonConstants.ROLE_NAME_HUD_Y_OFFSET,
-                JasonConstants.ROLE_COLOR
-        );
-        context.getMatrices().pop();
     }
 }

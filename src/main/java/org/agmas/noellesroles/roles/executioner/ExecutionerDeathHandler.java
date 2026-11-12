@@ -25,6 +25,15 @@ import java.util.UUID;
  * 刽子手目标死亡时的身份转换。
  */
 public final class ExecutionerDeathHandler {
+    /**
+     * 是否要求仇杀目标真正完成死亡流程后，仇杀客才能转职。
+     *
+     * <p>默认关闭，方便调试死亡尝试、护盾和免死链：</p>
+     * <p>false：只要目标进入一次死亡尝试，就沿用旧行为立即转职，即使后续死亡被保护拦下；</p>
+     * <p>true：只有 {@link dev.doctor4t.wathe.api.death.DeathContext#confirmedDeath()} 为 true 才转职。</p>
+     */
+    public static final boolean REQUIRE_CONFIRMED_TARGET_DEATH_FOR_TRANSFORMATION = false;
+
     private static boolean initialized = false;
 
     private ExecutionerDeathHandler() {
@@ -39,12 +48,25 @@ public final class ExecutionerDeathHandler {
         DeathApi.registerBeforeAttempt(
                 NoellesRolesCore.id("executioner_confirm"),
                 DeathApi.DEFAULT_PRIORITY,
-                ExecutionerDeathHandler::handleTargetDeath
+                context -> {
+                    if (!REQUIRE_CONFIRMED_TARGET_DEATH_FOR_TRANSFORMATION) {
+                        handleTargetDeath(context);
+                    }
+                }
         );
         DeathApi.registerAfterAttempt(
                 NoellesRolesCore.id("executioner_retarget_after_confirmed_death"),
-                DeathApi.PRIORITY_POST_CONFIRMED_DEATH,
-                ExecutionerDeathHandler::retargetAfterConfirmedDeath
+                DeathApi.PRIORITY_POST_CONFIRMED_DEATH + 10,
+                context -> {
+                    /*
+                     * 严格模式把转职延后到 Wathe 明确确认死亡之后；默认调试模式则已在
+                     * beforeAttempt 完成转职。两个分支共用同一套目标/凶手校验，避免行为漂移。
+                     */
+                    if (REQUIRE_CONFIRMED_TARGET_DEATH_FOR_TRANSFORMATION && context.confirmedDeath()) {
+                        handleTargetDeath(context);
+                    }
+                    retargetAfterConfirmedDeath(context);
+                }
         );
     }
 

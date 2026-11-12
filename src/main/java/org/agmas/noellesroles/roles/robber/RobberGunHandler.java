@@ -52,16 +52,26 @@ public final class RobberGunHandler {
          * alivePlayerTarget 同时要求目标仍处于 Wathe 玩法存活状态。
          */
         PlayerEntity target = context.alivePlayerTarget(65.0F, false);
+        PlayerEntity killedTarget = null;
         if (target != null) {
             context.recordGunHit(target);
             if (context.killTarget(target) && !context.isCreative()) {
-                handlePostKillOutcome(context.shooter(), target);
+                killedTarget = target;
             }
         }
         context.playDefaultShootSound();
         context.sendMuzzle();
         if (!context.isCreative()) {
+            /*
+             * 冷却必须在概率结算删除强盗手枪之前写入。
+             * GunShotContext 以本次开火的 ItemStack 读取冷却物品；如果先把唯一一把强盗手枪
+             * 从背包删空，ItemStack 可能已经变成 EMPTY，后续冷却就无法稳定落到 ROBBER_PISTOL。
+             * 因此先完成声音和枪口表现，再固定写入冷却，最后才处理保枪/掉枪/消失。
+             */
             context.applyCooldown(GameConstants.ITEM_COOLDOWNS.getOrDefault(ModItems.ROBBER_PISTOL, 0));
+            if (killedTarget != null) {
+                handlePostKillOutcome(context.shooter(), killedTarget);
+            }
         }
         return GunShotResult.HANDLED;
     }

@@ -16,6 +16,7 @@ import org.agmas.noellesroles.client.instinct.roles.bounty_hunter.BountyHunterIn
 import org.agmas.noellesroles.client.instinct.roles.convener.ConvenerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.conductor.ConductorInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.cook.CookInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.corpsemaker.CorpsemakerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.drugmaker.DrugmakerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.dreamer.DreamerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.executioner.ExecutionerInstinctHandler;
@@ -26,6 +27,7 @@ import org.agmas.noellesroles.client.instinct.roles.insane_damned_paranoid_kille
 import org.agmas.noellesroles.client.instinct.roles.jester.JesterInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.licensed_villain.LicensedVillainInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.mimic.MimicInstinctHandler;
+import org.agmas.noellesroles.client.instinct.roles.magician.MagicianInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.morphling.MorphlingInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.coroner.CoronerInstinctHandler;
 import org.agmas.noellesroles.client.instinct.roles.physician.PhysicianInstinctHandler;
@@ -71,9 +73,11 @@ public final class NoellesInstinctHandlers {
         BountyHunterInstinctHandler.register();
         BomberInstinctHandler.register();
         MimicInstinctHandler.register();
+        MagicianInstinctHandler.register();
         MorphlingInstinctHandler.register();
         WaiterInstinctHandler.register();
         CookInstinctHandler.register();
+        CorpsemakerInstinctHandler.register();
         PhysicianInstinctHandler.register();
         DreamerInstinctHandler.register();
         HackerInstinctHandler.register();

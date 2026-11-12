@@ -6,7 +6,6 @@ import org.agmas.noellesroles.registry.NoellesRoleRegistry;
 import org.agmas.noellesroles.registry.NoellesRolesCore;
 
 import dev.doctor4t.wathe.api.Role;
-import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.api.body.PlayerBodyInfoApi;
 import dev.doctor4t.wathe.api.body.PlayerBodyInfoSnapshot;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
@@ -30,6 +29,7 @@ import org.agmas.noellesroles.ModItems;
 import dev.doctor4t.wathe.record.GameRecordManager;
 import dev.doctor4t.wathe.record.GameRecordTypes;
 import org.agmas.noellesroles.packet.role.corpsemaker.CorpsemakerC2SPacket;
+import org.agmas.noellesroles.util.RoleInputResolver;
 
 public final class CorpsemakerAbility {
 
@@ -66,14 +66,8 @@ public final class CorpsemakerAbility {
             return;
         }
 
-        // 匹配角色（忽略大小写）
-        Role matchedRole = null;
-        for (Role role : WatheRoles.ROLES) {
-            if (role.identifier().getPath().equalsIgnoreCase(inputRole)) {
-                matchedRole = role;
-                break;
-            }
-        }
+        // 新客户端发送完整职业 ID；解析器仍兼容旧客户端发送的不带命名空间 path。
+        Role matchedRole = RoleInputResolver.resolve(inputRole);
         if (matchedRole == null) {
             player.sendMessage(Text.literal("无效的身份：" + inputRole), true);
             return;
@@ -98,6 +92,12 @@ public final class CorpsemakerAbility {
                 true,
                 target.getUuid()
         ));
+        /*
+         * 观察者默认按尸体 owner UUID 查询本局职业色。在线但未参加本局的玩家没有职业映射，
+         * 因此这里冻结“生成时是否参与本局”，让客户端只把这类造尸怪伪尸显示成白色。
+         * 不能只依赖 synthetic，因为魔术师播放结束生成的尸体同样属于 synthetic。
+         */
+        CorpsemakerBodyComponent.KEY.get(body).markForged(gameWorld.getRole(target) != null);
         body.refreshPositionAndAngles(spawnPos.getX(), player.getY(), spawnPos.getZ(), yaw, 0f);
         body.setYaw(yaw);
         body.setHeadYaw(yaw);
@@ -110,6 +110,11 @@ public final class CorpsemakerAbility {
         body.age = 0;
 
         target.getWorld().spawnEntity(body);
+        /*
+         * 实体首次追踪通常会携带 CCA 初始数据；生成后再显式同步一次作为保险，
+         * 确保同 tick 已开始追踪尸体的客户端也能立即取得白色观察者本能标记。
+         */
+        CorpsemakerBodyComponent.KEY.get(body).sync();
 
         // 如果伪造的角色是大嗓门，让尸体发光60秒
         if (matchedRole == NoellesRoleRegistry.NOISEMAKER) {
