@@ -48,6 +48,15 @@ public final class MagicianConstants {
     public static final int PLAYBACK_TRACKING_RANGE = 92;
 
     /**
+     * 皮套被击碎后，尸体锚点沿死亡瞬间视线方向前移的距离，单位为方块。
+     *
+     * <p>Wathe 的正常玩家死亡流程会把 {@code PlayerBodyEntity} 放到死者前方一格，
+     * 再由尸体渲染器围绕该锚点播放向前倒地动画。魔术师人工尸体必须使用同样的距离，
+     * 否则尸体模型会以皮套原站位为中心展开，并在倒地旋转时明显穿入地面。</p>
+     */
+    public static final double PLAYBACK_CORPSE_FORWARD_OFFSET_BLOCKS = 1.0D;
+
+    /**
      * 皮套在服务端每 tick 都强制保持 noClip。
      * 这能尽量保证轨迹复刻不会被门、玩家、狭窄地形卡住。
      */

@@ -23,6 +23,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import org.agmas.noellesroles.NoellesRolesEntities;
 import org.agmas.noellesroles.entities.MagicianPlaybackEntity;
 import org.jetbrains.annotations.NotNull;
@@ -441,19 +442,40 @@ public final class MagicianPlaybackManager {
                 true,
                 playback.disguiseUuid
         ));
+
+        MagicianReplayFrame deathFrame = playback.lastAppliedFrame;
+        /*
+         * 必须复刻 Wathe GameFunctions.killPlayer 的正常尸体定位方式：
+         * 先按死亡瞬间的视线方向把尸体实体锚点前移一格，再保留死者脚底的 Y 坐标。
+         *
+         * 这里必须读取最后一帧已应用的录制快照，不能读取 visibleEntity 的瞬时世界坐标。
+         * 可见皮套是 noClip 的 LivingEntity，同时保留了录制速度供动作和鞘翅表现使用；在两次
+         * 服务端帧校正之间，它仍可能被原版实体 tick 按速度短暂移动，向下速度会让实体锚点进入
+         * 地板。皮套 renderer 的视觉高度补偿会遮住这段误差，但尸体继承该 Y 后就会永久倒进地面。
+         * 录制帧保存的则是原玩家经过碰撞结算后的脚底坐标，与 Wathe 正常死亡读取 PlayerEntity
+         * 坐标的语义一致。
+         */
+        Vec3d deathPosition = new Vec3d(deathFrame.x(), deathFrame.y(), deathFrame.z());
+        Vec3d deathRotation = Vec3d.fromPolar(deathFrame.pitch(), deathFrame.yaw());
+        Vec3d spawnPos = deathPosition
+                .add(deathRotation.normalize()
+                        .multiply(MagicianConstants.PLAYBACK_CORPSE_FORWARD_OFFSET_BLOCKS));
+        float deathYaw = deathFrame.headYaw();
         body.refreshPositionAndAngles(
-                playback.visibleEntity.getX(),
-                playback.visibleEntity.getY(),
-                playback.visibleEntity.getZ(),
-                playback.visibleEntity.getHeadYaw(),
+                spawnPos.getX(),
+                deathFrame.y(),
+                spawnPos.getZ(),
+                deathYaw,
                 0.0F
         );
-        body.setYaw(playback.visibleEntity.getHeadYaw());
-        body.setHeadYaw(playback.visibleEntity.getHeadYaw());
-        body.prevYaw = playback.visibleEntity.getHeadYaw();
-        body.prevHeadYaw = playback.visibleEntity.getHeadYaw();
-        body.prevBodyYaw = playback.visibleEntity.bodyYaw;
-        body.bodyYaw = playback.visibleEntity.bodyYaw;
+
+        /*
+         * 正常玩家死亡只把尸体 yaw 与 headYaw 初始化为死亡瞬间视线朝向。
+         * 这里不能再额外复制皮套的 bodyYaw / prevBodyYaw：玩家身体朝向本来就会滞后于视线，
+         * 强写后会使“向前一格的生成方向”和尸体 renderer 的倒地方向不一致，最终造成偏心和穿地。
+         */
+        body.setYaw(deathYaw);
+        body.setHeadYaw(deathYaw);
         playback.magician.getWorld().spawnEntity(body);
 
     }
@@ -519,6 +541,13 @@ public final class MagicianPlaybackManager {
         private final Map<Integer, List<MagicianRecordedAction>> actionsByTick;
         private final UUID disguiseUuid;
         private final String disguiseName;
+        /**
+         * 最近一次真正写入皮套和播放代理的录制帧。
+         *
+         * <p>尸体生成必须读取这份不可变快照，不能读取会在世界 tick 中发生 noClip 漂移的
+         * 可见实体坐标，也不能读取可能被回放交互临时改变位置的 FakePlayer。</p>
+         */
+        private MagicianReplayFrame lastAppliedFrame;
         private int frameIndex = 0;
         private int remainingTicks;
         private int performedTicks = 0;
@@ -544,6 +573,7 @@ public final class MagicianPlaybackManager {
             this.actionsByTick = actionsByTick;
             this.disguiseUuid = disguiseUuid;
             this.disguiseName = disguiseName;
+            this.lastAppliedFrame = frames.getFirst();
             this.remainingTicks = frames.size();
         }
 
@@ -656,6 +686,8 @@ public final class MagicianPlaybackManager {
 
             MagicianReplayFrame frame = this.frames.get(this.frameIndex);
             List<MagicianRecordedAction> actions = this.actionsByTick.get(this.frameIndex);
+            // 先固定当前死亡语义帧；即使本帧动作随后触发强制结束，尸体也能使用正确的录制坐标。
+            this.lastAppliedFrame = frame;
             applyFrame(frame, hasReleaseUseAction(actions));
 
             if (actions != null) {
