@@ -91,7 +91,8 @@ public final class MagicianPlaybackActionExecutor {
                 case SWING_OFF_HAND -> performVisualSwing(proxy, visibleEntity, Hand.OFF_HAND);
                 case SELECT_SLOT -> proxy.getInventory().selectedSlot = Math.max(0, Math.min(action.intValue, 8));
                 case GUN_SHOOT -> performGunShoot(magician, proxy, visibleEntity);
-                case KNIFE_STAB -> performKnifeStab(magician, proxy, visibleEntity);
+                case KNIFE_STAB -> performKnifeStab(magician, proxy);
+                //case KNIFE_STAB -> performKnifeStab(magician, proxy,visibleEntity);"原挥手动画格式，现已注释"
                 case BAYONET_STAB -> performBayonetStab(magician, proxy, visibleEntity);
                 case BAYONET_KNOCKBACK -> performBayonetKnockback(proxy, visibleEntity);
                 case SNIPER_SHOOT -> performSniperShoot(magician, proxy, new Vec3d(action.x, action.y, action.z));
@@ -268,7 +269,8 @@ public final class MagicianPlaybackActionExecutor {
         visibleEntity.setReplayItemUseTime(0, 0);
 
         if (releasedStack.isOf(WatheItems.KNIFE) && usedTicks >= 10) {
-            performKnifeStab(magician, proxy, visibleEntity);
+            performKnifeStab(magician, proxy);
+            //performKnifeStab(magician, proxy,visibleEntity);"原挥手动画格式，现已注释"
         }
     }
 
@@ -282,8 +284,8 @@ public final class MagicianPlaybackActionExecutor {
 
     private static void performKnifeStab(
             @NotNull ServerPlayerEntity magician,
-            @NotNull MagicianPlaybackFakePlayer proxy,
-            @NotNull MagicianPlaybackEntity visibleEntity
+            @NotNull MagicianPlaybackFakePlayer proxy
+            //@NotNull MagicianPlaybackEntity visibleEntity"原挥手动画格式，现已注释"
     ) {
         EntityHitResult entityHitResult = getKnifeEntityTarget(proxy);
         if (entityHitResult == null || !(entityHitResult.getEntity() instanceof PlayerEntity target)) {
@@ -307,7 +309,13 @@ public final class MagicianPlaybackActionExecutor {
 
         GameFunctions.killPlayer(target, true, magician, GameConstants.DeathReasons.KNIFE, replayActorDeathData(proxy.getMainHandStack(), magician, proxy));
         target.playSound(WatheSounds.ITEM_KNIFE_STAB, 1.0F, 1.0F);
-        swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);
+        /*
+         * 蓄力刺杀已经由 UseAction.SPEAR 完整表现举刀和松手收势，命中后不能再显式挥手。
+         * Wathe 的 KnifeStabContext 同样规定成功刺杀不广播 swingHand；否则皮套会在刺入动作结束后
+         * 额外抡一次手臂，与真实玩家的 knife 行为不一致。猎刀等蓄力刺杀实现本身也不发送挥手，
+         * 因此这里只移除播放器曾经额外补出的动画，不改变击杀、声音、回放或冷却结算。
+         */
+        //swingReplayHand(proxy, visibleEntity, Hand.MAIN_HAND);"原挥手动画格式，现已注释"
         if (!proxy.isCreative()) {
             proxy.getItemCooldownManager().set(WatheItems.KNIFE, GameConstants.ITEM_COOLDOWNS.getOrDefault(WatheItems.KNIFE, 0));
         }
